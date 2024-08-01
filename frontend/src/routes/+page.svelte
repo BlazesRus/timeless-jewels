@@ -169,7 +169,7 @@
       </div>
 
       <div class="text-orange-500">
-        <a href="https://github.com/Vilsol/timeless-jewels" target="_blank" rel="noopener">Source (Github)</a>
+        <a href="https://github.com/BlazesRus/timeless-jewels" target="_blank" rel="noopener">Source (Github)</a>
       </div>
     </div>
   </div>

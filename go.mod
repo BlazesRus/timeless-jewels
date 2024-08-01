@@ -1,4 +1,4 @@
-module github.com/Vilsol/timeless-jewels
+module github.com/BlazesRus/timeless-jewels
 
 go 1.22.5
 
