@@ -320,6 +320,8 @@ export interface ReverseSearchConfig {
   conqueror: string;
   nodes: number[];
   stats: StatConfig[];
+  otherNodes: number[];
+  //otherStats: StatConfig[];
   minTotalWeight: number;
 }
 

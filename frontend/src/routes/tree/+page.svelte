@@ -184,6 +184,13 @@
         .filter((n) => !!n)
         .map((n) => n.Index),
       stats: Object.keys(selectedStats).map((stat) => selectedStats[stat]),
+	//Saving results for disabled nodes as well to display stat changes but exclude in results
+      otherNodes: affectedNodes
+        .filter((n) => disabled.has(n.skill))
+        .map((n) => data.TreeToPassive[n.skill])
+        .filter((n) => !!n)
+        .map((n) => n.Index),
+      //otherStats: Object.keys(selectedStats).map((stat) => selectedStats[stat]),
       minTotalWeight
     };
 
