@@ -1,4 +1,5 @@
 <script lang="ts">
+  import IncludeSwitch from './IncludeSwitch.svelte'
   import { openQueryTrade } from '$lib/utils/trade_utils';
   import { constructSingleResultQuery, type SearchWithSeed } from '../skill_tree';
   import { skillTree, translateStat } from '../skill_tree';
