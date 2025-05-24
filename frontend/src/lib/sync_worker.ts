@@ -31,6 +31,7 @@ const obj = {
       const seed = parseInt(seedStr);
 
       let weight = 0;
+      let stattotal = 0;
 
       const statCounts: Record<number, number> = {};
       const skills = Object.keys(searchResult[seed]).map((skillIDStr) => {
@@ -39,6 +40,7 @@ const obj = {
           const n = parseInt(st);
           statCounts[n] = (statCounts[n] || 0) + 1;
           weight += args.stats.find((s) => s.id == n)?.weight || 0;
+          stattotal += (statCounts[n] || 0);
         });
 
         return {
@@ -63,6 +65,9 @@ const obj = {
       const nLen = parseInt(len);
       searchGrouped[nLen] = searchGrouped[nLen].filter((g) => {
         if (g.weight < args.minTotalWeight) {
+          return false;
+        }
+        if (g.stattotal < args.stattotal) {
           return false;
         }
 
