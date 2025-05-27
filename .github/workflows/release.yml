@@ -30,7 +30,10 @@ jobs:
           GOARCH: wasm
 
       - name: Install pnpm
-        run: npm install -g pnpm
+        run: |
+          if ! command -v pnpm > /dev/null; then
+            npm install -g pnpm
+          fi
 
       - name: Build frontend
         working-directory: frontend
