@@ -32,9 +32,10 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         run: |
+          npm i -g pnpm
           pnpm install
           pnpm run build
-          ls -lah build
+          ls -lah buildnpm i -g pnpm
 
       - uses: peaceiris/actions-gh-pages@v4
         with:
