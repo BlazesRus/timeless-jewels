@@ -84,8 +84,15 @@ jobs:
       - name: Enable corepack
         run: corepack enable
 
+      # Install pnpm only if not present, but corepack prepare will ensure correct version
+      - name: Install pnpm
+        run: |
+          if ! command -v pnpm > /dev/null; then
+            npm install -g pnpm
+          fi
+
       - name: Prepare pnpm with corepack
-        run: corepack prepare pnpm@latest --activate
+        run: corepack prepare pnpm@10.11.0 --activate
 
       - name: Build frontend
         working-directory: frontend
