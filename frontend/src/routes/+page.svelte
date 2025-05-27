@@ -142,7 +142,7 @@
 
                           {#if info.StatRolls && Object.keys(info.StatRolls).length > 0}
                             <ol class="list-decimal pl-8">
-                              {#each Object.keys(info.StatRolls) as roll, i}//Might need to extract individual stat values
+                              {#each Object.keys(info.StatRolls) as roll, i}
                                 {@const stat = data.GetStatByIndex(info.AlternatePassiveAddition.StatsKeys[i])}
                                 <li>{stat.Text || '<no name>'} ({stat.ID}) - {info.StatRolls[roll]}</li>
                               {/each}

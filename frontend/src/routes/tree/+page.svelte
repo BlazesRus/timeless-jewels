@@ -78,8 +78,8 @@
       selectedStats[nStat] = {
         weight: 1,
         min: 0,
-        id: nStat,
-        minStatTotal: 0//Minimum number of stat total in jewel in order to allow in search results
+        id: nStat//,
+        //minStatTotal: 0
       };
     });
   }
@@ -140,8 +140,8 @@
     selectedStats[stat.detail.value] = {
       weight: 1,
       min: 0,
-      id: stat.detail.value,
-      minStatTotal: 0
+      id: stat.detail.value//,
+      //minStatTotal: 0
     };
     selectedStats = selectedStats;
     statSelector.handleClear();
@@ -619,10 +619,10 @@
                             <div class="mr-2">Weight:</div>
                             <input type="number" min="0" bind:value={selectedStats[s].weight} />
                           </div>
-                          <div class="flex flex-row items-center">
+                          <!--<div class="flex flex-row items-center">
                             <div class="mr-2">Minimum Stat Total:</div>
                             <input type="number" min="0" bind:value={selectedStats[s].stattotal} />
-                          </div>
+                          </div>-->
                         </div>
                       </div>
                     {/each}

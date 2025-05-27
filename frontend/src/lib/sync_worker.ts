@@ -31,19 +31,18 @@ const obj = {
       const seed = parseInt(seedStr);
 
       let weight = 0;
-      let totalStats = 0;
+      //let totalStats = 0;
 
       const statCounts: Record<number, number> = {};
-      const statTotal: Record<number, number> = {};
+      //const statTotal: Record<number, number> = {};
+
       const skills = Object.keys(searchResult[seed]).map((skillIDStr) => {
         const skillID = parseInt(skillIDStr);
         Object.keys(searchResult[seed][skillID]).forEach((st) => {
           const n = parseInt(st);
           statCounts[n] = (statCounts[n] || 0) + 1;
           weight += args.stats.find((s) => s.id == n)?.weight || 0;
-          //const extractedValue = 0;
           //need to figure out how to extract the stat value and then store inside statTotal
-          //statTotal[n] = (statTotal[n] || 0) + extractedValue;
         });
 
         return {
@@ -59,8 +58,8 @@ const obj = {
           skills: skills,
           seed,
           weight,
-          statCounts,
-          statTotal
+          statCounts//,
+          //statTotal
         }
       ];
     });
@@ -76,9 +75,7 @@ const obj = {
           if ((g.statCounts[stat.id] === undefined && stat.min > 0) || g.statCounts[stat.id] < stat.min) {
             return false;
           }
-          //Might be able to just use stat.min to calculate stat total
-          //g.statCounts[stat.id] =  stat.min;     
-          //Check if minimum stat total is reached 
+          //Check for meeting minimum stat theshold for jewel here
         }
 
         return true;
