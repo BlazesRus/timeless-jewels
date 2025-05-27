@@ -1,8 +1,8 @@
 package calculator
 
 import (
-	"github.com/Vilsol/timeless-jewels/data"
-	"github.com/Vilsol/timeless-jewels/random"
+	"github.com/BlazesRus/timeless-jewels/data"
+	"github.com/BlazesRus/timeless-jewels/random"
 )
 
 type UpdateFunc func(seed uint32)

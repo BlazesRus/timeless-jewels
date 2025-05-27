@@ -1,7 +1,7 @@
 package random
 
 import (
-	"github.com/Vilsol/timeless-jewels/data"
+	"github.com/BlazesRus/timeless-jewels/data"
 )
 
 const (

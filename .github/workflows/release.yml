@@ -3,12 +3,12 @@ name: release
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   release:
     name: Release
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -28,6 +28,9 @@ jobs:
         env:
           GOOS: js
           GOARCH: wasm
+
+      - name: Install pnpm
+        run: npm install -g pnpm
 
       - name: Build frontend
         working-directory: frontend

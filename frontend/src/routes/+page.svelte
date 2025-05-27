@@ -142,7 +142,7 @@
 
                           {#if info.StatRolls && Object.keys(info.StatRolls).length > 0}
                             <ol class="list-decimal pl-8">
-                              {#each Object.keys(info.StatRolls) as roll, i}
+                              {#each Object.keys(info.StatRolls) as roll, i}//Might need to extract individual stat values
                                 {@const stat = data.GetStatByIndex(info.AlternatePassiveAddition.StatsKeys[i])}
                                 <li>{stat.Text || '<no name>'} ({stat.ID}) - {info.StatRolls[roll]}</li>
                               {/each}
@@ -169,7 +169,9 @@
       </div>
 
       <div class="text-orange-500">
-        <a href="https://github.com/Vilsol/timeless-jewels" target="_blank" rel="noopener">Source (Github)</a>
+        <a href="https://github.com/Vilsol/timeless-jewels" target="_blank" rel="noopener">Official Branch Source (Github)</a>
+        <a href="https://github.com/BlazesRus/timeless-jewels" target="_blank" rel="noopener">Source (Github)</a>
+        <a href="https://github.com/ImHamba/timeless-jewels" target="_blank" rel="noopener">ImHamba Branch Source (Github)</a>
       </div>
     </div>
   </div>
