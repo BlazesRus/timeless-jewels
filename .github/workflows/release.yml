@@ -35,6 +35,9 @@ jobs:
             npm install -g pnpm
           fi
 
+      - name: Prepare pnpm with corepack
+        run: corepack prepare pnpm@latest --activate
+
       - name: Build frontend
         working-directory: frontend
         run: |
