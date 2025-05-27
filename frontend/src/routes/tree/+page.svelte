@@ -79,7 +79,7 @@
         weight: 1,
         min: 0,
         id: nStat,
-		stattotal: 0
+        minStatTotal: 0//Minimum number of stat total in jewel in order to allow in search results
       };
     });
   }
@@ -141,7 +141,7 @@
       weight: 1,
       min: 0,
       id: stat.detail.value,
-	  stattotal: 0
+      minStatTotal: 0
     };
     selectedStats = selectedStats;
     statSelector.handleClear();
@@ -186,13 +186,6 @@
         .filter((n) => !!n)
         .map((n) => n.Index),
       stats: Object.keys(selectedStats).map((stat) => selectedStats[stat]),
-	//Saving results for disabled nodes as well to display stat changes but exclude in results
-      otherNodes: affectedNodes
-        .filter((n) => disabled.has(n.skill))
-        .map((n) => data.TreeToPassive[n.skill])
-        .filter((n) => !!n)
-        .map((n) => n.Index),
-      //otherStats: Object.keys(selectedStats).map((stat) => selectedStats[stat]),
       minTotalWeight
     };
 

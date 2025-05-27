@@ -41,9 +41,9 @@ const obj = {
           const n = parseInt(st);
           statCounts[n] = (statCounts[n] || 0) + 1;
           weight += args.stats.find((s) => s.id == n)?.weight || 0;
-          const extractedValue = 0;
-          //need to figure out how to extract the stat value(from searchResult[seed][skillID]?) and then store inside statTotal
-          statTotal[n] = (statTotal[n] || 0) + extractedValue;
+          //const extractedValue = 0;
+          //need to figure out how to extract the stat value and then store inside statTotal
+          //statTotal[n] = (statTotal[n] || 0) + extractedValue;
         });
 
         return {
@@ -60,8 +60,7 @@ const obj = {
           seed,
           weight,
           statCounts,
-          statTotal,
-          totalStats
+          statTotal
         }
       ];
     });
@@ -77,10 +76,9 @@ const obj = {
           if ((g.statCounts[stat.id] === undefined && stat.min > 0) || g.statCounts[stat.id] < stat.min) {
             return false;
           }
+          //Might be able to just use stat.min to calculate stat total
+          //g.statCounts[stat.id] =  stat.min;     
           //Check if minimum stat total is reached 
-          //if ((g.statCounts[stat.id] === undefined && stat.min > 0) || g.statCounts[stat.id] < stat.min) {
-          //  return false;
-          //}
         }
 
         return true;
