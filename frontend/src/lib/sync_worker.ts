@@ -31,16 +31,19 @@ const obj = {
       const seed = parseInt(seedStr);
 
       let weight = 0;
-      let stattotal = 0;
+      let totalStats = 0;
 
       const statCounts: Record<number, number> = {};
+      const statTotal: Record<number, number> = {};
       const skills = Object.keys(searchResult[seed]).map((skillIDStr) => {
         const skillID = parseInt(skillIDStr);
         Object.keys(searchResult[seed][skillID]).forEach((st) => {
           const n = parseInt(st);
           statCounts[n] = (statCounts[n] || 0) + 1;
           weight += args.stats.find((s) => s.id == n)?.weight || 0;
-          stattotal += (statCounts[n] || 0);
+          const extractedValue = 0;
+          //need to figure out how to extract the stat value(from searchResult[seed][skillID]?) and then store inside statTotal
+          statTotal[n] = (statTotal[n] || 0) + extractedValue;
         });
 
         return {
@@ -56,7 +59,9 @@ const obj = {
           skills: skills,
           seed,
           weight,
-          statCounts
+          statCounts,
+          statTotal,
+          totalStats
         }
       ];
     });
@@ -67,14 +72,15 @@ const obj = {
         if (g.weight < args.minTotalWeight) {
           return false;
         }
-        if (g.stattotal < args.stattotal) {
-          return false;
-        }
 
         for (const stat of args.stats) {
           if ((g.statCounts[stat.id] === undefined && stat.min > 0) || g.statCounts[stat.id] < stat.min) {
             return false;
           }
+          //Check if minimum stat total is reached 
+          //if ((g.statCounts[stat.id] === undefined && stat.min > 0) || g.statCounts[stat.id] < stat.min) {
+          //  return false;
+          //}
         }
 
         return true;
