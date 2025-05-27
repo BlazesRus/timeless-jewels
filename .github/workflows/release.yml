@@ -32,10 +32,8 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         run: |
-#Error likely occured here because of package manager version
           pnpm install
           pnpm run build
-#command here likely just lists directory info
           ls -lah build
 
       - uses: peaceiris/actions-gh-pages@v4
