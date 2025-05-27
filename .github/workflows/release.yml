@@ -36,7 +36,7 @@ jobs:
           fi
 
       - name: Prepare pnpm with corepack
-        run: corepack prepare pnpm@latest --activate
+        run: corepack prepare pnpm@10.11.0 --activate
 
       - name: Build frontend
         working-directory: frontend
