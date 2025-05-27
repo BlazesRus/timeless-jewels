@@ -29,13 +29,15 @@ jobs:
           GOOS: js
           GOARCH: wasm
 
+      - name: Install pnpm
+        run: npm install -g pnpm
+
       - name: Build frontend
         working-directory: frontend
         run: |
-          npm i -g pnpm
           pnpm install
           pnpm run build
-          ls -lah buildnpm i -g pnpm
+          ls -lah build
 
       - uses: peaceiris/actions-gh-pages@v4
         with:
