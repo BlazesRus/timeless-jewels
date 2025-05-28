@@ -20,11 +20,11 @@ jobs:
         with:
           node-version-file: 'frontend/.nvmrc'
 
-      - name: Clear corepack cache
-        run: corepack clear
+      #- name: Clear corepack cache
+      #  run: corepack cache clean
 
-      - name: Remove corepack cache directory
-        run: rm -rf ~/.cache/corepack
+      #- name: Remove corepack cache directory
+      #  run: rm -rf ~/.cache/corepack
 
       - name: Enable corepack
         run: corepack enable
@@ -35,11 +35,12 @@ jobs:
           GOOS: js
           GOARCH: wasm
 
-      - name: Prepare pnpm with corepack
-        run: corepack prepare pnpm@10.11.0 --activate
+      #- name: Prepare pnpm with corepack
+      #  run: corepack prepare pnpm@10.11.0 --activate
 
       - name: Build frontend
         working-directory: frontend
+		shell: bash
         run: |
           pnpm install
           pnpm run build
