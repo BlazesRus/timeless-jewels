@@ -17,10 +17,6 @@ module.exports = {
     }
   ],
   ignorePatterns: ['node_modules'],
-  settings: {
-    'svelte3/typescript': () => require('typescript'),
-    'svelte3/ignore-warnings': ({ code }) => code === 'missing-declaration'
-  },
   env: {
     browser: true,
     es2017: true,
