@@ -7,7 +7,7 @@ on:
 
 defaults:
   run:
-    shell: bash
+    shell: sh
 
 jobs:
   release:
@@ -45,6 +45,7 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         run: |
+          pnpm --recursive update --latest
           pnpm install
           pnpm run build
           ls -lah build
