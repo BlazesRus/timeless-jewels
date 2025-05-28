@@ -31,10 +31,10 @@ const obj = {
       const seed = parseInt(seedStr);
 
       let weight = 0;
-      //let totalStats = 0;
+      let totalStats = 0;
 
       const statCounts: Record<number, number> = {};
-      //const statTotal: Record<number, number> = {};
+      const statTotal: Record<number, number> = {};
 
       const skills = Object.keys(searchResult[seed]).map((skillIDStr) => {
         const skillID = parseInt(skillIDStr);
@@ -58,8 +58,8 @@ const obj = {
           skills: skills,
           seed,
           weight,
-          statCounts//,
-          //statTotal
+          statCounts,
+          statTotal
         }
       ];
     });
