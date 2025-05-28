@@ -465,9 +465,9 @@
         <div class="flex flex-row justify-between mb-2">
           <div class="flex flex-row items-center">
             <button class="burger-menu mr-3" on:click={() => (collapsed = true)}>
-              <div />
-              <div />
-              <div />
+              <div></div>
+              <div></div>
+              <div></div>
             </button>
 
             <h3 class="flex-grow">
@@ -695,9 +695,9 @@
     <button
       class="burger-menu absolute top-0 left-0 bg-black/80 backdrop-blur-sm rounded-br-lg p-4 pt-5"
       on:click={() => (collapsed = false)}>
-      <div />
-      <div />
-      <div />
+      <div></div>
+      <div></div>
+      <div></div>
     </button>
   {/if}
 
