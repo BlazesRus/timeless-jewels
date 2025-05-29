@@ -125,15 +125,16 @@
     const result = [];
 
     let currentWord = '';
-    text.split(' ').forEach((word) => {
-      if (context.measureText(currentWord + word).width < width) {
-        currentWord += ' ' + word;
-      } else {
-        result.push(currentWord.trim());
-        currentWord = word;
+    text.split(' ').forEach(
+      (word) => {
+        if (context.measureText(currentWord + word).width < width) {
+          currentWord += ' ' + word;
+        } else {
+          result.push(currentWord.trim());
+          currentWord = word;
+        }
       }
-    });
-    61834;
+    );
 
     if (currentWord.length > 0) {
       result.push(currentWord.trim());
