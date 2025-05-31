@@ -23,16 +23,16 @@
       .reverse() as k}
       <button
         class="text-lg w-full p-2 px-4 bg-neutral-500/30 rounded flex flex-row justify-between mb-2"
-        on:click={() => (expandedGroup = expandedGroup === k ? '' : k)}>
+        on:click={() => (expandedGroup = parseInt(expandedGroup) === k ? '' : k.toString())}>
         <span>
           {k} Match{k > 1 ? 'es' : ''} [{searchResults.grouped[k].length}]
         </span>
         <span>
-          {expandedGroup === k ? '^' : 'V'}
+          {parseInt(expandedGroup) === k ? '^' : 'V'}
         </span>
       </button>
 
-      {#if expandedGroup === k}
+      {#if parseInt(expandedGroup) === k}
         <div class="flex flex-col overflow-auto min-h-[200px] mb-2">
           <VirtualList
             height="auto"
