@@ -8,7 +8,7 @@ with some modifications for better trade search functionality
 
 Original Hosted Version: [https://vilsol.github.io/timeless-jewels](https://vilsol.github.io/timeless-jewels)
 
-Modified version: [https://imhamba.github.io/timeless-jewels](https://imhamba.github.io/timeless-jewels)
+Modified version: [https://BlazesRus.github.io/timeless-jewels](https://BlazesRus.github.io/timeless-jewels)
 
 Uses data extracted with https://github.com/Vilsol/go-pob-data
 

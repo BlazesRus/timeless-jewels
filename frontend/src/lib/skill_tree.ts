@@ -107,9 +107,15 @@ export const loadSkillTree = () => {
     });
   });
 
-  Object.keys(data.TreeToPassive).forEach((k) => {
-    passiveToTree[data.TreeToPassive[parseInt(k)].Index] = parseInt(k);
-  });
+  //Checks if data.TreeToPassive is null before running code
+  if (data.TreeToPassive) {
+    Object.keys(data.TreeToPassive ?? {}).forEach((k) => {
+      const treeToPassiveEntry = data.TreeToPassive?.[parseInt(k)];
+      if (treeToPassiveEntry && typeof treeToPassiveEntry.Index !== 'undefined') {
+        passiveToTree[treeToPassiveEntry.Index] = parseInt(k);
+      }
+    });
+  }
 };
 
 const indexHandlers: Record<string, number> = {
@@ -303,8 +309,13 @@ type Stat = { Index: number; ID: string; Text: string };
 const statCache: Record<number, Stat> = {};
 export const getStat = (id: number | string): Stat => {
   const nId = typeof id === 'string' ? parseInt(id) : id;
+  //Checks if stat is valid before running code
   if (!(nId in statCache)) {
-    statCache[nId] = data.GetStatByIndex(nId);
+    const stat = data.GetStatByIndex(nId);
+    if (!stat) {
+      throw new Error(`Stat not found for id: ${nId}`);
+    }
+    statCache[nId] = stat;
   }
   return statCache[nId];
 };
