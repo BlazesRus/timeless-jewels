@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { openQueryTrade } from '$lib/utils/trade_utils';
+  import { openQueryTrade } from '../utils/trade_utils';
   import { constructSingleResultQuery, type SearchWithSeed } from '../skill_tree';
   import { skillTree, translateStat } from '../skill_tree';
 
@@ -37,7 +37,7 @@
         {skillTree.nodes[skill.passive].name} ({skill.passive})
       </span>
       <ul class="list-disc pl-6 font-bold">
-        {#each Object.keys(skill.stats) as stat}
+        {#each Object.values(skill.stats) as stat}
           <li>{translateStat(stat, skill.stats[stat])}</li>
         {/each}
       </ul>
