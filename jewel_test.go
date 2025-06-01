@@ -110,7 +110,11 @@ func TestGloriousVanity(t *testing.T) {
 	for _, test := range tests {
 		t.Run(string(test.conqueror), func(t *testing.T) {
 			t.Run(strconv.Itoa(int(test.passive)), func(t *testing.T) {
-				testza.AssertEqual(t, test.result, calculator.Calculate(test.passive, seed, test.jewel, test.conqueror))
+				result := calculator.Calculate(test.passive, seed, test.jewel, test.conqueror)
+				if result.AlternatePassiveAdditionInformations == nil {
+					t.Fatalf("AlternatePassiveAdditionInformations is nil for test case jewel=%v conqueror=%v passive=%d", test.jewel, test.conqueror, test.passive)
+				}
+				testza.AssertEqual(t, test.result, result)
 			})
 		})
 	}
