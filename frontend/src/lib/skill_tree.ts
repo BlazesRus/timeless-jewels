@@ -324,6 +324,7 @@ export interface StatConfig {
   min: number;
   id: number;
   weight: number;
+  minStatTotal: number;
 }
 
 export interface ReverseSearchConfig {
@@ -342,6 +343,7 @@ export interface SearchWithSeed {
     passive: number;
     stats: { [key: string]: number };
   }[];
+  statTotal: Record<number, number>;
 }
 
 export interface SearchResults {
