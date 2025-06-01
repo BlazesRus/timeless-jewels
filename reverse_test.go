@@ -56,7 +56,6 @@ func BenchmarkGloriousVanity(b *testing.B) {
 		}
 
 	})
-
 	b.Run("uncached", func(b *testing.B) {
 
 		for range b.N {
@@ -88,7 +87,6 @@ func BenchmarkElegantHubris(b *testing.B) {
 		}
 
 	})
-
 	b.Run("uncached", func(b *testing.B) {
 
 		for range b.N {
