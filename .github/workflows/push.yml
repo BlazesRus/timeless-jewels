@@ -19,6 +19,9 @@ jobs:
         with:
           go-version-file: 'go.mod'
 
+      - name: Format Go files
+        run: gofumpt -w .
+
       - uses: golangci/golangci-lint-action@v6
         with:
           args: --timeout 5m
