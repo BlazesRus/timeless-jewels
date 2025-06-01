@@ -4,9 +4,10 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/MarvinJWendt/testza"
+
 	"github.com/BlazesRus/timeless-jewels/calculator"
 	"github.com/BlazesRus/timeless-jewels/data"
-	"github.com/MarvinJWendt/testza"
 )
 
 func TestGloriousVanity(t *testing.T) {
@@ -585,7 +586,7 @@ func BenchmarkAll(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 
-	//for i := 0; i < b.N; i++ {
+	// Cycles through all timeless jewel types and their conquerors
 	for range b.N {
 		for jewelType := range data.TimelessJewelConquerors {
 			var firstConqueror data.Conqueror
