@@ -76,16 +76,16 @@ func ReverseSearch(passiveIDs []uint32, statIDs []uint32, timelessJewelType data
 
 	results := make(map[uint32]map[uint32]map[uint32]uint32)
 
-	min := data.TimelessJewelSeedRanges[timelessJewelType].Min
-	max := data.TimelessJewelSeedRanges[timelessJewelType].Max
+	minValue := data.TimelessJewelSeedRanges[timelessJewelType].Min
+	maxValue := data.TimelessJewelSeedRanges[timelessJewelType].Max
 
 	if data.TimelessJewelSeedRanges[timelessJewelType].Special {
-		min /= 20
-		max /= 20
+		minValue /= 20
+		maxValue /= 20
 	}
 
 	rng := random.NewRNG()
-	for seed := min; seed <= max; seed++ {
+	for seed := minValue; seed <= maxValue; seed++ {
 		realSeed := seed
 		if data.TimelessJewelSeedRanges[timelessJewelType].Special {
 			realSeed *= 20

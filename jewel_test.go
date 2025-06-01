@@ -4,9 +4,9 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/MarvinJWendt/testza"
 	"github.com/BlazesRus/timeless-jewels/calculator"
 	"github.com/BlazesRus/timeless-jewels/data"
+	"github.com/MarvinJWendt/testza"
 )
 
 func TestGloriousVanity(t *testing.T) {
@@ -585,7 +585,8 @@ func BenchmarkAll(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 
-	for i := 0; i < b.N; i++ {
+	//for i := 0; i < b.N; i++ {
+	for range b.N {
 		for jewelType := range data.TimelessJewelConquerors {
 			var firstConqueror data.Conqueror
 			for conqueror := range data.TimelessJewelConquerors[jewelType] {
@@ -593,15 +594,15 @@ func BenchmarkAll(b *testing.B) {
 				break
 			}
 
-			min := data.TimelessJewelSeedRanges[jewelType].Min
-			max := data.TimelessJewelSeedRanges[jewelType].Max
+			minValue := data.TimelessJewelSeedRanges[jewelType].Min
+			maxValue := data.TimelessJewelSeedRanges[jewelType].Max
 
 			if data.TimelessJewelSeedRanges[jewelType].Special {
-				min /= 20
-				max /= 20
+				minValue /= 20
+				maxValue /= 20
 			}
 
-			for seed := min; seed <= max; seed++ {
+			for seed := minValue; seed <= maxValue; seed++ {
 				realSeed := seed
 				if data.TimelessJewelSeedRanges[jewelType].Special {
 					realSeed *= 20
