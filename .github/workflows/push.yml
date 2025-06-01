@@ -19,6 +19,9 @@ jobs:
         with:
           go-version-file: 'go.mod'
 
+      - name: Install gofumpt
+        run: go install mvdan.cc/gofumpt@latest
+
       - name: Format Go files
         run: gofumpt -w .
 
