@@ -94,7 +94,7 @@ func (a *AlternateTreeManager) ReplacePassiveSkill(rng *random.NumberGenerator) 
 		}
 	}
 
-	elements := min(uint32(len(rolledAlternatePassiveSkill.StatsKeys)), 4)
+	elements := minimum(uint32(len(rolledAlternatePassiveSkill.StatsKeys)), 4)
 	alternatePassiveSkillStatRolls := make(map[uint32]uint32, elements)
 	for i := range elements {
 		alternatePassiveSkillStatRolls[i] = rolledAlternatePassiveSkill.GetStatMinMax(true, i)
@@ -137,7 +137,7 @@ func (a *AlternateTreeManager) RollAdditions(minimumAdditions uint32, maximumAdd
 			rolledAlternatePassiveAddition = a.RollAlternatePassiveAddition(rng)
 		}
 
-		elements := min(uint32(len(rolledAlternatePassiveAddition.StatsKeys)), 2)
+		elements := minimum(uint32(len(rolledAlternatePassiveAddition.StatsKeys)), 2)
 		alternatePassiveAdditionStatRolls := make(map[uint32]uint32, elements)
 		for j := range elements {
 			alternatePassiveAdditionStatRolls[j] = rolledAlternatePassiveAddition.GetStatMinMax(true, j)
@@ -156,7 +156,7 @@ func (a *AlternateTreeManager) RollAdditions(minimumAdditions uint32, maximumAdd
 	return alternatePassiveAdditionInformations
 }
 
-func min(a uint32, b uint32) uint32 {
+func minimum(a uint32, b uint32) uint32 {
 	if a < b {
 		return a
 	}
