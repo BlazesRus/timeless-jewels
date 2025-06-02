@@ -162,6 +162,7 @@
 
   let results = false;
   let minTotalWeight = 0;
+  let minTotalStats: number = 0;
   let searching = false;
   let currentSeed = 0;
   let searchResults: SearchResults;
