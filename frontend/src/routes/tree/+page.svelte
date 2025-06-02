@@ -79,7 +79,7 @@
         weight: 1,
         min: 0,
         id: nStat,
-        minStatTotal: 0//Minimum number of stat total in jewel in order to allow in search results
+        minStatTotal: 0
       };
     });
   }
@@ -629,8 +629,14 @@
                   </div>
                   <div class="flex flex-col mt-2">
                     <div class="flex flex-row items-center">
-                      <div class="mr-2 min-w-fit">Min Total Weight:</div>
+                      <div class="mr-2 min-w-fit">Minimum Total Weight:</div>
                       <input type="number" min="0" bind:value={minTotalWeight} />
+                    </div>
+                  </div>
+                  <div class="flex flex-col mt-2">
+                    <div class="flex flex-row items-center">
+                      <div class="mr-2 min-w-fit">Minimum Stat Total:</div>
+                      <input type="number" min="0" bind:value={minTotalStats} />
                     </div>
                   </div>
                   <div class="flex flex-col mt-4">
@@ -704,7 +710,6 @@
   <div class="text-orange-500 absolute bottom-0 right-0 m-2">
     <a href="https://github.com/Vilsol/timeless-jewels" target="_blank" rel="noopener">Source of official branch code(Github)</a>
     <a href="https://github.com/BlazesRus/timeless-jewels" target="_blank" rel="noopener">Source (Github)</a>
-    <a href="https://github.com/ImHamba/timeless-jewels" target="_blank" rel="noopener">Source of ImHamba Branch(Github)</a>
   </div>
 </SkillTree>
 

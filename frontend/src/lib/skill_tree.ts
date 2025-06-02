@@ -321,9 +321,11 @@ export const getStat = (id: number | string): Stat => {
 };
 
 export interface StatConfig {
+  //Minimum number of node with related stat to include in search
   min: number;
   id: number;
   weight: number;
+  //Minimum number of stat total in jewel in order to allow in search results
   minStatTotal: number;
 }
 
@@ -333,6 +335,8 @@ export interface ReverseSearchConfig {
   nodes: number[];
   stats: StatConfig[];
   minTotalWeight: number;
+  //Minimum number of total targeted stats in search area
+  minTotalStats: number;
 }
 
 export interface SearchWithSeed {
@@ -344,6 +348,8 @@ export interface SearchWithSeed {
     stats: { [key: string]: number };
   }[];
   statTotal: Record<number, number>;
+  //Total value of targeted stats in search area
+  totalStats: number;
 }
 
 export interface SearchResults {

@@ -9,6 +9,9 @@ with some modifications for better trade search functionality
 Original Hosted Version: [https://vilsol.github.io/timeless-jewels](https://vilsol.github.io/timeless-jewels)
 
 Modified version: [https://BlazesRus.github.io/timeless-jewels](https://BlazesRus.github.io/timeless-jewels)
+Hosted Timeless Jewel Searcher:[https://blazesrus.github.io/timeless-jewels/tree]https://blazesrus.github.io/timeless-jewels/tree
+
+Source of ImHamba Branch(Github):[https://github.com/ImHamba/timeless-jewels](https://github.com/ImHamba/timeless-jewels)
 
 Uses data extracted with https://github.com/Vilsol/go-pob-data
 
