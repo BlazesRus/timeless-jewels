@@ -35,23 +35,24 @@ const obj = {
 
       const statCounts: Record<number, number> = {};
       const statTotal: Record<number, number> = {};
-      const skills = Object.keys(searchResult[seed]).map((skillIDStr) => {
+      const skills = Object.keys(searchResult?.[seed] ?? {}).map((skillIDStr) => {
         const skillID = parseInt(skillIDStr);
-        Object.keys(searchResult[seed][skillID]).forEach((st) => {
+        const skillStats = searchResult?.[seed]?.[skillID] ?? {};
+        Object.keys(skillStats).forEach((st) => {
           const n = parseInt(st);
           statCounts[n] = (statCounts[n] || 0) + 1;
           weight += args.stats.find((s) => s.id == n)?.weight || 0;
-          statTotal[n] = (statTotal[n] || 0) + stats[st];
-          totalstats += stats[st];
+          statTotal[n] = (statTotal[n] || 0) + skillStats[st];
+          totalStats += skillStats[st];
         });
 
         return {
           passive: passiveToTree[skillID],
-          stats: searchResult[seed][skillID]
+          stats: skillStats as { [key: string]: number }
         };
       });
 
-      const len = Object.keys(searchResult[seed]).length;
+      const len = Object.keys(searchResult?.[seed] ?? {}).length;
       searchGrouped[len] = [
         ...(searchGrouped[len] || []),
         {
