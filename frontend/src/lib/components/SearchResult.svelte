@@ -1,7 +1,7 @@
 <script lang="ts">
   import { openQueryTrade } from '$lib/utils/trade_utils';
   import { constructSingleResultQuery, type SearchWithSeed } from '../skill_tree';
-  import { skillTree, translateStat } from '../skill_tree';
+  import { skillTree, translateStatData } from '../skill_tree';
 
   export let highlight: (newSeed: number, passives: number[]) => void;
   export let set: SearchWithSeed;
@@ -25,7 +25,7 @@
     <!-- Padding -->
     <button class="px-3 invisible">Trade</button>
     <div class="font-bold text-orange-500 text-center">
-      Seed {set.seed} (weight {set.weight}) (Stat Total {set.stattotal})
+      Seed {set.seed} (weight {set.weight}) (Stat Total {set.statTotal})
     </div>
     <button
       class="px-3 bg-blue-500/40 rounded"
@@ -38,7 +38,7 @@
       </span>
       <ul class="list-disc pl-6 font-bold">
         {#each Object.keys(skill.stats) as stat}
-          <li>{translateStat(stat, skill.stats[stat])}</li>
+          <li>{translateStatData(stat, skill.stats[stat])}</li>
         {/each}
       </ul>
     </div>

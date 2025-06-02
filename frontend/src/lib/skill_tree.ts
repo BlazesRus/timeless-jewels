@@ -366,6 +366,21 @@ export const translateStat = (id: number, roll?: number | undefined): string => 
   return translationText;
 };
 
+export const translateStatData = (id: string, roll?: number | undefined): string => {
+  const stat = getStat(id);
+  const translation = inverseTranslations[stat.ID];
+  if (roll) {
+    return formatStats(translation, roll) || stat.ID;
+  }
+
+  let translationText = stat.Text || stat.ID;
+  if (translation && translation.list && translation.list.length) {
+    translationText = translation.list[0].string;
+    translationText = translationText.replace(/\{\d(?::(.*?)d(.*?))\}/, '$1#$2').replace(/\{\d\}/, '#');
+  }
+  return translationText;
+};
+
 const tradeStatNames: { [key: number]: { [key: string]: string } } = {
   1: {
     Ahuana: 'explicit.pseudo_timeless_jewel_ahuana',
