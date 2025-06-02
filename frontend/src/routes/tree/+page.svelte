@@ -621,7 +621,7 @@
                           </div>
                           <div class="flex flex-row items-center">
                             <div class="mr-2">Minimum Stat Total:</div>
-                            <input type="number" min="0" bind:value={selectedStats[s].stattotal} />
+                            <input type="number" min="0" bind:value={selectedStats[s].statTotal} />
                           </div>
                         </div>
                       </div>
