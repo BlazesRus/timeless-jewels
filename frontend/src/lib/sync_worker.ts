@@ -41,8 +41,8 @@ const obj = {
           const n = parseInt(st);
           statCounts[n] = (statCounts[n] || 0) + 1;
           weight += args.stats.find((s) => s.id == n)?.weight || 0;
-		  statTotal[n] = (statTotal[n] || 0) + stats[st];
-		  totalstats += stats[st];
+          statTotal[n] = (statTotal[n] || 0) + stats[st];
+          totalstats += stats[st];
         });
 
         return {
@@ -60,7 +60,7 @@ const obj = {
           weight,
           statCounts,
           statTotal,
-		  totalStats
+          totalStats
         }
       ];
     });
@@ -77,11 +77,11 @@ const obj = {
             return false;
           }
           //Check if minimum stat total is reached
-		  if(g.statTotal[stat.id]<stat.minStatTotal){
+          if (g.statTotal[stat.id] < stat.minStatTotal) {
             return false;
           }
         }
-        //Check if minimum total target stats is reached 
+        //Check if minimum total target stats is reached
         if (g.totalStats < args.minTotalStats) {
           return false;
         }
