@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/MarvinJWendt/testza"
-
 	"github.com/BlazesRus/timeless-jewels/calculator"
 	"github.com/BlazesRus/timeless-jewels/data"
 )
