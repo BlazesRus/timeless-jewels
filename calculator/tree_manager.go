@@ -74,6 +74,7 @@ func (a *AlternateTreeManager) ReplacePassiveSkill(rng *random.NumberGenerator) 
 			StatRolls: map[uint32]uint32{
 				0: alternatePassiveSkillKeyStone.Stat1Min,
 			},
+			AlternatePassiveAdditionInformations: make([]data.AlternatePassiveAdditionInformation, 0),
 		}
 	}
 
@@ -106,18 +107,24 @@ func (a *AlternateTreeManager) ReplacePassiveSkill(rng *random.NumberGenerator) 
 
 	if (rolledAlternatePassiveSkill.RandomMin == 0) && (rolledAlternatePassiveSkill.RandomMax == 0) {
 		return data.AlternatePassiveSkillInformation{
-			AlternatePassiveSkill: rolledAlternatePassiveSkill,
-			StatRolls:             alternatePassiveSkillStatRolls,
+			AlternatePassiveSkill:                rolledAlternatePassiveSkill,
+			StatRolls:                            alternatePassiveSkillStatRolls,
+			AlternatePassiveAdditionInformations: make([]data.AlternatePassiveAdditionInformation, 0),
 		}
 	}
 
 	minAdditions := a.TimelessJewel.AlternateTreeVersion.MinimumAdditions + rolledAlternatePassiveSkill.RandomMin
 	maxAdditions := a.TimelessJewel.AlternateTreeVersion.MaximumAdditions + rolledAlternatePassiveSkill.RandomMax
 
+	additions := a.RollAdditions(minAdditions, maxAdditions, rng)
+	if additions == nil {
+		additions = make([]data.AlternatePassiveAdditionInformation, 0)
+	}
+
 	return data.AlternatePassiveSkillInformation{
 		AlternatePassiveSkill:                rolledAlternatePassiveSkill,
 		StatRolls:                            alternatePassiveSkillStatRolls,
-		AlternatePassiveAdditionInformations: a.RollAdditions(minAdditions, maxAdditions, rng),
+		AlternatePassiveAdditionInformations: additions,
 	}
 }
 

@@ -25,7 +25,7 @@
     <!-- Padding -->
     <button class="px-3 invisible">Trade</button>
     <div class="font-bold text-orange-500 text-center">
-      Seed {set.seed} (weight {set.weight}) (Stat Total {set.statTotal})
+      Seed {set.seed} (weight {set.weight}) Stat Total: {set.statTotal}
     </div>
     <button
       class="px-3 bg-blue-500/40 rounded"
