@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 export let calculator;
 export let data;
 

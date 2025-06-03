@@ -1,13 +1,14 @@
-module.exports = {
+import typescript from 'typescript';
+export default {
   root: true,
   parser: '@typescript-eslint/parser',
   extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
-  plugins: ['svelte3', '@typescript-eslint'],
+  plugins: ['svelte5', '@typescript-eslint'],
   ignorePatterns: ['*.cjs'],
-  overrides: [{ files: ['*.svelte'], processor: 'svelte3/svelte3' }],
+  overrides: [{ files: ['*.svelte'], processor: 'svelte5/svelte5' }],
   settings: {
-    'svelte3/typescript': () => require('typescript'),
-    'svelte3/ignore-warnings': ({ code }) => code === 'missing-declaration'
+    'svelte5/typescript': () => typescript,
+    'svelte5/ignore-warnings': ({ code }) => code === 'missing-declaration'
   },
   parserOptions: {
     sourceType: 'module',
