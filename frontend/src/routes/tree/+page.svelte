@@ -561,11 +561,12 @@
                   {#if !split}
                     <ul class="mt-4 overflow-auto" class:rainbow={colored}>
                       {#each sortCombined(combineResults(seedResults, colored, 'all'), sortOrder.value) as r}
-                        <li class="cursor-pointer" on:click={() => highlight(seed, r.passives)}>
-                          <span class="font-bold" class:text-white={(statValues[r.id] || 0) < 3}
-                            >({r.passives.length})</span>
+                        <button class="cursor-pointer" on:click={() => highlight(seed, r.passives)}>
+                          <span class="font-bold" class:text-white={(statValues[r.id] || 0) < 3}>
+                            ({r.passives.length})
+                          </span>
                           <span class="text-white">{@html r.stat}</span>
-                        </li>
+                        </button>
                       {/each}
                     </ul>
                   {:else}
@@ -573,22 +574,24 @@
                       <h3>Notables</h3>
                       <ul class="mt-1" class:rainbow={colored}>
                         {#each sortCombined(combineResults(seedResults, colored, 'notables'), sortOrder.value) as r}
-                          <li class="cursor-pointer" on:click={() => highlight(seed, r.passives)}>
-                            <span class="font-bold" class:text-white={(statValues[r.id] || 0) < 3}
-                              >({r.passives.length})</span>
+                          <button class="cursor-pointer" on:click={() => highlight(seed, r.passives)}>
+                            <span class="font-bold" class:text-white={(statValues[r.id] || 0) < 3}>
+                              ({r.passives.length})
+                            </span>
                             <span class="text-white">{@html r.stat}</span>
-                          </li>
+                          </button>
                         {/each}
                       </ul>
 
                       <h3 class="mt-2">Smalls</h3>
                       <ul class="mt-1" class:rainbow={colored}>
                         {#each sortCombined(combineResults(seedResults, colored, 'passives'), sortOrder.value) as r}
-                          <li class="cursor-pointer" on:click={() => highlight(seed, r.passives)}>
-                            <span class="font-bold" class:text-white={(statValues[r.id] || 0) < 3}
-                              >({r.passives.length})</span>
+                          <button class="cursor-pointer" on:click={() => highlight(seed, r.passives)}>
+                            <span class="font-bold" class:text-white={(statValues[r.id] || 0) < 3}>
+                              ({r.passives.length})
+                            </span>
                             <span class="text-white">{@html r.stat}</span>
-                          </li>
+                          </button>
                         {/each}
                       </ul>
                     </div>

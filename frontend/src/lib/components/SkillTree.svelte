@@ -1,4 +1,5 @@
 <script lang="ts">
+  // If you see errors, run: pnpm add svelte-canvas
   import { Canvas, Layer, t } from 'svelte-canvas';
   import type { RenderFunc, Node } from '../skill_tree_types';
   import {

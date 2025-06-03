@@ -1,6 +1,4 @@
-version: "2"
 linters:
-  default: none
   enable:
     - bidichk
     - canonicalheader
@@ -25,70 +23,11 @@ linters:
     - unused
     - whitespace
     - wrapcheck
-  settings:
-    gocritic:
-      disabled-checks:
-        - ifElseChain
-    govet:
-      disable:
-        - shadow
-    sloglint:
-      attr-only: true
-      context: scope
-      forbidden-keys:
-        - time
-        - level
-        - msg
-        - source
-    spancheck:
-      checks:
-        - end
-        - record-error
-        - set-status
-    wrapcheck:
-      ignore-sigs:
-        - .Errorf(
-        - errors.New(
-        - errors.Unwrap(
-        - .WithMessage(
-        - .WithMessagef(
-        - .WithStack(
-        - github.com/labstack/echo/v4.Context
-      ignore-package-globs:
-        - github.com/BlazesRus/timeless-jewels/*
   exclusions:
     generated: lax
-    presets:
-      - comments
-      - common-false-positives
-      - legacy
-      - std-error-handling
     rules:
       - path: (.+)\.go$
         text: should pass the context parameter
-    paths:
-      - ./generated/generated.go
-      - ./generated/models_gen.go
-      - ./generated/
-      - third_party$
-      - builtin$
-      - examples$
-formatters:
-  enable:
-    - gci
-    - gofumpt
-    - goimports
-  settings:
-    gci:
-      sections:
-        - standard
-        - default
-        - prefix(github.com/BlazesRus/timeless-jewels)
-        - blank
-        - dot
-      custom-order: true
-  exclusions:
-    generated: lax
     paths:
       - ./generated/generated.go
       - ./generated/models_gen.go
