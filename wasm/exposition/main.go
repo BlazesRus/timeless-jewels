@@ -2,6 +2,7 @@ package exposition
 
 import (
 	"github.com/Vilsol/crystalline"
+
 	"github.com/BlazesRus/timeless-jewels/calculator"
 	"github.com/BlazesRus/timeless-jewels/data"
 )
@@ -17,11 +18,11 @@ func Expose() *crystalline.Exposer {
 	e.ExposeFuncOrPanic(data.GetPassiveSkillByIndex)
 
 	e.ExposeOrPanic(map[data.JewelType]string{
-		data.GloriousVanity: data.GloriousVanity.String(),
-		data.LethalPride: data.LethalPride.String(),
+		data.GloriousVanity:  data.GloriousVanity.String(),
+		data.LethalPride:     data.LethalPride.String(),
 		data.BrutalRestraint: data.BrutalRestraint.String(),
-		data.MilitantFaith: data.MilitantFaith.String(),
-		data.ElegantHubris: data.ElegantHubris.String(),
+		data.MilitantFaith:   data.MilitantFaith.String(),
+		data.ElegantHubris:   data.ElegantHubris.String(),
 	}, "data", "TimelessJewels")
 
 	e.ExposeOrPanic(data.TimelessJewelConquerors, "data", "TimelessJewelConquerors")
