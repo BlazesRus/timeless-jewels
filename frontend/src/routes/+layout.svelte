@@ -9,7 +9,7 @@
 
   let wasmLoading = true;
 
-  // eslint-disable-next-line no-undef
+   
   const go = new Go();
 
   if (browser) {

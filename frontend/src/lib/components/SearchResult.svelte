@@ -1,7 +1,7 @@
 <script lang="ts">
-  #import { openQueryTrade } from '$lib/utils/trade_utils';
-  #import { constructSingleResultQuery, type SearchWithSeed } from '../skill_tree';
-  #import { skillTree, translateStatData } from '../skill_tree';
+  import { openQueryTrade } from '$lib/utils/trade_utils';
+  import { constructSingleResultQuery, type SearchWithSeed } from '../skill_tree';
+  import { skillTree, translateStatData } from '../skill_tree';
 
   export let highlight: (newSeed: number, passives: number[]) => void;
   export let set: SearchWithSeed;

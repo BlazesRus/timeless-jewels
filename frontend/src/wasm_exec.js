@@ -1,6 +1,3 @@
-/* global console, TextEncoder, TextDecoder, performance, fs, setTimeout, clearTimeout, crypto, WebAssembly */
- 
- 
 // Copyright 2018 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
@@ -116,7 +113,6 @@
 				this.mem.setUint32(addr + 4, Math.floor(v / 4294967296), true);
 			}
 
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const setInt32 = (addr, v) => {
 				this.mem.setUint32(addr + 0, v, true);
 			}
@@ -553,7 +549,6 @@
 		}
 
 		_makeFuncWrapper(id) {
-			// eslint-disable-next-line @typescript-eslint/no-this-alias
 			const go = this;
 			return function () {
 				const event = { id: id, this: this, args: arguments };

@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { SearchResults, SearchWithSeed } from '../skill_tree';
-  #import SearchResult from './SearchResult.svelte';
-  #import VirtualList from 'svelte-tiny-virtual-list';
+  import SearchResult from './SearchResult.svelte';
+  import VirtualList from 'svelte-tiny-virtual-list';
 
   export let searchResults: SearchResults;
   export let highlight: (newSeed: number, passives: number[]) => void;
