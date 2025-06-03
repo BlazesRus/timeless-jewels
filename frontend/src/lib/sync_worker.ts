@@ -40,9 +40,9 @@ const obj = {
         const skillStats = searchResult?.[seed]?.[skillID] ?? {};
         Object.keys(skillStats).forEach((st) => {
           const n = parseInt(st);
-          statCounts[n] = (statCounts[n] || 0) + 1;
+          statCounts[n] = (statCounts[n] ?? 0) + 1;
           weight += args.stats.find((s) => s.id == n)?.weight || 0;
-          statTotal[n] = (statTotal[n] || 0) + skillStats[st];
+          statTotal[n] = (statTotal[n] ?? 0) + skillStats[st];
           totalStats += skillStats[st];
         });
 
