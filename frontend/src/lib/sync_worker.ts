@@ -1,7 +1,7 @@
 import { expose } from 'comlink';
 import '../wasm_exec.js';
 import { loadSkillTree, passiveToTree } from './skill_tree';
-import type { SearchWithSeed, ReverseSearchConfig, SearchResults } from './skill_tree';
+import type { ReverseSearchConfig, SearchResults, SearchWithSeed } from './skill_tree';
 import { calculator, initializeCrystalline } from './types';
 
 const obj = {
