@@ -186,9 +186,10 @@
     updateUrl();
   };
 
-  // Fix: replace delete with object spread to avoid dynamic delete
+  // Fix: replace object destructuring with delete for removeStat, but avoid unused var warning
   const removeStat = (id: number) => {
-    const { [id]: _, ...newStats } = selectedStats;
+    const newStats = { ...selectedStats };
+    delete newStats[id];
     selectedStats = newStats;
     updateUrl();
   };
@@ -295,7 +296,8 @@
     passives: number[];
   };
 
-  export const colorKeys = {
+  // Define colorKeys as a local constant (not exported) to fix no-undef errors
+  const colorKeys = {
     physical: '#c79d93',
     cast: '#b3f8fe',
     fire: '#ff9a77',
