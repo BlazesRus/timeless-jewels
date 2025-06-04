@@ -1,6 +1,6 @@
 <script lang="ts">
 // Declare browser globals for TypeScript and ESLint
-/* global window localStorage URL CustomEvent ClipboardEvent */
+/* global window localStorage URL CustomEvent ClipboardEvent Window DataTransfer */
 
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
@@ -98,7 +98,7 @@
 
   let selectedStats: Record<number, StatConfig> = {};
   if (searchParams.has('stat')) {
-    searchParams.getAll('stat').forEach((s) => {
+    for (const s of searchParams.getAll('stat')) {
       const nStat = parseInt(s);
       selectedStats[nStat] = {
         weight: 1,
@@ -106,7 +106,7 @@
         id: nStat,
         minStatTotal: 0
       };
-    });
+    }
   }
 
   let mode = searchParams.has('mode') ? searchParams.get('mode') : '';
@@ -188,8 +188,7 @@
 
   // Fix: replace delete with object spread to avoid dynamic delete
   const removeStat = (id: number) => {
-    const newStats = { ...selectedStats };
-    delete newStats[id];
+    const { [id]: _, ...newStats } = selectedStats;
     selectedStats = newStats;
     updateUrl();
   };
@@ -374,7 +373,7 @@
         stat: withColors ? colorMessage(translated) : translated,
         rawStat: translated,
         id: statID,
-        passives: mappedStats[statID as any]
+        passives: mappedStats[Number(statID)]
       };
     });
   };
@@ -483,7 +482,7 @@
     mode = 'seed';
     seed = newSeed;
     selectedJewel = jewel;
-    selectedConqueror = { label: conqueror, value: conqueror };
+    dropdownConqueror = { label: conqueror, value: conqueror };
     updateUrl();
   };
 
