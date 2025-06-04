@@ -7,17 +7,18 @@ func GetApplicableAlternatePassiveAdditions(passiveSkill *PassiveSkill, timeless
 }
 
 func GetPassiveSkillType(passiveSkill *PassiveSkill) PassiveSkillType {
-	if passiveSkill.IsJewelSocket {
+	switch {
+	case passiveSkill.IsJewelSocket:
 		return JewelSocket
-	} else if passiveSkill.IsKeystone {
+	case passiveSkill.IsKeystone:
 		return KeyStone
-	} else if passiveSkill.IsNotable {
+	case passiveSkill.IsNotable:
 		return Notable
-	} else if len(passiveSkill.StatIndices) == 1 && IsSmallAttribute(passiveSkill.StatIndices[0]) {
+	case len(passiveSkill.StatIndices) == 1 && IsSmallAttribute(passiveSkill.StatIndices[0]):
 		return SmallAttribute
+	default:
+		return SmallNormal
 	}
-
-	return SmallNormal
 }
 
 func GetAlternatePassiveSkillKeyStone(timelessJewel TimelessJewel) *AlternatePassiveSkill {
