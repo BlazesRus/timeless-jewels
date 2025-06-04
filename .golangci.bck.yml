@@ -5,13 +5,10 @@ linters:
     - contextcheck
     - copyloopvar
     - durationcheck
-    - errcheck
     - errorlint
     - fatcontext
     - gocritic
-    - govet
     - inamedparam
-    - ineffassign
     - intrange
     - misspell
     - nonamedreturns
@@ -19,19 +16,11 @@ linters:
     - revive
     - sloglint
     - spancheck
-    - staticcheck
-    - unused
     - whitespace
     - wrapcheck
   exclusions:
     generated: lax
-    rules:
-      - path: (.+)\.go$
-        text: should pass the context parameter
     paths:
-      - ./generated/generated.go
-      - ./generated/models_gen.go
-      - ./generated/
       - third_party$
       - builtin$
       - examples$
