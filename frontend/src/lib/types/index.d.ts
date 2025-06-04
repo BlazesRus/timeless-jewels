@@ -1,8 +1,3 @@
- 
-export declare namespace calculator {
-  function Calculate(passiveID: number, seed: number, timelessJewelType: number, conqueror: string): data.AlternatePassiveSkillInformation;
-  function ReverseSearch(passiveIDs?: Array<number>, statIDs?: Array<number>, timelessJewelType: number, conqueror: string, updates: (arg1: number) => Promise<void>): Promise<(Record<number, Record<number, Record<number, number> | undefined> | undefined> | undefined)>;
-}
 export declare namespace data {
   interface AlternatePassiveAddition {
     Index: number;
@@ -45,8 +40,8 @@ export declare namespace data {
   }
   interface AlternatePassiveSkillInformation {
     AlternatePassiveSkill?: data.AlternatePassiveSkill;
-    StatRolls?: Record<number, number>;
-    AlternatePassiveAdditionInformations?: Array<data.AlternatePassiveAdditionInformation>;
+    AlternatePassiveAdditionInformations?: data.AlternatePassiveAdditionInformation[];
+    StatRolls?: number[];
   }
   interface PassiveSkill {
     Index: number;
@@ -88,4 +83,9 @@ export declare namespace data {
   const TimelessJewels: Record<number, string> | undefined;
   const TreeToPassive: Record<number, data.PassiveSkill | undefined> | undefined;
 }
+export declare namespace calculator {
+  function Calculate(passiveID: number, seed: number, timelessJewelType: number, conqueror: string): data.AlternatePassiveSkillInformation;
+  function ReverseSearch(passiveIDs?: Array<number>, statIDs?: Array<number>, timelessJewelType: number, conqueror: string, updates: (arg1: number) => Promise<void>): Promise<(Record<number, Record<number, Record<number, number> | undefined> | undefined> | undefined)>;
+}
+ 
 export const initializeCrystalline: () => void;

@@ -90,7 +90,8 @@ const obj = {
       });
 
       if (Object.keys(searchGrouped[nLen]).length == 0) {
-        delete searchGrouped[nLen];
+        // Workaround: assign an empty array if no results, instead of deleting the key
+        searchGrouped[nLen] = [];
       } else {
         searchGrouped[nLen] = searchGrouped[nLen].sort((a, b) => b.weight - a.weight);
       }
