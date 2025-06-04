@@ -626,7 +626,7 @@
                           <span class="font-bold" class:text-white={getStatValue(r.id) < 3}>
                             ({r.passives.length})
                           </span>
-                          <span class="text-white">{@html sanitize(r.stat)}</span>
+                          <span class="text-white">{sanitize(r.stat)}</span> <!-- Removed {@html} for XSS safety -->
                         </button>
                       {/each}
                     </ul>
@@ -639,7 +639,7 @@
                             <span class="font-bold" class:text-white={getStatValue(r.id) < 3}>
                               ({r.passives.length})
                             </span>
-                            <span class="text-white">{@html sanitize(r.stat)}</span>
+                            <span class="text-white">{sanitize(r.stat)}</span> <!-- Removed {@html} for XSS safety -->
                           </button>
                         {/each}
                       </ul>
@@ -651,7 +651,7 @@
                             <span class="font-bold" class:text-white={getStatValue(r.id) < 3}>
                               ({r.passives.length})
                             </span>
-                            <span class="text-white">{@html sanitize(r.stat)}</span>
+                            <span class="text-white">{sanitize(r.stat)}</span> <!-- Removed {@html} for XSS safety -->
                           </button>
                         {/each}
                       </ul>
