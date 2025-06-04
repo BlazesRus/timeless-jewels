@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { openQueryTrade, type Query } from '$lib/utils/trade_utils';
+  import type { Query } from '$lib/utils/trade_utils';
+  import { openQueryTrade } from '$lib/utils/trade_utils';
 
   // queries to display trade link buttons for
   export let queries: Query[];

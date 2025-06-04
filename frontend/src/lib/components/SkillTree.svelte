@@ -1,7 +1,10 @@
 <script lang="ts">
   // If you see errors, run: pnpm add svelte-canvas
-  import { Canvas, Layer, t } from 'svelte-canvas';
+  import { Canvas, Layer } from 'svelte-canvas';
+  import { derived } from 'svelte/store';
+  import { calculator, data } from '../types';
   import type { Node, RenderFunc } from '../skill_tree_types';
+  import type { Point } from '../skill_tree';
   import {
     baseJewelRadius,
     calculateNodePos,
@@ -16,9 +19,6 @@
     skillTree,
     toCanvasCoords
   } from '../skill_tree';
-  import type { Point } from '../skill_tree';
-  import { derived } from 'svelte/store';
-  import { calculator, data } from '../types';
 
   export let clickNode: (node: Node) => void;
   export let circledNode: number | undefined;
@@ -30,6 +30,26 @@
   export let disabled: number[] = [];
   export let highlightJewels = false;
 
+  // Add a simple time store for animation
+  import { writable } from 'svelte/store';
+    import { onDestroy } from 'svelte';
+  
+  const t = writable(0);
+  let animationFrame: number;
+  
+  function animate(time: number) {
+    t.set(time);
+    animationFrame = requestAnimationFrame(animate);
+  }
+  
+  if (typeof window !== 'undefined') {
+    animationFrame = requestAnimationFrame(animate);
+  }
+  
+  onDestroy(() => {
+    if (animationFrame) cancelAnimationFrame(animationFrame);
+  });
+
   const slowTime = derived(t, (values) => {
     if ((!highlighted || !highlighted.length) && !highlightJewels) {
       return 0;
@@ -37,7 +57,6 @@
 
     return Math.round(values / 40);
   });
-
   const startGroups = [427, 320, 226, 227, 323, 422, 329];
 
   const titleFont = '25px Roboto Mono';
@@ -565,6 +584,6 @@
     <Canvas {width} {height} on:pointerdown={mouseDown} on:wheel={onScroll}>
       <Layer {render} />
     </Canvas>
-    <slot />
+    <slot></slot>
   </div>
 {/if}

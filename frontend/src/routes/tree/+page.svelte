@@ -1,18 +1,18 @@
 <script lang="ts">
-  import SkillTree from '../../lib/components/SkillTree.svelte';
-  import Select from 'svelte-select';
-  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import type { Node } from '../../lib/skill_tree_types';
-  import { constructQueries, getAffectedNodes, skillTree, translateStat } from '../../lib/skill_tree';
-  import { syncWrap } from '../../lib/worker';
-  import { proxy } from 'comlink';
-  import type { Query, ReverseSearchConfig, StatConfig } from '../../lib/skill_tree';
+  import { page } from '$app/stores';
   import SearchResults from '../../lib/components/SearchResults.svelte';
-  import { statValues } from '../../lib/values';
-  import { calculator, data } from '../../lib/types';
+  import Select from 'svelte-select';
+  import SkillTree from '../../lib/components/SkillTree.svelte';
   import TradeButton from '$lib/components/TradeButton.svelte';
   import TradeLinks from '$lib/components/TradeLinks.svelte';
+  import { calculator, data } from '../../lib/types';
+  import { constructQueries, getAffectedNodes, skillTree, translateStat } from '../../lib/skill_tree';
+  import type { Node } from '../../lib/skill_tree_types';
+  import type { Query, ReverseSearchConfig, StatConfig } from '../../lib/skill_tree';
+  import { proxy } from 'comlink';
+  import { statValues } from '../../lib/values';
+  import { syncWrap } from '../../lib/worker';
 
   const searchParams = $page.url.searchParams;
 
@@ -712,8 +712,8 @@
   {/if}
 
   <div class="text-orange-500 absolute bottom-0 right-0 m-2">
-    <a href="https://github.com/Vilsol/timeless-jewels" target="_blank" rel="noopener">Source of official branch code(Github)</a>
-    <a href="https://github.com/BlazesRus/timeless-jewels" target="_blank" rel="noopener">Source (Github)</a>
+    <a href="https://github.com/Vilsol/timeless-jewels" target="_blank" rel="noopener noreferrer">Source of official branch code(Github)</a>
+    <a href="https://github.com/BlazesRus/timeless-jewels" target="_blank" rel="noopener noreferrer">Source (Github)</a>
   </div>
 </SkillTree>
 

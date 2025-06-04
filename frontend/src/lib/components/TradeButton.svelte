@@ -1,10 +1,9 @@
 <script lang="ts">
-  import { openQueryTrade, type Query } from '$lib/utils/trade_utils';
+  import type { Query } from '$lib/utils/trade_utils';
+  import { openQueryTrade } from '$lib/utils/trade_utils';
 
   export let queries: Query[];
   export let showTradeLinks = false;
-
-  $: console.log(showTradeLinks);
 
   $: hasMultipleQueries = queries.length > 1;
 
