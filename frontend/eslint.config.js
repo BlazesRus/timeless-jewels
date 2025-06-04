@@ -38,7 +38,7 @@ export default [
       //quotes: ['warn', 'single', { avoidEscape: true, allowTemplateLiterals: true }],
       //'@typescript-eslint/sort-type-constituents': 'error',
       'sort-imports': [
-        'error',
+        'off',
         {
           ignoreCase: true,
           ignoreDeclarationSort: false,

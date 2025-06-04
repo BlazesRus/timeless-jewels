@@ -1,7 +1,6 @@
 <script lang="ts">
-  // If you see errors, run: pnpm add svelte-canvas
   import { Canvas, Layer } from 'svelte-canvas';
-  import { derived } from 'svelte/store';
+  import { derived, writable } from 'svelte/store';
   import { calculator, data } from '../types';
   import type { Node, RenderFunc } from '../skill_tree_types';
   import type { Point } from '../skill_tree';
@@ -19,6 +18,7 @@
     skillTree,
     toCanvasCoords
   } from '../skill_tree';
+  import { onDestroy } from 'svelte';
 
   export let clickNode: (node: Node) => void;
   export let circledNode: number | undefined;
@@ -31,8 +31,7 @@
   export let highlightJewels = false;
 
   // Add a simple time store for animation
-  import { writable } from 'svelte/store';
-    import { onDestroy } from 'svelte';
+  
   
   const t = writable(0);
   let animationFrame: number;
