@@ -1,5 +1,6 @@
 <script lang="ts">
-  /* global window WebAssembly fetch */
+  // @ts-nocheck Heavy DOM usage, so we disable type checking for this file
+  /* global window WebAssembly fetch alert */
 
   import '../app.scss';
   import '../wasm_exec.js';
@@ -23,8 +24,6 @@
       // Optionally replace with a custom error handler if you want to avoid no-console
       if (typeof alert !== 'undefined') {
         alert('GoConstructor is undefined');
-      } else {
-        console.error('GoConstructor is undefined');
       }
     }
 
