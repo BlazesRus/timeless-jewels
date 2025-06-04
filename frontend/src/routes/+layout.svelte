@@ -21,7 +21,11 @@
       go = new GoConstructor();
     } else {
       // Optionally replace with a custom error handler if you want to avoid no-console
-      alert('GoConstructor is undefined');
+      if (typeof alert !== 'undefined') {
+        alert('GoConstructor is undefined');
+      } else {
+        console.error('GoConstructor is undefined');
+      }
     }
 
     fetch(assets + '/calculator.wasm')
