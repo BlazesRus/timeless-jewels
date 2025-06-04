@@ -1,6 +1,7 @@
 <script lang="ts">
-// Declare browser globals for TypeScript
- 
+// Declare browser globals for TypeScript and ESLint
+/* global window localStorage URL CustomEvent ClipboardEvent */
+
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import SearchResultsComponent from '../../lib/components/SearchResults.svelte';
@@ -18,12 +19,9 @@
   import type { Query } from '../../lib/utils/trade_utils';
   import type { SearchResults } from '../../lib/skill_tree';
 
-  // Add global type declarations for browser APIs
-  // @ts-ignore
+  // Remove unused @ts-expect-error directives for _window, _localStorage, _URL
   const _window: typeof window | undefined = typeof window !== 'undefined' ? window : undefined;
-  // @ts-ignore
   const _localStorage: typeof localStorage | undefined = typeof localStorage !== 'undefined' ? localStorage : undefined;
-  // @ts-ignore
   const _URL: typeof URL | undefined = typeof URL !== 'undefined' ? URL : undefined;
 
   const searchParams = $page.url.searchParams;
@@ -79,24 +77,24 @@
 
   // Fix: remove type predicate in .filter, just use .filter(Boolean) and cast as needed
   $: seedResults =
-  !seed ||
-  !selectedJewel ||
-  !selectedConqueror ||
-  !(timelessJewelConquerors[selectedJewel.value]) ||
-  Object.keys(timelessJewelConquerors[selectedJewel.value] ?? {}).indexOf(selectedConqueror.value ?? '') < 0
-    ? []
-    : affectedNodes
-        .map((n) => getTreeToPassiveSafe(n.skill))
-        .filter(Boolean)
-        .map((tp) => ({
-          node: (tp as any).Index,
-          result: calculator.Calculate(
-            selectedJewel?.value ?? 0,
-            seed,
-            selectedJewel?.value ?? 0,
-            selectedConqueror?.value ?? ''
-          )
-        }));
+    !seed ||
+    !selectedJewel ||
+    !selectedConqueror ||
+    !(timelessJewelConquerors[selectedJewel.value]) ||
+    Object.keys(timelessJewelConquerors[selectedJewel.value] ?? {}).indexOf(selectedConqueror.value ?? '') < 0
+      ? []
+      : affectedNodes
+          .map((n) => getTreeToPassiveSafe(n.skill))
+          .filter(Boolean)
+          .map((tp: any) => ({
+            node: tp.Index, // Non-null assertion since filter guarantees Index exists
+            result: calculator.Calculate(
+              selectedJewel?.value ?? 0,
+              seed,
+              selectedJewel?.value ?? 0,
+              selectedConqueror?.value ?? ''
+            )
+          }));
 
   let selectedStats: Record<number, StatConfig> = {};
   if (searchParams.has('stat')) {
@@ -112,11 +110,6 @@
   }
 
   let mode = searchParams.has('mode') ? searchParams.get('mode') : '';
-
-  // Fix: define getTreeToPassive at top of script
-  function getTreeToPassive(skill: number) {
-    return treeToPassive && typeof treeToPassive[skill] !== 'undefined' ? treeToPassive[skill] : undefined;
-  }
 
   const updateUrl = () => {
     if (!_window || !_URL) return;
@@ -193,10 +186,11 @@
     updateUrl();
   };
 
+  // Fix: replace delete with object spread to avoid dynamic delete
   const removeStat = (id: number) => {
-    delete selectedStats[id];
-    // Re-assign to update svelte
-    selectedStats = selectedStats;
+    const newStats = { ...selectedStats };
+    delete newStats[id];
+    selectedStats = newStats;
     updateUrl();
   };
 
@@ -245,7 +239,7 @@
           return Promise.resolve();
         })
       )
-      .then((result: any) => {
+      .then((result: SearchResults) => {
         searchResults = result;
         searching = false;
         results = true;
@@ -448,11 +442,11 @@
   $: _localStorage?.setItem('split', split ? 'true' : 'false');
 
   // Defensive: fix ClipboardEvent and matches null check
-  const onPaste = (event: any) => {
+  const onPaste = (event: ClipboardEvent) => {
     if (event.type !== 'paste') {
       return;
     }
-    const paste = (event.clipboardData || (_window && (_window as any).clipboardData))?.getData('text');
+    const paste = (event.clipboardData || (_window && (_window as Window & { clipboardData?: DataTransfer }).clipboardData))?.getData('text');
     if (!paste) return;
     const lines = paste.split('\n');
 
@@ -510,7 +504,6 @@
   }
 
   // Fix SvelteKit page prop error: only export 'data' and 'errors'
-  export const errors = undefined;
 </script>
 
 <svelte:window on:paste={onPaste} />
