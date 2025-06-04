@@ -86,8 +86,8 @@
       : affectedNodes
           .map((n) => getTreeToPassiveSafe(n.skill))
           .filter(Boolean)
-          .map((tp: any) => ({
-            node: tp.Index, // Non-null assertion since filter guarantees Index exists
+          .map((tp) => ({
+            node: (tp as { Index: number }).Index, // Specify type instead of any
             result: calculator.Calculate(
               selectedJewel?.value ?? 0,
               seed,
