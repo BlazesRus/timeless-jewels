@@ -194,3 +194,5 @@ $RECYCLE.BIN/
 
 /build/bin/
 .vs/
+
+frontend/package.json.backup

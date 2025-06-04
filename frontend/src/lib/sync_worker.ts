@@ -1,7 +1,7 @@
 import { expose } from 'comlink';
 import '../wasm_exec.js';
 import { loadSkillTree, passiveToTree } from './skill_tree';
-import type { SearchWithSeed, ReverseSearchConfig, SearchResults } from './skill_tree';
+import type { ReverseSearchConfig, SearchResults, SearchWithSeed } from './skill_tree';
 import { calculator, initializeCrystalline } from './types';
 
 const obj = {
@@ -40,9 +40,9 @@ const obj = {
         const skillStats = searchResult?.[seed]?.[skillID] ?? {};
         Object.keys(skillStats).forEach((st) => {
           const n = parseInt(st);
-          statCounts[n] = (statCounts[n] || 0) + 1;
+          statCounts[n] = (statCounts[n] ?? 0) + 1;
           weight += args.stats.find((s) => s.id == n)?.weight || 0;
-          statTotal[n] = (statTotal[n] || 0) + skillStats[st];
+          statTotal[n] = (statTotal[n] ?? 0) + skillStats[st];
           totalStats += skillStats[st];
         });
 
@@ -90,7 +90,8 @@ const obj = {
       });
 
       if (Object.keys(searchGrouped[nLen]).length == 0) {
-        delete searchGrouped[nLen];
+        // Workaround: assign an empty array if no results, instead of deleting the key
+        searchGrouped[nLen] = [];
       } else {
         searchGrouped[nLen] = searchGrouped[nLen].sort((a, b) => b.weight - a.weight);
       }

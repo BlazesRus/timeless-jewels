@@ -3,8 +3,8 @@
   import SearchResult from './SearchResult.svelte';
   import VirtualList from 'svelte-tiny-virtual-list';
 
-  export let searchResults: SearchResults;
   export let highlight: (newSeed: number, passives: number[]) => void;
+  export let searchResults: SearchResults;
   export let groupResults = true;
   export let jewel: number;
   export let conqueror: string;
@@ -12,15 +12,15 @@
   const computeSize = (r: SearchWithSeed) =>
     8 + 48 + r.skills.reduce((o, s) => o + 32 + Object.keys(s.stats).length * 24, 0);
 
-  let expandedGroup = '';
+  let expandedGroup: number | '' = '';
 </script>
 
 {#if groupResults}
   <div class="flex flex-col overflow-auto">
     {#each Object.keys(searchResults.grouped)
-      .map((x) => parseInt(x))
+      .map((x) => parseInt(x, 10))
       .sort((a, b) => a - b)
-      .reverse() as k}
+      .reverse() as number[] as k (k)}
       <button
         class="text-lg w-full p-2 px-4 bg-neutral-500/30 rounded flex flex-row justify-between mb-2"
         on:click={() => (expandedGroup = expandedGroup === k ? '' : k)}>

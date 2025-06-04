@@ -1,6 +1,6 @@
-import type { Translation, Node, SkillTreeData, Group, Sprite, TranslationFile } from './skill_tree_types';
+import type { Group, Node, SkillTreeData, Sprite, Translation, TranslationFile } from './skill_tree_types';
 import { data } from './types';
-import { type Filter, type Query, filterGroupsToQuery, filtersToFilterGroup } from './utils/trade_utils';
+import { type Filter, filterGroupsToQuery, filtersToFilterGroup, type Query } from './utils/trade_utils';
 import { chunkArray } from './utils/utils';
 
 export let skillTree: SkillTreeData;

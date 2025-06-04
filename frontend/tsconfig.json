@@ -10,5 +10,5 @@
     "sourceMap": true,
     "strict": true
   },
-  "include": ["src/**/*.d.ts"]
+  "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.js", "src/**/*.svelte"]
 }

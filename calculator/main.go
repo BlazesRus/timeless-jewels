@@ -13,7 +13,9 @@ func Calculate(passiveID uint32, seed uint32, timelessJewelType data.JewelType, 
 	passiveSkill := data.GetPassiveSkillByIndex(passiveID)
 
 	if !data.IsPassiveSkillValidForAlteration(passiveSkill) {
-		return data.AlternatePassiveSkillInformation{}
+		return data.AlternatePassiveSkillInformation{
+			AlternatePassiveAdditionInformations: make([]data.AlternatePassiveAdditionInformation, 0),
+		}
 	}
 
 	alternateTreeVersion := data.GetAlternateTreeVersionIndex(uint32(timelessJewelType))
@@ -36,8 +38,13 @@ func Calculate(passiveID uint32, seed uint32, timelessJewelType data.JewelType, 
 		return alternateTreeManager.ReplacePassiveSkill(rng)
 	}
 
+	additions := alternateTreeManager.AugmentPassiveSkill(rng)
+	if additions == nil {
+		additions = make([]data.AlternatePassiveAdditionInformation, 0)
+	}
+
 	return data.AlternatePassiveSkillInformation{
-		AlternatePassiveAdditionInformations: alternateTreeManager.AugmentPassiveSkill(rng),
+		AlternatePassiveAdditionInformations: additions,
 	}
 }
 

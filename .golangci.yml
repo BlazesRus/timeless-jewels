@@ -1,87 +1,37 @@
-linters-settings:
-  wrapcheck:
-    ignoreSigs:
-      - .Errorf(
-      - errors.New(
-      - errors.Unwrap(
-      - .WithMessage(
-      - .WithMessagef(
-      - .WithStack(
-      - github.com/labstack/echo/v4.Context
-
-    ignorePackageGlobs:
-      - github.com/BlazesRus/timeless-jewels/*
-
-  govet:
-    disable:
-      - shadow
-
-  gocritic:
-    disabled-checks:
-      - ifElseChain
-
-  gci:
-    custom-order: true
-    sections:
-      - standard
-      - default
-      - prefix(github.com/BlazesRus/timeless-jewels)
-      - blank
-      - dot
-
-  sloglint:
-    attr-only: true
-    context: scope
-    forbidden-keys:
-      - time
-      - level
-      - msg
-      - source
-
-  spancheck:
-    checks:
-      - end
-      - record-error
-      - set-status
-
-
-issues:
-  exclude-files:
-    - ./generated/generated.go
-    - ./generated/models_gen.go
-  exclude-dirs:
-    - ./generated/
-  exclude:
-    - should pass the context parameter
-
 linters:
-  disable-all: true
   enable:
-    - errcheck
-    - gosimple
-    - govet
-    - ineffassign
-    - staticcheck
-    - typecheck
-    - unused
     - bidichk
+    - canonicalheader
     - contextcheck
+    - copyloopvar
     - durationcheck
+    - errcheck
     - errorlint
-    - goimports
-    - revive
-    - misspell
-    - prealloc
-    - whitespace
-    - wrapcheck
-    - gci
+    - fatcontext
     - gocritic
-    - gofumpt
-    - nonamedreturns
+    - govet
     - inamedparam
+    - ineffassign
+    - intrange
+    - misspell
+    - nonamedreturns
+    - prealloc
+    - revive
     - sloglint
     - spancheck
-    - intrange
-    - copyloopvar
-    - fatcontext
-    - canonicalheader
+    - staticcheck
+    - unused
+    - whitespace
+    - wrapcheck
+  exclusions:
+    generated: lax
+    rules:
+      - path: (.+)\.go$
+        text: should pass the context parameter
+    paths:
+      - ./generated/generated.go
+      - ./generated/models_gen.go
+      - ./generated/
+      - third_party$
+      - builtin$
+      - examples$
