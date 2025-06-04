@@ -188,8 +188,10 @@
 
   // Fix: replace object destructuring with delete for removeStat, but avoid unused var warning
   const removeStat = (id: number) => {
-    const newStats = { ...selectedStats };
-    delete newStats[id];
+    // Avoid dynamic delete and unused var: use object spread with computed key
+    const newStats = Object.fromEntries(
+      Object.entries(selectedStats).filter(([key]) => Number(key) !== id)
+    );
     selectedStats = newStats;
     updateUrl();
   };
