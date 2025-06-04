@@ -224,7 +224,7 @@
         .filter((n) => !disabled.has(n.skill))
         .map((n) => getTreeToPassiveSafe(n.skill))
         .filter(Boolean)
-        .map((n) => (n as any).Index),
+        .map((n) => (n as { Index: number }).Index),
       stats: Object.keys(selectedStats).map((stat) => selectedStats[Number(stat)]),
       minTotalWeight,
       minTotalStats
