@@ -1,4 +1,6 @@
 <script lang="ts">
+// Declare browser globals for TypeScript
+ 
   import '../app.scss';
   import '../wasm_exec.js';
   import { assets } from '$app/paths';

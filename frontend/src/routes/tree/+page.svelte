@@ -1,4 +1,6 @@
 <script lang="ts">
+// Declare browser globals for TypeScript
+ 
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import SearchResults from '../../lib/components/SearchResults.svelte';
