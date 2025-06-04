@@ -1,14 +1,14 @@
 ﻿// eslint.config.js
 
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import { globalIgnores } from 'eslint/config';
 import js from '@eslint/js';
 import svelte from 'eslint-plugin-svelte';
 import svelteParser from 'svelte-eslint-parser';
-import tsEslint from 'typescript-eslint';
 import ts from '@typescript-eslint/eslint-plugin'; //Adds support for typescript
+import tsEslint from 'typescript-eslint';
 import tsParser from '@typescript-eslint/parser';
 //import eslintConfigPrettierFlat from "eslint-config-prettier/flat";
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
-import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default [
   js.configs.recommended,
@@ -51,6 +51,7 @@ export default [
   },
   {
     files: ['**/*.svelte'],
+    ignores: ['**/*.svelte.ts'],
     languageOptions: {
       parser: svelteParser, // Set the Svelte parser
       parserOptions: {
@@ -76,7 +77,7 @@ export default [
     }
   },
   {
-    files: ['**/*svelte.ts'],
+    files: ['**/*.svelte.ts'],
     languageOptions: {
       parser: svelteParser, // Set the Svelte parser
       parserOptions: {

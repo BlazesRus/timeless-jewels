@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { constructSingleResultQuery, type SearchWithSeed } from '../skill_tree';
   import { openQueryTrade } from '$lib/utils/trade_utils';
+  import { constructSingleResultQuery, type SearchWithSeed } from '../skill_tree';
   import { skillTree, translateStatData } from '../skill_tree';
 
   export let highlight: (newSeed: number, passives: number[]) => void;
@@ -29,13 +29,13 @@
     </div>
     <button class="px-3 bg-blue-500/40 rounded" on:click={() => openQueryTrade(constructSingleResultQuery(jewel, conqueror, set))}>Trade</button>
   </div>
-  {#each set.skills as skill}
+  {#each set.skills as skill (skill.passive)}
     <div class="mt-2">
       <span>
         {skillTree.nodes[skill.passive].name} ({skill.passive})
       </span>
       <ul class="list-disc pl-6 font-bold">
-        {#each Object.keys(skill.stats) as stat}
+        {#each Object.keys(skill.stats) as stat (stat)}
           <li>{translateStatData(stat, skill.stats[stat])}</li>
         {/each}
       </ul>
