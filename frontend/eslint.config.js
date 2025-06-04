@@ -42,8 +42,11 @@ export default [
           // Enable features specific to Svelte 5
           experimentalGenerics: true // Optional: If using generics
         },
-        extraFileExtensions: ['.svelte', '.svelte.js'],
+        extraFileExtensions: ['.svelte', '.svelte.js']
       }
+    },
+    settings: {
+      svelte: {}
     },
     rules: {
       'no-nested-ternary': 'error',
@@ -72,6 +75,9 @@ export default [
     plugins: {
       'eslint-plugin-svelte': svelte,
       '@typescript-eslint': ts // Include the TypeScript plugin
+    },
+    settings: {
+      svelte: {}
     },
     rules: {
       'no-undef': 'off',

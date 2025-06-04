@@ -4,13 +4,13 @@
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import type { Node } from '../../lib/skill_tree_types';
-  import { getAffectedNodes, skillTree, translateStat, constructQueries } from '../../lib/skill_tree';
+  import { constructQueries, getAffectedNodes, skillTree, translateStat } from '../../lib/skill_tree';
   import { syncWrap } from '../../lib/worker';
   import { proxy } from 'comlink';
   import type { Query, ReverseSearchConfig, StatConfig } from '../../lib/skill_tree';
   import SearchResults from '../../lib/components/SearchResults.svelte';
   import { statValues } from '../../lib/values';
-  import { data, calculator } from '../../lib/types';
+  import { calculator, data } from '../../lib/types';
   import TradeButton from '$lib/components/TradeButton.svelte';
   import TradeLinks from '$lib/components/TradeLinks.svelte';
 

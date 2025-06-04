@@ -2,7 +2,7 @@
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { base, assets } from '$app/paths';
+  import { assets, base } from '$app/paths';
   import { calculator, data } from '../lib/types';
 
   const searchParams = $page.url.searchParams;
