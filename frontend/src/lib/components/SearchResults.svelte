@@ -1,10 +1,10 @@
 <script lang="ts">
+  import type { SearchResults, SearchWithSeed } from '../skill_tree';
   import SearchResult from './SearchResult.svelte';
   import VirtualList from 'svelte-tiny-virtual-list';
-  import type { SearchResults, SearchWithSeed } from '../skill_tree';
 
-  export let searchResults: SearchResults;
   export let highlight: (newSeed: number, passives: number[]) => void;
+  export let searchResults: SearchResults;
   export let groupResults = true;
   export let jewel: number;
   export let conqueror: string;
