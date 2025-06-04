@@ -73,7 +73,15 @@ export default [
       'svelte/no-target-blank': 'error',
       'svelte/no-at-debug-tags': 'error',
       'svelte/no-reactive-functions': 'error',
-      'svelte/no-reactive-literals': 'error'
+      'svelte/no-reactive-literals': 'error',
+      // Disable React/JSX rules that may leak in
+      'react/jsx-uses-react': 'off',
+      'react/react-in-jsx-scope': 'off',
+      'react/jsx-key': 'off',
+      'react/jsx-no-undef': 'off',
+      'react/jsx-uses-vars': 'off',
+      // Disable Prettier for Svelte files to avoid JSX parser errors
+      'prettier/prettier': 'off'
     }
   },
   {
