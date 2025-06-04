@@ -114,11 +114,18 @@
   const updateUrl = () => {
     if (!_window || !_URL) return;
     const url = new _URL(_window.location.origin + _window.location.pathname);
-    selectedJewel && url.searchParams.append('jewel', selectedJewel.value.toString());
-    dropdownConqueror && url.searchParams.append('conqueror', String(dropdownConqueror.value ?? ''));
-    seed && url.searchParams.append('seed', seed.toString());
-    circledNode && url.searchParams.append('location', circledNode.toString());
-    mode && url.searchParams.append('mode', mode);
+    if (selectedJewel)
+      url.searchParams.append('jewel', selectedJewel.value.toString());
+    if (dropdownConqueror && dropdownConqueror.value !== undefined && dropdownConqueror.value !== null && dropdownConqueror.value !== '')
+      url.searchParams.append('conqueror', String(dropdownConqueror.value));
+    else
+      url.searchParams.append('conqueror', "Any");
+    if (typeof seed === 'number' && !isNaN(seed))
+      url.searchParams.append('seed', seed.toString());
+    if (circledNode !== undefined && circledNode !== null)
+      url.searchParams.append('location', circledNode.toString());
+    if (mode && mode !== '') 
+      url.searchParams.append('mode', mode);
 
     Object.keys(selectedStats).forEach((s) => {
       url.searchParams.append('stat', s.toString());
