@@ -16,15 +16,22 @@
 
   const searchParams = $page.url.searchParams;
 
-  const jewels = Object.keys(data.TimelessJewels).map((k) => ({
-    value: parseInt(k),
-    label: data.TimelessJewels[k]
+  // Defensive: fallback to empty object if undefined
+  const timelessJewels = data?.TimelessJewels ?? {};
+  const timelessJewelConquerors = data?.TimelessJewelConquerors ?? {};
+  const timelessJewelSeedRanges = data?.TimelessJewelSeedRanges ?? {};
+  const treeToPassive = data?.TreeToPassive ?? {};
+  const allPossibleStats: { [key: string]: { [key: string]: number } } = data?.PossibleStats ? JSON.parse(data.PossibleStats) : {};
+
+  const jewels = Object.keys(timelessJewels).map((k) => ({
+    value: Number(k),
+    label: timelessJewels[Number(k)]
   }));
 
-  let selectedJewel = searchParams.has('jewel') ? jewels.find((j) => j.value == searchParams.get('jewel')) : undefined;
+  let selectedJewel = (searchParams.has('jewel') && jewels.find((j) => j.value === Number(searchParams.get('jewel')))) || undefined;
 
-  $: conquerors = selectedJewel
-    ? Object.keys(data.TimelessJewelConquerors[selectedJewel.value]).map((k) => ({
+  $: conquerors = selectedJewel && timelessJewelConquerors[selectedJewel.value]
+    ? Object.keys(timelessJewelConquerors[selectedJewel.value] ?? {}).map((k) => ({
         value: k,
         label: k
       }))
@@ -45,35 +52,56 @@
 
   let seed: number = searchParams.has('seed') ? parseInt(searchParams.get('seed')) : 0;
 
-  let circledNode: number | undefined = searchParams.has('location')
-    ? parseInt(searchParams.get('location'))
-    : undefined;
+  //Trying to reduce need to check location twice while still staying preventing parsing null
+  function getCircledNode(): number | undefined {
+    if(searchParams.has('location'))
+    {
+        nodeLoc = searchParams.get('location');
+        if(nodeLoc)
+            return parseInt(nodeLoc)
+        else
+            return undefined
+    }
+    return undefined
+  }
+
+  let circledNode: number | undefined = getCircledNode();
 
   $: affectedNodes = circledNode
     ? getAffectedNodes(skillTree.nodes[circledNode]).filter((n) => !n.isJewelSocket && !n.isMastery)
     : [];
 
+  // Fix usages in affectedNodes/seedResults mapping
+  // Fix: ensure getTreeToPassive only called with defined skill
+  function getTreeToPassiveSafe(skill: number | undefined) {
+    if (typeof skill !== 'number') return undefined;
+    return treeToPassive && typeof treeToPassive[skill] !== 'undefined' ? treeToPassive[skill] : undefined;
+  }
+
+  // Fix: remove type predicate in .filter, just use .filter(Boolean) and cast as needed
   $: seedResults =
     !seed ||
     !selectedJewel ||
     !selectedConqueror ||
-    Object.keys(data.TimelessJewelConquerors[selectedJewel.value]).indexOf(selectedConqueror.value) < 0
+    !(timelessJewelConquerors[selectedJewel.value]) ||
+    Object.keys(timelessJewelConquerors[selectedJewel.value] ?? {}).indexOf(selectedConqueror.value ?? '') < 0
       ? []
       : affectedNodes
-          .filter((n) => !!data.TreeToPassive[n.skill])
-          .map((n) => ({
-            node: n.skill,
+          .map((n) => getTreeToPassiveSafe(n.skill))
+          .filter(Boolean)
+          .map((tp) => ({
+            node: (tp as { Index: number }).Index, // Specify type instead of any
             result: calculator.Calculate(
-              data.TreeToPassive[n.skill].Index,
+              selectedJewel?.value ?? 0,
               seed,
-              selectedJewel.value,
-              selectedConqueror.value
+              selectedJewel?.value ?? 0,
+              selectedConqueror?.value ?? ''
             )
           }));
 
   let selectedStats: Record<number, StatConfig> = {};
   if (searchParams.has('stat')) {
-    searchParams.getAll('stat').forEach((s) => {
+    for (const s of searchParams.getAll('stat')) {
       const nStat = parseInt(s);
       selectedStats[nStat] = {
         weight: 1,
@@ -81,18 +109,26 @@
         id: nStat,
         minStatTotal: 0
       };
-    });
+    }
   }
 
   let mode = searchParams.has('mode') ? searchParams.get('mode') : '';
 
   const updateUrl = () => {
-    const url = new URL(window.location.origin + window.location.pathname);
-    selectedJewel && url.searchParams.append('jewel', selectedJewel.value.toString());
-    dropdownConqueror && url.searchParams.append('conqueror', dropdownConqueror.value);
-    seed && url.searchParams.append('seed', seed.toString());
-    circledNode && url.searchParams.append('location', circledNode.toString());
-    mode && url.searchParams.append('mode', mode);
+    if (!_window || !_URL) return;
+    const url = new _URL(_window.location.origin + _window.location.pathname);
+    if (selectedJewel)
+      url.searchParams.append('jewel', selectedJewel.value.toString());
+    if (dropdownConqueror && dropdownConqueror.value !== undefined && dropdownConqueror.value !== null && dropdownConqueror.value !== '')
+      url.searchParams.append('conqueror', String(dropdownConqueror.value));
+    else
+      url.searchParams.append('conqueror', "Any");
+    if (typeof seed === 'number' && !isNaN(seed))
+      url.searchParams.append('seed', seed.toString());
+    if (circledNode !== undefined && circledNode !== null)
+      url.searchParams.append('location', circledNode.toString());
+    if (mode && mode !== '') 
+      url.searchParams.append('mode', mode);
 
     Object.keys(selectedStats).forEach((s) => {
       url.searchParams.append('stat', s.toString());
@@ -122,7 +158,19 @@
     }
   };
 
-  const allPossibleStats: { [key: string]: { [key: string]: number } } = JSON.parse(data.PossibleStats);
+  function getStatValue(id: string | number) {
+    return (statValues as Record<string, number>)[String(id)] || 0;
+  }
+  function getAllPossibleStat(jewel: number | undefined, id: string | number) {
+    if (!jewel || !allPossibleStats[jewel]) return 0;
+    return (allPossibleStats[jewel] as Record<string | number, number>)[id] || 0;
+  }
+  function sanitize(html: string): string {
+    // Very basic sanitizer: strips script/style tags and on* attributes
+    return html.replace(/<script.*?>.*?<\/script>/gi, '')
+               .replace(/<style.*?>.*?<\/style>/gi, '')
+               .replace(/on\w+="[^"]*"/gi, '');
+  }
 
   $: availableStats = !selectedJewel ? [] : Object.keys(allPossibleStats[selectedJewel.value]);
   $: statItems = availableStats
@@ -148,10 +196,13 @@
     updateUrl();
   };
 
+  // Fix: replace object destructuring with delete for removeStat, but avoid unused var warning
   const removeStat = (id: number) => {
-    delete selectedStats[id];
-    // Re-assign to update svelte
-    selectedStats = selectedStats;
+    // Avoid dynamic delete and unused var: use object spread with computed key
+    const newStats = Object.fromEntries(
+      Object.entries(selectedStats).filter(([key]) => Number(key) !== id)
+    );
+    selectedStats = newStats;
     updateUrl();
   };
 
@@ -165,37 +216,42 @@
   let minTotalStats: number = 0;
   let searching = false;
   let currentSeed = 0;
-  let searchResults: SearchResults;
+  let searchResults: SearchResults | undefined = undefined;
   let searchJewel = 1;
   let searchConqueror: string | null = null;
+  // Fix all .value accesses in search and query construction
   const search = () => {
-    if (!circledNode) {
+    if (!circledNode || !selectedJewel || !selectedConqueror) {
       return;
     }
-
     searchJewel = selectedJewel.value;
-    searchConqueror = anyConqueror ? null : selectedConqueror.value;
+    searchConqueror = anyConqueror ? '' : selectedConqueror.value ?? '';
     searching = true;
     searchResults = undefined;
 
     const query: ReverseSearchConfig = {
       jewel: selectedJewel.value,
-      conqueror: selectedConqueror.value,
+      conqueror: selectedConqueror.value ?? '',
       nodes: affectedNodes
         .filter((n) => !disabled.has(n.skill))
-        .map((n) => data.TreeToPassive[n.skill])
-        .filter((n) => !!n)
-        .map((n) => n.Index),
-      stats: Object.keys(selectedStats).map((stat) => selectedStats[stat]),
-      minTotalWeight
+        .map((n) => getTreeToPassiveSafe(n.skill))
+        .filter(Boolean)
+        .map((n) => (n as { Index: number }).Index),
+      stats: Object.keys(selectedStats).map((stat) => selectedStats[Number(stat)]),
+      minTotalWeight,
+      minTotalStats
     };
 
+    if (!syncWrap) return;
     syncWrap
       .search(
         query,
-        proxy((s) => (currentSeed = s))
+        proxy((s: number) => {
+          currentSeed = s;
+          return Promise.resolve();
+        })
       )
-      .then((result) => {
+      .then((result: SearchResults) => {
         searchResults = result;
         searching = false;
         results = true;
@@ -393,6 +449,7 @@
     }
 
     const paste = (event.clipboardData || window.clipboardData).getData('text');
+    if (!paste) return;
     const lines = paste.split('\n');
 
     if (lines.length < 14) {
@@ -407,13 +464,14 @@
     let newSeed: number | undefined;
     let conqueror: string | undefined;
     for (let i = 10; i < lines.length; i++) {
-      conqueror = Object.keys(data.TimelessJewelConquerors[jewel.value]).find((k) => lines[i].indexOf(k) >= 0);
+      // Fix: use Object.keys(timelessJewelConquerors[jewel.value] ?? {}) for conquerorKeys
+      const conquerorKeys = Object.keys(timelessJewelConquerors[jewel.value] ?? {});
+      conqueror = conquerorKeys.find((k) => lines[i].indexOf(k) >= 0);
       if (conqueror) {
         const matches = /(\d+)/.exec(lines[i]);
-        if (matches.length === 0) {
+        if (!matches || matches.length === 0) {
           continue;
         }
-
         newSeed = parseInt(matches[1]);
         break;
       }
@@ -427,7 +485,7 @@
     mode = 'seed';
     seed = newSeed;
     selectedJewel = jewel;
-    selectedConqueror = { label: conqueror, value: conqueror };
+    dropdownConqueror = { label: conqueror, value: conqueror };
     updateUrl();
   };
 
@@ -465,10 +523,10 @@
       <div class="p-4 max-h-screen flex flex-col">
         <div class="flex flex-row justify-between mb-2">
           <div class="flex flex-row items-center">
-            <button class="burger-menu mr-3" on:click={() => (collapsed = true)}>
-              <div />
-              <div />
-              <div />
+            <button class="burger-menu mr-3" aria-label="Open menu" on:click={() => (collapsed = true)}>
+              <div></div>
+              <div></div>
+              <div></div>
             </button>
 
             <h3 class="flex-grow">
@@ -507,7 +565,10 @@
               <Select items={dropdownConqs} bind:value={dropdownConqueror} on:change={updateUrl} />
             </div>
 
-            {#if selectedConqueror && Object.keys(data.TimelessJewelConquerors[selectedJewel.value]).indexOf(selectedConqueror.value) >= 0}
+            {#if selectedConqueror &&
+              selectedJewel &&
+              timelessJewelConquerors[selectedJewel.value] &&
+              Object.keys(timelessJewelConquerors[selectedJewel.value] ?? {}).indexOf(selectedConqueror.value ?? '') >= 0}
               <div class="mt-4 w-full flex flex-row">
                 <button class="selection-button" class:selected={mode === 'seed'} on:click={() => setMode('seed')}>
                   Enter Seed
@@ -701,16 +762,16 @@
   {:else}
     <button
       class="burger-menu absolute top-0 left-0 bg-black/80 backdrop-blur-sm rounded-br-lg p-4 pt-5"
-      on:click={() => (collapsed = false)}>
-      <div />
-      <div />
-      <div />
+      aria-label="Close menu" on:click={() => (collapsed = false)}>
+      <div></div>
+      <div></div>
+      <div></div>
     </button>
   {/if}
 
   <div class="text-orange-500 absolute bottom-0 right-0 m-2">
-    <a href="https://github.com/Vilsol/timeless-jewels" target="_blank" rel="noopener">Source of official branch code(Github)</a>
-    <a href="https://github.com/BlazesRus/timeless-jewels" target="_blank" rel="noopener">Source (Github)</a>
+    <a href="https://github.com/Vilsol/timeless-jewels" target="_blank" rel="noopener noreferrer">Source of official branch code(Github)</a>
+    <a href="https://github.com/BlazesRus/timeless-jewels" target="_blank" rel="noopener noreferrer">Source (Github)</a>
   </div>
 </SkillTree>
 

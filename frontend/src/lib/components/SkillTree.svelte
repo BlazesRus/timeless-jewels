@@ -133,7 +133,6 @@
         currentWord = word;
       }
     });
-    61834;
 
     if (currentWord.length > 0) {
       result.push(currentWord.trim());
@@ -150,8 +149,8 @@
   let cursor = 'unset';
 
   let hoveredNode: Node | undefined;
-  $: render = (({ context, width, height }) => {
-    const start = window.performance.now();
+  $: render = ((params: { context: CanvasRenderingContext2D; width: number; height: number }) => {
+    const { context, width, height } = params;
 
     context.clearRect(0, 0, width, height);
 
@@ -178,6 +177,7 @@
 
     Object.keys(drawnNodes).forEach((nodeId) => {
       const node = drawnNodes[nodeId];
+      if (!node) return;
       const angle = orbitAngleAt(node.orbit, node.orbitIndex);
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
 
@@ -226,6 +226,7 @@
           const finalB = diff > Math.PI ? Math.min(a, b) : Math.max(a, b);
 
           const group = drawnGroups[node.group];
+          if (!group) return;
           const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
           context.arc(groupPos.x, groupPos.y, skillTree.constants.orbitRadii[node.orbit] / scaling + 1, finalA, finalB);
         }
@@ -256,13 +257,13 @@
         }
       }
 
-      if (disabled.indexOf(node.skill) >= 0) {
+      if (disabled.indexOf(node.skill ?? -1) >= 0) {
         active = false;
       }
 
       if (node.isKeystone) {
         touchDistance = 110;
-        drawSprite(context, node.icon, rotatedPos, active);
+        drawSprite(context, node.icon ?? 'PSGroupBackground1', rotatedPos, active);
         if (active) {
           drawSprite(context, 'KeystoneFrameAllocated', rotatedPos, false);
         } else {
@@ -270,7 +271,7 @@
         }
       } else if (node.isNotable) {
         touchDistance = 70;
-        drawSprite(context, node.icon, rotatedPos, active);
+        drawSprite(context, node.icon ?? 'PSGroupBackground1', rotatedPos, active);
         if (active) {
           drawSprite(context, 'NotableFrameAllocated', rotatedPos, false);
         } else {
@@ -292,10 +293,10 @@
           }
         }
       } else if (node.isMastery) {
-        drawSprite(context, node.inactiveIcon, rotatedPos, active);
+        drawSprite(context, node.inactiveIcon ?? '', rotatedPos, active);
       } else {
         touchDistance = 50;
-        drawSprite(context, node.icon, rotatedPos, active);
+        drawSprite(context, node.icon ?? '', rotatedPos, active);
         if (active) {
           drawSprite(context, 'PSSkillFrameActive', rotatedPos, false);
         } else {
@@ -328,7 +329,7 @@
     }
 
     if (hoveredNode) {
-      let nodeName = hoveredNode.name;
+      let nodeName = hoveredNode.name ?? '';
       let nodeStats: { text: string; special: boolean }[] = (hoveredNode.stats || []).map((s) => ({
         text: s,
         special: false
@@ -346,37 +347,40 @@
           if (result) {
             if ('AlternatePassiveSkill' in result && result.AlternatePassiveSkill) {
               nodeStats = [];
-              nodeName = result.AlternatePassiveSkill.Name;
+                nodeName = result.AlternatePassiveSkill.Name ?? '';
 
-              if ('StatsKeys' in result.AlternatePassiveSkill) {
-                result.AlternatePassiveSkill.StatsKeys.forEach((statId, i) => {
+                if (result.AlternatePassiveSkill.StatsKeys) {
+                  result.AlternatePassiveSkill.StatsKeys.forEach((statId: number, i: number) => {
                   const stat = data.GetStatByIndex(statId);
+                    if (!stat) return;
                   const translation = inverseTranslations[stat.ID] || '';
-                  if (translation) {
-                    nodeStats.push({
-                      text: formatStats(translation, result.StatRolls[i]) || stat.ID,
-                      special: true
-                    });
-                  }
+                    if (translation && result.StatRolls && result.StatRolls[i] !== undefined) {
+                      nodeStats.push({
+                        text: formatStats(translation, result.StatRolls[i]) || stat.ID,
+                        special: true
+                      });
+                    }
                 });
               }
             }
 
-            if (result.AlternatePassiveAdditionInformations) {
-              result.AlternatePassiveAdditionInformations.forEach((info) => {
-                if ('StatsKeys' in info.AlternatePassiveAddition) {
-                  info.AlternatePassiveAddition.StatsKeys.forEach((statId, i) => {
-                    const stat = data.GetStatByIndex(statId);
-                    const translation = inverseTranslations[stat.ID] || '';
-                    if (translation) {
-                      nodeStats.push({
-                        text: formatStats(translation, info.StatRolls[i]) || stat.ID,
-                        special: true
-                      });
-                    }
-                  });
-                }
-              });
+              if (result.AlternatePassiveAdditionInformations) {
+                result.AlternatePassiveAdditionInformations.forEach((info: { AlternatePassiveAddition?: { StatsKeys?: number[] }, StatRolls?: number[] }) => {
+                  if (info.AlternatePassiveAddition && info.AlternatePassiveAddition.StatsKeys) {
+                    info.AlternatePassiveAddition.StatsKeys.forEach((statId: number, i: number) => {
+                      const stat = data.GetStatByIndex(statId);
+                      if (!stat) return;
+                      const translation = inverseTranslations[stat.ID] || '';
+                      if (translation && info.StatRolls && info.StatRolls[i] !== undefined) {
+                        nodeStats.push({
+                          text: formatStats(translation, info.StatRolls[i]) || stat.ID,
+                          special: true
+                        });
+                      }
+                    });
+                  }
+                });
+              }
             }
           }
         }
@@ -564,6 +568,6 @@
     <Canvas {width} {height} on:pointerdown={mouseDown} on:wheel={onScroll}>
       <Layer {render} />
     </Canvas>
-    <slot />
+    <slot></slot>
   </div>
 {/if}

@@ -23,7 +23,8 @@
           loadSkillTree();
         });
 
-        syncWrap.boot(data);
+        if (syncWrap)
+            syncWrap.boot(data);
       });
   }
 </script>

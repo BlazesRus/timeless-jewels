@@ -33,7 +33,7 @@ export default [
   ]),
   {
     root: true,
-    ignores: ['**/postcss.config.js', '**/tsconfig.tsbuildinfo', '*.config.js'],
+    ignores: ['**/postcss.config.js', '**/tsconfig.tsbuildinfo', '*.config.js', 'wasm_exec.js'],
     parserOptions: {
       sourceType: 'module',
       ecmaVersion: 2020
