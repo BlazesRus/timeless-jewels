@@ -4,12 +4,12 @@
   
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { assets, base } from '$app/paths';
   import { calculator, data } from '../lib/types';
   import Select from 'svelte-select';
 
-  const searchParams = $page.url.searchParams;
+  const searchParams = page.url.searchParams;
 
   // Defensive: fallback to empty object if undefined
   const timelessJewels = data.TimelessJewels ?? {};
@@ -69,7 +69,7 @@
         .map((key) => key + '=' + encodeURIComponent(params[key]))
         .join('&');
 
-      goto($page.url.pathname + '?' + resultQuery);
+      goto(page.url.pathname + '?' + resultQuery);
     }
   };
 </script>

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { Canvas, Layer, t } from 'svelte-canvas';
   import type { RenderFunc, Node } from '../skill_tree_types';
   import {
@@ -19,15 +21,30 @@
   import { derived } from 'svelte/store';
   import { calculator, data } from '../types';
 
-  export let clickNode: (node: Node) => void;
-  export let circledNode: number | undefined;
 
-  export let selectedJewel: number;
-  export let selectedConqueror: string;
-  export let seed: number;
-  export let highlighted: number[] = [];
-  export let disabled: number[] = [];
-  export let highlightJewels = false;
+  interface Props {
+    clickNode: (node: Node) => void;
+    circledNode: number | undefined;
+    selectedJewel: number;
+    selectedConqueror: string;
+    seed: number;
+    highlighted?: number[];
+    disabled?: number[];
+    highlightJewels?: boolean;
+    children?: import('svelte').Snippet;
+  }
+
+  let {
+    clickNode,
+    circledNode,
+    selectedJewel,
+    selectedConqueror,
+    seed,
+    highlighted = [],
+    disabled = [],
+    highlightJewels = false,
+    children
+  }: Props = $props();
 
   const slowTime = derived(t, (values) => {
     if ((!highlighted || !highlighted.length) && !highlightJewels) {
@@ -42,12 +59,12 @@
   const titleFont = '25px Roboto Mono';
   const statsFont = '17px Roboto Mono';
 
-  let scaling = 10;
+  let scaling = $state(10);
 
-  let offsetX = 0;
-  let offsetY = 0;
+  let offsetX = $state(0);
+  let offsetY = $state(0);
 
-  $: jewelRadius = baseJewelRadius / scaling;
+  let jewelRadius = $derived(baseJewelRadius / scaling);
 
   const drawScaling = 2.6;
 
@@ -141,17 +158,17 @@
     return result;
   };
 
-  let mousePos: Point = {
+  let mousePos: Point = $state({
     x: Number.MIN_VALUE,
     y: Number.MIN_VALUE
-  };
+  });
 
-  let cursor = 'unset';
+  let cursor = $state('unset');
 
-  let hoveredNode: Node | undefined;
+  let hoveredNode: Node | undefined = $state();
   //$: render = ((params: { context: CanvasRenderingContext2D; width: number; height: number }) => {
   //  const { context, width, height } = params;
-  $: render = (({ context, width, height }) => {
+  let render = $derived((({ context, width, height }) => {
     const start = window.performance.now();
 
     context.clearRect(0, 0, width, height);
@@ -480,7 +497,7 @@
     const end = window.performance.now();
 
     context.fillText(`${(end - start).toFixed(1)}ms`, width - 5, 17);
-  }) as RenderFunc;
+  }) as RenderFunc);
 
   let downX = 0;
   let downY = 0;
@@ -549,31 +566,31 @@
     event.stopImmediatePropagation();
   };
 
-  let width = 0;
-  let height = 0;
+  let width = $state(0);
+  let height = $state(0);
   const resize = () => {
     width = window.innerWidth;
     height = window.innerHeight;
   };
 
-  let initialized = false;
-  $: {
+  let initialized = $state(false);
+  run(() => {
     if (!initialized && skillTree) {
       initialized = true;
       offsetX = skillTree.min_x + (window.innerWidth / 2) * scaling;
       offsetY = skillTree.min_y + (window.innerHeight / 2) * scaling;
     }
     resize();
-  }
+  });
 </script>
 
-<svelte:window on:pointerup={mouseUp} on:pointermove={mouseMove} on:resize={resize} />
+<svelte:window onpointerup={mouseUp} onpointermove={mouseMove} onresize={resize} />
 
 {#if width && height}
-  <div on:resize={resize} style="touch-action: none; cursor: {cursor}">
+  <div onresize={resize} style="touch-action: none; cursor: {cursor}">
     <Canvas {width} {height} on:pointerdown={mouseDown} on:wheel={onScroll}>
       <Layer {render} />
     </Canvas>
-    <slot></slot>
+    {@render children?.()}
   </div>
 {/if}

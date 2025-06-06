@@ -1,4 +1,5 @@
 <!-- @migration-task Error while migrating Svelte code: `<script>` was left open -->
+<!-- @migration-task Error while migrating Svelte code: `<script>` was left open -->
 <script lang="ts">
   import SkillTree from '../../lib/components/SkillTree.svelte';
   import Select from 'svelte-select';
