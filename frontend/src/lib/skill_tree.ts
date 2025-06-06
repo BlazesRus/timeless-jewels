@@ -312,9 +312,7 @@ export const getStat = (id: number | string): Stat => {
   //Checks if stat is valid before running code
   if (!(nId in statCache)) {
     const stat = data.GetStatByIndex(nId);
-    if (!stat) {
-      throw new Error(`Stat not found for id: ${nId}`);
-    }
+    if (!stat) throw new Error(`Stat not found for id: ${nId}`);
     statCache[nId] = stat;
   }
   return statCache[nId];
