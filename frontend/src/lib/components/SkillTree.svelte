@@ -1,14 +1,8 @@
-<!-- @migration-task Error while migrating Svelte code: can't migrate `$: jewelRadius = baseJewelRadius / scaling;` to `$derived` because there's a variable named derived.
-     Rename the variable and try again or migrate by hand. -->
 <script lang="ts">
-  // @ts-nocheck Heavy DOM usage, so we disable type checking for this file
-   
-  /* global window requestAnimationFrame cancelAnimationFrame HTMLImageElement CanvasRenderingContext2D Image MouseEvent PointerEvent WheelEvent CustomEvent */
-  import { Canvas, Layer } from 'svelte-canvas';
-  import { derived, writable } from 'svelte/store';
-  import { calculator, data } from '../types';
-  import type { Node, RenderFunc } from '../skill_tree_types';
-  import type { Point } from '../skill_tree';
+  import { run } from 'svelte/legacy';
+
+  import { Canvas, Layer, t } from 'svelte-canvas';
+  import type { RenderFunc, Node } from '../skill_tree_types';
   import {
     baseJewelRadius,
     calculateNodePos,
@@ -23,39 +17,34 @@
     skillTree,
     toCanvasCoords
   } from '../skill_tree';
-  import { onDestroy } from 'svelte';
+  import type { Point } from '../skill_tree';
+  import { derived } from 'svelte/store';
+  import { calculator, data } from '../types';
 
-  // Add global type references for browser APIs
-  // @ts-expect-error: Ensure DOM types are available for browser globals
-  export {};
-  export let clickNode: (node: Node) => void;
-  export let circledNode: number | undefined;
 
-  export let selectedJewel: number;
-  export let selectedConqueror: string;
-  export let seed: number;
-  export let highlighted: number[] = [];
-  export let disabled: number[] = [];
-  export let highlightJewels = false;
-
-  // Add a simple time store for animation
-  
-  
-  const t = writable(0);
-  let animationFrame: number;
-  
-  function animate(time: number) {
-    t.set(time);
-    animationFrame = requestAnimationFrame(animate);
+  interface Props {
+    clickNode: (node: Node) => void;
+    circledNode: number | undefined;
+    selectedJewel: number;
+    selectedConqueror: string;
+    seed: number;
+    highlighted?: number[];
+    disabled?: number[];
+    highlightJewels?: boolean;
+    children?: import('svelte').Snippet;
   }
-  
-  if (typeof window !== 'undefined') {
-    animationFrame = requestAnimationFrame(animate);
-  }
-  
-  onDestroy(() => {
-    if (animationFrame) cancelAnimationFrame(animationFrame);
-  });
+
+  let {
+    clickNode,
+    circledNode,
+    selectedJewel,
+    selectedConqueror,
+    seed,
+    highlighted = [],
+    disabled = [],
+    highlightJewels = false,
+    children
+  }: Props = $props();
 
   const slowTime = derived(t, (values) => {
     if ((!highlighted || !highlighted.length) && !highlightJewels) {
@@ -64,17 +53,18 @@
 
     return Math.round(values / 40);
   });
+
   const startGroups = [427, 320, 226, 227, 323, 422, 329];
 
   const titleFont = '25px Roboto Mono';
   const statsFont = '17px Roboto Mono';
 
-  let scaling = 10;
+  let scaling = $state(10);
 
-  let offsetX = 0;
-  let offsetY = 0;
+  let offsetX = $state(0);
+  let offsetY = $state(0);
 
-  $: jewelRadius = baseJewelRadius / scaling;
+  let jewelRadius = $derived(baseJewelRadius / scaling);
 
   const drawScaling = 2.6;
 
@@ -168,17 +158,17 @@
     return result;
   };
 
-  let mousePos: Point = {
+  let mousePos: Point = $state({
     x: Number.MIN_VALUE,
     y: Number.MIN_VALUE
-  };
+  });
 
-  let cursor = 'unset';
+  let cursor = $state('unset');
 
-  let hoveredNode: Node | undefined;
-  $: render = ((params: { context: CanvasRenderingContext2D; width: number; height: number }) => {
-    const { context, width, height } = params;
-
+  let hoveredNode: Node | undefined = $state();
+  //$: render = ((params: { context: CanvasRenderingContext2D; width: number; height: number }) => {
+  //  const { context, width, height } = params;
+  let render = $derived((({ context, width, height }) => {
     const start = window.performance.now();
 
     context.clearRect(0, 0, width, height);
@@ -186,10 +176,9 @@
     context.fillStyle = '#080c11';
     context.fillRect(0, 0, width, height);
 
-    const connected: Record<string, boolean> = {};
+    const connected = {};
     Object.keys(drawnGroups).forEach((groupId) => {
-      const group = drawnGroups[parseInt(groupId)];
-      if (!group) return;
+      const group = drawnGroups[groupId];
       const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
 
       const maxOrbit = Math.max(...group.orbits);
@@ -206,12 +195,12 @@
     });
 
     Object.keys(drawnNodes).forEach((nodeId) => {
-      const node = drawnNodes[parseInt(nodeId)];
+      const node = drawnNodes[nodeId];
       if (!node) return;
-      const angle = orbitAngleAt(node.orbit ?? 0, node.orbitIndex ?? 0);
+      const angle = orbitAngleAt(node.orbit, node.orbitIndex);
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
 
-      node.out?.forEach((o: string) => {
+      node.out?.forEach((o) => {
         const targetNode = drawnNodes[parseInt(o)];
         if (!targetNode) {
           return;
@@ -221,17 +210,21 @@
         const max = Math.max(parseInt(o), parseInt(nodeId));
         const joined = min + ':' + max;
 
-        if (connected[joined]) {
+        if (joined in connected) {
           return;
         }
         connected[joined] = true;
+
+        if (!targetNode) {
+          return;
+        }
 
         // Do not draw connections to mastery nodes
         if (targetNode.isMastery) {
           return;
         }
 
-        const targetAngle = orbitAngleAt(targetNode.orbit ?? 0, targetNode.orbitIndex ?? 0);
+        const targetAngle = orbitAngleAt(targetNode.orbit, targetNode.orbitIndex);
         const targetRotatedPos = calculateNodePos(targetNode, offsetX, offsetY, scaling);
 
         context.beginPath();
@@ -251,10 +244,10 @@
           const finalA = diff > Math.PI ? Math.max(a, b) : Math.min(a, b);
           const finalB = diff > Math.PI ? Math.min(a, b) : Math.max(a, b);
 
-          const group = drawnGroups[node.group ?? 0];
+          const group = drawnGroups[node.group];
           if (!group) return;
           const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
-          context.arc(groupPos.x, groupPos.y, skillTree.constants.orbitRadii[node.orbit ?? 0] / scaling + 1, finalA, finalB);
+          context.arc(groupPos.x, groupPos.y, skillTree.constants.orbitRadii[node.orbit] / scaling + 1, finalA, finalB);
         }
 
         context.lineWidth = 6 / scaling;
@@ -263,8 +256,8 @@
       });
     });
 
-    let circledNodePos: Point | undefined;
-    if (circledNode && drawnNodes[circledNode]) {
+    let circledNodePos: Point;
+    if (circledNode) {
       circledNodePos = calculateNodePos(drawnNodes[circledNode], offsetX, offsetY, scaling);
       context.strokeStyle = '#ad2b2b';
     }
@@ -272,25 +265,25 @@
     let hoveredNodeActive = false;
     let newHoverNode: Node | undefined;
     Object.keys(drawnNodes).forEach((nodeId) => {
-      const node = drawnNodes[parseInt(nodeId)];
-      if (!node) return;
+      const node = drawnNodes[nodeId];
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
       let touchDistance = 0;
 
       let active = false;
-      if (circledNode && circledNodePos) {
+      if (circledNode) {
         if (distance(rotatedPos, circledNodePos) < jewelRadius) {
           active = true;
         }
       }
 
-      if (disabled.indexOf(node.skill ?? -1) >= 0) {
+      //if (disabled.indexOf(node.skill ?? -1) >= 0) {
+      if (disabled.indexOf(node.skill) >= 0) {
         active = false;
       }
 
       if (node.isKeystone) {
         touchDistance = 110;
-        drawSprite(context, node.icon ?? 'PSGroupBackground1', rotatedPos, active);
+        drawSprite(context, node.icon, rotatedPos, active);
         if (active) {
           drawSprite(context, 'KeystoneFrameAllocated', rotatedPos, false);
         } else {
@@ -298,7 +291,7 @@
         }
       } else if (node.isNotable) {
         touchDistance = 70;
-        drawSprite(context, node.icon ?? 'PSGroupBackground1', rotatedPos, active);
+        drawSprite(context, node.icon, rotatedPos, active);
         if (active) {
           drawSprite(context, 'NotableFrameAllocated', rotatedPos, false);
         } else {
@@ -320,10 +313,10 @@
           }
         }
       } else if (node.isMastery) {
-        drawSprite(context, node.inactiveIcon ?? '', rotatedPos, active);
+        drawSprite(context, node.inactiveIcon, rotatedPos, active);
       } else {
         touchDistance = 50;
-        drawSprite(context, node.icon ?? '', rotatedPos, active);
+        drawSprite(context, node.icon, rotatedPos, active);
         if (active) {
           drawSprite(context, 'PSSkillFrameActive', rotatedPos, false);
         } else {
@@ -331,7 +324,7 @@
         }
       }
 
-      if (highlighted.indexOf(node.skill ?? -1) >= 0 || (highlightJewels && node.isJewelSocket)) {
+      if (highlighted.indexOf(node.skill) >= 0 || (highlightJewels && node.isJewelSocket)) {
         context.strokeStyle = `hsl(${$slowTime}, 100%, 50%)`;
         context.lineWidth = 3;
         context.beginPath();
@@ -347,7 +340,7 @@
 
     hoveredNode = newHoverNode;
 
-    if (circledNode && circledNodePos) {
+    if (circledNode) {
       context.strokeStyle = '#ad2b2b';
       context.lineWidth = 1;
       context.beginPath();
@@ -356,67 +349,59 @@
     }
 
     if (hoveredNode) {
-      let nodeName = hoveredNode.name ?? '';
+      let nodeName = hoveredNode.name ?? 'Node name';
       let nodeStats: { text: string; special: boolean }[] = (hoveredNode.stats || []).map((s) => ({
         text: s,
         special: false
       }));
 
       if (!hoveredNode.isJewelSocket && hoveredNodeActive) {
-        if (
-          hoveredNode.skill !== undefined &&
-          data?.TreeToPassive &&
-          data.TreeToPassive[hoveredNode.skill] !== undefined &&
-          seed &&
-          selectedJewel &&
-          selectedConqueror
-        ) {
-          const treePassive = data.TreeToPassive[hoveredNode.skill];
-          if (treePassive && treePassive.Index !== undefined) {
-            const result = calculator.Calculate(
-              treePassive.Index,
-              seed,
-              selectedJewel,
-              selectedConqueror
-            );
+        if (hoveredNode.skill && seed && selectedJewel && selectedConqueror) {
+          const result = calculator.Calculate(
+            data.TreeToPassive[hoveredNode.skill].Index,
+            seed,
+            selectedJewel,
+            selectedConqueror
+          );
 
-            if (result) {
-              if ('AlternatePassiveSkill' in result && result.AlternatePassiveSkill) {
-                nodeStats = [];
-                nodeName = result.AlternatePassiveSkill.Name ?? '';
+          if (result) {
+            if ('AlternatePassiveSkill' in result && result.AlternatePassiveSkill) {
+              nodeStats = [];
+              nodeName = result.AlternatePassiveSkill.Name ?? 'Alternative Node';
 
-                if (result.AlternatePassiveSkill.StatsKeys) {
-                  result.AlternatePassiveSkill.StatsKeys.forEach((statId: number, i: number) => {
+              if (result.AlternatePassiveSkill.StatsKeys) {
+                result.AlternatePassiveSkill.StatsKeys.forEach((statId, i) => {
+                  const stat = data.GetStatByIndex(statId);
+                  if (!stat) return;
+                  const translation = inverseTranslations[stat.ID] || '';
+                  if (translation && result.StatRolls && result.StatRolls[i] !== undefined) {
+                    nodeStats.push({
+                      text: formatStats(translation, result.StatRolls[i]) || stat.ID,
+                      special: true
+                    });
+                  }
+                });
+              }
+            }
+
+            if (result.AlternatePassiveAdditionInformations) {
+              result.AlternatePassiveAdditionInformations.forEach((info) => {
+                //if (info.AlternatePassiveAddition && info.AlternatePassiveAddition.StatsKeys) {
+                if ('StatsKeys' in info.AlternatePassiveAddition) {
+                  info.AlternatePassiveAddition.StatsKeys.forEach((statId, i) => {
                     const stat = data.GetStatByIndex(statId);
                     if (!stat) return;
                     const translation = inverseTranslations[stat.ID] || '';
-                    if (translation && result.StatRolls && result.StatRolls[i] !== undefined) {
+                    //if (translation && info.StatRolls && info.StatRolls[i] !== undefined) {
+                    if (translation) {
                       nodeStats.push({
-                        text: formatStats(translation, result.StatRolls[i]) || stat.ID,
+                        text: formatStats(translation, info.StatRolls[i]) || stat.ID,
                         special: true
                       });
                     }
                   });
                 }
-              }
-
-              if (result.AlternatePassiveAdditionInformations) {
-                result.AlternatePassiveAdditionInformations.forEach((info: { AlternatePassiveAddition?: { StatsKeys?: number[] }, StatRolls?: number[] }) => {
-                  if (info.AlternatePassiveAddition && info.AlternatePassiveAddition.StatsKeys) {
-                    info.AlternatePassiveAddition.StatsKeys.forEach((statId: number, i: number) => {
-                      const stat = data.GetStatByIndex(statId);
-                      if (!stat) return;
-                      const translation = inverseTranslations[stat.ID] || '';
-                      if (translation && info.StatRolls && info.StatRolls[i] !== undefined) {
-                        nodeStats.push({
-                          text: formatStats(translation, info.StatRolls[i]) || stat.ID,
-                          special: true
-                        });
-                      }
-                    });
-                  }
-                });
-              }
+              });
             }
           }
         }
@@ -510,7 +495,7 @@
     const end = window.performance.now();
 
     context.fillText(`${(end - start).toFixed(1)}ms`, width - 5, 17);
-  }) as RenderFunc;
+  }) as RenderFunc);
 
   let downX = 0;
   let downY = 0;
@@ -579,43 +564,31 @@
     event.stopImmediatePropagation();
   };
 
-  let width = 0;
-  let height = 0;
+  let width = $state(0);
+  let height = $state(0);
   const resize = () => {
     width = window.innerWidth;
     height = window.innerHeight;
   };
 
-  let initialized = false;
-  $: {
+  let initialized = $state(false);
+  run(() => {
     if (!initialized && skillTree) {
       initialized = true;
       offsetX = skillTree.min_x + (window.innerWidth / 2) * scaling;
       offsetY = skillTree.min_y + (window.innerHeight / 2) * scaling;
     }
     resize();
-  }
-
-  // Canvas expects CustomEvent, so wrap handlers
-  function handlePointerDown(e: CustomEvent) {
-    if (e.detail && e.detail.originalEvent) {
-      mouseDown(e.detail.originalEvent);
-    }
-  }
-  function handleWheel(e: CustomEvent) {
-    if (e.detail && e.detail.originalEvent) {
-      onScroll(e.detail.originalEvent);
-    }
-  }
+  });
 </script>
 
-<svelte:window on:pointerup={mouseUp} on:pointermove={mouseMove} on:resize={resize} />
+<svelte:window onpointerup={mouseUp} onpointermove={mouseMove} onresize={resize} />
 
 {#if width && height}
-  <div on:resize={resize} style="touch-action: none; cursor: {cursor}">
-    <Canvas {width} {height} on:pointerdown={handlePointerDown} on:wheel={handleWheel}>
+  <div onresize={resize} style="touch-action: none; cursor: {cursor}">
+    <Canvas {width} {height} on:pointerdown={mouseDown} on:wheel={onScroll}>
       <Layer {render} />
     </Canvas>
-    <slot></slot>
+    {@render children?.()}
   </div>
 {/if}
