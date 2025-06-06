@@ -199,10 +199,7 @@
   }
 
   function sanitize(html: string): string {
-//    // Very basic sanitizer: strips script/style tags and on* attributes
-//    return html.replace(/<script.*?>.*?<\/script>/gi, '')
-//               .replace(/<style.*?>.*?<\/style>/gi, '')
-//               .replace(/on\w+="[^"]*"/gi, '');
+    return '';//Temporary code until migrate 
   }
 
   //const allPossibleStats: { [key: string]: { [key: string]: number } } = data?.PossibleStats ? JSON.parse(data.PossibleStats) : {};
