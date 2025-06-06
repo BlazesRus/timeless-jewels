@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
 // Declare browser globals for TypeScript
  
   import { browser } from '$app/environment';
@@ -21,16 +23,16 @@
     label: timelessJewels[Number(k)]
   }));
 
-  let selectedJewel = (searchParams.has('jewel') && jewels.find((j) => j.value === Number(searchParams.get('jewel')))) || undefined;
+  let selectedJewel = $state((searchParams.has('jewel') && jewels.find((j) => j.value === Number(searchParams.get('jewel')))) || undefined);
 
-  $: conquerors = selectedJewel && timelessJewelConquerors[selectedJewel.value]
+  let conquerors = $derived(selectedJewel && timelessJewelConquerors[selectedJewel.value]
     ? Object.keys(timelessJewelConquerors[selectedJewel.value] ?? {}).map((k) => ({
         value: k,
         label: k
       }))
-    : [];
+    : []);
 
-  let selectedConqueror = (searchParams.has('conqueror') && conquerors.find((c) => c.value === searchParams.get('conqueror'))) || undefined;
+  let selectedConqueror = $state((searchParams.has('conqueror') && conquerors.find((c) => c.value === searchParams.get('conqueror'))) || undefined);
 
   const passiveSkills = passiveSkillsArr
     .filter((passive): passive is NonNullable<typeof passive> => !!passive)
@@ -39,13 +41,13 @@
       label: `${passive.Name} (${passive.ID})`
     }));
 
-  let selectedPassiveSkill: { label: string; value: number } | undefined = (searchParams.has('passive_skill') && passiveSkills.find((j) => j.value === Number(searchParams.get('passive_skill')))) || undefined;
+  let selectedPassiveSkill: { label: string; value: number } | undefined = $state((searchParams.has('passive_skill') && passiveSkills.find((j) => j.value === Number(searchParams.get('passive_skill')))) || undefined);
 
-  let seed: number = searchParams.has('seed') ? Number(searchParams.get('seed')) : 0;
+  let seed: number = $state(searchParams.has('seed') ? Number(searchParams.get('seed')) : 0);
 
-  let result: undefined | data.AlternatePassiveSkillInformation;
+  let result: undefined | data.AlternatePassiveSkillInformation = $state();
 
-  $: {
+  run(() => {
     if (selectedPassiveSkill && seed && selectedJewel && selectedConqueror) {
       result = calculator.Calculate(
         selectedPassiveSkill.value,
@@ -54,7 +56,7 @@
         selectedConqueror.value
       );
     }
-  }
+  });
 
   const updateUrl = () => {
     if (browser) {
@@ -105,7 +107,7 @@
                   type="number"
                   bind:value={seed}
                   class="seed"
-                  on:blur={updateUrl}
+                  onblur={updateUrl}
                   min={selectedJewel && timelessJewelSeedRanges[selectedJewel.value]?.Min}
                   max={selectedJewel && timelessJewelSeedRanges[selectedJewel.value]?.Max} />
                 {#if selectedJewel && (seed < (timelessJewelSeedRanges[selectedJewel.value]?.Min ?? -Infinity) || seed > (timelessJewelSeedRanges[selectedJewel.value]?.Max ?? Infinity))}

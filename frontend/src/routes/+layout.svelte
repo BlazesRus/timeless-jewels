@@ -9,8 +9,13 @@
   import { loadSkillTree } from '../lib/skill_tree';
   import { syncWrap } from '../lib/worker';
   import { initializeCrystalline } from '../lib/types';
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
 
-  let wasmLoading = true;
+  let { children }: Props = $props();
+
+  let wasmLoading = $state(true);
 
   let go: { importObject: Record<string, unknown>; run: (instance: WebAssembly.Instance) => void } | undefined;
   let GoConstructor: { new(): { importObject: Record<string, unknown>; run: (instance: WebAssembly.Instance) => void } } | undefined;
@@ -57,5 +62,5 @@
     </div>
   </div>
 {:else}
-  <slot />
+  {@render children?.()}
 {/if}

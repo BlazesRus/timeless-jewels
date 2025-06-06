@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: `<script>` was left open
+https://svelte.dev/e/element_unclosed -->
 <script lang="ts">
 // Declare browser globals for TypeScript and ESLint
 /* global window localStorage URL CustomEvent ClipboardEvent Window DataTransfer */
@@ -323,6 +325,7 @@
   function getColorKeySafe(key: string) {
     return (colorKeys as Record<string, string>)[key] || '#fff';
   }
+
   function getTimelessJewelSeedRange(jewel: number) {
     return timelessJewelSeedRanges && timelessJewelSeedRanges[jewel] ? timelessJewelSeedRanges[jewel] : { Min: 0, Max: 0 };
   }
@@ -576,8 +579,7 @@
               <Select items={dropdownConqs} bind:value={dropdownConqueror} on:change={updateUrl} />
             </div>
 
-            {#if selectedConqueror &&
-              selectedJewel &&
+            {#if selectedConqueror && selectedJewel &&
               timelessJewelConquerors[selectedJewel.value] &&
               Object.keys(timelessJewelConquerors[selectedJewel.value] ?? {}).indexOf(selectedConqueror.value ?? '') >= 0}
               <div class="mt-4 w-full flex flex-row">

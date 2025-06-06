@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: can't migrate `$: jewelRadius = baseJewelRadius / scaling;` to `$derived` because there's a variable named derived.
+     Rename the variable and try again or migrate by hand. -->
 <script lang="ts">
   // @ts-nocheck Heavy DOM usage, so we disable type checking for this file
    
@@ -288,7 +290,7 @@
 
       if (node.isKeystone) {
         touchDistance = 110;
-        drawSprite(context, node.icon ?? '', rotatedPos, active);
+        drawSprite(context, node.icon ?? 'PSGroupBackground1', rotatedPos, active);
         if (active) {
           drawSprite(context, 'KeystoneFrameAllocated', rotatedPos, false);
         } else {
@@ -296,7 +298,7 @@
         }
       } else if (node.isNotable) {
         touchDistance = 70;
-        drawSprite(context, node.icon ?? '', rotatedPos, active);
+        drawSprite(context, node.icon ?? 'PSGroupBackground1', rotatedPos, active);
         if (active) {
           drawSprite(context, 'NotableFrameAllocated', rotatedPos, false);
         } else {
