@@ -17,6 +17,11 @@ const config = {
     }),
     paths: {
       base: '/timeless-jewels'
+    },
+    alias: {
+      $lib: 'src/lib',
+      $app: '.svelte-kit/types/app',
+      $routes: 'src/routes'
     }
   }
 };
