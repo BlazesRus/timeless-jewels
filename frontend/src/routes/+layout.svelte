@@ -6,8 +6,13 @@
   import { loadSkillTree } from '../lib/skill_tree';
   import { syncWrap } from '../lib/worker';
   import { initializeCrystalline } from '../lib/types';
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
 
-  let wasmLoading = true;
+  let { children }: Props = $props();
+
+  let wasmLoading = $state(true);
 
   // eslint-disable-next-line no-undef
   const go = new Go();
@@ -42,5 +47,5 @@
     </div>
   </div>
 {:else}
-  <slot />
+  {@render children?.()}
 {/if}
