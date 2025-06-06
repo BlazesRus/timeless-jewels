@@ -1,14 +1,25 @@
+<!-- @migration-task Error while migrating Svelte code: Cannot use `export let` in runes mode — use `$props()` instead
+https://svelte.dev/e/legacy_export_invalid -->
 <script lang="ts">
   import type { SearchResults, SearchWithSeed } from '../skill_tree';
   import SearchResult from './SearchResult.svelte';
   import VirtualList from 'svelte-tiny-virtual-list';
 
-  // Remove interface Props and $props usage, use Svelte export let
-  export let searchResults: SearchResults;
-  export let highlight: (newSeed: number, passives: number[]) => void;
-  export let groupResults: boolean = true;
-  export let jewel: number;
-  export let conqueror: string;
+  // Use $props() for runes mode compatibility
+  interface Props {
+    searchResults: SearchResults;
+    highlight: (newSeed: number, passives: number[]) => void;
+    groupResults?: boolean;
+    jewel: number;
+    conqueror: string;
+  }
+  let {
+    searchResults,
+    highlight,
+    groupResults = true,
+    jewel,
+    conqueror
+  }: Props = $props();
 
   const computeSize = (r: SearchWithSeed) =>
     8 + 48 + r.skills.reduce((o, s) => o + 32 + Object.keys(s.stats).length * 24, 0);

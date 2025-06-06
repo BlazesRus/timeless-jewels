@@ -1,10 +1,13 @@
 <script lang="ts">
   import { run } from 'svelte/legacy';
-
   import { openQueryTrade, type Query } from '$lib/utils/trade_utils';
 
-  export let queries: Query[];
-  export let showTradeLinks: boolean;
+  // Use $props() for runes mode compatibility
+  interface Props {
+    queries: Query[];
+    showTradeLinks: boolean;
+  }
+  let { queries, showTradeLinks }: Props = $props();
 
   run(() => {
     console.log(showTradeLinks);
@@ -14,10 +17,8 @@
 
   const handleOnClick = () => {
     if (queries.length === 1) {
-      // if all filter fit into a single query, link straight to trade website
       openQueryTrade(queries[0]);
     } else if (hasMultipleQueries) {
-      // otherwise toggle display of batched trade links
       showTradeLinks = !showTradeLinks;
     }
   };

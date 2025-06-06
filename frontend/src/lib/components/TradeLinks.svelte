@@ -1,8 +1,11 @@
 <script lang="ts">
   import { openQueryTrade, type Query } from '$lib/utils/trade_utils';
 
-  // queries to display trade link buttons for
-  export let queries: Query[];
+  // Use $props() for runes mode compatibility
+  interface Props {
+    queries: Query[];
+  }
+  let { queries }: Props = $props();
 </script>
 
 <div class="flex flex-wrap gap-2.5 my-2">
