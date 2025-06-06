@@ -7,7 +7,7 @@ import { calculator, initializeCrystalline } from './types';
 const obj = {
   boot(wasm: ArrayBuffer) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+  
     const go = new Go();
     WebAssembly.instantiate(wasm, go.importObject).then((result) => {
       go.run(result.instance);

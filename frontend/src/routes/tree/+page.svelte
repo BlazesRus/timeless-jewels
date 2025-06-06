@@ -1,23 +1,23 @@
 <script lang="ts">
-  // @ts-ignore
-  import SkillTree from '../../lib/components/SkillTree.svelte';
+
+  import SkillTree from '$lib/components/SkillTree.svelte';
   import Select from 'svelte-select';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import type { Node } from '../../lib/skill_tree_types';
-  import { getAffectedNodes, skillTree, translateStat, constructQueries } from '../../lib/skill_tree';
-  import { syncWrap } from '../../lib/worker';
+  import type { Node } from '$lib/skill_tree_types';
+  import { getAffectedNodes, skillTree, translateStat, constructQueries } from '$lib/skill_tree';
+  import { syncWrap } from '$lib/worker';
   import { proxy } from 'comlink';
-  import type { Query } from '../../lib/utils/trade_utils';
-  import type { ReverseSearchConfig, StatConfig } from '../../lib/skill_tree';
-  // @ts-ignore
-  import SearchResults from '../../lib/components/SearchResults.svelte';
-  import { statValues } from '../../lib/values';
-  import { data, calculator } from '../../lib/types';
-  // @ts-ignore
-  import TradeButton from '../../lib/components/TradeButton.svelte';
-  // @ts-ignore
-  import TradeLinks from '../../lib/components/TradeLinks.svelte';
+  import type { Query } from '$lib/utils/trade_utils';
+  import type { ReverseSearchConfig, StatConfig } from '$lib/skill_tree';
+
+  import SearchResults from '$lib/components/SearchResults.svelte';
+  import { statValues } from '$lib/values';
+  import { data, calculator } from '$lib/types';
+
+  import TradeButton from '$lib/components/TradeButton.svelte';
+
+  import TradeLinks from '$lib/components/TradeLinks.svelte';
 
   // --- REACTIVE STATE ---
   $: searchParams = $page.url.searchParams;
