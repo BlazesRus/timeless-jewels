@@ -199,10 +199,10 @@
   }
 
   function sanitize(html: string): string {
-    // Very basic sanitizer: strips script/style tags and on* attributes
-    return html.replace(/<script.*?>.*?<\/script>/gi, '')
-               .replace(/<style.*?>.*?<\/style>/gi, '')
-               .replace(/on\w+="[^"]*"/gi, '');
+//    // Very basic sanitizer: strips script/style tags and on* attributes
+//    return html.replace(/<script.*?>.*?<\/script>/gi, '')
+//               .replace(/<style.*?>.*?<\/style>/gi, '')
+//               .replace(/on\w+="[^"]*"/gi, '');
   }
 
   //const allPossibleStats: { [key: string]: { [key: string]: number } } = data?.PossibleStats ? JSON.parse(data.PossibleStats) : {};
@@ -589,6 +589,7 @@
       showTradeLinks = false;
     }
   }
+
 </script>
 
 <svelte:window on:paste={onPaste} />
