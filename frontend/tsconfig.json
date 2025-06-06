@@ -8,13 +8,8 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true,
-    "strict": true
+    "strict": true,
+    "types": ["svelte"]
   },
-  "include": ["src/**/*.d.ts"],
-  "compilerOptions": {
-    "types": ["svelte"],
-    "paths": {
-      "$app/*": [".svelte-kit/types/app/*"]
-    }
-  }
+  "include": ["src/**/*.d.ts"]
 }

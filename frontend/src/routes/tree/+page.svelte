@@ -1,5 +1,3 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   // @ts-ignore
   import SkillTree from '../../lib/components/SkillTree.svelte';
@@ -10,7 +8,8 @@ https://svelte.dev/e/js_parse_error -->
   import { getAffectedNodes, skillTree, translateStat, constructQueries } from '../../lib/skill_tree';
   import { syncWrap } from '../../lib/worker';
   import { proxy } from 'comlink';
-  import type { Query, ReverseSearchConfig, StatConfig } from '../../lib/skill_tree';
+  import type { Query } from '../../lib/utils/trade_utils';
+  import type { ReverseSearchConfig, StatConfig } from '../../lib/skill_tree';
   // @ts-ignore
   import SearchResults from '../../lib/components/SearchResults.svelte';
   import { statValues } from '../../lib/values';
@@ -20,84 +19,18 @@ https://svelte.dev/e/js_parse_error -->
   // @ts-ignore
   import TradeLinks from '../../lib/components/TradeLinks.svelte';
 
-  // Remove invalid top-level assignment
-  // const searchParams = $page.url.searchParams;
-
-  // Add reactive statement for searchParams
+  // --- REACTIVE STATE ---
   $: searchParams = $page.url.searchParams;
-
-  // Defensive: fallback to empty object if undefined
-  //const timelessJewels = data?.TimelessJewels ?? {};
-  //const timelessJewelConquerors = data?.TimelessJewelConquerors ?? {};
-  //const timelessJewelSeedRanges = data?.TimelessJewelSeedRanges ?? {};
-  //const treeToPassive = data?.TreeToPassive ?? {};
-
-  //const jewels = Object.keys(timelessJewels).map((k) => ({
-  //  value: Number(k),
-  //  label: timelessJewels[Number(k)]
-  //}));
-  const jewels = Object.keys(data.TimelessJewels).map((k) => ({
-    value: parseInt(k),
-    label: data.TimelessJewels[k]
-  }));
-
-  //let selectedJewel = (searchParams.has('jewel') && jewels.find((j) => j.value === Number(searchParams.get('jewel')))) || undefined;
-  let selectedJewel = searchParams.has('jewel') ? jewels.find((j) => j.value == searchParams.get('jewel')) : undefined;
-
-  // Reactive: selectedJewel depends on searchParams and jewels
+  $: jewels = Object.keys(data.TimelessJewels).map((k) => ({ value: parseInt(k), label: data.TimelessJewels[k] }));
   $: selectedJewel = searchParams.has('jewel') ? jewels.find((j) => j.value == searchParams.get('jewel')) : undefined;
-
-  // Reactive: conquerors and dropdownConqs depend on selectedJewel
-  $: conquerors = selectedJewel
-    ? Object.keys(data.TimelessJewelConquerors[selectedJewel.value]).map((k) => ({
-        value: k,
-        label: k
-      }))
-    : [];
+  $: conquerors = selectedJewel ? Object.keys(data.TimelessJewelConquerors[selectedJewel.value]).map((k) => ({ value: k, label: k })) : [];
   $: dropdownConqs = conquerors.concat([{ value: 'Any', label: 'Any' }]);
-
-  let dropdownConqueror = searchParams.has('conqueror')
-    ? {
-        value: searchParams.get('conqueror'),
-        label: searchParams.get('conqueror')
-      }
-    : undefined;
-
-  // Reactive: dropdownConqueror depends on searchParams
-  $: dropdownConqueror = searchParams.has('conqueror')
-    ? {
-        value: searchParams.get('conqueror'),
-        label: searchParams.get('conqueror')
-      }
-    : undefined;
-
-  // Reactive: anyConqueror and selectedConqueror
+  $: dropdownConqueror = searchParams.has('conqueror') ? { value: searchParams.get('conqueror'), label: searchParams.get('conqueror') } : undefined;
   $: anyConqueror = dropdownConqueror?.value === 'Any';
   $: selectedConqueror = dropdownConqueror?.value === 'Any' ? conquerors[0] : dropdownConqueror;
-
-  let seed: number = searchParams.has('seed') ? parseInt(searchParams.get('seed')) : 0;
-
-  //Trying to reduce need to check location twice while still staying preventing parsing null
-  function getCircledNode(): number | undefined {
-    if (searchParams.has('location')) {
-      const nodeLoc = searchParams.get('location');
-      if (nodeLoc) return parseInt(nodeLoc);
-      else return undefined;
-    }
-    return undefined;
-  }
-
-  //let circledNode: number | undefined = getCircledNode();
-  let circledNode: number | undefined = searchParams.has('location')
-    ? parseInt(searchParams.get('location'))
-    : undefined;
-
-  // Reactive: circledNode depends on searchParams
+  $: seed = searchParams.has('seed') ? parseInt(searchParams.get('seed')) : 0;
   $: circledNode = searchParams.has('location') ? parseInt(searchParams.get('location')) : undefined;
-
-  $: affectedNodes = circledNode
-    ? getAffectedNodes(skillTree.nodes[circledNode]).filter((n) => !n.isJewelSocket && !n.isMastery)
-    : [];
+  $: affectedNodes = circledNode ? getAffectedNodes(skillTree.nodes[circledNode]).filter((n) => !n.isJewelSocket && !n.isMastery) : [];
 
   // Fix usages in affectedNodes/seedResults mapping
   // Fix: ensure getTreeToPassive only called with defined skill

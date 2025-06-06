@@ -4,6 +4,7 @@ https://svelte.dev/e/legacy_export_invalid -->
   import type { SearchResults, SearchWithSeed } from '../skill_tree';
   import SearchResult from './SearchResult.svelte';
   import VirtualList from 'svelte-tiny-virtual-list';
+  import type { Query } from '../utils/trade_utils';
 
   // Use $props() for runes mode compatibility
   interface Props {
