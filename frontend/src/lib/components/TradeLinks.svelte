@@ -2,11 +2,7 @@
   import { openQueryTrade, type Query } from '$lib/utils/trade_utils';
 
   // queries to display trade link buttons for
-  interface Props {
-    queries: Query[];
-  }
-
-  let { queries }: Props = $props();
+  export let queries: Query[];
 </script>
 
 <div class="flex flex-wrap gap-2.5 my-2">

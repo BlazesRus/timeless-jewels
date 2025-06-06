@@ -3,21 +3,12 @@
   import SearchResult from './SearchResult.svelte';
   import VirtualList from 'svelte-tiny-virtual-list';
 
-  interface Props {
-    searchResults: SearchResults;
-    highlight: (newSeed: number, passives: number[]) => void;
-    groupResults?: boolean;
-    jewel: number;
-    conqueror: string;
-  }
-
-  let {
-    searchResults,
-    highlight,
-    groupResults = true,
-    jewel,
-    conqueror
-  }: Props = $props();
+  // Remove interface Props and $props usage, use Svelte export let
+  export let searchResults: SearchResults;
+  export let highlight: (newSeed: number, passives: number[]) => void;
+  export let groupResults: boolean = true;
+  export let jewel: number;
+  export let conqueror: string;
 
   const computeSize = (r: SearchWithSeed) =>
     8 + 48 + r.skills.reduce((o, s) => o + 32 + Object.keys(s.stats).length * 24, 0);

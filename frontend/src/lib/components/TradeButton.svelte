@@ -3,12 +3,8 @@
 
   import { openQueryTrade, type Query } from '$lib/utils/trade_utils';
 
-  interface Props {
-    queries: Query[];
-    showTradeLinks?: boolean;
-  }
-
-  let { queries, showTradeLinks = $bindable(false) }: Props = $props();
+  export let queries: Query[];
+  export let showTradeLinks: boolean;
 
   run(() => {
     console.log(showTradeLinks);

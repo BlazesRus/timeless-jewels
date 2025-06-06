@@ -475,3 +475,5 @@ export const constructQueries = (jewel: number, conqueror: string | null, result
 
   return tradeQueries;
 };
+
+export type { Query, ReverseSearchConfig, StatConfig };

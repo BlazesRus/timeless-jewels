@@ -1,4 +1,7 @@
+<!-- @migration-task Error while migrating Svelte code: Unexpected token
+https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
+  // @ts-ignore
   import SkillTree from '../../lib/components/SkillTree.svelte';
   import Select from 'svelte-select';
   import { page } from '$app/stores';
@@ -8,13 +11,20 @@
   import { syncWrap } from '../../lib/worker';
   import { proxy } from 'comlink';
   import type { Query, ReverseSearchConfig, StatConfig } from '../../lib/skill_tree';
+  // @ts-ignore
   import SearchResults from '../../lib/components/SearchResults.svelte';
   import { statValues } from '../../lib/values';
   import { data, calculator } from '../../lib/types';
-  import TradeButton from '$lib/components/TradeButton.svelte';
-  import TradeLinks from '$lib/components/TradeLinks.svelte';
+  // @ts-ignore
+  import TradeButton from '../../lib/components/TradeButton.svelte';
+  // @ts-ignore
+  import TradeLinks from '../../lib/components/TradeLinks.svelte';
 
-  const searchParams = $page.url.searchParams;
+  // Remove invalid top-level assignment
+  // const searchParams = $page.url.searchParams;
+
+  // Add reactive statement for searchParams
+  $: searchParams = $page.url.searchParams;
 
   // Defensive: fallback to empty object if undefined
   //const timelessJewels = data?.TimelessJewels ?? {};
@@ -34,13 +44,16 @@
   //let selectedJewel = (searchParams.has('jewel') && jewels.find((j) => j.value === Number(searchParams.get('jewel')))) || undefined;
   let selectedJewel = searchParams.has('jewel') ? jewels.find((j) => j.value == searchParams.get('jewel')) : undefined;
 
+  // Reactive: selectedJewel depends on searchParams and jewels
+  $: selectedJewel = searchParams.has('jewel') ? jewels.find((j) => j.value == searchParams.get('jewel')) : undefined;
+
+  // Reactive: conquerors and dropdownConqs depend on selectedJewel
   $: conquerors = selectedJewel
     ? Object.keys(data.TimelessJewelConquerors[selectedJewel.value]).map((k) => ({
         value: k,
         label: k
       }))
     : [];
-
   $: dropdownConqs = conquerors.concat([{ value: 'Any', label: 'Any' }]);
 
   let dropdownConqueror = searchParams.has('conqueror')
@@ -50,29 +63,37 @@
       }
     : undefined;
 
-  $: anyConqueror = dropdownConqueror?.value === 'Any';
+  // Reactive: dropdownConqueror depends on searchParams
+  $: dropdownConqueror = searchParams.has('conqueror')
+    ? {
+        value: searchParams.get('conqueror'),
+        label: searchParams.get('conqueror')
+      }
+    : undefined;
 
+  // Reactive: anyConqueror and selectedConqueror
+  $: anyConqueror = dropdownConqueror?.value === 'Any';
   $: selectedConqueror = dropdownConqueror?.value === 'Any' ? conquerors[0] : dropdownConqueror;
 
   let seed: number = searchParams.has('seed') ? parseInt(searchParams.get('seed')) : 0;
 
   //Trying to reduce need to check location twice while still staying preventing parsing null
   function getCircledNode(): number | undefined {
-    if(searchParams.has('location'))
-    {
-        nodeLoc = searchParams.get('location')
-        if(nodeLoc)
-            return parseInt(nodeLoc)
-        else
-            return undefined
+    if (searchParams.has('location')) {
+      const nodeLoc = searchParams.get('location');
+      if (nodeLoc) return parseInt(nodeLoc);
+      else return undefined;
     }
-    return undefined
+    return undefined;
   }
 
   //let circledNode: number | undefined = getCircledNode();
   let circledNode: number | undefined = searchParams.has('location')
     ? parseInt(searchParams.get('location'))
     : undefined;
+
+  // Reactive: circledNode depends on searchParams
+  $: circledNode = searchParams.has('location') ? parseInt(searchParams.get('location')) : undefined;
 
   $: affectedNodes = circledNode
     ? getAffectedNodes(skillTree.nodes[circledNode]).filter((n) => !n.isJewelSocket && !n.isMastery)
@@ -82,7 +103,7 @@
   // Fix: ensure getTreeToPassive only called with defined skill
   function getTreeToPassiveSafe(skill: number | undefined) {
     if (typeof skill !== 'number') return undefined;
-    return treeToPassive && typeof treeToPassive[skill] !== 'undefined' ? treeToPassive[skill] : undefined;
+    return data.TreeToPassive && typeof data.TreeToPassive[skill] !== 'undefined' ? data.TreeToPassive[skill] : undefined;
   }
 
   // Fix: remove type predicate in .filter, just use .filter(Boolean) and cast as needed
@@ -143,22 +164,17 @@
   let mode = searchParams.has('mode') ? searchParams.get('mode') : '';
 
   const updateUrl = () => {
-    if (!_window) return;//if (!_window || !_URL) return;
-    //const url = new _URL(_window.location.origin + _window.location.pathname);
+    if (!window) return;
     const url = new URL(window.location.origin + window.location.pathname);
-    //if (dropdownConqueror && dropdownConqueror.value !== undefined && dropdownConqueror.value !== null && dropdownConqueror.value !== '')
-    if(selectedJewel)
-      //url.searchParams.append('conqueror', String(dropdownConqueror.value));
+    if (selectedJewel)
       url.searchParams.append('jewel', selectedJewel.value.toString());
-    if(dropdownConqueror)
+    if (dropdownConqueror)
       url.searchParams.append('conqueror', dropdownConqueror.value);
-    //else
-    //  url.searchParams.append('conqueror', "Any");
     if (typeof seed === 'number' && !isNaN(seed))
       url.searchParams.append('seed', seed.toString());
     if (circledNode !== undefined && circledNode !== null)
       url.searchParams.append('location', circledNode.toString());
-    if(mode)//&& mode !== '')
+    if (mode)
       url.searchParams.append('mode', mode);
 
     Object.keys(selectedStats).forEach((s) => {
@@ -221,7 +237,8 @@
     selectedStats[stat.detail.value] = {
       weight: 1,
       min: 0,
-      id: stat.detail.value
+      id: stat.detail.value,
+      minStatTotal: 0
     };
     selectedStats = selectedStats;
     statSelector.handleClear();
@@ -284,11 +301,10 @@
     syncWrap
       .search(
         query,
-        //proxy((s: number) => {
-        //  currentSeed = s;
-        //  return Promise.resolve();
-        //})
-        proxy((s) => (currentSeed = s))
+        proxy((s) => {
+          currentSeed = s;
+          return Promise.resolve();
+        })
       )
       .then((result) => {
         searchResults = result;
@@ -369,7 +385,7 @@
   }
 
   function getTimelessJewelSeedRange(jewel: number) {
-    return timelessJewelSeedRanges && timelessJewelSeedRanges[jewel] ? timelessJewelSeedRanges[jewel] : { Min: 0, Max: 0 };
+    return data.TimelessJewelSeedRanges && data.TimelessJewelSeedRanges[jewel] ? data.TimelessJewelSeedRanges[jewel] : { Min: 0, Max: 0 };
   }
 
   const colorMessage = (message: string): string => {
@@ -387,7 +403,7 @@
     }
 
     function getTimelessJewelSeedRange(jewel: number) {
-      return timelessJewelSeedRanges && timelessJewelSeedRanges[jewel] ? timelessJewelSeedRanges[jewel] : { Min: 0, Max: 0 };
+      return data.TimelessJewelSeedRanges && data.TimelessJewelSeedRanges[jewel] ? data.TimelessJewelSeedRanges[jewel] : { Min: 0, Max: 0 };
     }
 
     // Fix: colorKeys[key] error by using getColorKeySafe
@@ -526,8 +542,7 @@
   // Defensive: fix ClipboardEvent and matches null check
   const onPaste = (event: ClipboardEvent) => {
     if (event.type !== 'paste') return;
-    //const paste = (event.clipboardData || (_window && (_window as Window & { clipboardData?: DataTransfer }).clipboardData))?.getData('text');
-    const paste = (event.clipboardData || window.clipboardData).getData('text');
+    const paste = event.clipboardData?.getData('text');
     if (!paste) return;
     const lines = paste.split('\n');
 
@@ -543,14 +558,10 @@
     let newSeed: number | undefined;
     let conqueror: string | undefined;
     for (let i = 10; i < lines.length; i++) {
-      // Fix: use Object.keys(timelessJewelConquerors[jewel.value] ?? {}) for conquerorKeys
-      //const conquerorKeys = Object.keys(timelessJewelConquerors[jewel.value] ?? {});
-      //conqueror = conquerorKeys.find((k) => lines[i].indexOf(k) >= 0);
       conqueror = Object.keys(data.TimelessJewelConquerors[jewel.value]).find((k) => lines[i].indexOf(k) >= 0);
       if (conqueror) {
         const matches = /(\d+)/.exec(lines[i]);
-        //if (!matches || matches.length === 0) {
-        if (matches.length === 0) {
+        if (!matches || matches.length === 0) {
           continue;
         }
 
