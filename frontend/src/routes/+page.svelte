@@ -6,7 +6,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import { assets, base } from '$app/paths';
-  import { calculator, data } from '../lib/types';
+  import { calculator, data } from '$lib/types';
   import Select from 'svelte-select';
 
   const searchParams = page.url.searchParams;
