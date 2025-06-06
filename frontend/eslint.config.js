@@ -70,6 +70,7 @@ export default [
       parser: svelteParser, // Set the Svelte parser
       parserOptions: {
         parser: '@typescript-eslint/parser', // Use the TypeScript parser
+        //project: './tsconfig02.json', // Specify your tsconfig.json file
         svelteFeatures: {
           // Enable features specific to Svelte 5
           experimentalGenerics: true // Optional: If using generics
@@ -109,6 +110,7 @@ export default [
       parser: svelteParser, // Set the Svelte parser
       parserOptions: {
         parser: '@typescript-eslint/parser', // Use the TypeScript parser
+        //project: './tsconfig02.json', // Specify your tsconfig.json file
         svelteFeatures: {
           // Enable features specific to Svelte 5
           experimentalGenerics: true // Optional: If using generics
