@@ -32,7 +32,21 @@ export default [
     '**/tsconfig.tsbuildinfo'
   ]),
   {
-    ignores: ['**/postcss.config.js', '**/tsconfig.tsbuildinfo'],
+    root: true,
+    ignores: ['**/postcss.config.js', '**/tsconfig.tsbuildinfo', '*.config.js', 'wasm_exec.js'],
+    parserOptions: {
+      sourceType: 'module',
+      ecmaVersion: 2020
+    },
+    //settings: {
+    //  'svelte3/typescript': () => require('typescript'),
+    //  'svelte3/ignore-warnings': ({ code }) => code === 'missing-declaration'
+    //},
+    env: {
+      browser: true,
+      es2020: true,
+      node: true
+    },
     rules: {
       //semi: ['warn', 'always'],
       //quotes: ['warn', 'single', { avoidEscape: true, allowTemplateLiterals: true }],
@@ -56,6 +70,7 @@ export default [
       parser: svelteParser, // Set the Svelte parser
       parserOptions: {
         parser: '@typescript-eslint/parser', // Use the TypeScript parser
+        //project: './tsconfig02.json', // Specify your tsconfig.json file
         svelteFeatures: {
           // Enable features specific to Svelte 5
           experimentalGenerics: true // Optional: If using generics
@@ -65,6 +80,11 @@ export default [
     },
     settings: {
       svelte: {}
+    },
+    env: {
+      browser: true,
+      es2020: true,
+      node: true
     },
     rules: {
       'no-nested-ternary': 'error',
@@ -90,6 +110,7 @@ export default [
       parser: svelteParser, // Set the Svelte parser
       parserOptions: {
         parser: '@typescript-eslint/parser', // Use the TypeScript parser
+        //project: './tsconfig02.json', // Specify your tsconfig.json file
         svelteFeatures: {
           // Enable features specific to Svelte 5
           experimentalGenerics: true // Optional: If using generics
@@ -103,6 +124,11 @@ export default [
     },
     settings: {
       svelte: {}
+    },
+    env: {
+      browser: true,
+      es2020: true,
+      node: true
     },
     rules: {
       'no-undef': 'off',
