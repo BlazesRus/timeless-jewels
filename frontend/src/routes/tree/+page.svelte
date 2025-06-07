@@ -99,15 +99,17 @@
 
   let selectedStats: Record<number, StatConfig> = $state({});
   if (searchParams.has('stat')) {
+    let stats: Record<number, StatConfig> = {};
     for (const s of searchParams.getAll('stat')) {
       const nStat = parseInt(s);
-      selectedStats[nStat] = {
+      stats[nStat] = {
         weight: 1,
         min: 0,
         id: nStat,
         minStatTotal: 0
       };
     }
+    selectedStats = stats;
   }
 
   let mode = $state(searchParams.has('mode') ? searchParams.get('mode') : '');
