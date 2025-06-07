@@ -32,7 +32,6 @@ export default [
     '**/tsconfig.tsbuildinfo'
   ]),
   {
-    root: true,
     ignores: ['**/postcss.config.js', '**/tsconfig.tsbuildinfo', '*.config.js', 'wasm_exec.js'],
     parserOptions: {
       sourceType: 'module',

@@ -1,3 +1,8 @@
+<script module lang="ts">
+  // Declare Go as a global variable provided by wasm_exec.js
+  declare const Go: any;
+</script>
+
 <script lang="ts">
   import '../app.scss';
   import '../wasm_exec.js';
@@ -14,7 +19,6 @@
 
   let wasmLoading = $state(true);
 
-  // eslint-disable-next-line no-undef
   const go = new Go();
 
   if (browser) {
