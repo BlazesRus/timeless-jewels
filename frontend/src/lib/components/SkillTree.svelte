@@ -520,16 +520,18 @@
   let startY = 0;
 
   let down = false;
-  const mouseDown = (event: MouseEvent) => {
+  const mouseDown = (event: MouseEvent | CustomEvent) => {
+    // If event is a CustomEvent, extract the native event from detail
+    const e = (event instanceof MouseEvent) ? event : (event as CustomEvent).detail as MouseEvent;
     down = true;
-    downX = event.offsetX;
-    downY = event.offsetY;
+    downX = e.offsetX;
+    downY = e.offsetY;
     startX = offsetX;
     startY = offsetY;
 
     mousePos = {
-      x: event.offsetX,
-      y: event.offsetY
+      x: e.offsetX,
+      y: e.offsetY
     };
 
     if (hoveredNode) {
@@ -560,24 +562,26 @@
     };
   };
 
-  const onScroll = (event: WheelEvent) => {
-    if (event.deltaY > 0) {
+  const onScroll = (event: CustomEvent | WheelEvent) => {
+    // If event is a CustomEvent, extract the native event from detail
+    const e = (event instanceof WheelEvent) ? event : (event as CustomEvent).detail as WheelEvent;
+    if (e.deltaY > 0) {
       if (scaling < 30) {
-        offsetX += event.offsetX;
-        offsetY += event.offsetY;
+        offsetX += e.offsetX;
+        offsetY += e.offsetY;
       }
     } else {
       if (scaling > 3) {
-        offsetX -= event.offsetX;
-        offsetY -= event.offsetY;
+        offsetX -= e.offsetX;
+        offsetY -= e.offsetY;
       }
     }
 
-    scaling = Math.min(30, Math.max(3, scaling + event.deltaY / 100));
+    scaling = Math.min(30, Math.max(3, scaling + e.deltaY / 100));
 
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation();
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
   };
 
   let width = $state(0);
