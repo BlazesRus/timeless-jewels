@@ -18,7 +18,6 @@
     toCanvasCoords
   } from '../skill_tree';
   import type { Point } from '../skill_tree';
-  import { derived } from 'svelte/store';
   import { calculator, data } from '../types';
 
 
@@ -64,7 +63,7 @@
   let offsetX = $state(0);
   let offsetY = $state(0);
 
-  let jewelRadius = $derived(baseJewelRadius / scaling);
+  $: jewelRadius = baseJewelRadius / scaling;
 
   const drawScaling = 2.6;
 
@@ -166,9 +165,9 @@
   let cursor = $state('unset');
 
   let hoveredNode: Node | undefined = $state();
-  //$: render = ((params: { context: CanvasRenderingContext2D; width: number; height: number }) => {
-  //  const { context, width, height } = params;
-  let render = $derived((({ context, width, height }) => {
+  $: render = $derived((({ context, width, height }) => {
+    const { context, width, height } = params;
+
     const start = window.performance.now();
 
     context.clearRect(0, 0, width, height);
@@ -176,7 +175,7 @@
     context.fillStyle = '#080c11';
     context.fillRect(0, 0, width, height);
 
-    const connected = {};
+    const connected: Record<string, boolean> = {};
     Object.keys(drawnGroups).forEach((groupId) => {
       const group = drawnGroups[groupId];
       const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
@@ -200,7 +199,7 @@
       const angle = orbitAngleAt(node.orbit, node.orbitIndex);
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
 
-      node.out?.forEach((o) => {
+      node.out?.forEach((o: string) => {
         const targetNode = drawnNodes[parseInt(o)];
         if (!targetNode) {
           return;
@@ -215,14 +214,10 @@
         }
         connected[joined] = true;
 
-        if (!targetNode) {
-          return;
-        }
+        if (!targetNode) return;
 
         // Do not draw connections to mastery nodes
-        if (targetNode.isMastery) {
-          return;
-        }
+        if (targetNode.isMastery) return;
 
         const targetAngle = orbitAngleAt(targetNode.orbit, targetNode.orbitIndex);
         const targetRotatedPos = calculateNodePos(targetNode, offsetX, offsetY, scaling);
@@ -244,6 +239,7 @@
           const finalA = diff > Math.PI ? Math.max(a, b) : Math.min(a, b);
           const finalB = diff > Math.PI ? Math.min(a, b) : Math.max(a, b);
 
+          //if(!node.group) return;
           const group = drawnGroups[node.group];
           if (!group) return;
           const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
@@ -276,11 +272,9 @@
         }
       }
 
-      //if (disabled.indexOf(node.skill ?? -1) >= 0) {
-      if (disabled.indexOf(node.skill) >= 0) {
-        active = false;
-      }
+      if (node.skill&&disabled.indexOf(node.skill) >= 0) active = false;
 
+      //Todo:Give default node image if invalid icon
       if (node.isKeystone) {
         touchDistance = 110;
         drawSprite(context, node.icon, rotatedPos, active);
@@ -356,53 +350,58 @@
       }));
 
       if (!hoveredNode.isJewelSocket && hoveredNodeActive) {
-        if (hoveredNode.skill && seed && selectedJewel && selectedConqueror) {
-          const result = calculator.Calculate(
-            data.TreeToPassive[hoveredNode.skill].Index,
-            seed,
-            selectedJewel,
-            selectedConqueror
-          );
+        if (
+          hoveredNode.skill !== undefined &&
+          data?.TreeToPassive &&
+          data.TreeToPassive[hoveredNode.skill] !== undefined &&
+          seed &&
+          selectedJewel &&
+          selectedConqueror
+        ) {
+          const treePassive = data.TreeToPassive[hoveredNode.skill];
+          if (treePassive && treePassive.Index !== undefined) {
+            const result = calculator.Calculate(treePassive.Index,seed,selectedJewel, selectedConqueror);
+            if (result)
+            {
+              if ('AlternatePassiveSkill' in result && result.AlternatePassiveSkill) {
+                nodeStats = [];
+                nodeName = result.AlternatePassiveSkill.Name ?? 'Alternative Skill';
 
-          if (result) {
-            if ('AlternatePassiveSkill' in result && result.AlternatePassiveSkill) {
-              nodeStats = [];
-              nodeName = result.AlternatePassiveSkill.Name ?? 'Alternative Node';
-
-              if (result.AlternatePassiveSkill.StatsKeys) {
-                result.AlternatePassiveSkill.StatsKeys.forEach((statId, i) => {
-                  const stat = data.GetStatByIndex(statId);
-                  if (!stat) return;
-                  const translation = inverseTranslations[stat.ID] || '';
-                  if (translation && result.StatRolls && result.StatRolls[i] !== undefined) {
-                    nodeStats.push({
-                      text: formatStats(translation, result.StatRolls[i]) || stat.ID,
-                      special: true
-                    });
-                  }
-                });
-              }
-            }
-
-            if (result.AlternatePassiveAdditionInformations) {
-              result.AlternatePassiveAdditionInformations.forEach((info) => {
-                //if (info.AlternatePassiveAddition && info.AlternatePassiveAddition.StatsKeys) {
-                if ('StatsKeys' in info.AlternatePassiveAddition) {
-                  info.AlternatePassiveAddition.StatsKeys.forEach((statId, i) => {
+                if (result.AlternatePassiveSkill.StatsKeys) {
+                  result.AlternatePassiveSkill.StatsKeys.forEach((statId: number, i: number) => {
                     const stat = data.GetStatByIndex(statId);
                     if (!stat) return;
                     const translation = inverseTranslations[stat.ID] || '';
-                    //if (translation && info.StatRolls && info.StatRolls[i] !== undefined) {
-                    if (translation) {
+                    if (translation && result.StatRolls && result.StatRolls[i] !== undefined) {
                       nodeStats.push({
-                        text: formatStats(translation, info.StatRolls[i]) || stat.ID,
+                        text: formatStats(translation, result.StatRolls[i]) || stat.ID,
                         special: true
                       });
                     }
+                    else
+                      throw new Error(`Failed to translate `+nodeName+' statID:'+stat.ID);
                   });
+                  if (result.AlternatePassiveAdditionInformations) {
+                    result.AlternatePassiveAdditionInformations.forEach((info) => {
+                      if (info.AlternatePassiveAddition && info.AlternatePassiveAddition.StatsKeys) {
+                        info.AlternatePassiveAddition.StatsKeys.forEach((statId: number, i: number) => {
+                          const stat = data.GetStatByIndex(statId);
+                          if (!stat) return;
+                          const translation = inverseTranslations[stat.ID] || '';
+                          if (translation && info.StatRolls && info.StatRolls[i] !== undefined) {
+                            nodeStats.push({text: formatStats(translation, info.StatRolls[i]) || stat.ID, special: true});
+                          }
+                          else
+                            throw new Error(`Failed to translate `+nodeName+' additional info for statID:'+stat.ID);
+                        });
+                      }
+                    });
+                  }
                 }
-              });
+              }
             }
+            else
+              throw new Error(`Failed to calculate `+nodeName+' skillID:'+hoveredNode.skill);
           }
         }
       }
