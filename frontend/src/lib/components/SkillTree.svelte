@@ -1,6 +1,6 @@
 <script lang="ts">
 
-  import { Canvas, Layer} from 'svelte-canvas';
+  import { Canvas, Layer } from 'svelte-canvas';
   import type { RenderFunc, Node } from '../skill_tree_types';
   import {
     baseJewelRadius,
@@ -18,7 +18,6 @@
   } from '../skill_tree';
   import type { Point } from '../skill_tree';
   import { calculator, data } from '../types';
-
 
   interface Props {
     clickNode: (node: Node) => void;
@@ -169,7 +168,7 @@
     const highlightGradientCenterY = height / 2;
     const highlightGradientInner = 90 / scaling;
     const highlightGradientOuter = 100 / scaling;
-    
+
     // Precompute the highlight gradient once per render
     // Use a generic center and radius, since the gradient is mostly for color
     let highlightGradient: CanvasGradient = context.createRadialGradient(
@@ -184,12 +183,14 @@
     highlightGradient.addColorStop(1, '#00ff00'); // neon green
 
     const connected: Record<string, boolean> = {};
-    Object.keys(drawnGroups).forEach((groupId) => {
+    //Need to convert keys to numbers because typescript converts all keys into strings
+    Object.keys(drawnGroups).forEach((keyId) => {
+      const groupId = parseInt(keyId)
       const group = drawnGroups[groupId];
       const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
 
       const maxOrbit = Math.max(...group.orbits);
-      if (startGroups.indexOf(parseInt(groupId)) >= 0) {
+      if (startGroups.indexOf(groupId) >= 0) {
         // Do not draw starter nodes
       } else if (maxOrbit == 1) {
         drawSprite(context, 'PSGroupBackground1', groupPos, false);
@@ -201,20 +202,22 @@
       }
     });
 
-    Object.keys(drawnNodes).forEach((nodeId) => {
-      const node = drawnNodes[nodeId];
+    Object.entries(drawnNodes).forEach(([keyId, node]) => {
+      const nodeId = parseInt(keyId);
+
       if (!node) return;
-      const angle = orbitAngleAt(node.orbit, node.orbitIndex);
+      const angle = orbitAngleAt(node.orbit??0, node.orbitIndex??0);
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
 
       node.out?.forEach((o: string) => {
-        const targetNode = drawnNodes[parseInt(o)];
+        const nodeOutId = parseInt(keyId);
+        const targetNode = drawnNodes[nodeOutId];
         if (!targetNode) {
           return;
         }
 
-        const min = Math.min(parseInt(o), parseInt(nodeId));
-        const max = Math.max(parseInt(o), parseInt(nodeId));
+        const min = Math.min(nodeOutId, nodeId);
+        const max = Math.max(nodeOutId, nodeId);
         const joined = min + ':' + max;
 
         if (joined in connected) {
@@ -227,7 +230,7 @@
         // Do not draw connections to mastery nodes
         if (targetNode.isMastery) return;
 
-        const targetAngle = orbitAngleAt(targetNode.orbit, targetNode.orbitIndex);
+        const targetAngle = orbitAngleAt(targetNode.orbit??0, targetNode.orbitIndex??0);
         const targetRotatedPos = calculateNodePos(targetNode, offsetX, offsetY, scaling);
 
         context.beginPath();
@@ -248,10 +251,10 @@
           const finalB = diff > Math.PI ? Math.min(a, b) : Math.max(a, b);
 
           //if(!node.group) return;
-          const group = drawnGroups[node.group];
+          const group = drawnGroups[node.group??0];
           if (!group) return;
           const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
-          context.arc(groupPos.x, groupPos.y, skillTree.constants.orbitRadii[node.orbit] / scaling + 1, finalA, finalB);
+          context.arc(groupPos.x, groupPos.y, skillTree.constants.orbitRadii[node.orbit??0] / scaling + 1, finalA, finalB);
         }
 
         context.lineWidth = 6 / scaling;
@@ -268,8 +271,8 @@
 
     let hoveredNodeActive = false;
     let newHoverNode: Node | undefined;
-    Object.keys(drawnNodes).forEach((nodeId) => {
-      const node = drawnNodes[nodeId];
+
+    Object.values(drawnNodes).forEach((node:Node) => {
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
       let touchDistance = 0;
 
@@ -285,7 +288,7 @@
       //Todo:Give default node image if invalid icon
       if (node.isKeystone) {
         touchDistance = 110;
-        drawSprite(context, node.icon, rotatedPos, active);
+        drawSprite(context, node.icon??"", rotatedPos, active);
         if (active) {
           drawSprite(context, 'KeystoneFrameAllocated', rotatedPos, false);
         } else {
@@ -293,7 +296,7 @@
         }
       } else if (node.isNotable) {
         touchDistance = 70;
-        drawSprite(context, node.icon, rotatedPos, active);
+        drawSprite(context, node.icon??"", rotatedPos, active);
         if (active) {
           drawSprite(context, 'NotableFrameAllocated', rotatedPos, false);
         } else {
@@ -315,10 +318,10 @@
           }
         }
       } else if (node.isMastery) {
-        drawSprite(context, node.inactiveIcon, rotatedPos, active);
+        drawSprite(context, node.inactiveIcon??"", rotatedPos, active);
       } else {
         touchDistance = 50;
-        drawSprite(context, node.icon, rotatedPos, active);
+        drawSprite(context, node.icon??"", rotatedPos, active);
         if (active) {
           drawSprite(context, 'PSSkillFrameActive', rotatedPos, false);
         } else {
@@ -326,7 +329,7 @@
         }
       }
 
-      if (highlighted.indexOf(node.skill) >= 0 || (highlightJewels && node.isJewelSocket)) {
+      if (highlighted.indexOf(node.skill??-1) >= 0 || (highlightJewels && node.isJewelSocket)) {
         // Use the precomputed bright green gradient for the highlight ring
         context.strokeStyle = highlightGradient;
         context.lineWidth = 3;
