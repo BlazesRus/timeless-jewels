@@ -1,6 +1,6 @@
 <script lang="ts">
 
-  import { Canvas, Layer, t } from 'svelte-canvas';
+  import { Canvas, Layer} from 'svelte-canvas';
   import type { RenderFunc, Node } from '../skill_tree_types';
   import {
     baseJewelRadius,
@@ -43,14 +43,6 @@
     highlightJewels = false,
     children
   }: Props = $props();
-
-  const slowTime = derived(t, (values) => {
-    if ((!highlighted || !highlighted.length) && !highlightJewels) {
-      return 0;
-    }
-
-    return Math.round(values / 40);
-  });
 
   const startGroups = [427, 320, 226, 227, 323, 422, 329];
 
@@ -164,8 +156,7 @@
   let cursor = $state('unset');
 
   let hoveredNode: Node | undefined = $state();
-  $: render = $derived((({ context, width, height }) => {
-    const { context, width, height } = params;
+  $: render = $derived(({ context, width, height }) => {
 
     const start = window.performance.now();
 
@@ -318,7 +309,18 @@
       }
 
       if (highlighted.indexOf(node.skill) >= 0 || (highlightJewels && node.isJewelSocket)) {
-        context.strokeStyle = `hsl(${$slowTime}, 100%, 50%)`;
+        // Use a bright green gradient for the highlight ring
+        const gradient = context.createRadialGradient(
+          rotatedPos.x,
+          rotatedPos.y,
+          (touchDistance + 20) / scaling,
+          rotatedPos.x,
+          rotatedPos.y,
+          (touchDistance + 30) / scaling
+        );
+        gradient.addColorStop(0, '#8cf34c'); // bright green
+        gradient.addColorStop(1, '#00ff00'); // neon green
+        context.strokeStyle = gradient;
         context.lineWidth = 3;
         context.beginPath();
         context.arc(rotatedPos.x, rotatedPos.y, (touchDistance + 30) / scaling, 0, Math.PI * 2);
