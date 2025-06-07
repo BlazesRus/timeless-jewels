@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
 
   import { Canvas, Layer, t } from 'svelte-canvas';
   import type { RenderFunc, Node } from '../skill_tree_types';
@@ -571,7 +570,7 @@
   };
 
   let initialized = $state(false);
-  run(() => {
+  $effect(() => {
     if (!initialized && skillTree) {
       initialized = true;
       offsetX = skillTree.min_x + (window.innerWidth / 2) * scaling;
