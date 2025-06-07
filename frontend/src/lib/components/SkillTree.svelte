@@ -165,6 +165,24 @@
     context.fillStyle = '#080c11';
     context.fillRect(0, 0, width, height);
 
+    const highlightGradientCenterX = width / 2;
+    const highlightGradientCenterY = height / 2;
+    const highlightGradientInner = 90 / scaling;
+    const highlightGradientOuter = 100 / scaling;
+    
+    // Precompute the highlight gradient once per render
+    // Use a generic center and radius, since the gradient is mostly for color
+    let highlightGradient: CanvasGradient = context.createRadialGradient(
+      highlightGradientCenterX,
+      highlightGradientCenterY,
+      highlightGradientInner,
+      highlightGradientCenterX,
+      highlightGradientCenterY,
+      highlightGradientOuter
+    );
+    highlightGradient.addColorStop(0, '#8cf34c'); // bright green
+    highlightGradient.addColorStop(1, '#00ff00'); // neon green
+
     const connected: Record<string, boolean> = {};
     Object.keys(drawnGroups).forEach((groupId) => {
       const group = drawnGroups[groupId];
@@ -309,18 +327,8 @@
       }
 
       if (highlighted.indexOf(node.skill) >= 0 || (highlightJewels && node.isJewelSocket)) {
-        // Use a bright green gradient for the highlight ring
-        const gradient = context.createRadialGradient(
-          rotatedPos.x,
-          rotatedPos.y,
-          (touchDistance + 20) / scaling,
-          rotatedPos.x,
-          rotatedPos.y,
-          (touchDistance + 30) / scaling
-        );
-        gradient.addColorStop(0, '#8cf34c'); // bright green
-        gradient.addColorStop(1, '#00ff00'); // neon green
-        context.strokeStyle = gradient;
+        // Use the precomputed bright green gradient for the highlight ring
+        context.strokeStyle = highlightGradient;
         context.lineWidth = 3;
         context.beginPath();
         context.arc(rotatedPos.x, rotatedPos.y, (touchDistance + 30) / scaling, 0, Math.PI * 2);
