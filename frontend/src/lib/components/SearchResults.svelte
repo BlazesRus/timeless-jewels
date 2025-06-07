@@ -3,57 +3,45 @@
   import SearchResult from './SearchResult.svelte';
   import VirtualList from 'svelte-tiny-virtual-list';
 
-  interface Props {
-    highlight: (newSeed: number, passives: number[]) => void;
-    searchResults: SearchResults;
-    groupResults?: boolean;
-    jewel: number;
-    conqueror: string;
-  }
-
-  let {
-    highlight,
-    searchResults,
-    groupResults = true,
-    jewel,
-    conqueror
-  }: Props = $props();
+  export let searchResults: SearchResults;
+  export let highlight: (newSeed: number, passives: number[]) => void;
+  export let groupResults = true;
+  export let jewel: number;
+  export let conqueror: string;
 
   const computeSize = (r: SearchWithSeed) =>
     8 + 48 + r.skills.reduce((o, s) => o + 32 + Object.keys(s.stats).length * 24, 0);
 
-  let expandedGroup: number | '' = $state('');
+  let expandedGroup = '';
 </script>
 
 {#if groupResults}
   <div class="flex flex-col overflow-auto">
     {#each Object.keys(searchResults.grouped)
-      .map((x) => parseInt(x, 10))
+      .map((x) => parseInt(x))
       .sort((a, b) => a - b)
-      .reverse() as number[] as k (k)}
+      .reverse() as k}
       <button
         class="text-lg w-full p-2 px-4 bg-neutral-500/30 rounded flex flex-row justify-between mb-2"
-        onclick={() => (expandedGroup = expandedGroup === k ? '' : k)}>
+        on:click={() => (expandedGroup = expandedGroup === k.toString() ? '' : k.toString())}>
         <span>
           {k} Match{k > 1 ? 'es' : ''} [{searchResults.grouped[k].length}]
         </span>
         <span>
-          {expandedGroup === k ? '^' : 'V'}
+          {expandedGroup === k.toString() ? '^' : 'V'}
         </span>
       </button>
 
-      {#if expandedGroup === k}
+      {#if expandedGroup === k.toString()}
         <div class="flex flex-col overflow-auto min-h-[200px] mb-2">
           <VirtualList
             height="auto"
             overscanCount={10}
             itemCount={searchResults.grouped[k].length}
             itemSize={searchResults.grouped[k].map(computeSize)}>
-            {#snippet item({ index, style })}
-                        <div    {style}>
-                <SearchResult set={searchResults.grouped[k][index]} {highlight} {jewel} {conqueror} />
-              </div>
-                      {/snippet}
+            <div slot="item" let:index let:style {style}>
+              <SearchResult set={searchResults.grouped[k][index]} {highlight} {jewel} {conqueror} />
+            </div>
           </VirtualList>
         </div>
       {/if}
@@ -66,11 +54,9 @@
       overscanCount={15}
       itemCount={searchResults.raw.length}
       itemSize={searchResults.raw.map(computeSize)}>
-      {#snippet item({ index, style })}
-            <div    {style}>
-          <SearchResult set={searchResults.raw[index]} {highlight} {jewel} {conqueror} />
-        </div>
-          {/snippet}
+      <div slot="item" let:index let:style {style}>
+        <SearchResult set={searchResults.raw[index]} {highlight} {jewel} {conqueror} />
+      </div>
     </VirtualList>
   </div>
 {/if}
