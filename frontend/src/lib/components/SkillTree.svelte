@@ -1,5 +1,9 @@
 <script lang="ts">
 
+  const measurePerformance = (): number => {
+    return window.performance.now();
+  };
+
   import { Canvas, Layer } from 'svelte-canvas';
   import type { RenderFunc, Node } from '../skill_tree_types';
   import {
@@ -157,7 +161,10 @@
   let cursor = $state('unset');
 
   let hoveredNode: Node | undefined = $state();
-  $: render = $derived(({ context, width, height }: { context: CanvasRenderingContext2D; width: number; height: number }) => {
+
+  // Function to render the skill tree
+  // This function is called by the Canvas component to render the skill tree
+  const render: RenderFunc = $derived(({ context, width, height }: { context: CanvasRenderingContext2D; width: number; height: number }) => {
 
     const start = window.performance.now();
 
@@ -396,7 +403,7 @@
                       });
                     }
                     else
-                      throw new Error(`Failed to translate `+nodeName+' statID:'+stat.ID);
+                      throw new Error(`Failed to translate ${nodeName}. Skill ID: ${hoveredNode.skill}, Stat ID: ${stat.ID}`);
                   });
                   if (result.AlternatePassiveAdditionInformations) {
                     result.AlternatePassiveAdditionInformations.forEach((info) => {
@@ -409,7 +416,7 @@
                             nodeStats.push({text: formatStats(translation, info.StatRolls[i]) || stat.ID, special: true});
                           }
                           else
-                            throw new Error(`Failed to translate `+nodeName+' additional info for statID:'+stat.ID);
+                            throw new Error(`Failed to translate ${nodeName} additional info for statID: ${stat.ID}, skillID: ${hoveredNode.skill}, statRoll: ${info.StatRolls[i]}`);
                         });
                       }
                     });
@@ -418,7 +425,7 @@
               }
             }
             else
-              throw new Error(`Failed to calculate `+nodeName+' skillID:'+hoveredNode.skill);
+              throw new Error(`Failed to calculate ${nodeName}. Skill ID: ${hoveredNode.skill}, Seed: ${seed}, Selected Jewel: ${selectedJewel}, Selected Conqueror: ${selectedConqueror}`);
           }
         }
       }
@@ -508,10 +515,10 @@
     context.textAlign = 'right';
     context.font = '12px Roboto Mono';
 
-    const end = window.performance.now();
+    const end = measurePerformance();
 
     context.fillText(`${(end - start).toFixed(1)}ms`, width - 5, 17);
-  }) as RenderFunc);
+  });
 
   let downX = 0;
   let downY = 0;
