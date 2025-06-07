@@ -160,7 +160,7 @@
 
   let cursor = $state('unset');
 
-  let hoveredNode: Node | undefined = $state();
+  let hoveredNode: Node | undefined = $state(undefined);
 
   // Function to render the skill tree
   // This function is called by the Canvas component to render the skill tree
