@@ -263,7 +263,10 @@
       });
     });
 
-    let circledNodePos: Point;
+
+    // Define circledNodePos if circledNode is set 
+    // (setting to 0,0 to avoid needing to check for undefined; only used if circledNode is set)
+    let circledNodePos: Point = { x: 0, y: 0 };
     if (circledNode) {
       circledNodePos = calculateNodePos(drawnNodes[circledNode], offsetX, offsetY, scaling);
       context.strokeStyle = '#ad2b2b';
