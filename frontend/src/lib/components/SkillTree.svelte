@@ -382,7 +382,11 @@
           selectedJewel &&
           selectedConqueror
         ) {
-          const treePassive = data.TreeToPassive[hoveredNode.skill];
+          // Saving the hovered node skill to avoid recalculating it
+          // This is mainly for error handling because VS Code forgets that hoveredNode is valid within this block
+          // and complains about hoveredNode.skill being possibly undefined
+          const hoveredSkill = hoveredNode.skill;
+          const treePassive = data.TreeToPassive[hoveredSkill];
           if (treePassive && treePassive.Index !== undefined) {
             const result = calculator.Calculate(treePassive.Index,seed,selectedJewel, selectedConqueror);
             if (result)
@@ -403,7 +407,7 @@
                       });
                     }
                     else
-                      throw new Error(`Failed to translate ${nodeName}. Skill ID: ${hoveredNode.skill}, Stat ID: ${stat.ID}`);
+                      throw new Error(`Failed to translate ${nodeName}. Skill ID: ${hoveredSkill}, Stat ID: ${stat.ID}`);
                   });
                   if (result.AlternatePassiveAdditionInformations) {
                     result.AlternatePassiveAdditionInformations.forEach((info) => {
@@ -416,7 +420,7 @@
                             nodeStats.push({text: formatStats(translation, info.StatRolls[i]) || stat.ID, special: true});
                           }
                           else
-                            throw new Error(`Failed to translate ${nodeName} additional info for statID: ${stat.ID}, skillID: ${hoveredNode.skill}, statRoll: ${info.StatRolls[i]}`);
+                            throw new Error(`Failed to translate ${nodeName} additional info for statID: ${stat.ID}, skillID: ${hoveredSkill}, statRoll: ${info.StatRolls ? info.StatRolls[i] : 'undefined'}`);
                         });
                       }
                     });
@@ -425,7 +429,7 @@
               }
             }
             else
-              throw new Error(`Failed to calculate ${nodeName}. Skill ID: ${hoveredNode.skill}, Seed: ${seed}, Selected Jewel: ${selectedJewel}, Selected Conqueror: ${selectedConqueror}`);
+              throw new Error(`Failed to calculate ${nodeName}. Skill ID: ${hoveredSkill}, Seed: ${seed}, Selected Jewel: ${selectedJewel}, Selected Conqueror: ${selectedConqueror}`);
           }
         }
       }
