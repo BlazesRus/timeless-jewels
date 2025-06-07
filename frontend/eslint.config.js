@@ -33,19 +33,34 @@ export default [
   ]),
   {
     ignores: ['**/postcss.config.js', '**/tsconfig.tsbuildinfo', '*.config.js', 'wasm_exec.js'],
-    parserOptions: {
-      sourceType: 'module',
-      ecmaVersion: 2020
+    languageOptions: {
+      parserOptions: {
+        sourceType: 'module',
+        ecmaVersion: 2020
+      },
+      globals: {
+        browser: true,
+        es2020: true,
+        node: true,
+        window: 'readonly',
+        document: 'readonly',
+        console: 'readonly',
+        process: 'readonly',
+        module: 'readonly',
+        require: 'readonly',
+        __dirname: 'readonly',
+        global: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+        Promise: 'readonly'
+      }
     },
     //settings: {
     //  'svelte3/typescript': () => require('typescript'),
     //  'svelte3/ignore-warnings': ({ code }) => code === 'missing-declaration'
     //},
-    env: {
-      browser: true,
-      es2020: true,
-      node: true
-    },
     rules: {
       //semi: ['warn', 'always'],
       //quotes: ['warn', 'single', { avoidEscape: true, allowTemplateLiterals: true }],
@@ -79,11 +94,6 @@ export default [
     },
     settings: {
       svelte: {}
-    },
-    env: {
-      browser: true,
-      es2020: true,
-      node: true
     },
     rules: {
       'no-nested-ternary': 'error',
@@ -123,11 +133,6 @@ export default [
     },
     settings: {
       svelte: {}
-    },
-    env: {
-      browser: true,
-      es2020: true,
-      node: true
     },
     rules: {
       'no-undef': 'off',
