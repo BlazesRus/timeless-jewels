@@ -1,4 +1,5 @@
 <script lang="ts">
+
 // Declare browser globals for TypeScript and ESLint
 /* global window localStorage URL CustomEvent ClipboardEvent Window DataTransfer */
 
@@ -38,35 +39,35 @@
     label: timelessJewels[Number(k)]
   }));
 
-  let selectedJewel = (searchParams.has('jewel') && jewels.find((j) => j.value === Number(searchParams.get('jewel')))) || undefined;
+  let selectedJewel = $state((searchParams.has('jewel') && jewels.find((j) => j.value === Number(searchParams.get('jewel')))) || undefined);
 
-  $: conquerors = selectedJewel && timelessJewelConquerors[selectedJewel.value]
+  let conquerors = $derived(selectedJewel && timelessJewelConquerors[selectedJewel.value]
     ? Object.keys(timelessJewelConquerors[selectedJewel.value] ?? {}).map((k) => ({
         value: k,
         label: k
       }))
-    : [];
+    : []);
 
-  $: dropdownConqs = conquerors.concat([{ value: 'Any', label: 'Any' }]);
+  let dropdownConqs = $derived(conquerors.concat([{ value: 'Any', label: 'Any' }]));
 
-  let dropdownConqueror = searchParams.has('conqueror')
+  let dropdownConqueror = $state(searchParams.has('conqueror')
     ? {
         value: searchParams.get('conqueror'),
         label: searchParams.get('conqueror')
       }
-    : undefined;
+    : undefined);
 
-  $: anyConqueror = dropdownConqueror?.value === 'Any';
+  let anyConqueror = $derived(dropdownConqueror?.value === 'Any');
 
-  $: selectedConqueror = dropdownConqueror?.value === 'Any' ? conquerors[0] : dropdownConqueror;
+  let selectedConqueror = $derived(dropdownConqueror?.value === 'Any' ? conquerors[0] : dropdownConqueror);
 
-  let seed: number = searchParams.has('seed') && searchParams.get('seed') ? Number(searchParams.get('seed')) : 0;
+  let seed: number = $state(searchParams.has('seed') && searchParams.get('seed') ? Number(searchParams.get('seed')) : 0);
 
-  let circledNode: number | undefined = searchParams.has('location') && searchParams.get('location') ? Number(searchParams.get('location')) : undefined;
+  let circledNode: number | undefined = $state(searchParams.has('location') && searchParams.get('location') ? Number(searchParams.get('location')) : undefined);
 
-  $: affectedNodes = circledNode
+  let affectedNodes = $derived(circledNode
     ? getAffectedNodes(skillTree.nodes[circledNode]).filter((n) => !n.isJewelSocket && !n.isMastery)
-    : [];
+    : []);
 
   // Fix usages in affectedNodes/seedResults mapping
   // Fix: ensure getTreeToPassive only called with defined skill
@@ -76,8 +77,8 @@
   }
 
   // Fix: remove type predicate in .filter, just use .filter(Boolean) and cast as needed
-  $: seedResults =
-    !seed ||
+  let seedResults =
+    $derived(!seed ||
     !selectedJewel ||
     !selectedConqueror ||
     !(timelessJewelConquerors[selectedJewel.value]) ||
@@ -94,9 +95,9 @@
               selectedJewel?.value ?? 0,
               selectedConqueror?.value ?? ''
             )
-          }));
+          })));
 
-  let selectedStats: Record<number, StatConfig> = {};
+  let selectedStats: Record<number, StatConfig> = $state({});
   if (searchParams.has('stat')) {
     for (const s of searchParams.getAll('stat')) {
       const nStat = parseInt(s);
@@ -109,7 +110,7 @@
     }
   }
 
-  let mode = searchParams.has('mode') ? searchParams.get('mode') : '';
+  let mode = $state(searchParams.has('mode') ? searchParams.get('mode') : '');
 
   const updateUrl = () => {
     if (!_window || !_URL) return;
@@ -139,7 +140,7 @@
     updateUrl();
   };
 
-  let disabled = new Set();
+  let disabled = $state(new Set());
   const clickNode = (node: Node) => {
     if (node.isJewelSocket) {
       circledNode = node.skill;
@@ -166,10 +167,13 @@
 	
   // Very basic sanitizer: strips script/style tags and on* attributes
   function sanitize(html: string): string {
+    return html.replace(/<script.*?>.*?<\/script>/gi, '')
+               .replace(/<style.*?>.*?<\/style>/gi, '')
+               .replace(/on\w+="[^"]*"/gi, '');
   }
 
-  $: availableStats = !selectedJewel ? [] : Object.keys(allPossibleStats[selectedJewel.value]);
-  $: statItems = availableStats
+  let availableStats = $derived(!selectedJewel ? [] : Object.keys(allPossibleStats[selectedJewel.value]));
+  let statItems = $derived(availableStats
     .map((statId) => {
       const id = parseInt(statId);
       return {
@@ -177,9 +181,9 @@
         value: id
       };
     })
-    .filter((s) => !(s.value in selectedStats));
+    .filter((s) => !(s.value in selectedStats)));
 
-  let statSelector: Select;
+  let statSelector: Select | undefined = $state(undefined);
   const selectStat = (stat: CustomEvent) => {
     selectedStats[stat.detail.value] = {
       weight: 1,
@@ -188,7 +192,7 @@
       minStatTotal: 0
     };
     selectedStats = selectedStats;
-    statSelector.handleClear();
+    if (statSelector) statSelector.handleClear();
     updateUrl();
   };
 
@@ -207,14 +211,14 @@
     updateUrl();
   };
 
-  let results = false;
-  let minTotalWeight = 0;
-  let minTotalStats: number = 0;
-  let searching = false;
-  let currentSeed = 0;
-  let searchResults: SearchResults | undefined = undefined;
-  let searchJewel = 1;
-  let searchConqueror: string | null = null;
+  let results = $state(false);
+  let minTotalWeight = $state(0);
+  let minTotalStats: number = $state(0);
+  let searching = $state(false);
+  let currentSeed = $state(0);
+  let searchResults: SearchResults | undefined = $state(undefined);
+  let searchJewel = $state(1);
+  let searchConqueror: string | null = $state(null);
   // Fix all .value accesses in search and query construction
   const search = () => {
     if (!circledNode || !selectedJewel || !selectedConqueror) {
@@ -254,7 +258,7 @@
       });
   };
 
-  let highlighted: number[] = [];
+  let highlighted: number[] = $state([]);
   const highlight = (newSeed: number, passives: number[]) => {
     seed = newSeed;
     highlighted = passives;
@@ -294,8 +298,11 @@
   };
 
   let groupResults =
-    _localStorage?.getItem('groupResults') === null ? true : _localStorage?.getItem('groupResults') === 'true';
-  $: _localStorage?.setItem('groupResults', groupResults ? 'true' : 'false');
+    $state(_localStorage?.getItem('groupResults') === null ? true : _localStorage?.getItem('groupResults') === 'true');
+  
+  $effect(() => {
+    _localStorage?.setItem('groupResults', groupResults ? 'true' : 'false');
+  });
 
   type CombinedResult = {
     id: string;
@@ -441,14 +448,20 @@
     }
   ] as const;
   // Defensive: fallback for sortOrder
-  let sortOrder = sortResultsArr[0];
-  $: _localStorage?.setItem('sortOrder', sortOrder.value);
+  let sortOrder = $state(sortResultsArr[0]);
+  $effect(() => {
+    _localStorage?.setItem('sortOrder', sortOrder.value);
+  });
 
-  let colored = _localStorage?.getItem('colored') === null ? true : _localStorage?.getItem('colored') === 'true';
-  $: _localStorage?.setItem('colored', colored ? 'true' : 'false');
+  let colored = $state(_localStorage?.getItem('colored') === null ? true : _localStorage?.getItem('colored') === 'true');
+  $effect(() => {
+    _localStorage?.setItem('colored', colored ? 'true' : 'false');
+  });
 
-  let split = _localStorage?.getItem('split') === null ? true : _localStorage?.getItem('split') === 'true';
-  $: _localStorage?.setItem('split', split ? 'true' : 'false');
+  let split = $state(_localStorage?.getItem('split') === null ? true : _localStorage?.getItem('split') === 'true');
+  $effect(() => {
+    _localStorage?.setItem('split', split ? 'true' : 'false');
+  });
 
   // Defensive: fix ClipboardEvent and matches null check
   const onPaste = (event: ClipboardEvent) => {
@@ -495,26 +508,28 @@
     updateUrl();
   };
 
-  let collapsed = false;
+  let collapsed = $state(false);
 
-  let showTradeLinks = false;
+  let showTradeLinks = $state(false);
 
-  let queries: Query[] = [];
+  let queries: Query[] = $state([]);
 
   // reconstruct queries if search results change
-  $: if (searchResults && results) {
-    queries = constructQueries(searchJewel, searchConqueror, searchResults.raw);
+  $effect(() => {
+    if (searchResults && results) {
+      queries = constructQueries(searchJewel, searchConqueror, searchResults.raw);
 
-    // reset showTradeLinks to hidden if new queries is only length of 1
-    if (queries.length === 1) {
-      showTradeLinks = false;
+      // reset showTradeLinks to hidden if new queries is only length of 1
+      if (queries.length === 1) {
+        showTradeLinks = false;
+      }
     }
-  }
+  });
 
   // Fix SvelteKit page prop error: only export 'data' and 'errors'
 </script>
 
-<svelte:window on:paste={onPaste} />
+<svelte:window onpaste={onPaste} />
 
 <SkillTree
   {clickNode}
@@ -532,7 +547,7 @@
       <div class="p-4 max-h-screen flex flex-col">
         <div class="flex flex-row justify-between mb-2">
           <div class="flex flex-row items-center">
-            <button class="burger-menu mr-3" aria-label="Open menu" on:click={() => (collapsed = true)}>
+            <button class="burger-menu mr-3" aria-label="Open menu" onclick={() => (collapsed = true)}>
               <div></div>
               <div></div>
               <div></div>
@@ -553,12 +568,12 @@
                 <button
                   class="p-1 px-3 bg-blue-500/40 rounded disabled:bg-blue-900/40 mr-2"
                   class:grouped={groupResults}
-                  on:click={() => (groupResults = !groupResults)}
+                  onclick={() => (groupResults = !groupResults)}
                   disabled={!searchResults}>
                   Grouped
                 </button>
               {/if}
-              <button class="bg-neutral-100/20 px-4 p-1 rounded" on:click={() => (results = !results)}>
+              <button class="bg-neutral-100/20 px-4 p-1 rounded" onclick={() => (results = !results)}>
                 {results ? 'Config' : 'Results'}
               </button>
             </div>
@@ -578,10 +593,10 @@
               timelessJewelConquerors[selectedJewel.value] &&
               Object.keys(timelessJewelConquerors[selectedJewel.value] ?? {}).indexOf(selectedConqueror.value ?? '') >= 0}
               <div class="mt-4 w-full flex flex-row">
-                <button class="selection-button" class:selected={mode === 'seed'} on:click={() => setMode('seed')}>
+                <button class="selection-button" class:selected={mode === 'seed'} onclick={() => setMode('seed')}>
                   Enter Seed
                 </button>
-                <button class="selection-button" class:selected={mode === 'stats'} on:click={() => setMode('stats')}>
+                <button class="selection-button" class:selected={mode === 'stats'} onclick={() => setMode('stats')}>
                   Select Stats
                 </button>
               </div>
@@ -592,7 +607,7 @@
                   <input
                     type="number"
                     bind:value={seed}
-                    on:blur={updateUrl}
+                    onblur={updateUrl}
                     min={getTimelessJewelSeedRange(selectedJewel?.value ?? 0).Min}
                     max={getTimelessJewelSeedRange(selectedJewel?.value ?? 0).Max} />
                   {#if seed < getTimelessJewelSeedRange(selectedJewel?.value ?? 0).Min || seed > getTimelessJewelSeedRange(selectedJewel?.value ?? 0).Max}
@@ -612,7 +627,7 @@
                       <button
                         class="bg-neutral-500/20 p-2 px-4 rounded"
                         class:selected={colored}
-                        on:click={() => (colored = !colored)}>
+                        onclick={() => (colored = !colored)}>
                         Colors
                       </button>
                     </div>
@@ -620,7 +635,7 @@
                       <button
                         class="bg-neutral-500/20 p-2 px-4 rounded"
                         class:selected={split}
-                        on:click={() => (split = !split)}>
+                        onclick={() => (split = !split)}>
                         Split
                       </button>
                     </div>
@@ -629,7 +644,7 @@
                   {#if !split}
                     <ul class="mt-4 overflow-auto" class:rainbow={colored}>
                       {#each sortCombined(combineResults(seedResults, colored, 'all'), sortOrder.value) as r (r.id)}
-                        <button class="cursor-pointer" on:click={() => highlight(seed, r.passives)}>
+                        <button class="cursor-pointer" onclick={() => highlight(seed, r.passives)}>
                           <span class="font-bold" class:text-white={getStatValue(r.id) < 3}>
                             ({r.passives.length})
                           </span>
@@ -642,7 +657,7 @@
                       <h3>Notables</h3>
                       <ul class="mt-1" class:rainbow={colored}>
                         {#each sortCombined(combineResults(seedResults, colored, 'notables'), sortOrder.value) as r (r.id)}
-                          <button class="cursor-pointer" on:click={() => highlight(seed, r.passives)}>
+                          <button class="cursor-pointer" onclick={() => highlight(seed, r.passives)}>
                             <span class="font-bold" class:text-white={getStatValue(r.id) < 3}>
                               ({r.passives.length})
                             </span>
@@ -654,7 +669,7 @@
                       <h3 class="mt-2">Smalls</h3>
                       <ul class="mt-1" class:rainbow={colored}>
                         {#each sortCombined(combineResults(seedResults, colored, 'passives'), sortOrder.value) as r (r.id)}
-                          <button class="cursor-pointer" on:click={() => highlight(seed, r.passives)}>
+                          <button class="cursor-pointer" onclick={() => highlight(seed, r.passives)}>
                             <span class="font-bold" class:text-white={getStatValue(r.id) < 3}>
                               ({r.passives.length})
                             </span>
@@ -677,7 +692,7 @@
                         <div>
                           <button
                             class="p-2 px-4 bg-red-500/40 rounded mr-2"
-                            on:click={() => removeStat(selectedStats[Number(s)].id)}>
+                            onclick={() => removeStat(selectedStats[Number(s)].id)}>
                             -
                           </button>
                           <span>{translateStat(selectedStats[Number(s)].id)}</span>
@@ -715,25 +730,25 @@
                     <div class="flex flex-row">
                       <button
                         class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2"
-                        on:click={selectAll}
+                        onclick={selectAll}
                         disabled={searching || disabled.size == 0}>
                         Select All
                       </button>
                       <button
                         class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2"
-                        on:click={selectAllNotables}
+                        onclick={selectAllNotables}
                         disabled={searching || disabled.size == 0}>
                         Notables
                       </button>
                       <button
                         class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2"
-                        on:click={selectAllPassives}
+                        onclick={selectAllPassives}
                         disabled={searching || disabled.size == 0}>
                         Passives
                       </button>
                       <button
                         class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 flex-grow"
-                        on:click={deselectAll}
+                        onclick={deselectAll}
                         disabled={searching || disabled.size >= affectedNodes.length}>
                         Deselect
                       </button>
@@ -741,7 +756,7 @@
                     <div class="flex flex-row mt-2">
                       <button
                         class="p-2 px-3 bg-green-500/40 rounded disabled:bg-green-900/40 flex-grow"
-                        on:click={() => search()}
+                        onclick={() => search()}
                         disabled={searching}>
                         {#if searching}
                           {currentSeed} / {getTimelessJewelSeedRange(selectedJewel?.value ?? 0).Max}
@@ -776,7 +791,7 @@
     <button
       class="burger-menu absolute top-0 left-0 bg-black/80 backdrop-blur-sm rounded-br-lg p-4 pt-5"
       aria-label="Close menu"
-      on:click={() => (collapsed = false)}>
+      onclick={() => (collapsed = false)}>
       <div></div>
       <div></div>
       <div></div>
