@@ -158,15 +158,14 @@
   function getStatValue(id: string | number) {
     return (statValues as Record<string, number>)[String(id)] || 0;
   }
+	
   function getAllPossibleStat(jewel: number | undefined, id: string | number) {
     if (!jewel || !allPossibleStats[jewel]) return 0;
     return (allPossibleStats[jewel] as Record<string | number, number>)[id] || 0;
   }
+	
+  // Very basic sanitizer: strips script/style tags and on* attributes
   function sanitize(html: string): string {
-    // Very basic sanitizer: strips script/style tags and on* attributes
-    return html.replace(/<script.*?>.*?<\/script>/gi, '')
-               .replace(/<style.*?>.*?<\/style>/gi, '')
-               .replace(/on\w+="[^"]*"/gi, '');
   }
 
   $: availableStats = !selectedJewel ? [] : Object.keys(allPossibleStats[selectedJewel.value]);
