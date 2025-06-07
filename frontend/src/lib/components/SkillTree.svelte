@@ -53,7 +53,9 @@
   let offsetX = $state(0);
   let offsetY = $state(0);
 
-  $: jewelRadius = baseJewelRadius / scaling;
+  // Calculate jewel radius based on scaling
+  // This is a constant value that scales with the zoom level
+  const jewelRadius = $derived(baseJewelRadius / scaling);
 
   const drawScaling = 2.6;
 
