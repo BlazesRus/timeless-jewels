@@ -155,7 +155,7 @@
   let cursor = $state('unset');
 
   let hoveredNode: Node | undefined = $state();
-  $: render = $derived(({ context, width, height }) => {
+  $: render = $derived(({ context, width, height }: { context: CanvasRenderingContext2D; width: number; height: number }) => {
 
     const start = window.performance.now();
 
