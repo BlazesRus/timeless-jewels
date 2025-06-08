@@ -219,7 +219,7 @@
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
 
       node.out?.forEach((o: string) => {
-        const nodeOutId = parseInt(keyId);
+        const nodeOutId = parseInt(o);
         const targetNode = drawnNodes[nodeOutId];
         if (!targetNode) {
           return;
@@ -259,8 +259,8 @@
           const finalA = diff > Math.PI ? Math.max(a, b) : Math.min(a, b);
           const finalB = diff > Math.PI ? Math.min(a, b) : Math.max(a, b);
 
-          //if(!node.group) return;
-          const group = drawnGroups[node.group??0];
+          if(!node.group) return;
+          const group = drawnGroups[node.group];
           if (!group) return;
           const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
           context.arc(groupPos.x, groupPos.y, skillTree.constants.orbitRadii[node.orbit??0] / scaling + 1, finalA, finalB);
