@@ -39,37 +39,45 @@ export default [
         ecmaVersion: 2020
       },
       globals: {
+        // --- Browser DOM globals ---
         window: 'readonly',
         document: 'readonly',
         console: 'readonly',
+        fetch: 'readonly',
+        localStorage: 'readonly',
+        URL: 'readonly',
+        Image: 'readonly',
+        HTMLImageElement: 'readonly',
+        CanvasGradient: 'readonly',
+        CanvasRenderingContext2D: 'readonly',
+        WebAssembly: 'readonly',
+
+        // --- Node.js globals ---
         process: 'readonly',
         module: 'readonly',
         require: 'readonly',
         __dirname: 'readonly',
         global: 'readonly',
+
+        // --- Timers ---
         setTimeout: 'readonly',
         clearTimeout: 'readonly',
         setInterval: 'readonly',
         clearInterval: 'readonly',
+
+        // --- Standard JS globals ---
         Promise: 'readonly',
-        CanvasGradient: 'readonly',
-        CanvasRenderingContext2D: 'readonly',
-        HTMLImageElement: 'readonly',
-        Image: 'readonly',
-        //Browser globals
-        fetch: 'readonly',
-        WebAssembly: 'readonly',
-        localStorage: 'readonly',
-        URL: 'readonly',
+
+        // --- Event types (Svelte 5 & browser) ---
         ClipboardEvent: 'readonly',
-        Window: 'readonly',
-        DataTransfer: 'readonly',
-        //New Event types for Svelte 5
         MouseEvent: 'readonly',
         KeyboardEvent: 'readonly',
         PointerEvent: 'readonly',
         WheelEvent: 'readonly',
-        CustomEvent: 'readonly'
+        CustomEvent: 'readonly',
+        DataTransfer: 'readonly',
+        Window: 'readonly',
+        // Add more as needed for your project
       }
     },
     //settings: {
