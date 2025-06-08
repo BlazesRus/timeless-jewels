@@ -531,6 +531,7 @@
   let startY = 0;
 
   let down = false;
+  
   const mouseDown = (event: MouseEvent | CustomEvent) => {
     // If event is a CustomEvent, extract the native event from detail
     const e = (event instanceof MouseEvent) ? event : (event as CustomEvent).detail as MouseEvent;

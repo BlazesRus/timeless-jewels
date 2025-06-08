@@ -1,8 +1,5 @@
 <script lang="ts">
 
-// Declare browser globals for TypeScript and ESLint
-/* global window localStorage URL CustomEvent ClipboardEvent Window DataTransfer */
-
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import SearchResultsComponent from '../../lib/components/SearchResults.svelte';

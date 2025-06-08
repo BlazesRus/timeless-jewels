@@ -39,9 +39,6 @@ export default [
         ecmaVersion: 2020
       },
       globals: {
-        browser: true,
-        es2020: true,
-        node: true,
         window: 'readonly',
         document: 'readonly',
         console: 'readonly',
@@ -54,7 +51,25 @@ export default [
         clearTimeout: 'readonly',
         setInterval: 'readonly',
         clearInterval: 'readonly',
-        Promise: 'readonly'
+        Promise: 'readonly',
+        CanvasGradient: 'readonly',
+        CanvasRenderingContext2D: 'readonly',
+        HTMLImageElement: 'readonly',
+        Image: 'readonly',
+        //Browser globals
+        fetch: 'readonly',
+        WebAssembly: 'readonly',
+        localStorage: 'readonly',
+        URL: 'readonly',
+        ClipboardEvent: 'readonly',
+        Window: 'readonly',
+        DataTransfer: 'readonly',
+        //New Event types for Svelte 5
+        MouseEvent: 'readonly',
+        KeyboardEvent: 'readonly',
+        PointerEvent: 'readonly',
+        WheelEvent: 'readonly',
+        CustomEvent: 'readonly'
       }
     },
     //settings: {
