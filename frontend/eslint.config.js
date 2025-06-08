@@ -76,7 +76,10 @@ export default [
         WheelEvent: 'readonly',
         CustomEvent: 'readonly',
         DataTransfer: 'readonly',
-        Window: 'readonly'
+        Window: 'readonly',
+
+        // --- Go WASM global (from wasm_exec.js) ---
+        Go: 'readonly'
         // Add more as needed for your project
       }
     },
