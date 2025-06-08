@@ -1,5 +1,6 @@
 <script lang="ts">
-  import type { SearchResults, SearchWithSeed } from '../skill_tree';
+  //import type { SearchResults, SearchWithSeed } from '../skill_tree';
+  import type { SearchResults } from '../skill_tree';
   import SearchResult from './SearchResult.svelte';
 
   interface Props {
