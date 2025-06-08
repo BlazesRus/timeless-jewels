@@ -27,7 +27,6 @@
   // Defensive: fallback to empty object if undefined
   const timelessJewels = data?.TimelessJewels ?? {};
   const timelessJewelConquerors = data?.TimelessJewelConquerors ?? {};
-  const timelessJewelSeedRanges = data?.TimelessJewelSeedRanges ?? {};
   const treeToPassive = data?.TreeToPassive ?? {};
   const allPossibleStats: { [key: string]: { [key: string]: number } } = data?.PossibleStats ? JSON.parse(data.PossibleStats) : {};
 
