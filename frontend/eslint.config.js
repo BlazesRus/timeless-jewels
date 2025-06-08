@@ -76,7 +76,7 @@ export default [
         WheelEvent: 'readonly',
         CustomEvent: 'readonly',
         DataTransfer: 'readonly',
-        Window: 'readonly',
+        Window: 'readonly'
         // Add more as needed for your project
       }
     },
