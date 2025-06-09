@@ -510,19 +510,17 @@
 
   let showTradeLinks = $state(false);
 
-  let queries: Query[] = $state([]);
+  let queries: Query[] = $derived(
+  searchResults && results
+    ? constructQueries(searchJewel, searchConqueror, searchResults.raw)
+    : []
+);
 
-  // reconstruct queries if search results change
-  $effect(() => {
-    if (searchResults && results) {
-      queries = constructQueries(searchJewel, searchConqueror, searchResults.raw);
-
-      // reset showTradeLinks to hidden if new queries is only length of 1
-      if (queries.length === 1) {
-        showTradeLinks = false;
-      }
-    }
-  });
+$effect(() => {
+  if (queries.length === 1) {
+    showTradeLinks = false;
+  }
+});
 
   // Fix SvelteKit page prop error: only export 'data' and 'errors'
 </script>
