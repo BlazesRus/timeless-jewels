@@ -61,7 +61,8 @@ var skillTreeGz []byte
 var (
 	// SkillTreeJSON contains the marshaled skill tree data as JSON.
 	SkillTreeJSON []byte
-	SkillTreeData SkillTree // SkillTreeData holds the unmarshaled skill tree data.
+	// SkillTreeData holds the unmarshaled skill tree data.
+	SkillTreeData SkillTree
 )
 
 //go:embed stat_descriptions.json.gz

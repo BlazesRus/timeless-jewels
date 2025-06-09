@@ -1,3 +1,4 @@
+// Package main provides the entry point for the WASM build of the Timeless Jewel calculator.
 package main
 
 import (
