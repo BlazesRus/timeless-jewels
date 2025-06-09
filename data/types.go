@@ -1,5 +1,6 @@
 package data
 
+// Stat represents a stat in the passive skill system.
 type Stat struct {
 	Index    uint32  `json:"_key"`
 	ID       string  `json:"Id"`
@@ -7,6 +8,7 @@ type Stat struct {
 	Category *uint32 `json:"Category"`
 }
 
+// PassiveSkill represents a passive skill node.
 type PassiveSkill struct {
 	Index               uint32   `json:"_key"`
 	ID                  string   `json:"Id"`
@@ -18,6 +20,7 @@ type PassiveSkill struct {
 	IsJewelSocket       bool     `json:"IsJewelSocket"`
 }
 
+// AlternateTreeVersion represents a version of the alternate tree.
 type AlternateTreeVersion struct {
 	Index                                  uint32 `json:"_key"`
 	ID                                     string `json:"Id"`
@@ -28,6 +31,7 @@ type AlternateTreeVersion struct {
 	NotableReplacementSpawnWeight          uint32 `json:"Var9"`
 }
 
+// AlternatePassiveSkill represents an alternate passive skill.
 type AlternatePassiveSkill struct {
 	Index                    uint32             `json:"_key"`
 	ID                       string             `json:"Id"`
@@ -50,6 +54,7 @@ type AlternatePassiveSkill struct {
 	ConquerorVersion         uint32             `json:"Var24"`
 }
 
+// GetStatMinMax returns the min or max value for a stat index.
 func (a *AlternatePassiveSkill) GetStatMinMax(isMin bool, index uint32) uint32 {
 	switch isMin {
 	case true:
@@ -78,6 +83,7 @@ func (a *AlternatePassiveSkill) GetStatMinMax(isMin bool, index uint32) uint32 {
 	return 0
 }
 
+// AlternatePassiveAddition represents an alternate passive addition.
 type AlternatePassiveAddition struct {
 	Index                    uint32             `json:"_key"`
 	ID                       string             `json:"Id"`
@@ -91,6 +97,7 @@ type AlternatePassiveAddition struct {
 	PassiveType              []PassiveSkillType `json:"PassiveType"`
 }
 
+// GetStatMinMax returns the min or max value for a stat index in an alternate passive addition.
 func (a *AlternatePassiveAddition) GetStatMinMax(isMin bool, index uint32) uint32 {
 	switch isMin {
 	case true:

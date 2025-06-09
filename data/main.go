@@ -11,6 +11,8 @@ import (
 
 //go:embed alternate_passive_additions.json.gz
 var alternatePassiveAdditionsGz []byte
+
+// AlternatePassiveAdditions holds all alternate passive additions loaded from the embedded JSON.
 var AlternatePassiveAdditions []*AlternatePassiveAddition
 
 var (
@@ -20,6 +22,8 @@ var (
 
 //go:embed alternate_passive_skills.json.gz
 var alternatePassiveSkillsGz []byte
+
+// AlternatePassiveSkills holds all alternate passive skills loaded from the embedded JSON.
 var AlternatePassiveSkills []*AlternatePassiveSkill
 
 var (
@@ -29,18 +33,24 @@ var (
 
 //go:embed alternate_tree_versions.json.gz
 var alternateTreeVersionsGz []byte
+
+// AlternateTreeVersions holds all alternate tree versions loaded from the embedded JSON.
 var AlternateTreeVersions []*AlternateTreeVersion
 
 var idToAlternateTreeVersion = make(map[uint32]*AlternateTreeVersion)
 
 //go:embed passive_skills.json.gz
 var passiveSkillsGz []byte
+
+// PassiveSkills holds all passive skills loaded from the embedded JSON.
 var PassiveSkills []*PassiveSkill
 
 var idToPassiveSkill = make(map[uint32]*PassiveSkill)
 
 //go:embed stats.json.gz
 var statsGz []byte
+
+// Stats holds all stats loaded from the embedded JSON.
 var Stats []*Stat
 
 var idToStat = make(map[uint32]*Stat)
@@ -49,24 +59,33 @@ var idToStat = make(map[uint32]*Stat)
 var skillTreeGz []byte
 
 var (
+	// SkillTreeJSON contains the marshaled skill tree data as JSON.
 	SkillTreeJSON []byte
-	SkillTreeData SkillTree
+	SkillTreeData SkillTree // SkillTreeData holds the unmarshaled skill tree data.
 )
 
 //go:embed stat_descriptions.json.gz
 var statTranslationsGz []byte
+
+// StatTranslationsJSON contains the stat translations as JSON.
 var StatTranslationsJSON []byte
 
 //go:embed passive_skill_stat_descriptions.json.gz
 var passiveSkillStatTranslationsGz []byte
+
+// PassiveSkillStatTranslationsJSON contains the passive skill stat translations as JSON.
 var PassiveSkillStatTranslationsJSON []byte
 
 //go:embed passive_skill_aura_stat_descriptions.json.gz
 var passiveSkillAuraStatTranslationsGz []byte
+
+// PassiveSkillAuraStatTranslationsJSON contains the passive skill aura stat translations as JSON.
 var PassiveSkillAuraStatTranslationsJSON []byte
 
 //go:embed possible_stats.json.gz
 var possibleStatsGz []byte
+
+// PossibleStatsJSON contains the possible stats as JSON.
 var PossibleStatsJSON []byte
 
 func init() {
