@@ -1,0 +1,28 @@
+linters:
+  enable:
+    - bidichk
+    - canonicalheader
+    - contextcheck
+    - copyloopvar
+    - durationcheck
+    - errorlint
+    - fatcontext
+    - gocritic
+    - inamedparam
+    - intrange
+    - misspell
+    - nonamedreturns
+    - prealloc
+    - revive
+    - sloglint
+    - spancheck
+    - whitespace
+    - wrapcheck
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+run:
+  timeout: 5m
