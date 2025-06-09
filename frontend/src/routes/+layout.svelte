@@ -24,7 +24,15 @@
           go.run(result.instance);
           wasmLoading = false;
           initializeCrystalline();
-          loadSkillTree();
+          // Wait for data.SkillTree to be available before loading
+          const waitForSkillTree = () => {
+            if (typeof data.SkillTree === 'string' && data.SkillTree.length > 10) {
+              loadSkillTree();
+            } else {
+              setTimeout(waitForSkillTree, 50);
+            }
+          };
+          waitForSkillTree();
         });
 
         if (syncWrap)
