@@ -30,3 +30,11 @@ Specifically, this project depends on the following data tables:
 * Passive Skills
 * Stats
 * Translations
+
+---------------------------------Local testing instruction------------------------
+Update golangci-lint via running in console:
+go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+run command:
+golangci-lint config verify
+golangci-lint run ./... --default=none -E errcheck

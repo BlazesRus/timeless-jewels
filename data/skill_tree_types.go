@@ -1,5 +1,6 @@
 package data
 
+// SkillTree represents the passive skill tree structure.
 type SkillTree struct {
 	Tree            string                `json:"tree"`
 	Classes         []Class               `json:"classes"`
@@ -18,6 +19,7 @@ type SkillTree struct {
 	Points          Points                `json:"points"`
 }
 
+// Assets represents the assets used in the skill tree.
 type Assets struct {
 	PSSkillFrame                            Asset       `json:"PSSkillFrame"`
 	PSSkillFrameHighlighted                 Asset       `json:"PSSkillFrameHighlighted"`
@@ -149,6 +151,7 @@ type Assets struct {
 	PassiveMasteryConnectedButton           Asset       `json:"PassiveMasteryConnectedButton"`
 }
 
+// Asset represents a single asset in the skill tree.
 type Asset struct {
 	The01246 string `json:"0.1246"`
 	The02109 string `json:"0.2109"`
@@ -156,10 +159,12 @@ type Asset struct {
 	The03835 string `json:"0.3835"`
 }
 
+// JewelCircle represents a jewel circle in the skill tree.
 type JewelCircle struct {
 	The1 string `json:"1"`
 }
 
+// Class represents a character class in the skill tree.
 type Class struct {
 	Name         string       `json:"name"`
 	BaseStr      int64        `json:"base_str"`
@@ -168,6 +173,7 @@ type Class struct {
 	Ascendancies []Ascendancy `json:"ascendancies"`
 }
 
+// Ascendancy represents an ascendancy class in the skill tree.
 type Ascendancy struct {
 	ID                string           `json:"id"`
 	Name              string           `json:"name"`
@@ -176,6 +182,7 @@ type Ascendancy struct {
 	FlavourTextRect   *FlavourTextRect `json:"flavourTextRect,omitempty"`
 }
 
+// FlavourTextRect represents a rectangle for flavour text in the skill tree.
 type FlavourTextRect struct {
 	X      int64 `json:"x"`
 	Y      int64 `json:"y"`
@@ -183,6 +190,7 @@ type FlavourTextRect struct {
 	Height int64 `json:"height"`
 }
 
+// Constants holds various constants for the skill tree.
 type Constants struct {
 	Classes              Classes             `json:"classes"`
 	CharacterAttributes  CharacterAttributes `json:"characterAttributes"`
@@ -191,12 +199,14 @@ type Constants struct {
 	OrbitRadii           []int64             `json:"orbitRadii"`
 }
 
+// CharacterAttributes represents character attributes in the skill tree.
 type CharacterAttributes struct {
 	Strength     int64 `json:"Strength"`
 	Dexterity    int64 `json:"Dexterity"`
 	Intelligence int64 `json:"Intelligence"`
 }
 
+// Classes represents a collection of character classes in the skill tree.
 type Classes struct {
 	StrDexIntClass int64 `json:"StrDexIntClass"`
 	StrClass       int64 `json:"StrClass"`
@@ -207,12 +217,14 @@ type Classes struct {
 	DexIntClass    int64 `json:"DexIntClass"`
 }
 
+// ExtraImage represents an extra image in the skill tree.
 type ExtraImage struct {
 	X     float64 `json:"x"`
 	Y     float64 `json:"y"`
 	Image string  `json:"image"`
 }
 
+// Group represents a group of nodes in the skill tree.
 type Group struct {
 	X       float64  `json:"x"`
 	Y       float64  `json:"y"`
@@ -221,6 +233,7 @@ type Group struct {
 	IsProxy *bool    `json:"isProxy,omitempty"`
 }
 
+// Node represents a node in the skill tree.
 type Node struct {
 	Skill                  *int64          `json:"skill,omitempty"`
 	Name                   *string         `json:"name,omitempty"`
@@ -256,6 +269,7 @@ type Node struct {
 	ClassStartIndex        *int64          `json:"classStartIndex,omitempty"`
 }
 
+// ExpansionJewel represents an expansion jewel in the skill tree.
 type ExpansionJewel struct {
 	Size   int64   `json:"size"`
 	Index  int64   `json:"index"`
@@ -263,17 +277,20 @@ type ExpansionJewel struct {
 	Parent *string `json:"parent,omitempty"`
 }
 
+// MasteryEffect represents a mastery effect in the skill tree.
 type MasteryEffect struct {
 	Effect       int64    `json:"effect"`
 	Stats        []string `json:"stats"`
 	ReminderText []string `json:"reminderText,omitempty"`
 }
 
+// Points represents points in the skill tree.
 type Points struct {
 	TotalPoints      int64 `json:"totalPoints"`
 	AscendancyPoints int64 `json:"ascendancyPoints"`
 }
 
+// Sprites represents sprite data in the skill tree.
 type Sprites struct {
 	NormalActive          map[string]Sprite `json:"normalActive"`
 	NotableActive         map[string]Sprite `json:"notableActive"`
@@ -290,11 +307,13 @@ type Sprites struct {
 	Frame                 map[string]Sprite `json:"frame"`
 }
 
+// Sprite represents a single sprite in the skill tree.
 type Sprite struct {
 	Filename string           `json:"filename"`
 	Coords   map[string]Coord `json:"coords"`
 }
 
+// Coord represents a coordinate in the skill tree.
 type Coord struct {
 	X int64 `json:"x"`
 	Y int64 `json:"y"`
@@ -302,20 +321,8 @@ type Coord struct {
 	H int64 `json:"h"`
 }
 
+// Recipe represents a recipe string in the skill tree.
 type Recipe string
 
-const (
-	AmberOil      Recipe = "AmberOil"
-	AzureOil      Recipe = "AzureOil"
-	BlackOil      Recipe = "BlackOil"
-	ClearOil      Recipe = "ClearOil"
-	CrimsonOil    Recipe = "CrimsonOil"
-	GoldenOil     Recipe = "GoldenOil"
-	IndigoOil     Recipe = "IndigoOil"
-	OpalescentOil Recipe = "OpalescentOil"
-	SepiaOil      Recipe = "SepiaOil"
-	SilverOil     Recipe = "SilverOil"
-	TealOil       Recipe = "TealOil"
-	VerdantOil    Recipe = "VerdantOil"
-	VioletOil     Recipe = "VioletOil"
-)
+// AmberOil is a recipe constant for Amber Oil.
+const AmberOil Recipe = "AmberOil"

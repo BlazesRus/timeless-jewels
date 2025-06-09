@@ -1,3 +1,5 @@
+// Package calculator provides functions for calculating and searching alternate passive skill information
+// for Timeless Jewels in Path of Exile.
 package calculator
 
 import (
@@ -5,10 +7,12 @@ import (
 	"github.com/BlazesRus/timeless-jewels/random"
 )
 
+// UpdateFunc is a callback function used to report progress during calculations.
 type UpdateFunc func(seed uint32)
 
 var calculationCache = make(map[data.Conqueror]map[data.JewelType]map[uint32]map[uint32]data.AlternatePassiveSkillInformation)
 
+// Calculate computes the alternate passive skill information for a given passive ID, seed, jewel type, and conqueror.
 func Calculate(passiveID uint32, seed uint32, timelessJewelType data.JewelType, conqueror data.Conqueror) data.AlternatePassiveSkillInformation {
 	passiveSkill := data.GetPassiveSkillByIndex(passiveID)
 
@@ -48,6 +52,8 @@ func Calculate(passiveID uint32, seed uint32, timelessJewelType data.JewelType, 
 	}
 }
 
+// ReverseSearch searches for seeds that produce specific stat IDs for given passive IDs and jewel parameters.
+// It returns a nested map of results indexed by seed, passive skill index, and stat key.
 func ReverseSearch(passiveIDs []uint32, statIDs []uint32, timelessJewelType data.JewelType, conqueror data.Conqueror, updates UpdateFunc) map[uint32]map[uint32]map[uint32]uint32 {
 	passiveSkills := make(map[uint32]*data.PassiveSkill)
 	for _, id := range passiveIDs {
@@ -169,6 +175,7 @@ func ReverseSearch(passiveIDs []uint32, statIDs []uint32, timelessJewelType data
 	return results
 }
 
+// ClearCache resets the calculation cache used by the calculator package.
 func ClearCache() {
 	calculationCache = make(map[data.Conqueror]map[data.JewelType]map[uint32]map[uint32]data.AlternatePassiveSkillInformation)
 }

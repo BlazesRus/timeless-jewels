@@ -42,7 +42,7 @@
     "svelte-tiny-virtual-list": "^2.0.6",
     "tailwindcss": "^4.1.8",
     "tslib": "^2.6.3",
-    "typescript": "^5.4.5",
+    "typescript": "^5.5.0",
     "typescript-eslint": "^8.33.1",
     "vite": "^6.3.5"
   },

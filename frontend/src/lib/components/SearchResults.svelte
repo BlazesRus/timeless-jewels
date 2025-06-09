@@ -1,18 +1,28 @@
 <script lang="ts">
-  import type { SearchResults, SearchWithSeed } from '../skill_tree';
+  //import type { SearchResults, SearchWithSeed } from '../skill_tree';
+  import type { SearchResults } from '../skill_tree';
   import SearchResult from './SearchResult.svelte';
-  import VirtualList from 'svelte-tiny-virtual-list';
 
-  export let highlight: (newSeed: number, passives: number[]) => void;
-  export let searchResults: SearchResults;
-  export let groupResults = true;
-  export let jewel: number;
-  export let conqueror: string;
+  interface Props {
+    searchResults: SearchResults;
+    highlight: (newSeed: number, passives: number[]) => void;
+    groupResults?: boolean;
+    jewel: number;
+    conqueror: string;
+  }
 
-  const computeSize = (r: SearchWithSeed) =>
-    8 + 48 + r.skills.reduce((o, s) => o + 32 + Object.keys(s.stats).length * 24, 0);
+  let {
+    searchResults,
+    highlight,
+    groupResults = true,
+    jewel,
+    conqueror
+  }: Props = $props();
 
-  let expandedGroup: number | '' = '';
+  //const computeSize = (r: SearchWithSeed) =>
+  //  8 + 48 + r.skills.reduce((o, s) => o + 32 + Object.keys(s.stats).length * 24, 0);
+
+  let expandedGroup = $state("");
 </script>
 
 {#if groupResults}
@@ -23,40 +33,32 @@
       .reverse() as number[] as k (k)}
       <button
         class="text-lg w-full p-2 px-4 bg-neutral-500/30 rounded flex flex-row justify-between mb-2"
-        on:click={() => (expandedGroup = expandedGroup === k ? '' : k)}>
+        onclick={() => (expandedGroup === String(k) ? expandedGroup = "" : expandedGroup = String(k))}>
         <span>
           {k} Match{k > 1 ? 'es' : ''} [{searchResults.grouped[k].length}]
         </span>
         <span>
-          {expandedGroup === k ? '^' : 'V'}
+          {expandedGroup === String(k) ? '^' : 'V'}
         </span>
       </button>
 
-      {#if expandedGroup === k}
+      {#if expandedGroup === String(k)}
         <div class="flex flex-col overflow-auto min-h-[200px] mb-2">
-          <VirtualList
-            height="auto"
-            overscanCount={10}
-            itemCount={searchResults.grouped[k].length}
-            itemSize={searchResults.grouped[k].map(computeSize)}>
-            <div slot="item" let:index let:style {style}>
-              <SearchResult set={searchResults.grouped[k][index]} {highlight} {jewel} {conqueror} />
+          {#each searchResults.grouped[k] as item, index (index)}
+            <div>
+              <SearchResult set={item} {highlight} {jewel} {conqueror} />
             </div>
-          </VirtualList>
+          {/each}
         </div>
       {/if}
     {/each}
   </div>
 {:else}
   <div class="mt-4 flex flex-col overflow-auto">
-    <VirtualList
-      height="auto"
-      overscanCount={15}
-      itemCount={searchResults.raw.length}
-      itemSize={searchResults.raw.map(computeSize)}>
-      <div slot="item" let:index let:style {style}>
-        <SearchResult set={searchResults.raw[index]} {highlight} {jewel} {conqueror} />
+    {#each searchResults.raw as item, index (index)}
+      <div>
+        <SearchResult set={item} {highlight} {jewel} {conqueror} />
       </div>
-    </VirtualList>
+    {/each}
   </div>
 {/if}

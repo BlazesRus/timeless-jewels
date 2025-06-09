@@ -24,3 +24,5 @@ linters:
       - third_party$
       - builtin$
       - examples$
+run:
+  timeout: 5m

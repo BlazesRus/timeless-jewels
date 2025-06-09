@@ -1,12 +1,11 @@
 <script lang="ts">
-  // @ts-nocheck Heavy DOM usage, so we disable type checking for this file
-   
-  /* global window requestAnimationFrame cancelAnimationFrame HTMLImageElement CanvasRenderingContext2D Image MouseEvent PointerEvent WheelEvent CustomEvent */
+
+  const measurePerformance = (): number => {
+    return window.performance.now();
+  };
+
   import { Canvas, Layer } from 'svelte-canvas';
-  import { derived, writable } from 'svelte/store';
-  import { calculator, data } from '../types';
-  import type { Node, RenderFunc } from '../skill_tree_types';
-  import type { Point } from '../skill_tree';
+  import type { RenderFunc, Node } from '../skill_tree_types';
   import {
     baseJewelRadius,
     calculateNodePos,
@@ -21,58 +20,46 @@
     skillTree,
     toCanvasCoords
   } from '../skill_tree';
-  import { onDestroy } from 'svelte';
+  import type { Point } from '../skill_tree';
+  import { calculator, data } from '../types';
 
-  // Add global type references for browser APIs
-  // @ts-expect-error: Ensure DOM types are available for browser globals
-  export {};
-  export let clickNode: (node: Node) => void;
-  export let circledNode: number | undefined;
-
-  export let selectedJewel: number;
-  export let selectedConqueror: string;
-  export let seed: number;
-  export let highlighted: number[] = [];
-  export let disabled: number[] = [];
-  export let highlightJewels = false;
-
-  // Add a simple time store for animation
-  
-  
-  const t = writable(0);
-  let animationFrame: number;
-  
-  function animate(time: number) {
-    t.set(time);
-    animationFrame = requestAnimationFrame(animate);
+  interface Props {
+    clickNode: (node: Node) => void;
+    circledNode: number | undefined;
+    selectedJewel: number;
+    selectedConqueror: string;
+    seed: number;
+    highlighted?: number[];
+    disabled?: number[];
+    highlightJewels?: boolean;
+    children?: import('svelte').Snippet;
   }
-  
-  if (typeof window !== 'undefined') {
-    animationFrame = requestAnimationFrame(animate);
-  }
-  
-  onDestroy(() => {
-    if (animationFrame) cancelAnimationFrame(animationFrame);
-  });
 
-  const slowTime = derived(t, (values) => {
-    if ((!highlighted || !highlighted.length) && !highlightJewels) {
-      return 0;
-    }
+  let {
+    clickNode,
+    circledNode,
+    selectedJewel,
+    selectedConqueror,
+    seed,
+    highlighted = [],
+    disabled = [],
+    highlightJewels = false,
+    children
+  }: Props = $props();
 
-    return Math.round(values / 40);
-  });
   const startGroups = [427, 320, 226, 227, 323, 422, 329];
 
   const titleFont = '25px Roboto Mono';
   const statsFont = '17px Roboto Mono';
 
-  let scaling = 10;
+  let scaling = $state(10);
 
-  let offsetX = 0;
-  let offsetY = 0;
+  let offsetX = $state(0);
+  let offsetY = $state(0);
 
-  $: jewelRadius = baseJewelRadius / scaling;
+  // Calculate jewel radius based on scaling
+  // This is a constant value that scales with the zoom level
+  const jewelRadius = $derived(baseJewelRadius / scaling);
 
   const drawScaling = 2.6;
 
@@ -166,16 +153,18 @@
     return result;
   };
 
-  let mousePos: Point = {
+  let mousePos: Point = $state({
     x: Number.MIN_VALUE,
     y: Number.MIN_VALUE
-  };
+  });
 
-  let cursor = 'unset';
+  let cursor = $state('unset');
 
-  let hoveredNode: Node | undefined;
-  $: render = ((params: { context: CanvasRenderingContext2D; width: number; height: number }) => {
-    const { context, width, height } = params;
+  let hoveredNode: Node | undefined = $state(undefined);
+
+  // Function to render the skill tree
+  // This function is called by the Canvas component to render the skill tree
+  const render: RenderFunc = $derived(({ context, width, height }: { context: CanvasRenderingContext2D; width: number; height: number }) => {
 
     const start = window.performance.now();
 
@@ -184,14 +173,33 @@
     context.fillStyle = '#080c11';
     context.fillRect(0, 0, width, height);
 
+    const highlightGradientCenterX = width / 2;
+    const highlightGradientCenterY = height / 2;
+    const highlightGradientInner = 90 / scaling;
+    const highlightGradientOuter = 100 / scaling;
+
+    // Precompute the highlight gradient once per render
+    // Use a generic center and radius, since the gradient is mostly for color
+    let highlightGradient: CanvasGradient = context.createRadialGradient(
+      highlightGradientCenterX,
+      highlightGradientCenterY,
+      highlightGradientInner,
+      highlightGradientCenterX,
+      highlightGradientCenterY,
+      highlightGradientOuter
+    );
+    highlightGradient.addColorStop(0, '#8cf34c'); // bright green
+    highlightGradient.addColorStop(1, '#00ff00'); // neon green
+
     const connected: Record<string, boolean> = {};
-    Object.keys(drawnGroups).forEach((groupId) => {
-      const group = drawnGroups[parseInt(groupId)];
-      if (!group) return;
+    //Need to convert keys to numbers because typescript converts all keys into strings
+    Object.keys(drawnGroups).forEach((keyId) => {
+      const groupId = parseInt(keyId)
+      const group = drawnGroups[groupId];
       const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
 
       const maxOrbit = Math.max(...group.orbits);
-      if (startGroups.indexOf(parseInt(groupId)) >= 0) {
+      if (startGroups.indexOf(groupId) >= 0) {
         // Do not draw starter nodes
       } else if (maxOrbit == 1) {
         drawSprite(context, 'PSGroupBackground1', groupPos, false);
@@ -203,33 +211,35 @@
       }
     });
 
-    Object.keys(drawnNodes).forEach((nodeId) => {
-      const node = drawnNodes[parseInt(nodeId)];
+    Object.entries(drawnNodes).forEach(([keyId, node]) => {
+      const nodeId = parseInt(keyId);
+
       if (!node) return;
-      const angle = orbitAngleAt(node.orbit ?? 0, node.orbitIndex ?? 0);
+      const angle = orbitAngleAt(node.orbit??0, node.orbitIndex??0);
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
 
       node.out?.forEach((o: string) => {
-        const targetNode = drawnNodes[parseInt(o)];
+        const nodeOutId = parseInt(o);
+        const targetNode = drawnNodes[nodeOutId];
         if (!targetNode) {
           return;
         }
 
-        const min = Math.min(parseInt(o), parseInt(nodeId));
-        const max = Math.max(parseInt(o), parseInt(nodeId));
+        const min = Math.min(nodeOutId, nodeId);
+        const max = Math.max(nodeOutId, nodeId);
         const joined = min + ':' + max;
 
-        if (connected[joined]) {
+        if (joined in connected) {
           return;
         }
         connected[joined] = true;
 
-        // Do not draw connections to mastery nodes
-        if (targetNode.isMastery) {
-          return;
-        }
+        if (!targetNode) return;
 
-        const targetAngle = orbitAngleAt(targetNode.orbit ?? 0, targetNode.orbitIndex ?? 0);
+        // Do not draw connections to mastery nodes
+        if (targetNode.isMastery) return;
+
+        const targetAngle = orbitAngleAt(targetNode.orbit??0, targetNode.orbitIndex??0);
         const targetRotatedPos = calculateNodePos(targetNode, offsetX, offsetY, scaling);
 
         context.beginPath();
@@ -249,10 +259,11 @@
           const finalA = diff > Math.PI ? Math.max(a, b) : Math.min(a, b);
           const finalB = diff > Math.PI ? Math.min(a, b) : Math.max(a, b);
 
-          const group = drawnGroups[node.group ?? 0];
+          if(!node.group) return;
+          const group = drawnGroups[node.group];
           if (!group) return;
           const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
-          context.arc(groupPos.x, groupPos.y, skillTree.constants.orbitRadii[node.orbit ?? 0] / scaling + 1, finalA, finalB);
+          context.arc(groupPos.x, groupPos.y, skillTree.constants.orbitRadii[node.orbit??0] / scaling + 1, finalA, finalB);
         }
 
         context.lineWidth = 6 / scaling;
@@ -261,34 +272,35 @@
       });
     });
 
-    let circledNodePos: Point | undefined;
-    if (circledNode && drawnNodes[circledNode]) {
+
+    // Define circledNodePos if circledNode is set 
+    // (setting to 0,0 to avoid needing to check for undefined; only used if circledNode is set)
+    let circledNodePos: Point = { x: 0, y: 0 };
+    if (circledNode) {
       circledNodePos = calculateNodePos(drawnNodes[circledNode], offsetX, offsetY, scaling);
       context.strokeStyle = '#ad2b2b';
     }
 
     let hoveredNodeActive = false;
     let newHoverNode: Node | undefined;
-    Object.keys(drawnNodes).forEach((nodeId) => {
-      const node = drawnNodes[parseInt(nodeId)];
-      if (!node) return;
+
+    Object.values(drawnNodes).forEach((node:Node) => {
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
       let touchDistance = 0;
 
       let active = false;
-      if (circledNode && circledNodePos) {
+      if (circledNode) {
         if (distance(rotatedPos, circledNodePos) < jewelRadius) {
           active = true;
         }
       }
 
-      if (disabled.indexOf(node.skill ?? -1) >= 0) {
-        active = false;
-      }
+      if (node.skill&&disabled.indexOf(node.skill) >= 0) active = false;
 
+      //Todo:Give default node image if invalid icon
       if (node.isKeystone) {
         touchDistance = 110;
-        drawSprite(context, node.icon ?? '', rotatedPos, active);
+        drawSprite(context, node.icon??"", rotatedPos, active);
         if (active) {
           drawSprite(context, 'KeystoneFrameAllocated', rotatedPos, false);
         } else {
@@ -296,7 +308,7 @@
         }
       } else if (node.isNotable) {
         touchDistance = 70;
-        drawSprite(context, node.icon ?? '', rotatedPos, active);
+        drawSprite(context, node.icon??"", rotatedPos, active);
         if (active) {
           drawSprite(context, 'NotableFrameAllocated', rotatedPos, false);
         } else {
@@ -318,10 +330,10 @@
           }
         }
       } else if (node.isMastery) {
-        drawSprite(context, node.inactiveIcon ?? '', rotatedPos, active);
+        drawSprite(context, node.inactiveIcon??"", rotatedPos, active);
       } else {
         touchDistance = 50;
-        drawSprite(context, node.icon ?? '', rotatedPos, active);
+        drawSprite(context, node.icon??"", rotatedPos, active);
         if (active) {
           drawSprite(context, 'PSSkillFrameActive', rotatedPos, false);
         } else {
@@ -329,8 +341,9 @@
         }
       }
 
-      if (highlighted.indexOf(node.skill ?? -1) >= 0 || (highlightJewels && node.isJewelSocket)) {
-        context.strokeStyle = `hsl(${$slowTime}, 100%, 50%)`;
+      if (highlighted.indexOf(node.skill??-1) >= 0 || (highlightJewels && node.isJewelSocket)) {
+        // Use the precomputed bright green gradient for the highlight ring
+        context.strokeStyle = highlightGradient;
         context.lineWidth = 3;
         context.beginPath();
         context.arc(rotatedPos.x, rotatedPos.y, (touchDistance + 30) / scaling, 0, Math.PI * 2);
@@ -345,7 +358,7 @@
 
     hoveredNode = newHoverNode;
 
-    if (circledNode && circledNodePos) {
+    if (circledNode) {
       context.strokeStyle = '#ad2b2b';
       context.lineWidth = 1;
       context.beginPath();
@@ -354,7 +367,7 @@
     }
 
     if (hoveredNode) {
-      let nodeName = hoveredNode.name ?? '';
+      let nodeName = hoveredNode.name ?? 'Node name';
       let nodeStats: { text: string; special: boolean }[] = (hoveredNode.stats || []).map((s) => ({
         text: s,
         special: false
@@ -369,19 +382,18 @@
           selectedJewel &&
           selectedConqueror
         ) {
-          const treePassive = data.TreeToPassive[hoveredNode.skill];
+          // Saving the hovered node skill to avoid recalculating it
+          // This is mainly for error handling because VS Code forgets that hoveredNode is valid within this block
+          // and complains about hoveredNode.skill being possibly undefined
+          const hoveredSkill = hoveredNode.skill;
+          const treePassive = data.TreeToPassive[hoveredSkill];
           if (treePassive && treePassive.Index !== undefined) {
-            const result = calculator.Calculate(
-              treePassive.Index,
-              seed,
-              selectedJewel,
-              selectedConqueror
-            );
-
-            if (result) {
+            const result = calculator.Calculate(treePassive.Index,seed,selectedJewel, selectedConqueror);
+            if (result)
+            {
               if ('AlternatePassiveSkill' in result && result.AlternatePassiveSkill) {
                 nodeStats = [];
-                nodeName = result.AlternatePassiveSkill.Name ?? '';
+                nodeName = result.AlternatePassiveSkill.Name ?? 'Alternative Skill';
 
                 if (result.AlternatePassiveSkill.StatsKeys) {
                   result.AlternatePassiveSkill.StatsKeys.forEach((statId: number, i: number) => {
@@ -394,28 +406,30 @@
                         special: true
                       });
                     }
+                    else
+                      throw new Error(`Failed to translate ${nodeName}. Skill ID: ${hoveredSkill}, Stat ID: ${stat.ID}`);
                   });
-                }
-              }
-
-              if (result.AlternatePassiveAdditionInformations) {
-                result.AlternatePassiveAdditionInformations.forEach((info: { AlternatePassiveAddition?: { StatsKeys?: number[] }, StatRolls?: number[] }) => {
-                  if (info.AlternatePassiveAddition && info.AlternatePassiveAddition.StatsKeys) {
-                    info.AlternatePassiveAddition.StatsKeys.forEach((statId: number, i: number) => {
-                      const stat = data.GetStatByIndex(statId);
-                      if (!stat) return;
-                      const translation = inverseTranslations[stat.ID] || '';
-                      if (translation && info.StatRolls && info.StatRolls[i] !== undefined) {
-                        nodeStats.push({
-                          text: formatStats(translation, info.StatRolls[i]) || stat.ID,
-                          special: true
+                  if (result.AlternatePassiveAdditionInformations) {
+                    result.AlternatePassiveAdditionInformations.forEach((info) => {
+                      if (info.AlternatePassiveAddition && info.AlternatePassiveAddition.StatsKeys) {
+                        info.AlternatePassiveAddition.StatsKeys.forEach((statId: number, i: number) => {
+                          const stat = data.GetStatByIndex(statId);
+                          if (!stat) return;
+                          const translation = inverseTranslations[stat.ID] || '';
+                          if (translation && info.StatRolls && info.StatRolls[i] !== undefined) {
+                            nodeStats.push({text: formatStats(translation, info.StatRolls[i]) || stat.ID, special: true});
+                          }
+                          else
+                            throw new Error(`Failed to translate ${nodeName} additional info for statID: ${stat.ID}, skillID: ${hoveredSkill}, statRoll: ${info.StatRolls ? info.StatRolls[i] : 'undefined'}`);
                         });
                       }
                     });
                   }
-                });
+                }
               }
             }
+            else
+              throw new Error(`Failed to calculate ${nodeName}. Skill ID: ${hoveredSkill}, Seed: ${seed}, Selected Jewel: ${selectedJewel}, Selected Conqueror: ${selectedConqueror}`);
           }
         }
       }
@@ -505,10 +519,10 @@
     context.textAlign = 'right';
     context.font = '12px Roboto Mono';
 
-    const end = window.performance.now();
+    const end = measurePerformance();
 
     context.fillText(`${(end - start).toFixed(1)}ms`, width - 5, 17);
-  }) as RenderFunc;
+  });
 
   let downX = 0;
   let downY = 0;
@@ -517,16 +531,19 @@
   let startY = 0;
 
   let down = false;
-  const mouseDown = (event: MouseEvent) => {
+  
+  const mouseDown = (event: MouseEvent | CustomEvent) => {
+    // If event is a CustomEvent, extract the native event from detail
+    const e = (event instanceof MouseEvent) ? event : (event as CustomEvent).detail as MouseEvent;
     down = true;
-    downX = event.offsetX;
-    downY = event.offsetY;
+    downX = e.offsetX;
+    downY = e.offsetY;
     startX = offsetX;
     startY = offsetY;
 
     mousePos = {
-      x: event.offsetX,
-      y: event.offsetY
+      x: e.offsetX,
+      y: e.offsetY
     };
 
     if (hoveredNode) {
@@ -557,63 +574,53 @@
     };
   };
 
-  const onScroll = (event: WheelEvent) => {
-    if (event.deltaY > 0) {
+  const onScroll = (event: CustomEvent | WheelEvent) => {
+    // If event is a CustomEvent, extract the native event from detail
+    const e = (event instanceof WheelEvent) ? event : (event as CustomEvent).detail as WheelEvent;
+    if (e.deltaY > 0) {
       if (scaling < 30) {
-        offsetX += event.offsetX;
-        offsetY += event.offsetY;
+        offsetX += e.offsetX;
+        offsetY += e.offsetY;
       }
     } else {
       if (scaling > 3) {
-        offsetX -= event.offsetX;
-        offsetY -= event.offsetY;
+        offsetX -= e.offsetX;
+        offsetY -= e.offsetY;
       }
     }
 
-    scaling = Math.min(30, Math.max(3, scaling + event.deltaY / 100));
+    scaling = Math.min(30, Math.max(3, scaling + e.deltaY / 100));
 
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation();
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
   };
 
-  let width = 0;
-  let height = 0;
+  let width = $state(0);
+  let height = $state(0);
   const resize = () => {
     width = window.innerWidth;
     height = window.innerHeight;
   };
 
-  let initialized = false;
-  $: {
+  let initialized = $state(false);
+  $effect(() => {
     if (!initialized && skillTree) {
       initialized = true;
       offsetX = skillTree.min_x + (window.innerWidth / 2) * scaling;
       offsetY = skillTree.min_y + (window.innerHeight / 2) * scaling;
     }
     resize();
-  }
-
-  // Canvas expects CustomEvent, so wrap handlers
-  function handlePointerDown(e: CustomEvent) {
-    if (e.detail && e.detail.originalEvent) {
-      mouseDown(e.detail.originalEvent);
-    }
-  }
-  function handleWheel(e: CustomEvent) {
-    if (e.detail && e.detail.originalEvent) {
-      onScroll(e.detail.originalEvent);
-    }
-  }
+  });
 </script>
 
-<svelte:window on:pointerup={mouseUp} on:pointermove={mouseMove} on:resize={resize} />
+<svelte:window onpointerup={mouseUp} onpointermove={mouseMove} onresize={resize} />
 
 {#if width && height}
-  <div on:resize={resize} style="touch-action: none; cursor: {cursor}">
-    <Canvas {width} {height} on:pointerdown={handlePointerDown} on:wheel={handleWheel}>
+  <div onresize={resize} style="touch-action: none; cursor: {cursor}">
+    <Canvas {width} {height} on:pointerdown={mouseDown} on:wheel={onScroll}>
       <Layer {render} />
     </Canvas>
-    <slot></slot>
+    {@render children?.()}
   </div>
 {/if}

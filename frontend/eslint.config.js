@@ -32,7 +32,61 @@ export default [
     '**/tsconfig.tsbuildinfo'
   ]),
   {
-    ignores: ['**/postcss.config.js', '**/tsconfig.tsbuildinfo'],
+    ignores: ['**/postcss.config.js', '**/tsconfig.tsbuildinfo', '*.config.js', 'wasm_exec.js'],
+    languageOptions: {
+      parserOptions: {
+        sourceType: 'module',
+        ecmaVersion: 2020
+      },
+      globals: {
+        // --- Browser DOM globals ---
+        window: 'readonly',
+        document: 'readonly',
+        console: 'readonly',
+        fetch: 'readonly',
+        localStorage: 'readonly',
+        URL: 'readonly',
+        Image: 'readonly',
+        HTMLImageElement: 'readonly',
+        CanvasGradient: 'readonly',
+        CanvasRenderingContext2D: 'readonly',
+        WebAssembly: 'readonly',
+
+        // --- Node.js globals ---
+        process: 'readonly',
+        module: 'readonly',
+        require: 'readonly',
+        __dirname: 'readonly',
+        global: 'readonly',
+
+        // --- Timers ---
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+
+        // --- Standard JS globals ---
+        Promise: 'readonly',
+
+        // --- Event types (Svelte 5 & browser) ---
+        ClipboardEvent: 'readonly',
+        MouseEvent: 'readonly',
+        KeyboardEvent: 'readonly',
+        PointerEvent: 'readonly',
+        WheelEvent: 'readonly',
+        CustomEvent: 'readonly',
+        DataTransfer: 'readonly',
+        Window: 'readonly',
+
+        // --- Go WASM global (from wasm_exec.js) ---
+        Go: 'readonly'
+        // Add more as needed for your project
+      }
+    },
+    //settings: {
+    //  'svelte3/typescript': () => require('typescript'),
+    //  'svelte3/ignore-warnings': ({ code }) => code === 'missing-declaration'
+    //},
     rules: {
       //semi: ['warn', 'always'],
       //quotes: ['warn', 'single', { avoidEscape: true, allowTemplateLiterals: true }],
@@ -56,6 +110,7 @@ export default [
       parser: svelteParser, // Set the Svelte parser
       parserOptions: {
         parser: '@typescript-eslint/parser', // Use the TypeScript parser
+        //project: './tsconfig02.json', // Specify your tsconfig.json file
         svelteFeatures: {
           // Enable features specific to Svelte 5
           experimentalGenerics: true // Optional: If using generics
@@ -90,6 +145,7 @@ export default [
       parser: svelteParser, // Set the Svelte parser
       parserOptions: {
         parser: '@typescript-eslint/parser', // Use the TypeScript parser
+        //project: './tsconfig02.json', // Specify your tsconfig.json file
         svelteFeatures: {
           // Enable features specific to Svelte 5
           experimentalGenerics: true // Optional: If using generics

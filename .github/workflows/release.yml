@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      - ReleaseTest
+	  
 jobs:
   release:
     name: Release
