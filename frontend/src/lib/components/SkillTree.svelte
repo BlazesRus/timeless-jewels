@@ -610,7 +610,18 @@
       offsetX = skillTree.min_x + (window.innerWidth / 2) * scaling;
       offsetY = skillTree.min_y + (window.innerHeight / 2) * scaling;
     }
+  });
+  onMount(() => {
     resize();
+  });
+
+  let _first = true;
+  $tick(() => {
+    if (_first) {
+      _first = false;
+    } else {
+      resize();
+    }
   });
 </script>
 
