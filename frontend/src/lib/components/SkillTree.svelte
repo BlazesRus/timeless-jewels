@@ -162,6 +162,24 @@
 
   let hoveredNode: Node | undefined = $state(undefined);
 
+  const highlightGradientCenterX = width / 2;
+  const highlightGradientCenterY = height / 2;
+  const highlightGradientInner = 90 / scaling;
+  const highlightGradientOuter = 100 / scaling;
+
+  // Precompute the highlight gradient once per render
+  // Use a generic center and radius, since the gradient is mostly for color
+  let highlightGradient: CanvasGradient = context.createRadialGradient(
+    highlightGradientCenterX,
+    highlightGradientCenterY,
+    highlightGradientInner,
+    highlightGradientCenterX,
+    highlightGradientCenterY,
+    highlightGradientOuter
+  );
+  highlightGradient.addColorStop(0, '#8cf34c'); // bright green
+  highlightGradient.addColorStop(1, '#00ff00'); // neon green
+
   // Function to render the skill tree
   // This function is called by the Canvas component to render the skill tree
   const render: RenderFunc = $derived(({ context, width, height }: { context: CanvasRenderingContext2D; width: number; height: number }) => {
@@ -173,25 +191,8 @@
     context.fillStyle = '#080c11';
     context.fillRect(0, 0, width, height);
 
-    const highlightGradientCenterX = width / 2;
-    const highlightGradientCenterY = height / 2;
-    const highlightGradientInner = 90 / scaling;
-    const highlightGradientOuter = 100 / scaling;
-
-    // Precompute the highlight gradient once per render
-    // Use a generic center and radius, since the gradient is mostly for color
-    let highlightGradient: CanvasGradient = context.createRadialGradient(
-      highlightGradientCenterX,
-      highlightGradientCenterY,
-      highlightGradientInner,
-      highlightGradientCenterX,
-      highlightGradientCenterY,
-      highlightGradientOuter
-    );
-    highlightGradient.addColorStop(0, '#8cf34c'); // bright green
-    highlightGradient.addColorStop(1, '#00ff00'); // neon green
-
     const connected: Record<string, boolean> = {};
+
     //Need to convert keys to numbers because typescript converts all keys into strings
     Object.keys(drawnGroups).forEach((keyId) => {
       const groupId = parseInt(keyId)
@@ -271,7 +272,6 @@
         context.stroke();
       });
     });
-
 
     // Define circledNodePos if circledNode is set 
     // (setting to 0,0 to avoid needing to check for undefined; only used if circledNode is set)
