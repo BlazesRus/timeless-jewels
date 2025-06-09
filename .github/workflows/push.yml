@@ -27,7 +27,8 @@ jobs:
 
       - uses: golangci/golangci-lint-action@v6
         with:
-          args: --timeout 5m
+          version: latest
+          args: --config=.golangci.yml --timeout 5m
 
 #Temporaly disabling because test always fails for now(possible to get working tree even when fails this one)		  
 #      - name: Test
