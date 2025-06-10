@@ -1,6 +1,6 @@
 <script lang="ts">
   import { constructSingleResultQuery, type SearchWithSeed } from '../skill_tree';
-  import { skillTree, translateStatData } from '../skill_tree';
+  import { skillTree, translateStat } from '../skill_tree';
   import { openQueryTrade } from '$lib/utils/trade_utils';
 
   interface Props {
@@ -45,7 +45,7 @@
       </span>
       <ul class="list-disc pl-6 font-bold">
         {#each Object.keys(skill.stats) as stat (stat)}
-          <li>{translateStatData(stat, skill.stats[stat])}</li>
+          <li>{translateStat(parseInt(stat), skill.stats[stat])}</li>
         {/each}
       </ul>
     </div>

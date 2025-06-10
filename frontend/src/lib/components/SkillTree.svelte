@@ -21,32 +21,41 @@
     toCanvasCoords
   } from '../skill_tree';
   import type { Point } from '../skill_tree';
-  import { derived } from 'svelte/store';
   import { calculator, data } from '../types';
-
-  export let clickNode: (node: Node) => void;
-  export let circledNode: number | undefined;
-
-  export let selectedJewel: number;
-  export let selectedConqueror: string;
-  export let seed: number;
-  export let highlighted: number[] = [];
-  export let disabled: number[] = [];
-  export let highlightJewels = false;
-
+  interface Props {
+    clickNode: (node: Node) => void;
+    circledNode?: number | undefined;
+    selectedJewel: number;
+    selectedConqueror: string;
+    seed: number;
+    highlighted?: number[];
+    disabled?: number[];
+    highlightJewels?: boolean;
+    children?: import('svelte').Snippet;
+  }
+  let {
+    clickNode,
+    circledNode,
+    selectedJewel,
+    selectedConqueror,
+    seed,
+    highlighted = [],
+    disabled = [],
+    highlightJewels = false,
+    children
+  }: Props = $props();
   const startGroups = [427, 320, 226, 227, 323, 422, 329];
 
   const titleFont = '25px Roboto Mono';
   const statsFont = '17px Roboto Mono';
 
-  let scaling = 10;
-
-  let offsetX = 0;
-  let offsetY = 0;
+  let scaling = $state(10);
+  let offsetX = $state(0);
+  let offsetY = $state(0);
 
   // Calculate jewel radius based on scaling
   // This is a constant value that scales with the zoom level
-  $: jewelRadius = baseJewelRadius / scaling;
+  let jewelRadius = $derived(baseJewelRadius / scaling);
 
   const drawScaling = 2.6;
 
@@ -139,46 +148,45 @@
 
     return result;
   };
-
-  let mousePos: Point = {
+  let mousePos: Point = $state({
     x: Number.MIN_VALUE,
     y: Number.MIN_VALUE
-  };
+  });
 
-  let cursor = 'unset';
-
-  let hoveredNode: Node | undefined;
+  let cursor = $state('unset');
+  let hoveredNode: Node | undefined = $state();
 
   // Function to render the skill tree
   // This function is called by the Canvas component to render the skill tree
-  $: render = (({ context, width, height }) => {
-    const start = window.performance.now();
+  let render = $derived.by((): RenderFunc => {
+    return ({ context, width, height }) => {
+      const start = window.performance.now();
 
-    context.clearRect(0, 0, width, height);
+      context.clearRect(0, 0, width, height);
 
-    context.fillStyle = '#080c11';
-    context.fillRect(0, 0, width, height);
+      context.fillStyle = '#080c11';
+      context.fillRect(0, 0, width, height);
 
-    const connected: Record<string, boolean> = {};
+      const connected: Record<string, boolean> = {};
 
-    //Need to convert keys to numbers because typescript converts all keys into strings
-    Object.keys(drawnGroups).forEach((keyId) => {
-      const groupId = parseInt(keyId){
-      const group = drawnGroups[groupId];
-      const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
+      //Need to convert keys to numbers because typescript converts all keys into strings
+      Object.keys(drawnGroups).forEach((keyId) => {
+        const groupId = parseInt(keyId);
+        const group = drawnGroups[groupId];
+        const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
 
-      const maxOrbit = Math.max(...group.orbits);
-      if (startGroups.indexOf(groupId) >= 0) {
-        // Do not draw starter nodes
-      } else if (maxOrbit == 1) {
-        drawSprite(context, 'PSGroupBackground1', groupPos, false);
-      } else if (maxOrbit == 2) {
-        drawSprite(context, 'PSGroupBackground2', groupPos, false);
-      } else if (maxOrbit == 3 || group.orbits.length > 1) {
-        drawSprite(context, 'PSGroupBackground3', groupPos, false, true);
-        // drawMirror(context, $PSGroupBackground3, groupPos);
-      }
-    });
+        const maxOrbit = Math.max(...group.orbits);
+        if (startGroups.indexOf(groupId) >= 0) {
+          // Do not draw starter nodes
+        } else if (maxOrbit == 1) {
+          drawSprite(context, 'PSGroupBackground1', groupPos, false);
+        } else if (maxOrbit == 2) {
+          drawSprite(context, 'PSGroupBackground2', groupPos, false);
+        } else if (maxOrbit == 3 || group.orbits.length > 1) {
+          drawSprite(context, 'PSGroupBackground3', groupPos, false, true);
+          // drawMirror(context, $PSGroupBackground3, groupPos);
+        }
+      });
 
     Object.entries(drawnNodes).forEach(([keyId, node]) => {
       const nodeId = parseInt(keyId);
@@ -486,22 +494,17 @@
 
     context.fillStyle = '#ffffff';
     context.textAlign = 'right';
-    context.font = '12px Roboto Mono';
+    context.font = '12px Roboto Mono';      const end = measurePerformance();
 
-    const end = measurePerformance();
+      context.fillText(`${(end - start).toFixed(1)}ms`, width - 5, 17);
+    };
+  });
 
-    context.fillText(`${(end - start).toFixed(1)}ms`, width - 5, 17);
-  }) as RenderFunc;
-
-  let downX = 0;
-  let downY = 0;
-
-  let startX = 0;
-  let startY = 0;
-
-  let down = false;
-
-  const mouseDown = (event: MouseEvent) => {
+  let downX = $state(0);
+  let downY = $state(0);
+  let startX = $state(0);
+  let startY = $state(0);
+  let down = $state(false);  const mouseDown = (event: PointerEvent) => {
     down = true;
     downX = event.offsetX;
     downY = event.offsetY;
@@ -529,7 +532,7 @@
     };
   };
 
-  const mouseMove = (event: MouseEvent) => {
+  const mouseMove = (event: PointerEvent) => {
     if (down) {
       offsetX = startX - (downX - event.offsetX) * scaling;
       offsetY = startY - (downY - event.offsetY) * scaling;
@@ -561,31 +564,40 @@
     event.stopImmediatePropagation();
   };
 
-  let width = 0;
-  let height = 0;
+  let width = $state(0);
+  let height = $state(0);
+  
   const resize = () => {
     width = window.innerWidth;
     height = window.innerHeight;
   };
 
-  let initialized = false;
-  $: {
+  let initialized = $state(false);
+  
+  // Initialize position only once when skillTree is available
+  $effect(() => {
     if (!initialized && skillTree) {
       initialized = true;
       offsetX = skillTree.min_x + (window.innerWidth / 2) * scaling;
       offsetY = skillTree.min_y + (window.innerHeight / 2) * scaling;
     }
+  });
+
+  // Handle window resize separately to avoid infinite loops
+  $effect(() => {
     resize();
-  }
+  });
 </script>
 
-<svelte:window on:pointerup={mouseUp} on:pointermove={mouseMove} on:resize={resize} />
+<svelte:window onpointerup={mouseUp} onpointermove={mouseMove} onresize={resize} />
 
 {#if width && height}
-  <div on:resize={resize} style="touch-action: none; cursor: {cursor}">
-    <Canvas {width} {height} on:pointerdown={mouseDown} on:wheel={onScroll}>
+  <div style="touch-action: none; cursor: {cursor}">
+    <Canvas {width} {height} onpointerdown={mouseDown} onwheel={onScroll}>
       <Layer {render} />
     </Canvas>
-    <slot></slot>
+    {#if children}
+      {@render children()}
+    {/if}
   </div>
 {/if}

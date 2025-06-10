@@ -27,31 +27,49 @@ const obj = {
     );
 
     const searchGrouped: { [key: number]: SearchWithSeed[] } = {};
+    
+    if (!searchResult) {
+      return { grouped: {}, raw: [] };
+    }
+
     Object.keys(searchResult).forEach((seedStr) => {
       const seed = parseInt(seedStr);
+      const seedData = searchResult[seed];
+      
+      if (!seedData) return;
 
       let weight = 0;
       let totalStats = 0;
 
       const statCounts: Record<number, number> = {};
-      const skills = Object.keys(searchResult[seed]).map((skillIDStr) => {
+      const statTotal: Record<number, number> = {};
+      const skills = Object.keys(seedData).map((skillIDStr) => {
         const skillID = parseInt(skillIDStr);
-        Object.keys(searchResult[seed][skillID]).forEach((st) => {
+        const skillStats = seedData[skillID];
+        
+        if (!skillStats) {
+          return {
+            passive: passiveToTree[skillID],
+            stats: {}
+          };
+        }
+
+        Object.keys(skillStats).forEach((st) => {
           const n = parseInt(st);
           statCounts[n] = (statCounts[n] || 0) + 1;
           weight += args.stats.find((s) => s.id == n)?.weight || 0;
-          const statValue = (skillStats as Record<string, number>)[st];
+          const statValue = skillStats[parseInt(st)];
           statTotal[n] = (statTotal[n] ?? 0) + statValue;
           totalStats += statValue;
         });
 
         return {
           passive: passiveToTree[skillID],
-          stats: searchResult[seed][skillID]
+          stats: skillStats as { [key: string]: number }
         };
       });
 
-      const len = Object.keys(searchResult[seed]).length;
+      const len = Object.keys(seedData).length;
       searchGrouped[len] = [
         ...(searchGrouped[len] || []),
         {

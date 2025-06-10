@@ -7,7 +7,6 @@
     queries: Query[];
     showTradeLinks?: boolean;
   }
-
   let { queries, showTradeLinks = $bindable(false) }: Props = $props();
 
   let hasMultipleQueries = $derived(queries.length > 1);
