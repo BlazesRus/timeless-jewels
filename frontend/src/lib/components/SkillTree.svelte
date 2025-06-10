@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount, tick } from 'svelte';
 
   const measurePerformance = (): number => {
     return window.performance.now();
@@ -162,24 +163,6 @@
 
   let hoveredNode: Node | undefined = $state(undefined);
 
-  const highlightGradientCenterX = width / 2;
-  const highlightGradientCenterY = height / 2;
-  const highlightGradientInner = 90 / scaling;
-  const highlightGradientOuter = 100 / scaling;
-
-  // Precompute the highlight gradient once per render
-  // Use a generic center and radius, since the gradient is mostly for color
-  let highlightGradient: CanvasGradient = context.createRadialGradient(
-    highlightGradientCenterX,
-    highlightGradientCenterY,
-    highlightGradientInner,
-    highlightGradientCenterX,
-    highlightGradientCenterY,
-    highlightGradientOuter
-  );
-  highlightGradient.addColorStop(0, '#8cf34c'); // bright green
-  highlightGradient.addColorStop(1, '#00ff00'); // neon green
-
   // Function to render the skill tree
   // This function is called by the Canvas component to render the skill tree
   const render: RenderFunc = $derived(({ context, width, height }: { context: CanvasRenderingContext2D; width: number; height: number }) => {
@@ -340,6 +323,22 @@
           drawSprite(context, 'PSSkillFrame', rotatedPos, false);
         }
       }
+
+      // Create highlightGradient inside render function
+      const highlightGradientCenterX = width / 2;
+      const highlightGradientCenterY = height / 2;
+      const highlightGradientInner = 90 / scaling;
+      const highlightGradientOuter = 100 / scaling;
+      let highlightGradient: CanvasGradient = context.createRadialGradient(
+        highlightGradientCenterX,
+        highlightGradientCenterY,
+        highlightGradientInner,
+        highlightGradientCenterX,
+        highlightGradientCenterY,
+        highlightGradientOuter
+      );
+      highlightGradient.addColorStop(0, '#8cf34c'); // bright green
+      highlightGradient.addColorStop(1, '#00ff00'); // neon green
 
       if (highlighted.indexOf(node.skill??-1) >= 0 || (highlightJewels && node.isJewelSocket)) {
         // Use the precomputed bright green gradient for the highlight ring
@@ -610,19 +609,19 @@
       offsetX = skillTree.min_x + (window.innerWidth / 2) * scaling;
       offsetY = skillTree.min_y + (window.innerHeight / 2) * scaling;
     }
-  });
+  }
 
   onMount(() => {
     resize();
-  });
-
-  let _first = true;
-  $tick(() => {
-    if (_first) {
-      _first = false;
-    } else {
-      resize();
-    }
+    (async () => {
+      let _first = true;
+      if (_first) {
+        _first = false;
+      } else {
+        await tick();
+        resize();
+      }
+    })();
   });
 </script>
 
