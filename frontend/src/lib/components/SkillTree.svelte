@@ -347,11 +347,10 @@
         context.beginPath();
         context.arc(rotatedPos.x, rotatedPos.y, (touchDistance + 30) / scaling, 0, Math.PI * 2);
         context.stroke();
-      }
-
-      if (distance(rotatedPos, mousePos) < touchDistance / scaling) {
+      }      if (distance(rotatedPos, mousePos) < touchDistance / scaling) {
         newHoverNode = node;
         hoveredNodeActive = active;
+        // console.log('Hovering over node:', node.skill, node.name, 'at distance:', distance(rotatedPos, mousePos), 'touchDistance:', touchDistance / scaling);
       }
     });
 
@@ -530,7 +529,6 @@
   let startY = 0;
 
   let down = false;
-  
   const mouseDown = (event: MouseEvent | CustomEvent) => {
     // If event is a CustomEvent, extract the native event from detail
     const e = (event instanceof MouseEvent) ? event : (event as CustomEvent).detail as MouseEvent;
@@ -540,12 +538,39 @@
     startX = offsetX;
     startY = offsetY;
 
+    // Update mouse position first
     mousePos = {
       x: e.offsetX,
       y: e.offsetY
     };
 
-    if (hoveredNode) {
+    // Force a re-render to update hoveredNode before processing click
+    // Check for node under mouse cursor manually
+    let clickedNode: Node | undefined;
+    Object.values(drawnNodes).forEach((node: Node) => {
+      const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
+      let touchDistance = 0;
+
+      if (node.isKeystone) {
+        touchDistance = 110;
+      } else if (node.isNotable || node.isJewelSocket) {
+        touchDistance = 70;
+      } else {
+        touchDistance = 50;
+      }
+
+      if (distance(rotatedPos, mousePos) < touchDistance / scaling) {
+        clickedNode = node;
+      }
+    });
+
+    console.log('Mouse clicked at:', mousePos, 'clickedNode:', clickedNode, 'hoveredNode:', hoveredNode);
+    
+    if (clickedNode) {
+      console.log('Clicking node:', clickedNode.skill, clickedNode.name);
+      clickNode(clickedNode);
+    } else if (hoveredNode) {
+      console.log('Fallback clicking hovered node:', hoveredNode.skill, hoveredNode.name);
       clickNode(hoveredNode);
     }
   };
@@ -560,17 +585,17 @@
       y: event.offsetY
     };
   };
-
   const mouseMove = (event: MouseEvent) => {
-    if (down) {
-      offsetX = startX - (downX - event.offsetX) * scaling;
-      offsetY = startY - (downY - event.offsetY) * scaling;
-    }
-
+    // Always update mouse position for hover detection
     mousePos = {
       x: event.offsetX,
       y: event.offsetY
     };
+
+    if (down) {
+      offsetX = startX - (downX - event.offsetX) * scaling;
+      offsetY = startY - (downY - event.offsetY) * scaling;
+    }
   };
 
   const onScroll = (event: CustomEvent | WheelEvent) => {
