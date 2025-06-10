@@ -10,7 +10,7 @@ Original Hosted Version: [https://vilsol.github.io/timeless-jewels](https://vils
 
 Hosted Timeless Jewel Searcher:[https://blazesrus.github.io/timeless-jewels/tree]https://blazesrus.github.io/timeless-jewels/tree
 
-Modified version: [https://BlazesRus.github.io/timeless-jewels](https://BlazesRus.github.io/timeless-jewels)
+Modified version: https://BlazesRus.github.io/timeless-jewels
 
 Official Branch(Github):[https://github.com/vilsol/timeless-jewels](https://github.com/vilsol/timeless-jewels)
 

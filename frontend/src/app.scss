@@ -26,8 +26,8 @@ div {
 /* Specifically target common elements that might have white backgrounds */
 .flex,
 .h-screen,
-div[class*="flex"],
-div[class*="h-screen"] {
+div[class*='flex'],
+div[class*='h-screen'] {
   background-color: #171717 !important;
 }
 

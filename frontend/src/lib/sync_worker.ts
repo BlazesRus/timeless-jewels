@@ -1,14 +1,13 @@
 import { expose } from 'comlink';
 import '../wasm_exec.js';
 import { loadSkillTree, passiveToTree } from './skill_tree';
-import type { ReverseSearchConfig, SearchResults, SearchWithSeed } from './skill_tree';
+import type { SearchWithSeed, ReverseSearchConfig, SearchResults } from './skill_tree';
 import { calculator, initializeCrystalline } from './types';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-declare const Go: any;
 
 const obj = {
   boot(wasm: ArrayBuffer) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const go = new Go();
     WebAssembly.instantiate(wasm, go.importObject).then((result) => {
       go.run(result.instance);
@@ -28,20 +27,18 @@ const obj = {
     );
 
     const searchGrouped: { [key: number]: SearchWithSeed[] } = {};
-    Object.keys(searchResult || {}).forEach((seedStr) => {
+    Object.keys(searchResult).forEach((seedStr) => {
       const seed = parseInt(seedStr);
 
       let weight = 0;
       let totalStats = 0;
 
       const statCounts: Record<number, number> = {};
-      const statTotal: Record<number, number> = {};
-      const skills = Object.keys(searchResult?.[seed] ?? {}).map((skillIDStr) => {
+      const skills = Object.keys(searchResult[seed]).map((skillIDStr) => {
         const skillID = parseInt(skillIDStr);
-        const skillStats = searchResult?.[seed]?.[skillID] ?? {};
-        Object.keys(skillStats).forEach((st) => {
+        Object.keys(searchResult[seed][skillID]).forEach((st) => {
           const n = parseInt(st);
-          statCounts[n] = (statCounts[n] ?? 0) + 1;
+          statCounts[n] = (statCounts[n] || 0) + 1;
           weight += args.stats.find((s) => s.id == n)?.weight || 0;
           const statValue = (skillStats as Record<string, number>)[st];
           statTotal[n] = (statTotal[n] ?? 0) + statValue;
@@ -50,11 +47,11 @@ const obj = {
 
         return {
           passive: passiveToTree[skillID],
-          stats: skillStats as { [key: string]: number }
+          stats: searchResult[seed][skillID]
         };
       });
 
-      const len = Object.keys(searchResult?.[seed] ?? {}).length;
+      const len = Object.keys(searchResult[seed]).length;
       searchGrouped[len] = [
         ...(searchGrouped[len] || []),
         {
@@ -92,8 +89,7 @@ const obj = {
       });
 
       if (Object.keys(searchGrouped[nLen]).length == 0) {
-        // Workaround: assign an empty array if no results, instead of deleting the key
-        searchGrouped[nLen] = [];
+        delete searchGrouped[nLen];
       } else {
         searchGrouped[nLen] = searchGrouped[nLen].sort((a, b) => b.weight - a.weight);
       }

@@ -1,40 +1,29 @@
-<script lang="ts">  import '../app.scss';
+<script lang="ts">
+  import '../app.scss';
   import '../wasm_exec.js';
   import { assets } from '$app/paths';
   import { browser } from '$app/environment';
-  import { loadSkillTree } from '$lib/skill_tree';
-  import { syncWrap } from '$lib/worker';
-  import { initializeCrystalline, data } from '$lib/types';
-  interface Props {
-    children?: import('svelte').Snippet;
-  }
+  import { loadSkillTree } from '../lib/skill_tree';
+  import { syncWrap } from '../lib/worker';
+  import { initializeCrystalline } from '../lib/types';
 
-  let { children }: Props = $props();
+  let wasmLoading = true;
 
-  let wasmLoading = $state(true);
-
-  // @ts-expect-error - Go class from WASM runtime
+  // eslint-disable-next-line no-undef
   const go = new Go();
+
   if (browser) {
     fetch(assets + '/calculator.wasm')
-      .then((response) => response.arrayBuffer())
-      .then((wasmData) => {
-        WebAssembly.instantiate(wasmData, go.importObject).then((result) => {
+      .then((data) => data.arrayBuffer())
+      .then((data) => {
+        WebAssembly.instantiate(data, go.importObject).then((result) => {
           go.run(result.instance);
           wasmLoading = false;
-          initializeCrystalline();          // Wait for data.SkillTree to be available before loading
-          const waitForSkillTree = () => {
-            if (typeof data.SkillTree === 'string' && data.SkillTree.length > 10) {
-              loadSkillTree();
-            } else {
-              setTimeout(waitForSkillTree, 50);
-            }
-          };
-          waitForSkillTree();
+          initializeCrystalline();
+          loadSkillTree();
         });
 
-        if (syncWrap)
-            syncWrap.boot(wasmData);
+        syncWrap.boot(data);
       });
   }
 </script>
@@ -52,5 +41,5 @@
     </div>
   </div>
 {:else}
-  {@render children?.()}
+  <slot />
 {/if}

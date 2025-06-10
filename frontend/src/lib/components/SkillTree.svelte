@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount, tick } from 'svelte';
 
   const measurePerformance = (): number => {
     return window.performance.now();
@@ -22,45 +21,32 @@
     toCanvasCoords
   } from '../skill_tree';
   import type { Point } from '../skill_tree';
+  import { derived } from 'svelte/store';
   import { calculator, data } from '../types';
 
-  interface Props {
-    clickNode: (node: Node) => void;
-    circledNode: number | undefined;
-    selectedJewel: number;
-    selectedConqueror: string;
-    seed: number;
-    highlighted?: number[];
-    disabled?: number[];
-    highlightJewels?: boolean;
-    children?: import('svelte').Snippet;
-  }
+  export let clickNode: (node: Node) => void;
+  export let circledNode: number | undefined;
 
-  let {
-    clickNode,
-    circledNode,
-    selectedJewel,
-    selectedConqueror,
-    seed,
-    highlighted = [],
-    disabled = [],
-    highlightJewels = false,
-    children
-  }: Props = $props();
+  export let selectedJewel: number;
+  export let selectedConqueror: string;
+  export let seed: number;
+  export let highlighted: number[] = [];
+  export let disabled: number[] = [];
+  export let highlightJewels = false;
 
   const startGroups = [427, 320, 226, 227, 323, 422, 329];
 
   const titleFont = '25px Roboto Mono';
   const statsFont = '17px Roboto Mono';
 
-  let scaling = $state(10);
+  let scaling = 10;
 
-  let offsetX = $state(0);
-  let offsetY = $state(0);
+  let offsetX = 0;
+  let offsetY = 0;
 
   // Calculate jewel radius based on scaling
   // This is a constant value that scales with the zoom level
-  const jewelRadius = $derived(baseJewelRadius / scaling);
+  $: jewelRadius = baseJewelRadius / scaling;
 
   const drawScaling = 2.6;
 
@@ -154,19 +140,18 @@
     return result;
   };
 
-  let mousePos: Point = $state({
+  let mousePos: Point = {
     x: Number.MIN_VALUE,
     y: Number.MIN_VALUE
-  });
+  };
 
-  let cursor = $state('unset');
+  let cursor = 'unset';
 
-  let hoveredNode: Node | undefined = $state(undefined);
+  let hoveredNode: Node | undefined;
 
   // Function to render the skill tree
   // This function is called by the Canvas component to render the skill tree
-  const render: RenderFunc = $derived(({ context, width, height }: { context: CanvasRenderingContext2D; width: number; height: number }) => {
-
+  $: render = (({ context, width, height }) => {
     const start = window.performance.now();
 
     context.clearRect(0, 0, width, height);
@@ -178,7 +163,7 @@
 
     //Need to convert keys to numbers because typescript converts all keys into strings
     Object.keys(drawnGroups).forEach((keyId) => {
-      const groupId = parseInt(keyId)
+      const groupId = parseInt(keyId){
       const group = drawnGroups[groupId];
       const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
 
@@ -324,33 +309,19 @@
         }
       }
 
-      // Create highlightGradient inside render function
-      const highlightGradientCenterX = width / 2;
-      const highlightGradientCenterY = height / 2;
-      const highlightGradientInner = 90 / scaling;
-      const highlightGradientOuter = 100 / scaling;
-      let highlightGradient: CanvasGradient = context.createRadialGradient(
-        highlightGradientCenterX,
-        highlightGradientCenterY,
-        highlightGradientInner,
-        highlightGradientCenterX,
-        highlightGradientCenterY,
-        highlightGradientOuter
-      );
-      highlightGradient.addColorStop(0, '#8cf34c'); // bright green
-      highlightGradient.addColorStop(1, '#00ff00'); // neon green
-
       if (highlighted.indexOf(node.skill??-1) >= 0 || (highlightJewels && node.isJewelSocket)) {
-        // Use the precomputed bright green gradient for the highlight ring
-        context.strokeStyle = highlightGradient;
+        // Using simple green color for the highlight ring for now(until optimize code)
+        context.strokeStyle = '#00ff00';
         context.lineWidth = 3;
         context.beginPath();
         context.arc(rotatedPos.x, rotatedPos.y, (touchDistance + 30) / scaling, 0, Math.PI * 2);
         context.stroke();
-      }      if (distance(rotatedPos, mousePos) < touchDistance / scaling) {
+      }
+
+      if (distance(rotatedPos, mousePos) < touchDistance / scaling) {
         newHoverNode = node;
         hoveredNodeActive = active;
-        // console.log('Hovering over node:', node.skill, node.name, 'at distance:', distance(rotatedPos, mousePos), 'touchDistance:', touchDistance / scaling);
+        console.log('Hovering over node:', node.skill, node.name, 'at distance:', distance(rotatedPos, mousePos), 'touchDistance:', touchDistance / scaling);
       }
     });
 
@@ -520,7 +491,7 @@
     const end = measurePerformance();
 
     context.fillText(`${(end - start).toFixed(1)}ms`, width - 5, 17);
-  });
+  }) as RenderFunc;
 
   let downX = 0;
   let downY = 0;
@@ -529,48 +500,20 @@
   let startY = 0;
 
   let down = false;
-  const mouseDown = (event: MouseEvent | CustomEvent) => {
-    // If event is a CustomEvent, extract the native event from detail
-    const e = (event instanceof MouseEvent) ? event : (event as CustomEvent).detail as MouseEvent;
+
+  const mouseDown = (event: MouseEvent) => {
     down = true;
-    downX = e.offsetX;
-    downY = e.offsetY;
+    downX = event.offsetX;
+    downY = event.offsetY;
     startX = offsetX;
     startY = offsetY;
 
-    // Update mouse position first
     mousePos = {
-      x: e.offsetX,
-      y: e.offsetY
+      x: event.offsetX,
+      y: event.offsetY
     };
 
-    // Force a re-render to update hoveredNode before processing click
-    // Check for node under mouse cursor manually
-    let clickedNode: Node | undefined;
-    Object.values(drawnNodes).forEach((node: Node) => {
-      const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
-      let touchDistance = 0;
-
-      if (node.isKeystone) {
-        touchDistance = 110;
-      } else if (node.isNotable || node.isJewelSocket) {
-        touchDistance = 70;
-      } else {
-        touchDistance = 50;
-      }
-
-      if (distance(rotatedPos, mousePos) < touchDistance / scaling) {
-        clickedNode = node;
-      }
-    });
-
-    console.log('Mouse clicked at:', mousePos, 'clickedNode:', clickedNode, 'hoveredNode:', hoveredNode);
-    
-    if (clickedNode) {
-      console.log('Clicking node:', clickedNode.skill, clickedNode.name);
-      clickNode(clickedNode);
-    } else if (hoveredNode) {
-      console.log('Fallback clicking hovered node:', hoveredNode.skill, hoveredNode.name);
+    if (hoveredNode) {
       clickNode(hoveredNode);
     }
   };
@@ -585,77 +528,64 @@
       y: event.offsetY
     };
   };
-  const mouseMove = (event: MouseEvent) => {
-    // Always update mouse position for hover detection
-    mousePos = {
-      x: event.offsetX,
-      y: event.offsetY
-    };
 
+  const mouseMove = (event: MouseEvent) => {
     if (down) {
       offsetX = startX - (downX - event.offsetX) * scaling;
       offsetY = startY - (downY - event.offsetY) * scaling;
     }
+
+    mousePos = {
+      x: event.offsetX,
+      y: event.offsetY
+    };
   };
 
-  const onScroll = (event: CustomEvent | WheelEvent) => {
-    // If event is a CustomEvent, extract the native event from detail
-    const e = (event instanceof WheelEvent) ? event : (event as CustomEvent).detail as WheelEvent;
-    if (e.deltaY > 0) {
+  const onScroll = (event: WheelEvent) => {
+    if (event.deltaY > 0) {
       if (scaling < 30) {
-        offsetX += e.offsetX;
-        offsetY += e.offsetY;
+        offsetX += event.offsetX;
+        offsetY += event.offsetY;
       }
     } else {
       if (scaling > 3) {
-        offsetX -= e.offsetX;
-        offsetY -= e.offsetY;
+        offsetX -= event.offsetX;
+        offsetY -= event.offsetY;
       }
     }
 
-    scaling = Math.min(30, Math.max(3, scaling + e.deltaY / 100));
+    scaling = Math.min(30, Math.max(3, scaling + event.deltaY / 100));
 
-    e.preventDefault();
-    e.stopPropagation();
-    e.stopImmediatePropagation();
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
   };
 
-  let width = $state(0);
-  let height = $state(0);
+  let width = 0;
+  let height = 0;
   const resize = () => {
     width = window.innerWidth;
     height = window.innerHeight;
   };
 
-  let initialized = $state(false);  $effect(() => {
+  let initialized = false;
+  $: {
     if (!initialized && skillTree) {
       initialized = true;
-      offsetX = (skillTree.min_x || 0) + (window.innerWidth / 2) * scaling;
-      offsetY = (skillTree.min_y || 0) + (window.innerHeight / 2) * scaling;
+      offsetX = skillTree.min_x + (window.innerWidth / 2) * scaling;
+      offsetY = skillTree.min_y + (window.innerHeight / 2) * scaling;
     }
-  })
-
-  onMount(() => {
     resize();
-    (async () => {
-      let _first = true;
-      if (_first) {
-        _first = false;
-      } else {
-        await tick();
-        resize();
-      }
-    })();
-  });
+  }
 </script>
 
-<svelte:window onpointerup={mouseUp} onpointermove={mouseMove} onresize={resize} />
+<svelte:window on:pointerup={mouseUp} on:pointermove={mouseMove} on:resize={resize} />
 
 {#if width && height}
-  <div onresize={resize} style="touch-action: none; cursor: {cursor}">
+  <div on:resize={resize} style="touch-action: none; cursor: {cursor}">
     <Canvas {width} {height} on:pointerdown={mouseDown} on:wheel={onScroll}>
       <Layer {render} />
     </Canvas>
-    {@render children?.()}
+    <slot></slot>
   </div>
 {/if}

@@ -1,6 +1,6 @@
-import type { Group, Node, SkillTreeData, Sprite, Translation, TranslationFile } from './skill_tree_types';
-import { type Filter, filterGroupsToQuery, filtersToFilterGroup, type Query } from './utils/trade_utils';
+import type { Translation, Node, SkillTreeData, Group, Sprite, TranslationFile } from './skill_tree_types';
 import { data } from './types';
+import { type Filter, type Query, filterGroupsToQuery, filtersToFilterGroup } from './utils/trade_utils';
 import { chunkArray } from './utils/utils';
 
 export let skillTree: SkillTreeData;
@@ -107,15 +107,9 @@ export const loadSkillTree = () => {
     });
   });
 
-  //Checks if data.TreeToPassive is null before running code
-  if (data.TreeToPassive) {
-    Object.keys(data.TreeToPassive ?? {}).forEach((k) => {
-      const treeToPassiveEntry = data.TreeToPassive?.[parseInt(k)];
-      if (treeToPassiveEntry && typeof treeToPassiveEntry.Index !== 'undefined') {
-        passiveToTree[treeToPassiveEntry.Index] = parseInt(k);
-      }
-    });
-  }
+  Object.keys(data.TreeToPassive).forEach((k) => {
+    passiveToTree[data.TreeToPassive[parseInt(k)].Index] = parseInt(k);
+  });
 };
 
 const indexHandlers: Record<string, number> = {
@@ -309,19 +303,13 @@ type Stat = { Index: number; ID: string; Text: string };
 const statCache: Record<number, Stat> = {};
 export const getStat = (id: number | string): Stat => {
   const nId = typeof id === 'string' ? parseInt(id) : id;
-  //Checks if stat is valid before running code
   if (!(nId in statCache)) {
-    const stat = data.GetStatByIndex(nId);
-    if (!stat) {
-      throw new Error(`Stat not found for id: ${nId}`);
-    }
-    statCache[nId] = stat;
+    statCache[nId] = data.GetStatByIndex(nId);
   }
   return statCache[nId];
 };
 
 export interface StatConfig {
-  //Minimum number of node with related stat to include in search
   min: number;
   id: number;
   weight: number;
@@ -342,11 +330,13 @@ export interface ReverseSearchConfig {
 export interface SearchWithSeed {
   seed: number;
   weight: number;
+  //Minimum number of nodes with specific stat
   statCounts: Record<number, number>;
   skills: {
     passive: number;
     stats: { [key: string]: number };
   }[];
+  //Minimum value for each specific stat
   statTotal: Record<number, number>;
   //Total value of targeted stats in search area
   totalStats: number;
@@ -358,21 +348,6 @@ export interface SearchResults {
 }
 
 export const translateStat = (id: number, roll?: number | undefined): string => {
-  const stat = getStat(id);
-  const translation = inverseTranslations[stat.ID];
-  if (roll) {
-    return formatStats(translation, roll) || stat.ID;
-  }
-
-  let translationText = stat.Text || stat.ID;
-  if (translation && translation.list && translation.list.length) {
-    translationText = translation.list[0].string;
-    translationText = translationText.replace(/\{\d(?::(.*?)d(.*?))\}/, '$1#$2').replace(/\{\d\}/, '#');
-  }
-  return translationText;
-};
-
-export const translateStatData = (id: string, roll?: number | undefined): string => {
   const stat = getStat(id);
   const translation = inverseTranslations[stat.ID];
   if (roll) {
