@@ -31,7 +31,19 @@
       }))
     : []);
 
-  let selectedConqueror = $state((searchParams.has('conqueror') && conquerors.find((c) => c.value === searchParams.get('conqueror'))) || undefined);
+  let selectedConqueror = $derived(() => {
+    if (searchParams.has('conqueror')) {
+      const val = searchParams.get('conqueror');
+      return conquerors.find((c) => c.value === val) || undefined;
+    }
+    return undefined;
+  });
+
+  // Helper to get the value directly for template and logic
+  function selectedConquerorValue(): string | undefined {
+    const sc = selectedConqueror();
+    return sc ? sc.value : undefined;
+  }
 
   const passiveSkills = passiveSkillsArr
     .filter((passive): passive is NonNullable<typeof passive> => !!passive)
@@ -47,12 +59,12 @@
   let result: undefined | data.AlternatePassiveSkillInformation = $state();
 
   run(() => {
-    if (selectedPassiveSkill && seed && selectedJewel && selectedConqueror) {
+    if (selectedPassiveSkill && seed && selectedJewel && selectedConquerorValue()) {
       result = calculator.Calculate(
         selectedPassiveSkill.value,
         seed,
         selectedJewel.value,
-        selectedConqueror.value
+        selectedConquerorValue()!
       );
     }
   });
@@ -61,7 +73,7 @@
     if (browser) {
       const params: Record<string, string | number> = {};
       if (selectedJewel) params.jewel = selectedJewel.value;
-      if (selectedConqueror) params.conqueror = selectedConqueror.value;
+      if (selectedConquerorValue()) params.conqueror = selectedConquerorValue()!;
       if (selectedPassiveSkill) params.passive_skill = selectedPassiveSkill.value;
       if (seed) params.seed = seed;
 
@@ -93,7 +105,7 @@
             <Select items={conquerors} bind:value={selectedConqueror} on:select={updateUrl} />
           </div>
 
-          {#if selectedConqueror && selectedJewel && timelessJewelConquerors[selectedJewel.value] && Object.keys(timelessJewelConquerors[selectedJewel.value] ?? {}).indexOf(selectedConqueror.value) >= 0}
+          {#if selectedConqueror && selectedConqueror() && selectedJewel && timelessJewelConquerors[selectedJewel.value] && Object.keys(timelessJewelConquerors[selectedJewel.value] ?? {}).indexOf(selectedConqueror()?.value ?? '') >= 0}
             <div class="mt-4">
               <h3 class="mb-2">Passive Skill</h3>
               <Select items={passiveSkills} bind:value={selectedPassiveSkill} on:select={updateUrl} />

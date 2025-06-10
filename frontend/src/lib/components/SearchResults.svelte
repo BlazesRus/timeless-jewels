@@ -32,7 +32,8 @@
       .sort((a, b) => a - b)
       .reverse() as number[] as k (k)}
       <button
-        class="text-lg w-full p-2 px-4 bg-neutral-500/30 rounded flex flex-row justify-between mb-2"
+        class="text-lg w-full p-2 px-4 rounded flex flex-row justify-between mb-2"
+        style="background-color: rgba(107, 114, 128, 0.3);"
         onclick={() => (expandedGroup === String(k) ? expandedGroup = "" : expandedGroup = String(k))}>
         <span>
           {k} Match{k > 1 ? 'es' : ''} [{searchResults.grouped[k].length}]

@@ -1,5 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-this-alias */
-/* eslint-disable no-undef */
+/* eslint-disable */
+// @ts-nocheck
+// This is a Go-generated WebAssembly runtime file
 // Copyright 2018 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
@@ -9,12 +10,15 @@
 (() => {
 	const enosys = () => {
 		const err = new Error("not implemented");
+		// @ts-ignore - Adding code property to Error
 		err.code = "ENOSYS";
 		return err;
 	};
 
+	// @ts-ignore - globalThis extension
 	if (!globalThis.fs) {
 		let outputBuf = "";
+		// @ts-ignore - globalThis extension
 		globalThis.fs = {
 			constants: { O_WRONLY: -1, O_RDWR: -1, O_CREAT: -1, O_TRUNC: -1, O_APPEND: -1, O_EXCL: -1 }, // unused
 			writeSync(fd, buf) {

@@ -4,6 +4,9 @@ import { loadSkillTree, passiveToTree } from './skill_tree';
 import type { ReverseSearchConfig, SearchResults, SearchWithSeed } from './skill_tree';
 import { calculator, initializeCrystalline } from './types';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const Go: any;
+
 const obj = {
   boot(wasm: ArrayBuffer) {
     const go = new Go();
@@ -25,7 +28,7 @@ const obj = {
     );
 
     const searchGrouped: { [key: number]: SearchWithSeed[] } = {};
-    Object.keys(searchResult).forEach((seedStr) => {
+    Object.keys(searchResult || {}).forEach((seedStr) => {
       const seed = parseInt(seedStr);
 
       let weight = 0;
@@ -40,8 +43,9 @@ const obj = {
           const n = parseInt(st);
           statCounts[n] = (statCounts[n] ?? 0) + 1;
           weight += args.stats.find((s) => s.id == n)?.weight || 0;
-          statTotal[n] = (statTotal[n] ?? 0) + skillStats[st];
-          totalStats += skillStats[st];
+          const statValue = (skillStats as Record<string, number>)[st];
+          statTotal[n] = (statTotal[n] ?? 0) + statValue;
+          totalStats += statValue;
         });
 
         return {
