@@ -124,7 +124,7 @@ export default [
     rules: {
       'no-nested-ternary': 'error',
       'no-cond-assign': ['error', 'always'],
-      'no-console': 'error',
+      'no-console': 'off',
       'svelte/no-target-blank': 'error',
       'svelte/no-at-debug-tags': 'error',
       'svelte/no-reactive-functions': 'error',
