@@ -5,38 +5,61 @@
   import { page } from '$app/stores';
   import { base, assets } from '$app/paths';
   import { calculator, data } from '../lib/types';
-
-  const searchParams = $page.url.searchParams;  const jewels = Object.keys(data.TimelessJewels || {}).map((k) => ({
+  const searchParams = $page.url.searchParams;
+  // Check if WASM data is available
+  let isDataReady = $derived(data?.TimelessJewels && data?.TimelessJewelConquerors && data?.PassiveSkills);
+  // Make jewels reactive to data loading
+  let jewels = $derived(isDataReady && data.TimelessJewels ? Object.keys(data.TimelessJewels).map((k) => ({
     value: parseInt(k),
     label: data.TimelessJewels?.[parseInt(k)] || k
-  }));let selectedJewel = $state(searchParams.has('jewel') ? jewels.find((j) => j.value == parseInt(searchParams.get('jewel') || '0')) : undefined);
+  })) : []);
 
-  let conquerors = $derived(selectedJewel && data.TimelessJewelConquerors
+  let selectedJewel = $state(undefined as { value: number; label: string } | undefined);
+
+  // Initialize selectedJewel when jewels are loaded
+  $effect(() => {
+    if (jewels.length > 0 && !selectedJewel && searchParams.has('jewel')) {
+      selectedJewel = jewels.find((j) => j.value == parseInt(searchParams.get('jewel') || '0'));
+    }
+  });
+  let conquerors = $derived(selectedJewel && isDataReady && data.TimelessJewelConquerors && data.TimelessJewelConquerors[selectedJewel.value]
     ? Object.keys(data.TimelessJewelConquerors[selectedJewel.value] || {}).map((k) => ({
         value: k,
         label: k
       }))
     : []);
 
-  let selectedConqueror = $state(searchParams.has('conqueror')
-    ? {
-        value: searchParams.get('conqueror'),
-        label: searchParams.get('conqueror')
+  let selectedConqueror = $state(undefined as { value: string; label: string } | undefined);
+
+  // Initialize selectedConqueror when conquerors are loaded
+  $effect(() => {
+    if (conquerors.length > 0 && !selectedConqueror && searchParams.has('conqueror')) {
+      const conquerorValue = searchParams.get('conqueror');
+      if (conquerorValue) {
+        selectedConqueror = {
+          value: conquerorValue,
+          label: conquerorValue
+        };
       }
-    : undefined);  const passiveSkills = Object.values(data.PassiveSkills || []).filter(passive => passive != null).map((passive) => ({
-    value: passive.Index,
-    label: passive.Name + ' (' + passive.ID + ')'
-  }));
+    }
+  });
+  let passiveSkills = $derived(isDataReady && data.PassiveSkills ? Object.values(data.PassiveSkills).filter(passive => passive != null).map((passive) => ({
+    value: passive?.Index || 0,
+    label: (passive?.Name || '') + ' (' + (passive?.ID || '') + ')'
+  })) : []);
 
-  let selectedPassiveSkill: { label: string; value: number } | undefined = $state(searchParams.has('passive_skill')
-    ? passiveSkills.find((j) => j.value == parseInt(searchParams.get('passive_skill') || '0'))
-    : undefined);
+  let selectedPassiveSkill: { label: string; value: number } | undefined = $state(undefined);
 
+  // Initialize selectedPassiveSkill when passiveSkills are loaded
+  $effect(() => {
+    if (passiveSkills.length > 0 && !selectedPassiveSkill && searchParams.has('passive_skill')) {
+      selectedPassiveSkill = passiveSkills.find((j) => j.value == parseInt(searchParams.get('passive_skill') || '0'));
+    }
+  });
   let seed = $state(searchParams.has('seed') ? parseInt(searchParams.get('seed') || '0') : 0);
   let result: undefined | data.AlternatePassiveSkillInformation = $state();
-
   $effect(() => {
-    if (selectedPassiveSkill && seed && selectedJewel && selectedConqueror) {
+    if (selectedPassiveSkill && seed && selectedJewel && selectedConqueror && calculator?.Calculate) {
       result = calculator.Calculate(
         selectedPassiveSkill.value,
         typeof seed === 'string' ? parseInt(seed) : seed,
@@ -81,7 +104,7 @@
             <Select items={conquerors} bind:value={selectedConqueror} on:select={updateUrl} />
           </div>
 
-          {#if selectedConqueror && selectedJewel && data.TimelessJewelConquerors?.[selectedJewel.value] && selectedConqueror.value && Object.keys(data.TimelessJewelConquerors[selectedJewel.value] || {}).indexOf(selectedConqueror.value) >= 0}
+          {#if selectedConqueror && selectedJewel && isDataReady && data.TimelessJewelConquerors && data.TimelessJewelConquerors[selectedJewel.value] && selectedConqueror.value && Object.keys(data.TimelessJewelConquerors[selectedJewel.value] || {}).indexOf(selectedConqueror.value) >= 0}
             <div class="mt-4">
               <h3 class="mb-2">Passive Skill</h3>
               <Select items={passiveSkills} bind:value={selectedPassiveSkill} on:select={updateUrl} />
@@ -93,11 +116,10 @@
                 <input
                   type="number"                  bind:value={seed}
                   class="seed"
-                  onblur={updateUrl}                  min={selectedJewel && data.TimelessJewelSeedRanges?.[selectedJewel.value] ? data.TimelessJewelSeedRanges[selectedJewel.value].Min : 0}
-                  max={selectedJewel && data.TimelessJewelSeedRanges?.[selectedJewel.value] ? data.TimelessJewelSeedRanges[selectedJewel.value].Max : 0} />                {#if selectedJewel && data.TimelessJewelSeedRanges?.[selectedJewel.value] && typeof seed === 'number' && (seed < data.TimelessJewelSeedRanges[selectedJewel.value].Min || seed > data.TimelessJewelSeedRanges[selectedJewel.value].Max)}
-                  <div class="mt-2">
-                    Seed must be between {data.TimelessJewelSeedRanges[selectedJewel.value].Min} and {data
-                      .TimelessJewelSeedRanges[selectedJewel.value].Max}
+                  onblur={updateUrl}                  min={selectedJewel && isDataReady && data.TimelessJewelSeedRanges && data.TimelessJewelSeedRanges[selectedJewel.value] ? data.TimelessJewelSeedRanges[selectedJewel.value].Min : 0}
+                  max={selectedJewel && isDataReady && data.TimelessJewelSeedRanges && data.TimelessJewelSeedRanges[selectedJewel.value] ? data.TimelessJewelSeedRanges[selectedJewel.value].Max : 0} />                {#if selectedJewel && isDataReady && data.TimelessJewelSeedRanges && data.TimelessJewelSeedRanges[selectedJewel.value] && typeof seed === 'number' && (seed < data.TimelessJewelSeedRanges[selectedJewel.value].Min || seed > data.TimelessJewelSeedRanges[selectedJewel.value].Max)}
+                  <div class="mt-2">                    Seed must be between {data.TimelessJewelSeedRanges?.[selectedJewel.value]?.Min} and {data
+                      .TimelessJewelSeedRanges?.[selectedJewel.value]?.Max}
                   </div>
                 {/if}
               </div>

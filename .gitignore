@@ -196,3 +196,9 @@ $RECYCLE.BIN/
 .vs/
 
 frontend/package.json.backup
+
+CorrectFrontPage.png
+
+FailedFrontPage.png
+
+ErrorInBuildWindow.png

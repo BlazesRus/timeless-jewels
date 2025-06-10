@@ -80,7 +80,10 @@ export default [
         Window: 'readonly',
 
         // --- Go WASM global (from wasm_exec.js) ---
-        Go: 'readonly'
+        Go: 'readonly',
+
+        // --- Browser API globals ---
+        navigator: 'readonly'
         // Add more as needed for your project
       }
     },

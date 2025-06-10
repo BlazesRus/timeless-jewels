@@ -15,12 +15,27 @@
   import TradeButton from '$lib/components/TradeButton.svelte';
   import TradeLinks from '$lib/components/TradeLinks.svelte';
 
-  const searchParams = $page.url.searchParams;  const jewels = Object.keys(data.TimelessJewels || {}).map((k) => ({
+  const searchParams = $page.url.searchParams;
+
+  // Check if WASM data is available
+  let isDataReady = $derived(data?.TimelessJewels && data?.TimelessJewelConquerors && data?.TreeToPassive);
+
+  // Make jewels reactive to data loading
+  let jewels = $derived(isDataReady && data.TimelessJewels ? Object.keys(data.TimelessJewels).map((k) => ({
     value: parseInt(k),
     label: data.TimelessJewels?.[parseInt(k)] || k
-  }));
+  })) : []);
 
-  let selectedJewel = $state(searchParams.has('jewel') ? jewels.find((j) => j.value == parseInt(searchParams.get('jewel') || '0')) : undefined);  let conquerors = $derived(selectedJewel && data.TimelessJewelConquerors
+  let selectedJewel = $state(undefined as { value: number; label: string } | undefined);
+
+  // Initialize selectedJewel when jewels are loaded
+  $effect(() => {
+    if (jewels.length > 0 && !selectedJewel && searchParams.has('jewel')) {
+      selectedJewel = jewels.find((j) => j.value == parseInt(searchParams.get('jewel') || '0'));
+    }
+  });
+
+  let conquerors = $derived(selectedJewel && isDataReady && data.TimelessJewelConquerors && data.TimelessJewelConquerors[selectedJewel.value]
     ? Object.keys(data.TimelessJewelConquerors[selectedJewel.value] || {}).map((k) => ({
         value: k,
         label: k
@@ -28,12 +43,20 @@
     : []);
 
   let dropdownConqs = $derived(conquerors.concat([{ value: 'Any', label: 'Any' }]));
-  let dropdownConqueror = $state(searchParams.has('conqueror')
-    ? {
-        value: searchParams.get('conqueror'),
-        label: searchParams.get('conqueror')
+  let dropdownConqueror = $state(undefined as { value: string; label: string } | undefined);
+
+  // Initialize dropdownConqueror when conquerors are loaded
+  $effect(() => {
+    if (conquerors.length > 0 && !dropdownConqueror && searchParams.has('conqueror')) {
+      const conquerorValue = searchParams.get('conqueror');
+      if (conquerorValue) {
+        dropdownConqueror = {
+          value: conquerorValue,
+          label: conquerorValue
+        };
       }
-    : undefined);
+    }
+  });
 
   let anyConqueror = $derived(dropdownConqueror?.value === 'Any');
   let selectedConqueror = $derived(dropdownConqueror?.value === 'Any' ? conquerors[0] : dropdownConqueror);
@@ -44,19 +67,22 @@
     : undefined);
   let affectedNodes = $derived(circledNode
     ? getAffectedNodes(skillTree.nodes[circledNode]).filter((n) => !n.isJewelSocket && !n.isMastery)
-    : []);  let seedResults = $derived(
+    : []);
+
+  let seedResults = $derived(
     !seed ||
     !selectedJewel ||
     !selectedConqueror ||
+    !isDataReady ||
     !data.TimelessJewelConquerors ||
     !data.TimelessJewelConquerors[selectedJewel.value] ||
     !selectedConqueror.value ||
     Object.keys(data.TimelessJewelConquerors[selectedJewel.value] || {}).indexOf(selectedConqueror.value) < 0
       ? []
       : affectedNodes        .filter((n) => n.skill !== undefined && data.TreeToPassive && data.TreeToPassive[n.skill])        .map((n) => ({
-            node: n.skill,
+            node: n.skill as number,
             result: calculator.Calculate(
-              data.TreeToPassive?.[n.skill]?.Index || 0,
+              data.TreeToPassive?.[n.skill as number]?.Index || 0,
               seed,
               selectedJewel?.value || 0,
               selectedConqueror?.value || ''
@@ -111,7 +137,7 @@
     }
   };
 
-  const allPossibleStats: { [key: string]: { [key: string]: number } } = JSON.parse(data.PossibleStats || '{}');
+  const allPossibleStats = $derived(isDataReady && data.PossibleStats ? JSON.parse(data.PossibleStats) : {});
 
   let availableStats = $derived(!selectedJewel || !allPossibleStats[selectedJewel.value] ? [] : Object.keys(allPossibleStats[selectedJewel.value]));
   let statItems = $derived(availableStats
@@ -246,29 +272,33 @@
   const colorKeys = {
     physical: '#c79d93',
     cast: '#b3f8fe',
-    fire: '#ff9a77',
-    cold: '#93d8ff',
-    lightning: '#f8cb76',
-    attack: '#da814d',
-    life: '#c96e6e',
-    chaos: '#d8a7d3',
-    unique: '#af6025',
-    critical: '#b2a7d6'
-  };  const colorMessage = (message: string): string => {
-    Object.keys(colorKeys).forEach((key) => {
-      const value = (colorKeys as Record<string, string>)[key];
-      message = message.replace(
-        new RegExp(`(${key}(?:$|\\s))|((?:^|\\s)${key})`, 'gi'),
-        `<span style='color: ${value}; font-weight: bold'>$1$2</span>`
-      );
-    });
-
-    return message;
+    attack: '#f8b3fe',
+    chaos: '#ac5896',
+    fire: '#e47600',
+    cold: '#02a5f7',
+    lightning: '#fdff59',
+    totem: '#a87fcf',
+    minion: '#00ff00',
+    life: '#ff0000',
+    mana: '#0000ff',
+    defences: '#ffaa00',
+    critical: '#ffff00',
+    spell: '#5555ff',
+    elemental: '#dd8844',
+    resist: '#ff5599'
   };
 
-  // Basic sanitizer for HTML content - only allows safe color spans
-  const sanitizeHtml = (html: string): string => {
-    // Only allow span tags with color styles, remove everything else
+  const colorMessage = (message: string): string => {
+    let result = message;
+    Object.entries(colorKeys).forEach(([keyword, color]) => {
+      const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
+      result = result.replace(regex, `<span style='color: ${color}; font-weight: bold'>${keyword}</span>`);
+    });
+    return result;
+  };
+
+  const sanitizeHtml = (html: string) => {
+    // Allow only span tags with specific style attributes (color and font-weight)
     return html.replace(/<(?!\/span|span\s+style='color:\s*#[0-9a-f]{6};\s*font-weight:\s*bold'[^>]*>)[^>]*>/gi, '');
   };
   const combineResults = (
@@ -320,36 +350,20 @@
     });
   };
   const sortCombined = (
-    combinedResults: CombinedResult[],
-    order: 'count' | 'alphabet' | 'rarity' | 'value'
+    results: CombinedResult[],
+    sortBy: 'alphabetical' | 'count' | 'length'
   ): CombinedResult[] => {
-    if (!selectedJewel) return combinedResults;
-    
-    switch (order) {
-      case 'alphabet':
-        return combinedResults.sort((a, b) =>
-          a.rawStat
-            .replace(/[#+%]/gi, '')
-            .trim()
-            .toLowerCase()
-            .localeCompare(b.rawStat.replace(/[#+%]/gi, '').trim().toLowerCase())
-        );
-      case 'count':
-        return combinedResults.sort((a, b) => b.passives.length - a.passives.length);      case 'rarity':
-        return combinedResults.sort(
-          (a, b) => (allPossibleStats[selectedJewel?.value || 0]?.[a.id] || 0) - (allPossibleStats[selectedJewel?.value || 0]?.[b.id] || 0)
-        );
-      case 'value':
-        return combinedResults.sort((a, b) => {
-          const aValue = (statValues as Record<string, number>)[a.id] || 0;
-          const bValue = (statValues as Record<string, number>)[b.id] || 0;
-          if (aValue != bValue) {
-            return bValue - aValue;          }
-          return (allPossibleStats[selectedJewel?.value || 0]?.[a.id] || 0) - (allPossibleStats[selectedJewel?.value || 0]?.[b.id] || 0);
-        });
+    const sorted = [...results];
+
+    if (sortBy === 'alphabetical') {
+      sorted.sort((a, b) => a.rawStat.localeCompare(b.rawStat));
+    } else if (sortBy === 'count') {
+      sorted.sort((a, b) => b.passives.length - a.passives.length);
+    } else if (sortBy === 'length') {
+      sorted.sort((a, b) => a.rawStat.length - b.rawStat.length);
     }
 
-    return combinedResults;
+    return sorted;
   };
 
   const sortResults = [
@@ -359,17 +373,14 @@
     },
     {
       label: 'Alphabetical',
-      value: 'alphabet'
+      value: 'alphabetical'
     },
     {
-      label: 'Rarity',
-      value: 'rarity'
-    },
-    {
-      label: 'Value',
-      value: 'value'
+      label: 'Length',
+      value: 'length'
     }
-  ] as const;
+  ];
+
   let sortOrder = $state(sortResults.find((r) => r.value === (localStorage.getItem('sortOrder') || 'count')));  $effect(() => {
     if (sortOrder?.value) {
       localStorage.setItem('sortOrder', sortOrder.value);
@@ -397,38 +408,40 @@
       return;
     }
 
-    const jewel = jewels.find((j) => j.label === lines[2]);
-    if (!jewel) {
+    const jewelLine = lines.find((l) => l.includes('Timeless Jewel'));
+    if (!jewelLine) {
       return;
     }
 
-    let newSeed: number | undefined;
-    let conqueror: string | undefined;    for (let i = 10; i < lines.length; i++) {
-      if (!data.TimelessJewelConquerors?.[jewel.value]) continue;
-      
-      conqueror = Object.keys(data.TimelessJewelConquerors[jewel.value] || {}).find((k) => lines[i].indexOf(k) >= 0);
-      if (conqueror) {
-        const matches = /(\d+)/.exec(lines[i]);
-        if (!matches || matches.length === 0) {
-          continue;
+    const conquerorKeys = Object.keys(data.TimelessJewelConquerors || {});
+    for (let i = 0; i < conquerorKeys.length; i++) {
+      const jewelKey = parseInt(conquerorKeys[i]);
+      const conquerors = Object.keys(data.TimelessJewelConquerors?.[jewelKey] || {});
+
+      for (let j = 0; j < conquerors.length; j++) {
+        const conqueror = conquerors[j];
+
+        if (jewelLine.includes(conqueror)) {
+          selectedJewel = jewels.find((jewel) => jewel.value === jewelKey);
+
+          let splitJewelLine = jewelLine.split(conqueror);
+          splitJewelLine = splitJewelLine[splitJewelLine.length - 1].split(' ');
+
+          for (let k = 0; k < splitJewelLine.length; k++) {
+            const potentialSeed = parseInt(splitJewelLine[k]);
+            if (!isNaN(potentialSeed)) {
+              seed = potentialSeed;
+              break;
+            }
+          }
+
+          selectedConqueror = { label: conqueror, value: conqueror };
+          updateUrl();
+          return;
         }
-
-        newSeed = parseInt(matches[1]);
-        break;
-      }
-    }
-
-    if (!conqueror || !newSeed) {
-      return;
-    }
-
-    results = false;
-    mode = 'seed';
-    seed = newSeed;
-    selectedJewel = jewel;
-    selectedConqueror = { label: conqueror, value: conqueror };
-    updateUrl();
+      }    }
   };
+
   let collapsed = $state(false);
   let showTradeLinks = $state(false);
   let queries: Query[] = $state([]);
@@ -454,7 +467,7 @@
   selectedConqueror={selectedConqueror?.value ?? ''}
   {highlighted}
   {seed}  highlightJewels={!circledNode}  disabled={Array.from(disabled) as number[]}>
-    {#if !collapsed}
+  <div>    {#if !collapsed}
       <div
         class="w-screen md:w-10/12 lg:w-2/3 xl:w-1/2 2xl:w-5/12 3xl:w-1/3 4xl:w-1/4 absolute top-0 left-0 bg-black/80 backdrop-blur-sm themed rounded-br-lg max-h-screen">
       <div class="p-4 max-h-screen flex flex-col">
@@ -515,11 +528,14 @@
                   <h3 class="mb-2">Seed</h3>
                   <input
                     type="number"                    bind:value={seed}
-                    onblur={updateUrl}                    min={selectedJewel && data.TimelessJewelSeedRanges?.[selectedJewel.value] ? data.TimelessJewelSeedRanges[selectedJewel.value].Min : 0}
-                    max={selectedJewel && data.TimelessJewelSeedRanges?.[selectedJewel.value] ? data.TimelessJewelSeedRanges[selectedJewel.value].Max : 0} />                  {#if selectedJewel && data.TimelessJewelSeedRanges?.[selectedJewel.value] && (seed < data.TimelessJewelSeedRanges[selectedJewel.value].Min || seed > data.TimelessJewelSeedRanges[selectedJewel.value].Max)}
+                    class="seed"
+                    onblur={updateUrl}
+                    min={selectedJewel && data.TimelessJewelSeedRanges?.[selectedJewel.value] ? data.TimelessJewelSeedRanges[selectedJewel.value].Min : 0}
+                    max={selectedJewel && data.TimelessJewelSeedRanges?.[selectedJewel.value] ? data.TimelessJewelSeedRanges[selectedJewel.value].Max : 0} />
+                  {#if selectedJewel && data.TimelessJewelSeedRanges?.[selectedJewel.value] && typeof seed === 'number' && (seed < data.TimelessJewelSeedRanges[selectedJewel.value].Min || seed > data.TimelessJewelSeedRanges[selectedJewel.value].Max)}
                     <div class="mt-2">
-                      Seed must be between {data.TimelessJewelSeedRanges[selectedJewel.value].Min}
-                      and {data.TimelessJewelSeedRanges[selectedJewel.value].Max}
+                      Seed must be between {data.TimelessJewelSeedRanges[selectedJewel.value].Min} and {data
+                        .TimelessJewelSeedRanges[selectedJewel.value].Max}
                     </div>
                   {/if}
                 </div>
@@ -529,13 +545,13 @@
                     <div class="flex-grow">
                       <h3 class="mb-2">Sort Order</h3>
                       <Select items={sortResults} bind:value={sortOrder} />
-                    </div>                    <div class="ml-2">                      <button                        class="bg-neutral-600 bg-opacity-20 p-2 px-4 rounded"
+                    </div>                    <div class="ml-2">                      <button                        class="bg-gray-600 bg-opacity-20 p-2 px-4 rounded"
                         class:selected={colored}
                         onclick={() => (colored = !colored)}>
                         Colors
                       </button>
                     </div>
-                    <div class="ml-2">                      <button                        class="bg-neutral-600 bg-opacity-20 p-2 px-4 rounded"
+                    <div class="ml-2">                      <button                        class="bg-gray-600 bg-opacity-20 p-2 px-4 rounded"
                         class:selected={split}
                         onclick={() => (split = !split)}>
                         Split
@@ -543,7 +559,7 @@
                     </div>
                   </div>                  {#if !split}
                     <ul class="mt-4 overflow-auto" class:rainbow={colored}>
-                      {#each sortCombined(combineResults(seedResults.filter(r => typeof r.node === 'number'), colored, 'all'), sortOrder?.value || 'count') as r (r.id)}
+                      {#each sortCombined(combineResults(seedResults.filter(r => typeof r.node === 'number'), colored, 'all'), (sortOrder?.value as 'alphabetical' | 'count' | 'length') || 'count') as r (r.id)}
                         <li>
                           <button 
                             class="cursor-pointer w-full text-left" 
@@ -556,7 +572,7 @@
                         </li>                      {/each}
                     </ul>
                   {:else}
-                    <div class="overflow-auto mt-4">                      <h3>Notables</h3>                      <ul class="mt-1" class:rainbow={colored}>                        {#each sortCombined(combineResults(seedResults.filter(r => typeof r.node === 'number'), colored, 'notables'), sortOrder?.value || 'count') as r (r.id)}
+                    <div class="overflow-auto mt-4">                      <h3>Notables</h3>                      <ul class="mt-1" class:rainbow={colored}>                        {#each sortCombined(combineResults(seedResults.filter(r => typeof r.node === 'number'), colored, 'notables'), (sortOrder?.value as 'alphabetical' | 'count' | 'length') || 'count') as r (r.id)}
                           <li>
                             <button 
                               class="cursor-pointer w-full text-left" 
@@ -569,7 +585,7 @@
                             </button>
                           </li>
                         {/each}
-                      </ul><h3 class="mt-2">Smalls</h3>                      <ul class="mt-1" class:rainbow={colored}>                        {#each sortCombined(combineResults(seedResults.filter(r => typeof r.node === 'number'), colored, 'passives'), sortOrder?.value || 'count') as r (r.id)}
+                      </ul><h3 class="mt-2">Smalls</h3>                      <ul class="mt-1" class:rainbow={colored}>                        {#each sortCombined(combineResults(seedResults.filter(r => typeof r.node === 'number'), colored, 'passives'), (sortOrder?.value as 'alphabetical' | 'count' | 'length') || 'count') as r (r.id)}
                           <li>
                             <button 
                               class="cursor-pointer w-full text-left" 
@@ -666,10 +682,6 @@
                   </div>
                 {/if}
               {/if}
-
-              {#if !circledNode}
-                <h2 class="mt-4">Click on a jewel socket</h2>
-              {/if}
             {/if}
           {/if}
         {/if}
@@ -688,15 +700,18 @@
         <div></div>
         <div></div>
         <div></div>      </button>
-    {/if}
-
-    <div class="text-orange-500 absolute bottom-0 right-0 m-2">
+    {/if}    <div class="text-orange-500 absolute bottom-0 right-0 m-2">
       <a href="https://github.com/BlazesRus/timeless-jewels" target="_blank" rel="noopener noreferrer">Source (Github)</a>
     </div>
+  </div>
 </SkillTree>
 
+{#if !circledNode}
+  <h2 class="text-white text-center absolute w-full top-1/2 bg-black/60 p-4">Click on a jewel socket</h2>
+{/if}
+
 <style lang="postcss">  .selection-button {
-    @apply bg-neutral-600 bg-opacity-20 p-2 px-4 flex-grow;
+    @apply bg-gray-600 bg-opacity-20 p-2 px-4 flex-grow;
   }
 
   .selection-button:first-child {
