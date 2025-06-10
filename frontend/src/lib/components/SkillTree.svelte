@@ -602,12 +602,11 @@
     height = window.innerHeight;
   };
 
-  let initialized = $state(false);
-  $effect(() => {
+  let initialized = $state(false);  $effect(() => {
     if (!initialized && skillTree) {
       initialized = true;
-      offsetX = skillTree!.min_x + (window.innerWidth / 2) * scaling;
-      offsetY = skillTree!.min_y + (window.innerHeight / 2) * scaling;
+      offsetX = (skillTree.min_x || 0) + (window.innerWidth / 2) * scaling;
+      offsetY = (skillTree.min_y || 0) + (window.innerHeight / 2) * scaling;
     }
   })
 

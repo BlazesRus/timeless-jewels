@@ -5,14 +5,38 @@ declare global {
   }
 
   interface GlobalThis {
-    fs?: any;
-    process?: any;
+    fs?: {
+      constants: Record<string, number>;
+      writeSync: (fd: number, buf: Uint8Array) => number;
+      write: (
+        fd: number,
+        buf: Uint8Array,
+        offset: number,
+        length: number,
+        position: number | null,
+        callback: (err: Error | null, bytesWritten?: number) => void
+      ) => void;
+      [key: string]: unknown;
+    };
+    process?: {
+      getuid: () => number;
+      getgid: () => number;
+      geteuid: () => number;
+      getegid: () => number;
+      getgroups: () => number[];
+      pid: number;
+      ppid: number;
+      umask: () => number;
+      cwd: () => string;
+      chdir: (path: string) => void;
+      [key: string]: unknown;
+    };
     crypto: Crypto;
     performance: Performance;
     TextEncoder: typeof TextEncoder;
     TextDecoder: typeof TextDecoder;
     Go: typeof GoClass;
-    go?: any;
+    go?: GoClass;
   }
 
   class GoClass {
@@ -26,10 +50,8 @@ declare global {
     constructor();
     run(instance: WebAssembly.Instance): Promise<void>;
     _resume(): void;
-    _makeFuncWrapper(id: number): Function;
+    _makeFuncWrapper(id: number): (...args: unknown[]) => unknown;
   }
 }
-
-declare const Go: typeof GoClass;
 
 export {};

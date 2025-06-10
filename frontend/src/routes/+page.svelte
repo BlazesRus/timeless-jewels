@@ -57,23 +57,25 @@
   let seed: number = $state(searchParams.has('seed') ? Number(searchParams.get('seed')) : 0);
 
   let result: undefined | data.AlternatePassiveSkillInformation = $state();
-
   run(() => {
     if (selectedPassiveSkill && seed && selectedJewel && selectedConquerorValue()) {
-      result = calculator.Calculate(
-        selectedPassiveSkill.value,
-        seed,
-        selectedJewel.value,
-        selectedConquerorValue()!
-      );
+      const conquerorValue = selectedConquerorValue();
+      if (conquerorValue) {
+        result = calculator.Calculate(
+          selectedPassiveSkill.value,
+          seed,
+          selectedJewel.value,
+          conquerorValue
+        );
+      }
     }
   });
-
   const updateUrl = () => {
     if (browser) {
       const params: Record<string, string | number> = {};
       if (selectedJewel) params.jewel = selectedJewel.value;
-      if (selectedConquerorValue()) params.conqueror = selectedConquerorValue()!;
+      const conquerorValue = selectedConquerorValue();
+      if (conquerorValue) params.conqueror = conquerorValue;
       if (selectedPassiveSkill) params.passive_skill = selectedPassiveSkill.value;
       if (seed) params.seed = seed;
 
