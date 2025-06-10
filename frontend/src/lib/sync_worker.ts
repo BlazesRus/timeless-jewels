@@ -27,7 +27,7 @@ const obj = {
     );
 
     const searchGrouped: { [key: number]: SearchWithSeed[] } = {};
-    
+
     if (!searchResult) {
       return { grouped: {}, raw: [] };
     }
@@ -35,8 +35,10 @@ const obj = {
     Object.keys(searchResult).forEach((seedStr) => {
       const seed = parseInt(seedStr);
       const seedData = searchResult[seed];
-      
-      if (!seedData) return;
+
+      if (!seedData) {
+        return;
+      }
 
       let weight = 0;
       let totalStats = 0;
@@ -46,10 +48,10 @@ const obj = {
       const skills = Object.keys(seedData).map((skillIDStr) => {
         const skillID = parseInt(skillIDStr);
         const skillStats = seedData[skillID];
-        
+
         if (!skillStats) {
           return {
-            passive: passiveToTree[skillID],
+            passive: passiveToTree[skillID] || skillID,
             stats: {}
           };
         }
@@ -64,7 +66,7 @@ const obj = {
         });
 
         return {
-          passive: passiveToTree[skillID],
+          passive: passiveToTree[skillID] || skillID,
           stats: skillStats as { [key: string]: number }
         };
       });
@@ -85,7 +87,7 @@ const obj = {
 
     Object.keys(searchGrouped).forEach((len) => {
       const nLen = parseInt(len);
-      searchGrouped[nLen] = searchGrouped[nLen].filter((g) => {
+      const filtered = searchGrouped[nLen].filter((g) => {
         if (g.weight < args.minTotalWeight) {
           return false;
         }
@@ -106,10 +108,11 @@ const obj = {
         return true;
       });
 
-      if (Object.keys(searchGrouped[nLen]).length == 0) {
+      if (filtered.length === 0) {
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete searchGrouped[nLen];
       } else {
-        searchGrouped[nLen] = searchGrouped[nLen].sort((a, b) => b.weight - a.weight);
+        searchGrouped[nLen] = filtered.sort((a, b) => b.weight - a.weight);
       }
     });
 

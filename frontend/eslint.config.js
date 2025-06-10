@@ -29,10 +29,11 @@ export default [
     '**/package',
     '**/node_modules',
     '**/postcss.config.js',
-    '**/tsconfig.tsbuildinfo'
+    '**/tsconfig.tsbuildinfo',
+    'src/wasm_exec.d.ts'
   ]),
   {
-    ignores: ['**/postcss.config.js', '**/tsconfig.tsbuildinfo', '*.config.js', 'wasm_exec.js'],
+    ignores: ['**/postcss.config.js', '**/tsconfig.tsbuildinfo', '*.config.js', 'wasm_exec.js', '**/wasm_exec.d.ts'],
     languageOptions: {
       parserOptions: {
         sourceType: 'module',

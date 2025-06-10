@@ -8,7 +8,7 @@
 
   const searchParams = $page.url.searchParams;  const jewels = Object.keys(data.TimelessJewels || {}).map((k) => ({
     value: parseInt(k),
-    label: (data.TimelessJewels || {} as Record<string, string>)[k]
+    label: data.TimelessJewels?.[parseInt(k)] || k
   }));let selectedJewel = $state(searchParams.has('jewel') ? jewels.find((j) => j.value == parseInt(searchParams.get('jewel') || '0')) : undefined);
 
   let conquerors = $derived(selectedJewel && data.TimelessJewelConquerors
@@ -23,10 +23,9 @@
         value: searchParams.get('conqueror'),
         label: searchParams.get('conqueror')
       }
-    : undefined);
-  const passiveSkills = Object.values(data.PassiveSkills || []).filter(passive => passive != null).map((passive) => ({
-    value: passive!.Index,
-    label: passive!.Name + ' (' + passive!.ID + ')'
+    : undefined);  const passiveSkills = Object.values(data.PassiveSkills || []).filter(passive => passive != null).map((passive) => ({
+    value: passive.Index,
+    label: passive.Name + ' (' + passive.ID + ')'
   }));
 
   let selectedPassiveSkill: { label: string; value: number } | undefined = $state(searchParams.has('passive_skill')
@@ -82,7 +81,7 @@
             <Select items={conquerors} bind:value={selectedConqueror} on:select={updateUrl} />
           </div>
 
-          {#if selectedConqueror && selectedJewel && data.TimelessJewelConquerors?.[selectedJewel.value] && selectedConqueror.value && Object.keys(data.TimelessJewelConquerors[selectedJewel.value]).indexOf(selectedConqueror.value) >= 0}
+          {#if selectedConqueror && selectedJewel && data.TimelessJewelConquerors?.[selectedJewel.value] && selectedConqueror.value && Object.keys(data.TimelessJewelConquerors[selectedJewel.value] || {}).indexOf(selectedConqueror.value) >= 0}
             <div class="mt-4">
               <h3 class="mb-2">Passive Skill</h3>
               <Select items={passiveSkills} bind:value={selectedPassiveSkill} on:select={updateUrl} />
@@ -110,28 +109,23 @@
                     <span>
                       {result.AlternatePassiveSkill.Name} ({result.AlternatePassiveSkill.ID})
                     </span>
-                  </div>
-
-                  {#if result.StatRolls && Object.keys(result.StatRolls).length > 0}
-                    <ol class="mt-4 list-decimal pl-8">                      {#each Object.keys(result.StatRolls) as roll, i}
+                  </div>                  {#if result.StatRolls && Object.keys(result.StatRolls).length > 0}
+                    <ol class="mt-4 list-decimal pl-8">                      {#each Object.keys(result.StatRolls) as roll, i (roll)}
                         {#if result.AlternatePassiveSkill?.StatsKeys?.[i]}
                           {@const stat = data.GetStatByIndex(result.AlternatePassiveSkill.StatsKeys[i])}
-                          <li>{stat?.Text || '<no name>'} ({stat?.ID}) - {(result.StatRolls as Record<string, number>)[roll]}</li>
+                          <li>{stat?.Text || '<no name>'} ({stat?.ID}) - {Object.values(result.StatRolls)[i]}</li>
                         {/if}
                       {/each}
                     </ol>
                   {/if}
                 {/if}                {#if 'AlternatePassiveAdditionInformations' in result && result.AlternatePassiveAdditionInformations && result.AlternatePassiveAdditionInformations.length > 0}
                   <div class="mt-4">
-                    <h3>Additions</h3>
-                    <ul class="list-disc pl-8">
-                      {#each result.AlternatePassiveAdditionInformations as info}
+                    <h3>Additions</h3>                    <ul class="list-disc pl-8">
+                      {#each result.AlternatePassiveAdditionInformations as info (info.AlternatePassiveAddition?.ID || Math.random())}
                         <li class="mt-4">
-                          <span>{info.AlternatePassiveAddition?.ID} ({info.AlternatePassiveAddition?.Index})</span>
-
-                          {#if info.StatRolls && Object.keys(info.StatRolls).length > 0}
+                          <span>{info.AlternatePassiveAddition?.ID} ({info.AlternatePassiveAddition?.Index})</span>                          {#if info.StatRolls && Object.keys(info.StatRolls).length > 0}
                             <ol class="list-decimal pl-8">
-                              {#each Object.keys(info.StatRolls) as roll, i}
+                              {#each Object.keys(info.StatRolls) as roll, i (roll)}
                                 {#if info.AlternatePassiveAddition?.StatsKeys?.[i]}
                                   {@const stat = data.GetStatByIndex(info.AlternatePassiveAddition.StatsKeys[i])}
                                   <li>{stat?.Text || '<no name>'} ({stat?.ID}) - {(info.StatRolls as Record<string, number>)[roll]}</li>

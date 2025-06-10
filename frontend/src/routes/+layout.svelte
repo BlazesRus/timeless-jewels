@@ -8,8 +8,8 @@
   import { initializeCrystalline } from '../lib/types';
 
   let wasmLoading = true;
-
-  // eslint-disable-next-line no-undef
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const go = new Go();
 
   if (browser) {
@@ -17,13 +17,14 @@
       .then((data) => data.arrayBuffer())
       .then((data) => {
         WebAssembly.instantiate(data, go.importObject).then((result) => {
-          go.run(result.instance);
-          wasmLoading = false;
+          go.run(result.instance);          wasmLoading = false;
           initializeCrystalline();
           loadSkillTree();
         });
 
-        syncWrap.boot(data);
+        if (syncWrap) {
+          syncWrap.boot(data);
+        }
       });
   }
 </script>

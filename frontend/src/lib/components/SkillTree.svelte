@@ -22,6 +22,7 @@
   } from '../skill_tree';
   import type { Point } from '../skill_tree';
   import { calculator, data } from '../types';
+
   interface Props {
     clickNode: (node: Node) => void;
     circledNode?: number | undefined;
@@ -33,6 +34,7 @@
     highlightJewels?: boolean;
     children?: import('svelte').Snippet;
   }
+
   let {
     clickNode,
     circledNode,
@@ -44,6 +46,7 @@
     highlightJewels = false,
     children
   }: Props = $props();
+
   const startGroups = [427, 320, 226, 227, 323, 422, 329];
 
   const titleFont = '25px Roboto Mono';
@@ -509,9 +512,7 @@
     downX = event.offsetX;
     downY = event.offsetY;
     startX = offsetX;
-    startY = offsetY;
-
-    mousePos = {
+    startY = offsetY;    mousePos = {
       x: event.offsetX,
       y: event.offsetY
     };
@@ -543,21 +544,21 @@
       y: event.offsetY
     };
   };
-
   const onScroll = (event: WheelEvent) => {
-    if (event.deltaY > 0) {
+    const wheelEvent = event;
+    if (wheelEvent.deltaY > 0) {
       if (scaling < 30) {
-        offsetX += event.offsetX;
-        offsetY += event.offsetY;
+        offsetX += wheelEvent.offsetX;
+        offsetY += wheelEvent.offsetY;
       }
     } else {
       if (scaling > 3) {
-        offsetX -= event.offsetX;
-        offsetY -= event.offsetY;
+        offsetX -= wheelEvent.offsetX;
+        offsetY -= wheelEvent.offsetY;
       }
     }
 
-    scaling = Math.min(30, Math.max(3, scaling + event.deltaY / 100));
+    scaling = Math.min(30, Math.max(3, scaling + wheelEvent.deltaY / 100));
 
     event.preventDefault();
     event.stopPropagation();
