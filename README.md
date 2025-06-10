@@ -38,3 +38,11 @@ go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 run command:
 golangci-lint config verify
 golangci-lint run ./... --default=none -E errcheck
+
+after using cd frontend:
+pnpm install
+pnpm run lint
+pnpm run format
+pnpm run check
+pnpm run prepare
+pnpm run build

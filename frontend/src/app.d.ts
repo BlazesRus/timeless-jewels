@@ -17,4 +17,10 @@ declare global {
   const TimelessJewels: Record<string, string>;
   const TimelessJewelConquerors: Record<number, string[]>;
   const TreeToPassive: Record<number, number>;
+
+  /**
+   * The Go WASM bootstrapper from wasm_exec.js
+   * https://github.com/golang/go/blob/master/misc/wasm/wasm_exec.js
+   */
+  declare const Go: unknown;
 }

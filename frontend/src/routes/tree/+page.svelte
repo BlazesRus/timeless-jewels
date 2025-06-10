@@ -50,10 +50,10 @@
     ? {
         value: searchParams.get('conqueror'),
         label: searchParams.get('conqueror')
-      }
-    : undefined);
+      } as { value: string ; label: string  }
+    : { value: 'Any', label: 'Any' });
 
-  let anyConqueror = $derived(dropdownConqueror?.value === 'Any');
+  let anyConqueror = $derived(dropdownConqueror.value === 'Any');
 
   let selectedConqueror = $derived(dropdownConqueror?.value === 'Any' ? conquerors[0] : dropdownConqueror);
 
@@ -508,21 +508,18 @@
 
   let collapsed = $state(false);
 
-  let showTradeLinks = $state(false);
-
-  let queries: Query[] = $state([]);
-
-  // reconstruct queries if search results change
-  $effect(() => {
-    if (searchResults && results) {
-      queries = constructQueries(searchJewel, searchConqueror, searchResults.raw);
-
-      // reset showTradeLinks to hidden if new queries is only length of 1
-      if (queries.length === 1) {
-        showTradeLinks = false;
-      }
+  let showTradeLinks = $state(false);  let queries: Query[] = $derived.by(() => {
+    if (results && searchResults && searchResults.raw) {
+      return constructQueries(searchJewel, searchConqueror, searchResults.raw);
     }
+    return [];
   });
+
+$effect(() => {
+  if (queries.length === 1) {
+    showTradeLinks = false;
+  }
+});
 
   // Fix SvelteKit page prop error: only export 'data' and 'errors'
 </script>
@@ -571,7 +568,7 @@
                   Grouped
                 </button>
               {/if}
-              <button class="bg-neutral-100/20 px-4 p-1 rounded" onclick={() => (results = !results)}>
+              <button class="px-4 p-1 rounded" style="background-color: rgba(245, 245, 245, 0.2);" onclick={() => (results = !results)}>
                 {results ? 'Config' : 'Results'}
               </button>
             </div>
@@ -621,17 +618,17 @@
                       <h3 class="mb-2">Sort Order</h3>
                       <Select items={sortResultsArr} bind:value={sortOrder} />
                     </div>
-                    <div class="ml-2">
-                      <button
-                        class="bg-neutral-500/20 p-2 px-4 rounded"
+                    <div class="ml-2">                      <button
+                        class="p-2 px-4 rounded"
+                        style="background-color: rgba(107, 114, 128, 0.2);"
                         class:selected={colored}
                         onclick={() => (colored = !colored)}>
                         Colors
                       </button>
                     </div>
-                    <div class="ml-2">
-                      <button
-                        class="bg-neutral-500/20 p-2 px-4 rounded"
+                    <div class="ml-2">                      <button
+                        class="p-2 px-4 rounded"
+                        style="background-color: rgba(107, 114, 128, 0.2);"
                         class:selected={split}
                         onclick={() => (split = !split)}>
                         Split
@@ -802,26 +799,28 @@
   </div>
 </SkillTree>
 
-<style lang="postcss">
-  .selection-button {
-    @apply bg-neutral-500/20 p-2 px-4 flex-grow;
+<style lang="postcss">  .selection-button {
+    background-color: rgba(107, 114, 128, 0.2);
+    padding: 0.5rem 1rem;
+    flex-grow: 1;
   }
-
   .selection-button:first-child {
-    @apply rounded-l border-r-2 border-black;
+    border-top-left-radius: 0.375rem;
+    border-bottom-left-radius: 0.375rem;
+    border-right: 2px solid black;
   }
 
   .selection-button:last-child {
-    @apply rounded-r;
+    border-top-right-radius: 0.375rem;
+    border-bottom-right-radius: 0.375rem;
   }
 
   .selected {
-    @apply bg-neutral-100/20;
+    background-color: rgba(245, 245, 245, 0.2);
   }
-
   .grouped {
-    @apply bg-pink-500/40;
-    disabled: bg-pink-900/40;
+    background-color: rgba(236, 72, 153, 0.4);
+    disabled: rgba(157, 23, 77, 0.4);
   }
 
   .rainbow {

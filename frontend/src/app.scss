@@ -2,22 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Force dark background everywhere */
 html,
-body {
-  @apply bg-neutral-900 text-white;
-  font-family: 'Roboto Mono', monospace;
+body,
+#svelte,
+div {
+  background-color: #171717 !important;
+  color: white !important;
+  font-family: 'Roboto Mono', monospace !important;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* Override any default styles that might cause white background */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  background-color: inherit !important;
+}
+
+/* Specifically target common elements that might have white backgrounds */
+.flex,
+.h-screen,
+div[class*="flex"],
+div[class*="h-screen"] {
+  background-color: #171717 !important;
+}
+
+/* Ensure the root elements maintain dark background */
+#svelte {
+  background-color: #171717 !important;
+  min-height: 100vh !important;
 }
 
 h1 {
-  @apply text-3xl font-bold;
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
 }
 
 h2 {
-  @apply text-2xl font-bold;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
 }
 
 h3 {
-  @apply text-xl font-bold;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 700;
 }
 
 .themed {
@@ -39,5 +74,8 @@ input {
 }
 
 .burger-menu > div {
-  @apply w-5 h-0.5 bg-white my-1;
+  width: 1.25rem;
+  height: 0.125rem;
+  background-color: white;
+  margin: 0.25rem 0;
 }

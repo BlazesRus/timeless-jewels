@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount, tick } from 'svelte';
 
   const measurePerformance = (): number => {
     return window.performance.now();
@@ -173,25 +174,8 @@
     context.fillStyle = '#080c11';
     context.fillRect(0, 0, width, height);
 
-    const highlightGradientCenterX = width / 2;
-    const highlightGradientCenterY = height / 2;
-    const highlightGradientInner = 90 / scaling;
-    const highlightGradientOuter = 100 / scaling;
-
-    // Precompute the highlight gradient once per render
-    // Use a generic center and radius, since the gradient is mostly for color
-    let highlightGradient: CanvasGradient = context.createRadialGradient(
-      highlightGradientCenterX,
-      highlightGradientCenterY,
-      highlightGradientInner,
-      highlightGradientCenterX,
-      highlightGradientCenterY,
-      highlightGradientOuter
-    );
-    highlightGradient.addColorStop(0, '#8cf34c'); // bright green
-    highlightGradient.addColorStop(1, '#00ff00'); // neon green
-
     const connected: Record<string, boolean> = {};
+
     //Need to convert keys to numbers because typescript converts all keys into strings
     Object.keys(drawnGroups).forEach((keyId) => {
       const groupId = parseInt(keyId)
@@ -272,7 +256,6 @@
       });
     });
 
-
     // Define circledNodePos if circledNode is set 
     // (setting to 0,0 to avoid needing to check for undefined; only used if circledNode is set)
     let circledNodePos: Point = { x: 0, y: 0 };
@@ -341,6 +324,22 @@
         }
       }
 
+      // Create highlightGradient inside render function
+      const highlightGradientCenterX = width / 2;
+      const highlightGradientCenterY = height / 2;
+      const highlightGradientInner = 90 / scaling;
+      const highlightGradientOuter = 100 / scaling;
+      let highlightGradient: CanvasGradient = context.createRadialGradient(
+        highlightGradientCenterX,
+        highlightGradientCenterY,
+        highlightGradientInner,
+        highlightGradientCenterX,
+        highlightGradientCenterY,
+        highlightGradientOuter
+      );
+      highlightGradient.addColorStop(0, '#8cf34c'); // bright green
+      highlightGradient.addColorStop(1, '#00ff00'); // neon green
+
       if (highlighted.indexOf(node.skill??-1) >= 0 || (highlightJewels && node.isJewelSocket)) {
         // Use the precomputed bright green gradient for the highlight ring
         context.strokeStyle = highlightGradient;
@@ -348,11 +347,10 @@
         context.beginPath();
         context.arc(rotatedPos.x, rotatedPos.y, (touchDistance + 30) / scaling, 0, Math.PI * 2);
         context.stroke();
-      }
-
-      if (distance(rotatedPos, mousePos) < touchDistance / scaling) {
+      }      if (distance(rotatedPos, mousePos) < touchDistance / scaling) {
         newHoverNode = node;
         hoveredNodeActive = active;
+        // console.log('Hovering over node:', node.skill, node.name, 'at distance:', distance(rotatedPos, mousePos), 'touchDistance:', touchDistance / scaling);
       }
     });
 
@@ -531,7 +529,6 @@
   let startY = 0;
 
   let down = false;
-  
   const mouseDown = (event: MouseEvent | CustomEvent) => {
     // If event is a CustomEvent, extract the native event from detail
     const e = (event instanceof MouseEvent) ? event : (event as CustomEvent).detail as MouseEvent;
@@ -541,12 +538,39 @@
     startX = offsetX;
     startY = offsetY;
 
+    // Update mouse position first
     mousePos = {
       x: e.offsetX,
       y: e.offsetY
     };
 
-    if (hoveredNode) {
+    // Force a re-render to update hoveredNode before processing click
+    // Check for node under mouse cursor manually
+    let clickedNode: Node | undefined;
+    Object.values(drawnNodes).forEach((node: Node) => {
+      const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
+      let touchDistance = 0;
+
+      if (node.isKeystone) {
+        touchDistance = 110;
+      } else if (node.isNotable || node.isJewelSocket) {
+        touchDistance = 70;
+      } else {
+        touchDistance = 50;
+      }
+
+      if (distance(rotatedPos, mousePos) < touchDistance / scaling) {
+        clickedNode = node;
+      }
+    });
+
+    console.log('Mouse clicked at:', mousePos, 'clickedNode:', clickedNode, 'hoveredNode:', hoveredNode);
+    
+    if (clickedNode) {
+      console.log('Clicking node:', clickedNode.skill, clickedNode.name);
+      clickNode(clickedNode);
+    } else if (hoveredNode) {
+      console.log('Fallback clicking hovered node:', hoveredNode.skill, hoveredNode.name);
       clickNode(hoveredNode);
     }
   };
@@ -561,17 +585,17 @@
       y: event.offsetY
     };
   };
-
   const mouseMove = (event: MouseEvent) => {
-    if (down) {
-      offsetX = startX - (downX - event.offsetX) * scaling;
-      offsetY = startY - (downY - event.offsetY) * scaling;
-    }
-
+    // Always update mouse position for hover detection
     mousePos = {
       x: event.offsetX,
       y: event.offsetY
     };
+
+    if (down) {
+      offsetX = startX - (downX - event.offsetX) * scaling;
+      offsetY = startY - (downY - event.offsetY) * scaling;
+    }
   };
 
   const onScroll = (event: CustomEvent | WheelEvent) => {
@@ -603,25 +627,25 @@
     height = window.innerHeight;
   };
 
-  let initialized = $state(false);
-  $effect(() => {
+  let initialized = $state(false);  $effect(() => {
     if (!initialized && skillTree) {
       initialized = true;
-      offsetX = skillTree.min_x + (window.innerWidth / 2) * scaling;
-      offsetY = skillTree.min_y + (window.innerHeight / 2) * scaling;
+      offsetX = (skillTree.min_x || 0) + (window.innerWidth / 2) * scaling;
+      offsetY = (skillTree.min_y || 0) + (window.innerHeight / 2) * scaling;
     }
-  });
+  })
+
   onMount(() => {
     resize();
-  });
-
-  let _first = true;
-  $tick(() => {
-    if (_first) {
-      _first = false;
-    } else {
-      resize();
-    }
+    (async () => {
+      let _first = true;
+      if (_first) {
+        _first = false;
+      } else {
+        await tick();
+        resize();
+      }
+    })();
   });
 </script>
 
