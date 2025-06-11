@@ -133,7 +133,6 @@
         currentWord = word;
       }
     });
-    61834;
 
     if (currentWord.length > 0) {
       result.push(currentWord.trim());
@@ -314,6 +313,7 @@
       if (distance(rotatedPos, mousePos) < touchDistance / scaling) {
         newHoverNode = node;
         hoveredNodeActive = active;
+        //console.log('Hovering over node:', node.skill, node.name, 'at distance:', distance(rotatedPos, mousePos), 'touchDistance:', touchDistance / scaling);
       }
     });
 
@@ -486,6 +486,7 @@
     startX = offsetX;
     startY = offsetY;
 
+    // Update mouse position first
     mousePos = {
       x: event.offsetX,
       y: event.offsetY

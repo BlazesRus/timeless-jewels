@@ -321,9 +321,12 @@ export const getStat = (id: number | string): Stat => {
 };
 
 export interface StatConfig {
+  //Minimum number of node with related stat to include in search
   min: number;
   id: number;
   weight: number;
+  //Minimum number of stat total in jewel in order to allow in search results
+  minStatTotal: number;
 }
 
 export interface ReverseSearchConfig {
@@ -332,6 +335,8 @@ export interface ReverseSearchConfig {
   nodes: number[];
   stats: StatConfig[];
   minTotalWeight: number;
+  //Minimum number of total targeted stats in search area
+  minTotalStats: number;
 }
 
 export interface SearchWithSeed {
@@ -342,6 +347,9 @@ export interface SearchWithSeed {
     passive: number;
     stats: { [key: string]: number };
   }[];
+  statTotal: Record<number, number>;
+  //Total value of targeted stats in search area
+  totalStats: number;
 }
 
 export interface SearchResults {
@@ -350,6 +358,21 @@ export interface SearchResults {
 }
 
 export const translateStat = (id: number, roll?: number | undefined): string => {
+  const stat = getStat(id);
+  const translation = inverseTranslations[stat.ID];
+  if (roll) {
+    return formatStats(translation, roll) || stat.ID;
+  }
+
+  let translationText = stat.Text || stat.ID;
+  if (translation && translation.list && translation.list.length) {
+    translationText = translation.list[0].string;
+    translationText = translationText.replace(/\{\d(?::(.*?)d(.*?))\}/, '$1#$2').replace(/\{\d\}/, '#');
+  }
+  return translationText;
+};
+
+export const translateStatData = (id: string, roll?: number | undefined): string => {
   const stat = getStat(id);
   const translation = inverseTranslations[stat.ID];
   if (roll) {

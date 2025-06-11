@@ -160,6 +160,7 @@
 
   let results = false;
   let minTotalWeight = 0;
+  let minTotalStats = 0;
   let searching = false;
   let currentSeed = 0;
   let searchResults: SearchResults;
@@ -184,7 +185,8 @@
         .filter((n) => !!n)
         .map((n) => n.Index),
       stats: Object.keys(selectedStats).map((stat) => selectedStats[stat]),
-      minTotalWeight
+      minTotalWeight,
+      minTotalStats
     };
 
     syncWrap
@@ -462,10 +464,10 @@
       <div class="p-4 max-h-screen flex flex-col">
         <div class="flex flex-row justify-between mb-2">
           <div class="flex flex-row items-center">
-            <button class="burger-menu mr-3" on:click={() => (collapsed = true)}>
-              <div />
-              <div />
-              <div />
+            <button class="burger-menu mr-3" aria-label="Open menu" on:click={() => (collapsed = true)}>
+              <div></div>
+              <div></div>
+              <div></div>
             </button>
 
             <h3 class="flex-grow">
@@ -617,6 +619,10 @@
                             <div class="mr-2">Weight:</div>
                             <input type="number" min="0" bind:value={selectedStats[s].weight} />
                           </div>
+                          <div class="flex flex-row items-center">
+                            <div class="mr-2">Minimum Stat Total:</div>
+                            <input type="number" min="0" bind:value={selectedStats[Number(s)].minStatTotal} />
+                          </div>
                         </div>
                       </div>
                     {/each}
@@ -625,6 +631,10 @@
                     <div class="flex flex-row items-center">
                       <div class="mr-2 min-w-fit">Min Total Weight:</div>
                       <input type="number" min="0" bind:value={minTotalWeight} />
+                    </div>
+                    <div class="flex flex-row items-center">
+                      <div class="mr-2 min-w-fit">Minimum Stat Total:</div>
+                      <input type="number" min="0" bind:value={minTotalStats} />
                     </div>
                   </div>
                   <div class="flex flex-col mt-4">
