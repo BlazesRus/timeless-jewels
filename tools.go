@@ -66,15 +66,15 @@ func findAll() {
 
 		println(jewelType.String())
 
-		min := data.TimelessJewelSeedRanges[jewelType].Min
-		max := data.TimelessJewelSeedRanges[jewelType].Max
+		minValue := data.TimelessJewelSeedRanges[jewelType].Min
+		maxValue := data.TimelessJewelSeedRanges[jewelType].Max
 
 		if data.TimelessJewelSeedRanges[jewelType].Special {
-			min /= 20
-			max /= 20
+			minValue /= 20
+			maxValue /= 20
 		}
 
-		for seed := min; seed <= max; seed++ {
+		for seed := minValue; seed <= maxValue; seed++ {
 			realSeed := seed
 			if data.TimelessJewelSeedRanges[jewelType].Special {
 				realSeed *= 20

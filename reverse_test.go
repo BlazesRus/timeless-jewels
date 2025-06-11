@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/MarvinJWendt/testza"
+
 	"github.com/BlazesRus/timeless-jewels/calculator"
 	"github.com/BlazesRus/timeless-jewels/data"
 )
@@ -31,13 +32,13 @@ func BenchmarkGloriousVanity(b *testing.B) {
 	b.Run("cached", func(b *testing.B) {
 		calculator.ReverseSearch(passiveIDs, []uint32{5815}, data.GloriousVanity, data.Xibaqua, nil)
 		b.ResetTimer()
-		for i := 0; i < b.N; i++ {
+		for range b.N {
 			calculator.ReverseSearch(passiveIDs, []uint32{5815}, data.GloriousVanity, data.Xibaqua, nil)
 		}
 	})
 
 	b.Run("uncached", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for range b.N {
 			calculator.ClearCache()
 			calculator.ReverseSearch(passiveIDs, []uint32{5815}, data.GloriousVanity, data.Xibaqua, nil)
 		}
@@ -49,13 +50,13 @@ func BenchmarkElegantHubris(b *testing.B) {
 	b.Run("cached", func(b *testing.B) {
 		calculator.ReverseSearch(passiveIDs, []uint32{25}, data.ElegantHubris, data.Cadiro, nil)
 		b.ResetTimer()
-		for i := 0; i < b.N; i++ {
+		for range b.N {
 			calculator.ReverseSearch(passiveIDs, []uint32{25}, data.ElegantHubris, data.Cadiro, nil)
 		}
 	})
 
 	b.Run("uncached", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for range b.N {
 			calculator.ClearCache()
 			calculator.ReverseSearch(passiveIDs, []uint32{25}, data.ElegantHubris, data.Cadiro, nil)
 		}

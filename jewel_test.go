@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/MarvinJWendt/testza"
+
 	"github.com/BlazesRus/timeless-jewels/calculator"
 	"github.com/BlazesRus/timeless-jewels/data"
 )
@@ -109,7 +110,11 @@ func TestGloriousVanity(t *testing.T) {
 	for _, test := range tests {
 		t.Run(string(test.conqueror), func(t *testing.T) {
 			t.Run(strconv.Itoa(int(test.passive)), func(t *testing.T) {
-				testza.AssertEqual(t, test.result, calculator.Calculate(test.passive, seed, test.jewel, test.conqueror))
+				result := calculator.Calculate(test.passive, seed, test.jewel, test.conqueror)
+				if result.AlternatePassiveAdditionInformations == nil {
+					t.Fatalf("AlternatePassiveAdditionInformations is nil for test case jewel=%v conqueror=%v passive=%d", test.jewel, test.conqueror, test.passive)
+				}
+				testza.AssertEqual(t, test.result, result)
 			})
 		})
 	}
@@ -585,7 +590,8 @@ func BenchmarkAll(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 
-	for i := 0; i < b.N; i++ {
+	// Cycles through all timeless jewel types and their conquerors
+	for range b.N {
 		for jewelType := range data.TimelessJewelConquerors {
 			var firstConqueror data.Conqueror
 			for conqueror := range data.TimelessJewelConquerors[jewelType] {
@@ -593,15 +599,15 @@ func BenchmarkAll(b *testing.B) {
 				break
 			}
 
-			min := data.TimelessJewelSeedRanges[jewelType].Min
-			max := data.TimelessJewelSeedRanges[jewelType].Max
+			minValue := data.TimelessJewelSeedRanges[jewelType].Min
+			maxValue := data.TimelessJewelSeedRanges[jewelType].Max
 
 			if data.TimelessJewelSeedRanges[jewelType].Special {
-				min /= 20
-				max /= 20
+				minValue /= 20
+				maxValue /= 20
 			}
 
-			for seed := min; seed <= max; seed++ {
+			for seed := minValue; seed <= maxValue; seed++ {
 				realSeed := seed
 				if data.TimelessJewelSeedRanges[jewelType].Special {
 					realSeed *= 20

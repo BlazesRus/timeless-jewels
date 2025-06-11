@@ -1,15 +1,23 @@
+// Package data provides types and constants for Timeless Jewels and their conquerors.
 package data
 
+// JewelType represents the type of a Timeless Jewel.
 type JewelType uint
 
 const (
-	GloriousVanity = JewelType(iota + 1)
+	// GloriousVanity is the Glorious Vanity jewel type.
+	GloriousVanity JewelType = iota + 1
+	// LethalPride is the Lethal Pride jewel type.
 	LethalPride
+	// BrutalRestraint is the Brutal Restraint jewel type.
 	BrutalRestraint
+	// MilitantFaith is the Militant Faith jewel type.
 	MilitantFaith
+	// ElegantHubris is the Elegant Hubris jewel type.
 	ElegantHubris
 )
 
+// String returns the string representation of the JewelType.
 func (t JewelType) String() string {
 	switch t {
 	case GloriousVanity:
@@ -27,35 +35,53 @@ func (t JewelType) String() string {
 	}
 }
 
+// Conqueror represents a conqueror associated with a Timeless Jewel.
 type Conqueror string
 
 const (
-	Xibaqua = Conqueror("Xibaqua")
-	Zerphi  = Conqueror("Zerphi")
-	Ahuana  = Conqueror("Ahuana")
-	Doryani = Conqueror("Doryani")
-
-	Kaom    = Conqueror("Kaom")
-	Rakiata = Conqueror("Rakiata")
-	Kiloava = Conqueror("Kiloava")
-	Akoya   = Conqueror("Akoya")
-
-	Deshret = Conqueror("Deshret")
-	Balbala = Conqueror("Balbala")
-	Asenath = Conqueror("Asenath")
-	Nasima  = Conqueror("Nasima")
-
-	Venarius = Conqueror("Venarius")
-	Maxarius = Conqueror("Maxarius")
-	Dominus  = Conqueror("Dominus")
-	Avarius  = Conqueror("Avarius")
-
-	Cadiro   = Conqueror("Cadiro")
-	Victario = Conqueror("Victario")
-	Chitus   = Conqueror("Chitus")
-	Caspiro  = Conqueror("Caspiro")
+	// Xibaqua is a conqueror for Glorious Vanity.
+	Xibaqua Conqueror = "Xibaqua"
+	// Zerphi is a conqueror for Glorious Vanity.
+	Zerphi Conqueror = "Zerphi"
+	// Ahuana is a conqueror for Glorious Vanity.
+	Ahuana Conqueror = "Ahuana"
+	// Doryani is a conqueror for Glorious Vanity.
+	Doryani Conqueror = "Doryani"
+	// Kaom is a conqueror for Lethal Pride.
+	Kaom Conqueror = "Kaom"
+	// Rakiata is a conqueror for Lethal Pride.
+	Rakiata Conqueror = "Rakiata"
+	// Kiloava is a conqueror for Lethal Pride.
+	Kiloava Conqueror = "Kiloava"
+	// Akoya is a conqueror for Lethal Pride.
+	Akoya Conqueror = "Akoya"
+	// Deshret is a conqueror for Brutal Restraint.
+	Deshret Conqueror = "Deshret"
+	// Balbala is a conqueror for Brutal Restraint.
+	Balbala Conqueror = "Balbala"
+	// Asenath is a conqueror for Brutal Restraint.
+	Asenath Conqueror = "Asenath"
+	// Nasima is a conqueror for Brutal Restraint.
+	Nasima Conqueror = "Nasima"
+	// Venarius is a conqueror for Militant Faith.
+	Venarius Conqueror = "Venarius"
+	// Maxarius is a conqueror for Militant Faith.
+	Maxarius Conqueror = "Maxarius"
+	// Dominus is a conqueror for Militant Faith.
+	Dominus Conqueror = "Dominus"
+	// Avarius is a conqueror for Militant Faith.
+	Avarius Conqueror = "Avarius"
+	// Cadiro is a conqueror for Elegant Hubris.
+	Cadiro Conqueror = "Cadiro"
+	// Victario is a conqueror for Elegant Hubris.
+	Victario Conqueror = "Victario"
+	// Chitus is a conqueror for Elegant Hubris.
+	Chitus Conqueror = "Chitus"
+	// Caspiro is a conqueror for Elegant Hubris.
+	Caspiro Conqueror = "Caspiro"
 )
 
+// TimelessJewelConquerors maps each JewelType and Conqueror to its TimelessJewelConqueror struct.
 var TimelessJewelConquerors = map[JewelType]map[Conqueror]*TimelessJewelConqueror{
 	GloriousVanity: {
 		Xibaqua: &TimelessJewelConqueror{
@@ -149,12 +175,14 @@ var TimelessJewelConquerors = map[JewelType]map[Conqueror]*TimelessJewelConquero
 	},
 }
 
+// Range represents a range of valid jewel seeds, with an optional special flag.
 type Range struct {
 	Min     uint32
 	Max     uint32
 	Special bool
 }
 
+// TimelessJewelSeedRanges maps each JewelType to its valid seed range.
 var TimelessJewelSeedRanges = map[JewelType]Range{
 	GloriousVanity: {
 		Min: 100,

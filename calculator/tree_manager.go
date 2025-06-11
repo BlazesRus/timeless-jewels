@@ -5,11 +5,13 @@ import (
 	"github.com/BlazesRus/timeless-jewels/random"
 )
 
+// AlternateTreeManager manages the logic for alternate passive skill calculations.
 type AlternateTreeManager struct {
 	PassiveSkill  *data.PassiveSkill
 	TimelessJewel data.TimelessJewel
 }
 
+// IsPassiveSkillReplaced determines if the passive skill should be replaced by an alternate skill.
 func (a *AlternateTreeManager) IsPassiveSkillReplaced(rng *random.NumberGenerator) bool {
 	if a.PassiveSkill.IsKeystone {
 		return true
@@ -35,6 +37,7 @@ func (a *AlternateTreeManager) IsPassiveSkillReplaced(rng *random.NumberGenerato
 	return a.TimelessJewel.AlternateTreeVersion.AreSmallNormalPassiveSkillsReplaced
 }
 
+// AugmentPassiveSkill rolls and returns alternate passive additions for the passive skill.
 func (a *AlternateTreeManager) AugmentPassiveSkill(rng *random.NumberGenerator) []data.AlternatePassiveAdditionInformation {
 	rng.Reset(a.PassiveSkill, a.TimelessJewel)
 
@@ -45,6 +48,7 @@ func (a *AlternateTreeManager) AugmentPassiveSkill(rng *random.NumberGenerator) 
 	return a.RollAdditions(a.TimelessJewel.AlternateTreeVersion.MinimumAdditions, a.TimelessJewel.AlternateTreeVersion.MaximumAdditions, rng)
 }
 
+// RollAlternatePassiveAddition rolls and returns a single alternate passive addition.
 func (a *AlternateTreeManager) RollAlternatePassiveAddition(rng *random.NumberGenerator) *data.AlternatePassiveAddition {
 	applicableAlternatePassiveAdditions := data.GetApplicableAlternatePassiveAdditions(a.PassiveSkill, a.TimelessJewel)
 
@@ -66,6 +70,14 @@ func (a *AlternateTreeManager) RollAlternatePassiveAddition(rng *random.NumberGe
 	return nil
 }
 
+func minimum(a uint32, b uint32) uint32 {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+// ReplacePassiveSkill rolls and returns the alternate passive skill information for a replaced skill.
 func (a *AlternateTreeManager) ReplacePassiveSkill(rng *random.NumberGenerator) data.AlternatePassiveSkillInformation {
 	if a.PassiveSkill.IsKeystone {
 		alternatePassiveSkillKeyStone := data.GetAlternatePassiveSkillKeyStone(a.TimelessJewel)
@@ -121,6 +133,7 @@ func (a *AlternateTreeManager) ReplacePassiveSkill(rng *random.NumberGenerator) 
 	}
 }
 
+// RollAdditions rolls and returns a slice of alternate passive addition information.
 func (a *AlternateTreeManager) RollAdditions(minimumAdditions uint32, maximumAdditions uint32, rng *random.NumberGenerator) []data.AlternatePassiveAdditionInformation {
 	additionCountRoll := minimumAdditions
 
@@ -137,7 +150,7 @@ func (a *AlternateTreeManager) RollAdditions(minimumAdditions uint32, maximumAdd
 			rolledAlternatePassiveAddition = a.RollAlternatePassiveAddition(rng)
 		}
 
-		elements := min(uint32(len(rolledAlternatePassiveAddition.StatsKeys)), 2)
+		elements := minimum(uint32(len(rolledAlternatePassiveAddition.StatsKeys)), 2)
 		alternatePassiveAdditionStatRolls := make(map[uint32]uint32, elements)
 		for j := range elements {
 			alternatePassiveAdditionStatRolls[j] = rolledAlternatePassiveAddition.GetStatMinMax(true, j)
@@ -154,11 +167,4 @@ func (a *AlternateTreeManager) RollAdditions(minimumAdditions uint32, maximumAdd
 	}
 
 	return alternatePassiveAdditionInformations
-}
-
-func min(a uint32, b uint32) uint32 {
-	if a < b {
-		return a
-	}
-	return b
 }

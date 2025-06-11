@@ -5,10 +5,12 @@ import (
 	"github.com/BlazesRus/timeless-jewels/random"
 )
 
+// UpdateFunc is a callback function used to report progress during calculations.
 type UpdateFunc func(seed uint32)
 
 var calculationCache = make(map[data.Conqueror]map[data.JewelType]map[uint32]map[uint32]data.AlternatePassiveSkillInformation)
 
+// Calculate computes the alternate passive skill information for a given passive ID, seed, jewel type, and conqueror.
 func Calculate(passiveID uint32, seed uint32, timelessJewelType data.JewelType, conqueror data.Conqueror) data.AlternatePassiveSkillInformation {
 	passiveSkill := data.GetPassiveSkillByIndex(passiveID)
 
@@ -36,11 +38,20 @@ func Calculate(passiveID uint32, seed uint32, timelessJewelType data.JewelType, 
 		return alternateTreeManager.ReplacePassiveSkill(rng)
 	}
 
+/*
+	additions := alternateTreeManager.AugmentPassiveSkill(rng)
+	if additions == nil {
+		additions = make([]data.AlternatePassiveAdditionInformation, 0)
+	}
+*/
+
 	return data.AlternatePassiveSkillInformation{
 		AlternatePassiveAdditionInformations: alternateTreeManager.AugmentPassiveSkill(rng),
 	}
 }
 
+// ReverseSearch searches for seeds that produce specific stat IDs for given passive IDs and jewel parameters.
+// It returns a nested map of results indexed by seed, passive skill index, and stat key.
 func ReverseSearch(passiveIDs []uint32, statIDs []uint32, timelessJewelType data.JewelType, conqueror data.Conqueror, updates UpdateFunc) map[uint32]map[uint32]map[uint32]uint32 {
 	passiveSkills := make(map[uint32]*data.PassiveSkill)
 	for _, id := range passiveIDs {
@@ -76,16 +87,16 @@ func ReverseSearch(passiveIDs []uint32, statIDs []uint32, timelessJewelType data
 
 	results := make(map[uint32]map[uint32]map[uint32]uint32)
 
-	min := data.TimelessJewelSeedRanges[timelessJewelType].Min
-	max := data.TimelessJewelSeedRanges[timelessJewelType].Max
+	minValue := data.TimelessJewelSeedRanges[timelessJewelType].Min
+	maxValue := data.TimelessJewelSeedRanges[timelessJewelType].Max
 
 	if data.TimelessJewelSeedRanges[timelessJewelType].Special {
-		min /= 20
-		max /= 20
+		minValue /= 20
+		maxValue /= 20
 	}
 
 	rng := random.NewRNG()
-	for seed := min; seed <= max; seed++ {
+	for seed := minValue; seed <= maxValue; seed++ {
 		realSeed := seed
 		if data.TimelessJewelSeedRanges[timelessJewelType].Special {
 			realSeed *= 20
@@ -162,6 +173,7 @@ func ReverseSearch(passiveIDs []uint32, statIDs []uint32, timelessJewelType data
 	return results
 }
 
+// ClearCache resets the calculation cache used by the calculator package.
 func ClearCache() {
 	calculationCache = make(map[data.Conqueror]map[data.JewelType]map[uint32]map[uint32]data.AlternatePassiveSkillInformation)
 }

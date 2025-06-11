@@ -1,11 +1,14 @@
+// Package exposition exposes Go functions and data for WASM usage.
 package exposition
 
 import (
 	"github.com/Vilsol/crystalline"
+
 	"github.com/BlazesRus/timeless-jewels/calculator"
 	"github.com/BlazesRus/timeless-jewels/data"
 )
 
+// Expose registers all relevant functions and data for WASM interop.
 func Expose() *crystalline.Exposer {
 	e := crystalline.NewExposer("timeless-jewels")
 
