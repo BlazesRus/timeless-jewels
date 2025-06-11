@@ -8,7 +8,13 @@ with some modifications for better trade search functionality
 
 Original Hosted Version: [https://vilsol.github.io/timeless-jewels](https://vilsol.github.io/timeless-jewels)
 
-Modified version: [https://BlazesRus.github.io/timeless-jewels](https://BlazesRus.github.io/timeless-jewels)
+Hosted Timeless Jewel Searcher:[https://blazesrus.github.io/timeless-jewels/tree]https://blazesrus.github.io/timeless-jewels/tree
+
+Modified version: https://BlazesRus.github.io/timeless-jewels
+
+Official Branch(Github):[https://github.com/vilsol/timeless-jewels](https://github.com/vilsol/timeless-jewels)
+
+Source of ImHamba Branch(Github):[https://github.com/ImHamba/timeless-jewels](https://github.com/ImHamba/timeless-jewels)
 
 Uses data extracted with https://github.com/Vilsol/go-pob-data
 
@@ -24,3 +30,19 @@ Specifically, this project depends on the following data tables:
 * Passive Skills
 * Stats
 * Translations
+
+---------------------------------Local testing instruction------------------------
+Update golangci-lint via running in console:
+go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+run command:
+golangci-lint config verify
+golangci-lint run ./... --default=none -E errcheck
+
+after using cd frontend:
+pnpm install
+pnpm run format
+pnpm run lint
+pnpm run check
+pnpm run prepare
+pnpm run build
