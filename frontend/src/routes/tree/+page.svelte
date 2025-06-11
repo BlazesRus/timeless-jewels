@@ -671,8 +671,8 @@
                     <ul class="mt-4 overflow-auto" class:rainbow={colored}>
                       {#each sortCombined(combineResults(seedResults(), colored, 'all'), sortOrder?.value ?? 'count') as r}
                         <li>
-                          <button 
-                            class="cursor-pointer w-full text-left" 
+                          <button
+                            class="cursor-pointer w-full text-left"
                             onclick={() => highlight(seed, r.passives)}
                             onkeydown={(e) => e.key === 'Enter' && highlight(seed, r.passives)}>
                             <span class="font-bold" class:text-white={((statValues as any)[r.id] || 0) < 3}>
@@ -689,8 +689,8 @@
                       <ul class="mt-1" class:rainbow={colored}>
                         {#each sortCombined(combineResults(seedResults(), colored, 'notables'), sortOrder?.value ?? 'count') as r}
                           <li>
-                            <button 
-                              class="cursor-pointer w-full text-left" 
+                            <button
+                              class="cursor-pointer w-full text-left"
                               onclick={() => highlight(seed, r.passives)}
                               onkeydown={(e) => e.key === 'Enter' && highlight(seed, r.passives)}>
                               <span class="font-bold" class:text-white={((statValues as any)[r.id] || 0) < 3}>
@@ -706,8 +706,8 @@
                       <ul class="mt-1" class:rainbow={colored}>
                         {#each sortCombined(combineResults(seedResults(), colored, 'passives'), sortOrder?.value ?? 'count') as r}
                           <li>
-                            <button 
-                              class="cursor-pointer w-full text-left" 
+                            <button
+                              class="cursor-pointer w-full text-left"
                               onclick={() => highlight(seed, r.passives)}
                               onkeydown={(e) => e.key === 'Enter' && highlight(seed, r.passives)}>
                               <span class="font-bold" class:text-white={((statValues as any)[r.id] || 0) < 3}>
@@ -729,7 +729,8 @@
                 {#if Object.keys(selectedStats).length > 0}
                   <div class="mt-4 flex flex-col overflow-auto min-h-[100px]">
                     {#each Object.keys(selectedStats) as s}
-                      <div class="mb-4 flex flex-row items-start flex-col border-neutral-100 border-opacity-40 border-b pb-4">
+                      <div
+                        class="mb-4 flex flex-row items-start flex-col border-neutral-100 border-opacity-40 border-b pb-4">
                         <div>
                           <button
                             class="p-2 px-4 bg-red-500/40 rounded mr-2"

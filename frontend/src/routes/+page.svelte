@@ -15,7 +15,7 @@
   let seed = $state<string | number>(0);
   let result = $state<data.AlternatePassiveSkillInformation | undefined>(undefined);
 
-  // Derived data that depends on WASM loading
+  // Direct data access - mimicking the working version(depends on WASM loading)
   let jewels = $derived(() => {
     if (!data?.TimelessJewels) return [];
     return Object.keys(data.TimelessJewels).map((k) => ({
@@ -44,9 +44,9 @@
       }));
   });
 
-  // Initialize from URL parameters when data is available
+  // Initialize from URL parameters - only after jewels are available
   $effect(() => {
-    if (!data?.TimelessJewels || jewels().length === 0) return;
+    if (jewels().length === 0) return;
 
     if (searchParams.has('jewel') && !selectedJewel) {
       const jewelParam = searchParams.get('jewel');
@@ -55,6 +55,10 @@
         if (jewel) selectedJewel = jewel;
       }
     }
+  });
+
+  $effect(() => {
+    if (conquerors().length === 0) return;
 
     if (searchParams.has('conqueror') && !selectedConqueror) {
       const conquerorParam = searchParams.get('conqueror');
@@ -65,6 +69,10 @@
         };
       }
     }
+  });
+
+  $effect(() => {
+    if (passiveSkills().length === 0) return;
 
     if (searchParams.has('passive_skill') && !selectedPassiveSkill) {
       const skillParam = searchParams.get('passive_skill');
@@ -82,7 +90,7 @@
 
   // Calculate result when all parameters are available
   $effect(() => {
-    if (selectedPassiveSkill && seed && selectedJewel && selectedConqueror) {
+    if (selectedPassiveSkill && seed && selectedJewel && selectedConqueror && calculator?.Calculate) {
       const seedNum = typeof seed === 'string' ? parseInt(seed) : seed;
       if (!isNaN(seedNum)) {
         result = calculator.Calculate(
