@@ -2,7 +2,6 @@
   import type { Query } from '$lib/utils/trade_utils';
   import { openQueryTrade } from '$lib/utils/trade_utils';
 
-  
   interface Props {
     // queries to display trade link buttons for
     queries: Query[];

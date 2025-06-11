@@ -6,10 +6,9 @@
   import { loadSkillTree } from '../lib/skill_tree';
   import { syncWrap } from '../lib/worker';
   import { initializeCrystalline } from '../lib/types';
-
   let wasmLoading = true;
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+
+  // @ts-expect-error - Go is defined in wasm_exec.js
   const go = new Go();
 
   if (browser) {
@@ -17,14 +16,13 @@
       .then((data) => data.arrayBuffer())
       .then((data) => {
         WebAssembly.instantiate(data, go.importObject).then((result) => {
-          go.run(result.instance);          wasmLoading = false;
+          go.run(result.instance);
+          wasmLoading = false;
           initializeCrystalline();
           loadSkillTree();
         });
 
-        if (syncWrap) {
-          syncWrap.boot(data);
-        }
+        syncWrap.boot(data);
       });
   }
 </script>

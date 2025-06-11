@@ -21,6 +21,7 @@
     "@sveltejs/vite-plugin-svelte": "^5.1.0",
     "@sveltejs/vite-plugin-svelte-inspector": "^4.0.1",
     "@tailwindcss/postcss": "^4.1.8",
+    "@tailwindcss/upgrade": "^4.1.8",
     "@typescript-eslint/eslint-plugin": "^8.33.1",
     "@typescript-eslint/parser": "^8.33.1",
     "autoprefixer": "^10.4.16",

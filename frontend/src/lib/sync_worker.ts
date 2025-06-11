@@ -27,51 +27,32 @@ const obj = {
     );
 
     const searchGrouped: { [key: number]: SearchWithSeed[] } = {};
-
-    if (!searchResult) {
-      return { grouped: {}, raw: [] };
-    }
-
     Object.keys(searchResult).forEach((seedStr) => {
       const seed = parseInt(seedStr);
-      const seedData = searchResult[seed];
-
-      if (!seedData) {
-        return;
-      }
 
       let weight = 0;
       let totalStats = 0;
 
       const statCounts: Record<number, number> = {};
       const statTotal: Record<number, number> = {};
-      const skills = Object.keys(seedData).map((skillIDStr) => {
+      const skills = Object.keys(searchResult[seed]).map((skillIDStr) => {
         const skillID = parseInt(skillIDStr);
-        const skillStats = seedData[skillID];
-
-        if (!skillStats) {
-          return {
-            passive: passiveToTree[skillID] || skillID,
-            stats: {}
-          };
-        }
-
-        Object.keys(skillStats).forEach((st) => {
+        Object.keys(searchResult[seed][skillID]).forEach((st) => {
           const n = parseInt(st);
           statCounts[n] = (statCounts[n] || 0) + 1;
           weight += args.stats.find((s) => s.id == n)?.weight || 0;
-          const statValue = skillStats[parseInt(st)];
+          const statValue = (skillStats as Record<string, number>)[st];
           statTotal[n] = (statTotal[n] ?? 0) + statValue;
           totalStats += statValue;
         });
 
         return {
-          passive: passiveToTree[skillID] || skillID,
-          stats: skillStats as { [key: string]: number }
+          passive: passiveToTree[skillID],
+          stats: searchResult[seed][skillID]
         };
       });
 
-      const len = Object.keys(seedData).length;
+      const len = Object.keys(searchResult[seed]).length;
       searchGrouped[len] = [
         ...(searchGrouped[len] || []),
         {
@@ -87,7 +68,7 @@ const obj = {
 
     Object.keys(searchGrouped).forEach((len) => {
       const nLen = parseInt(len);
-      const filtered = searchGrouped[nLen].filter((g) => {
+      searchGrouped[nLen] = searchGrouped[nLen].filter((g) => {
         if (g.weight < args.minTotalWeight) {
           return false;
         }
@@ -108,11 +89,10 @@ const obj = {
         return true;
       });
 
-      if (filtered.length === 0) {
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      if (Object.keys(searchGrouped[nLen]).length == 0) {
         delete searchGrouped[nLen];
       } else {
-        searchGrouped[nLen] = filtered.sort((a, b) => b.weight - a.weight);
+        searchGrouped[nLen] = searchGrouped[nLen].sort((a, b) => b.weight - a.weight);
       }
     });
 

@@ -1,5 +1,4 @@
 <script lang="ts">
-
   import type { Query } from '$lib/utils/trade_utils';
   import { openQueryTrade } from '$lib/utils/trade_utils';
 
@@ -11,7 +10,7 @@
 
   let hasMultipleQueries = $derived(queries.length > 1);
 
-  const handleOnClick = () => {  
+  const handleOnClick = () => {
     if (queries.length === 1) {
       // if all filter fit into a single query, link straight to trade website
       openQueryTrade(queries[0]);

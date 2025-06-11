@@ -1,0 +1,29 @@
+{
+  "[svelte]": {
+    "editor.defaultFormatter": "svelte.svelte-vscode",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "prettier.configPath": "./frontend/.prettierrc",
+  "prettier.ignorePath": "./frontend/.prettierignore",
+  "svelte.enable-ts-plugin": true,
+  "files.associations": {
+    "*.svelte": "svelte"
+  },
+  "emmet.includeLanguages": {
+    "svelte": "html"
+  }
+}

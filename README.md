@@ -41,8 +41,8 @@ golangci-lint run ./... --default=none -E errcheck
 
 after using cd frontend:
 pnpm install
-pnpm run lint
 pnpm run format
+pnpm run lint
 pnpm run check
 pnpm run prepare
 pnpm run build

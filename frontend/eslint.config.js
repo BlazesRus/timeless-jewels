@@ -1,7 +1,6 @@
 ﻿// eslint.config.js
 
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
-import { globalIgnores } from 'eslint/config';
 import js from '@eslint/js';
 import svelte from 'eslint-plugin-svelte';
 import svelteParser from 'svelte-eslint-parser';
@@ -15,23 +14,25 @@ export default [
   ...tsEslint.configs.strict,
   ...svelte.configs['flat/recommended'],
   eslintPluginPrettierRecommended, // must be last to override conflicting rules.
-  globalIgnores([
-    '*/*.env',
-    '*/.DS_Store',
-    '**/*.env.*',
-    '**/.git',
-    '**/.vercel',
-    '.svelte-kit', // Ensure this line is present to ignore the kit folder at root
-    '**/.svelte-kit', // Ensure this line is present to ignore kit folders in subdirectories
-    '.svelte-kit/**', // Ensure all contents of the kit folder are ignored
-    '**/.svelte-kit/**', // Ensure all contents of kit folders in subdirectories are ignored
-    '**/build',
-    '**/package',
-    '**/node_modules',
-    '**/postcss.config.js',
-    '**/tsconfig.tsbuildinfo',
-    'src/wasm_exec.d.ts'
-  ]),
+  {
+    ignores: [
+      '*/*.env',
+      '*/.DS_Store',
+      '**/*.env.*',
+      '**/.git',
+      '**/.vercel',
+      '.svelte-kit', // Ensure this line is present to ignore the kit folder at root
+      '**/.svelte-kit', // Ensure this line is present to ignore kit folders in subdirectories
+      '.svelte-kit/**', // Ensure all contents of the kit folder are ignored
+      '**/.svelte-kit/**', // Ensure all contents of kit folders in subdirectories are ignored
+      '**/build',
+      '**/package',
+      '**/node_modules',
+      '**/postcss.config.js',
+      '**/tsconfig.tsbuildinfo',
+      'src/wasm_exec.d.ts'
+    ]
+  },
   {
     ignores: ['**/postcss.config.js', '**/tsconfig.tsbuildinfo', '*.config.js', 'wasm_exec.js', '**/wasm_exec.d.ts'],
     languageOptions: {

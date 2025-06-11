@@ -1,8 +1,9 @@
 <script lang="ts">
-
+  /*
   const measurePerformance = (): number => {
     return window.performance.now();
   };
+*/
 
   import { Canvas, Layer } from 'svelte-canvas';
   import type { RenderFunc, Node } from '../skill_tree_types';
@@ -21,44 +22,32 @@
     toCanvasCoords
   } from '../skill_tree';
   import type { Point } from '../skill_tree';
+  import { derived } from 'svelte/store';
   import { calculator, data } from '../types';
 
-  interface Props {
-    clickNode: (node: Node) => void;
-    circledNode?: number | undefined;
-    selectedJewel: number;
-    selectedConqueror: string;
-    seed: number;
-    highlighted?: number[];
-    disabled?: number[];
-    highlightJewels?: boolean;
-    children?: import('svelte').Snippet;
-  }
+  export let clickNode: (node: Node) => void;
+  export let circledNode: number | undefined;
 
-  let {
-    clickNode,
-    circledNode,
-    selectedJewel,
-    selectedConqueror,
-    seed,
-    highlighted = [],
-    disabled = [],
-    highlightJewels = false,
-    children
-  }: Props = $props();
+  export let selectedJewel: number;
+  export let selectedConqueror: string;
+  export let seed: number;
+  export let highlighted: number[] = [];
+  export let disabled: number[] = [];
+  export let highlightJewels = false;
 
   const startGroups = [427, 320, 226, 227, 323, 422, 329];
 
   const titleFont = '25px Roboto Mono';
   const statsFont = '17px Roboto Mono';
 
-  let scaling = $state(10);
-  let offsetX = $state(0);
-  let offsetY = $state(0);
+  let scaling = 10;
+
+  let offsetX = 0;
+  let offsetY = 0;
 
   // Calculate jewel radius based on scaling
   // This is a constant value that scales with the zoom level
-  let jewelRadius = $derived(baseJewelRadius / scaling);
+  $: jewelRadius = baseJewelRadius / scaling;
 
   const drawScaling = 2.6;
 
@@ -151,62 +140,77 @@
 
     return result;
   };
-  let mousePos: Point = $state({
+
+  let mousePos: Point = {
     x: Number.MIN_VALUE,
     y: Number.MIN_VALUE
-  });
+  };
 
-  let cursor = $state('unset');
-  let hoveredNode: Node | undefined = $state();
+  /*
+  //Optional cycling gradiant that cycles between bright green and neon green
+  const cyclingGradiant = (context: CanvasRenderingContext2D): string[] => {
+    const highlightGradientCenterX = width / 2;
+    const highlightGradientCenterY = height / 2;
+    const highlightGradientInner = 90 / scaling;
+    const highlightGradientOuter = 100 / scaling;
 
-  // Function to render the skill tree
-  // This function is called by the Canvas component to render the skill tree
-  let render = $derived.by((): RenderFunc => {
-    return ({ context, width, height }) => {
-      const start = window.performance.now();
+    // Precompute the highlight gradient once per render
+    // Use a generic center and radius, since the gradient is mostly for color
+    let highlightGradient: CanvasGradient = context.createRadialGradient(
+      highlightGradientCenterX,
+      highlightGradientCenterY,
+      highlightGradientInner,
+      highlightGradientCenterX,
+      highlightGradientCenterY,
+      highlightGradientOuter
+    );
+    highlightGradient.addColorStop(0, '#8cf34c'); // bright green
+    highlightGradient.addColorStop(1, '#00ff00'); // neon green
+		return highlightGradient;
+  };
+*/
 
-      context.clearRect(0, 0, width, height);
+  let cursor = 'unset';
 
-      context.fillStyle = '#080c11';
-      context.fillRect(0, 0, width, height);
+  let hoveredNode: Node | undefined;
+  $: render = (({ context, width, height }) => {
+    const start = window.performance.now();
 
-      const connected: Record<string, boolean> = {};
+    context.clearRect(0, 0, width, height);
 
-      //Need to convert keys to numbers because typescript converts all keys into strings
-      Object.keys(drawnGroups).forEach((keyId) => {
-        const groupId = parseInt(keyId);
-        const group = drawnGroups[groupId];
-        const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
+    context.fillStyle = '#080c11';
+    context.fillRect(0, 0, width, height);
 
-        const maxOrbit = Math.max(...group.orbits);
-        if (startGroups.indexOf(groupId) >= 0) {
-          // Do not draw starter nodes
-        } else if (maxOrbit == 1) {
-          drawSprite(context, 'PSGroupBackground1', groupPos, false);
-        } else if (maxOrbit == 2) {
-          drawSprite(context, 'PSGroupBackground2', groupPos, false);
-        } else if (maxOrbit == 3 || group.orbits.length > 1) {
-          drawSprite(context, 'PSGroupBackground3', groupPos, false, true);
-          // drawMirror(context, $PSGroupBackground3, groupPos);
-        }
-      });
+    const connected = {};
+    Object.keys(drawnGroups).forEach((groupId) => {
+      const group = drawnGroups[groupId];
+      const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
 
-    Object.entries(drawnNodes).forEach(([keyId, node]) => {
-      const nodeId = parseInt(keyId);
+      const maxOrbit = Math.max(...group.orbits);
+      if (startGroups.indexOf(parseInt(groupId)) >= 0) {
+        // Do not draw starter nodes
+      } else if (maxOrbit == 1) {
+        drawSprite(context, 'PSGroupBackground1', groupPos, false);
+      } else if (maxOrbit == 2) {
+        drawSprite(context, 'PSGroupBackground2', groupPos, false);
+      } else if (maxOrbit == 3 || group.orbits.length > 1) {
+        drawSprite(context, 'PSGroupBackground3', groupPos, false, true);
+        // drawMirror(context, $PSGroupBackground3, groupPos);
+      }
+    });
 
-      if (!node) return;
-      const angle = orbitAngleAt(node.orbit??0, node.orbitIndex??0);
+    Object.keys(drawnNodes).forEach((nodeId) => {
+      const node = drawnNodes[nodeId];
+      const angle = orbitAngleAt(node.orbit, node.orbitIndex);
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
 
-      node.out?.forEach((o: string) => {
-        const nodeOutId = parseInt(o);
-        const targetNode = drawnNodes[nodeOutId];
-        if (!targetNode) {
+      node.out?.forEach((o) => {
+        if (!drawnNodes[parseInt(o)]) {
           return;
         }
 
-        const min = Math.min(nodeOutId, nodeId);
-        const max = Math.max(nodeOutId, nodeId);
+        const min = Math.min(parseInt(o), parseInt(nodeId));
+        const max = Math.max(parseInt(o), parseInt(nodeId));
         const joined = min + ':' + max;
 
         if (joined in connected) {
@@ -214,12 +218,17 @@
         }
         connected[joined] = true;
 
-        if (!targetNode) return;
+        const targetNode = drawnNodes[parseInt(o)];
+        if (!targetNode) {
+          return;
+        }
 
         // Do not draw connections to mastery nodes
-        if (targetNode.isMastery) return;
+        if (targetNode.isMastery) {
+          return;
+        }
 
-        const targetAngle = orbitAngleAt(targetNode.orbit??0, targetNode.orbitIndex??0);
+        const targetAngle = orbitAngleAt(targetNode.orbit, targetNode.orbitIndex);
         const targetRotatedPos = calculateNodePos(targetNode, offsetX, offsetY, scaling);
 
         context.beginPath();
@@ -239,11 +248,9 @@
           const finalA = diff > Math.PI ? Math.max(a, b) : Math.min(a, b);
           const finalB = diff > Math.PI ? Math.min(a, b) : Math.max(a, b);
 
-          if(!node.group) return;
           const group = drawnGroups[node.group];
-          if (!group) return;
           const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
-          context.arc(groupPos.x, groupPos.y, skillTree.constants.orbitRadii[node.orbit??0] / scaling + 1, finalA, finalB);
+          context.arc(groupPos.x, groupPos.y, skillTree.constants.orbitRadii[node.orbit] / scaling + 1, finalA, finalB);
         }
 
         context.lineWidth = 6 / scaling;
@@ -252,9 +259,7 @@
       });
     });
 
-    // Define circledNodePos if circledNode is set 
-    // (setting to 0,0 to avoid needing to check for undefined; only used if circledNode is set)
-    let circledNodePos: Point = { x: 0, y: 0 };
+    let circledNodePos: Point;
     if (circledNode) {
       circledNodePos = calculateNodePos(drawnNodes[circledNode], offsetX, offsetY, scaling);
       context.strokeStyle = '#ad2b2b';
@@ -262,8 +267,8 @@
 
     let hoveredNodeActive = false;
     let newHoverNode: Node | undefined;
-
-    Object.values(drawnNodes).forEach((node:Node) => {
+    Object.keys(drawnNodes).forEach((nodeId) => {
+      const node = drawnNodes[nodeId];
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
       let touchDistance = 0;
 
@@ -274,12 +279,13 @@
         }
       }
 
-      if (node.skill&&disabled.indexOf(node.skill) >= 0) active = false;
+      if (disabled.indexOf(node.skill) >= 0) {
+        active = false;
+      }
 
-      //Todo:Give default node image if invalid icon
       if (node.isKeystone) {
         touchDistance = 110;
-        drawSprite(context, node.icon??"", rotatedPos, active);
+        drawSprite(context, node.icon, rotatedPos, active);
         if (active) {
           drawSprite(context, 'KeystoneFrameAllocated', rotatedPos, false);
         } else {
@@ -287,7 +293,7 @@
         }
       } else if (node.isNotable) {
         touchDistance = 70;
-        drawSprite(context, node.icon??"", rotatedPos, active);
+        drawSprite(context, node.icon, rotatedPos, active);
         if (active) {
           drawSprite(context, 'NotableFrameAllocated', rotatedPos, false);
         } else {
@@ -309,10 +315,10 @@
           }
         }
       } else if (node.isMastery) {
-        drawSprite(context, node.inactiveIcon??"", rotatedPos, active);
+        drawSprite(context, node.inactiveIcon, rotatedPos, active);
       } else {
         touchDistance = 50;
-        drawSprite(context, node.icon??"", rotatedPos, active);
+        drawSprite(context, node.icon, rotatedPos, active);
         if (active) {
           drawSprite(context, 'PSSkillFrameActive', rotatedPos, false);
         } else {
@@ -320,9 +326,13 @@
         }
       }
 
-      if (highlighted.indexOf(node.skill??-1) >= 0 || (highlightJewels && node.isJewelSocket)) {
-        // Using simple green color for the highlight ring for now(until optimize code)
-        context.strokeStyle = '#00ff00';
+      if (highlighted.indexOf(node.skill) >= 0 || (highlightJewels && node.isJewelSocket)) {
+        if ((!highlighted || !highlighted.length) && !highlightJewels) {
+          context.strokeStyle = '#ffffff';
+        } else {
+          // Using simple green color for the highlight ring for now(until optimize code)
+          context.strokeStyle = '#00ff00';
+        }
         context.lineWidth = 3;
         context.beginPath();
         context.arc(rotatedPos.x, rotatedPos.y, (touchDistance + 30) / scaling, 0, Math.PI * 2);
@@ -332,7 +342,7 @@
       if (distance(rotatedPos, mousePos) < touchDistance / scaling) {
         newHoverNode = node;
         hoveredNodeActive = active;
-        console.log('Hovering over node:', node.skill, node.name, 'at distance:', distance(rotatedPos, mousePos), 'touchDistance:', touchDistance / scaling);
+        //console.log('Hovering over node:', node.skill, node.name, 'at distance:', distance(rotatedPos, mousePos), 'touchDistance:', touchDistance / scaling);
       }
     });
 
@@ -347,69 +357,56 @@
     }
 
     if (hoveredNode) {
-      let nodeName = hoveredNode.name ?? 'Node name';
+      let nodeName = hoveredNode.name;
       let nodeStats: { text: string; special: boolean }[] = (hoveredNode.stats || []).map((s) => ({
         text: s,
         special: false
       }));
 
       if (!hoveredNode.isJewelSocket && hoveredNodeActive) {
-        if (
-          hoveredNode.skill !== undefined &&
-          data?.TreeToPassive &&
-          data.TreeToPassive[hoveredNode.skill] !== undefined &&
-          seed &&
-          selectedJewel &&
-          selectedConqueror
-        ) {
-          // Saving the hovered node skill to avoid recalculating it
-          // This is mainly for error handling because VS Code forgets that hoveredNode is valid within this block
-          // and complains about hoveredNode.skill being possibly undefined
-          const hoveredSkill = hoveredNode.skill;
-          const treePassive = data.TreeToPassive[hoveredSkill];
-          if (treePassive && treePassive.Index !== undefined) {
-            const result = calculator.Calculate(treePassive.Index,seed,selectedJewel, selectedConqueror);
-            if (result)
-            {
-              if ('AlternatePassiveSkill' in result && result.AlternatePassiveSkill) {
-                nodeStats = [];
-                nodeName = result.AlternatePassiveSkill.Name ?? 'Alternative Skill';
+        if (hoveredNode.skill && seed && selectedJewel && selectedConqueror) {
+          const result = calculator.Calculate(
+            data.TreeToPassive[hoveredNode.skill].Index,
+            seed,
+            selectedJewel,
+            selectedConqueror
+          );
 
-                if (result.AlternatePassiveSkill.StatsKeys) {
-                  result.AlternatePassiveSkill.StatsKeys.forEach((statId: number, i: number) => {
+          if (result) {
+            if ('AlternatePassiveSkill' in result && result.AlternatePassiveSkill) {
+              nodeStats = [];
+              nodeName = result.AlternatePassiveSkill.Name;
+
+              if ('StatsKeys' in result.AlternatePassiveSkill) {
+                result.AlternatePassiveSkill.StatsKeys.forEach((statId, i) => {
+                  const stat = data.GetStatByIndex(statId);
+                  const translation = inverseTranslations[stat.ID] || '';
+                  if (translation) {
+                    nodeStats.push({
+                      text: formatStats(translation, result.StatRolls[i]) || stat.ID,
+                      special: true
+                    });
+                  }
+                });
+              }
+            }
+
+            if (result.AlternatePassiveAdditionInformations) {
+              result.AlternatePassiveAdditionInformations.forEach((info) => {
+                if ('StatsKeys' in info.AlternatePassiveAddition) {
+                  info.AlternatePassiveAddition.StatsKeys.forEach((statId, i) => {
                     const stat = data.GetStatByIndex(statId);
-                    if (!stat) return;
                     const translation = inverseTranslations[stat.ID] || '';
-                    if (translation && result.StatRolls && result.StatRolls[i] !== undefined) {
+                    if (translation) {
                       nodeStats.push({
-                        text: formatStats(translation, result.StatRolls[i]) || stat.ID,
+                        text: formatStats(translation, info.StatRolls[i]) || stat.ID,
                         special: true
                       });
                     }
-                    else
-                      throw new Error(`Failed to translate ${nodeName}. Skill ID: ${hoveredSkill}, Stat ID: ${stat.ID}`);
                   });
-                  if (result.AlternatePassiveAdditionInformations) {
-                    result.AlternatePassiveAdditionInformations.forEach((info) => {
-                      if (info.AlternatePassiveAddition && info.AlternatePassiveAddition.StatsKeys) {
-                        info.AlternatePassiveAddition.StatsKeys.forEach((statId: number, i: number) => {
-                          const stat = data.GetStatByIndex(statId);
-                          if (!stat) return;
-                          const translation = inverseTranslations[stat.ID] || '';
-                          if (translation && info.StatRolls && info.StatRolls[i] !== undefined) {
-                            nodeStats.push({text: formatStats(translation, info.StatRolls[i]) || stat.ID, special: true});
-                          }
-                          else
-                            throw new Error(`Failed to translate ${nodeName} additional info for statID: ${stat.ID}, skillID: ${hoveredSkill}, statRoll: ${info.StatRolls ? info.StatRolls[i] : 'undefined'}`);
-                        });
-                      }
-                    });
-                  }
                 }
-              }
+              });
             }
-            else
-              throw new Error(`Failed to calculate ${nodeName}. Skill ID: ${hoveredSkill}, Seed: ${seed}, Selected Jewel: ${selectedJewel}, Selected Conqueror: ${selectedConqueror}`);
           }
         }
       }
@@ -497,22 +494,29 @@
 
     context.fillStyle = '#ffffff';
     context.textAlign = 'right';
-    context.font = '12px Roboto Mono';      const end = measurePerformance();
+    context.font = '12px Roboto Mono';
 
-      context.fillText(`${(end - start).toFixed(1)}ms`, width - 5, 17);
-    };
-  });
+    const end = window.performance.now();
 
-  let downX = $state(0);
-  let downY = $state(0);
-  let startX = $state(0);
-  let startY = $state(0);
-  let down = $state(false);  const mouseDown = (event: PointerEvent) => {
+    context.fillText(`${(end - start).toFixed(1)}ms`, width - 5, 17);
+  }) as RenderFunc;
+
+  let downX = 0;
+  let downY = 0;
+
+  let startX = 0;
+  let startY = 0;
+
+  let down = false;
+  const mouseDown = (event: MouseEvent) => {
     down = true;
     downX = event.offsetX;
     downY = event.offsetY;
     startX = offsetX;
-    startY = offsetY;    mousePos = {
+    startY = offsetY;
+
+    // Update mouse position first
+    mousePos = {
       x: event.offsetX,
       y: event.offsetY
     };
@@ -533,7 +537,7 @@
     };
   };
 
-  const mouseMove = (event: PointerEvent) => {
+  const mouseMove = (event: MouseEvent) => {
     if (down) {
       offsetX = startX - (downX - event.offsetX) * scaling;
       offsetY = startY - (downY - event.offsetY) * scaling;
@@ -544,61 +548,52 @@
       y: event.offsetY
     };
   };
+
   const onScroll = (event: WheelEvent) => {
-    const wheelEvent = event;
-    if (wheelEvent.deltaY > 0) {
+    if (event.deltaY > 0) {
       if (scaling < 30) {
-        offsetX += wheelEvent.offsetX;
-        offsetY += wheelEvent.offsetY;
+        offsetX += event.offsetX;
+        offsetY += event.offsetY;
       }
     } else {
       if (scaling > 3) {
-        offsetX -= wheelEvent.offsetX;
-        offsetY -= wheelEvent.offsetY;
+        offsetX -= event.offsetX;
+        offsetY -= event.offsetY;
       }
     }
 
-    scaling = Math.min(30, Math.max(3, scaling + wheelEvent.deltaY / 100));
+    scaling = Math.min(30, Math.max(3, scaling + event.deltaY / 100));
 
     event.preventDefault();
     event.stopPropagation();
     event.stopImmediatePropagation();
   };
 
-  let width = $state(0);
-  let height = $state(0);
-  
+  let width = 0;
+  let height = 0;
   const resize = () => {
     width = window.innerWidth;
     height = window.innerHeight;
   };
 
-  let initialized = $state(false);
-  
-  // Initialize position only once when skillTree is available
-  $effect(() => {
+  let initialized = false;
+  $: {
     if (!initialized && skillTree) {
       initialized = true;
       offsetX = skillTree.min_x + (window.innerWidth / 2) * scaling;
       offsetY = skillTree.min_y + (window.innerHeight / 2) * scaling;
     }
-  });
-
-  // Handle window resize separately to avoid infinite loops
-  $effect(() => {
     resize();
-  });
+  }
 </script>
 
-<svelte:window onpointerup={mouseUp} onpointermove={mouseMove} onresize={resize} />
+<svelte:window on:pointerup={mouseUp} on:pointermove={mouseMove} on:resize={resize} />
 
 {#if width && height}
-  <div style="touch-action: none; cursor: {cursor}">
-    <Canvas {width} {height} onpointerdown={mouseDown} onwheel={onScroll}>
+  <div on:resize={resize} style="touch-action: none; cursor: {cursor}">
+    <Canvas {width} {height} on:pointerdown={mouseDown} on:wheel={onScroll}>
       <Layer {render} />
     </Canvas>
-    {#if children}
-      {@render children()}
-    {/if}
+    <slot />
   </div>
 {/if}

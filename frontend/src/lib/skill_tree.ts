@@ -3,6 +3,9 @@ import { data } from './types';
 import { type Filter, type Query, filterGroupsToQuery, filtersToFilterGroup } from './utils/trade_utils';
 import { chunkArray } from './utils/utils';
 
+// Re-export Query type for external use
+export type { Query } from './utils/trade_utils';
+
 export let skillTree: SkillTreeData;
 
 export const drawnGroups: Record<number, Group> = {};
@@ -107,14 +110,9 @@ export const loadSkillTree = () => {
     });
   });
 
-  if (data.TreeToPassive) {
-    Object.keys(data.TreeToPassive).forEach((k) => {
-      const passive = data.TreeToPassive?.[parseInt(k)];
-      if (passive) {
-        passiveToTree[passive.Index] = parseInt(k);
-      }
-    });
-  }
+  Object.keys(data.TreeToPassive).forEach((k) => {
+    passiveToTree[data.TreeToPassive[parseInt(k)].Index] = parseInt(k);
+  });
 };
 
 const indexHandlers: Record<string, number> = {
@@ -309,16 +307,13 @@ const statCache: Record<number, Stat> = {};
 export const getStat = (id: number | string): Stat => {
   const nId = typeof id === 'string' ? parseInt(id) : id;
   if (!(nId in statCache)) {
-    const stat = data.GetStatByIndex(nId);
-    if (!stat) {
-      throw new Error(`Stat not found for ID: ${nId}`);
-    }
-    statCache[nId] = stat;
+    statCache[nId] = data.GetStatByIndex(nId);
   }
   return statCache[nId];
 };
 
 export interface StatConfig {
+  //Minimum number of node with related stat to include in search
   min: number;
   id: number;
   weight: number;
@@ -339,13 +334,11 @@ export interface ReverseSearchConfig {
 export interface SearchWithSeed {
   seed: number;
   weight: number;
-  //Minimum number of nodes with specific stat
   statCounts: Record<number, number>;
   skills: {
     passive: number;
     stats: { [key: string]: number };
   }[];
-  //Minimum value for each specific stat
   statTotal: Record<number, number>;
   //Total value of targeted stats in search area
   totalStats: number;
@@ -370,6 +363,23 @@ export const translateStat = (id: number, roll?: number | undefined): string => 
   }
   return translationText;
 };
+
+/*
+export const translateStatData = (id: string, roll?: number | undefined): string => {
+  const stat = getStat(id);
+  const translation = inverseTranslations[stat.ID];
+  if (roll) {
+    return formatStats(translation, roll) || stat.ID;
+  }
+
+  let translationText = stat.Text || stat.ID;
+  if (translation && translation.list && translation.list.length) {
+    translationText = translation.list[0].string;
+    translationText = translationText.replace(/\{\d(?::(.*?)d(.*?))\}/, '$1#$2').replace(/\{\d\}/, '#');
+  }
+  return translationText;
+};
+*/
 
 const tradeStatNames: { [key: number]: { [key: string]: string } } = {
   1: {
