@@ -201,3 +201,9 @@ CorrectFrontPage.png
 FailedFrontPage.png
 ErrorInBuildWindow.png
 HowNodeClicksShouldBe.png
+
+BUILD_FIXES_COMPLETE.md
+
+FailedFrontend/
+
+FrontEndBackup/
