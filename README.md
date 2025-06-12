@@ -39,10 +39,49 @@ run command:
 golangci-lint config verify
 golangci-lint run ./... --default=none -E errcheck
 
-after using cd frontend:
+## Frontend Development
+
+This project uses **pnpm v10** for package management. Please ensure you have pnpm v10 installed:
+
+```powershell
+# Install or update to pnpm v10
+pnpm self-update
+
+# Or via npm
+npm install -g pnpm@10
+```
+
+### First-time Setup
+
+```powershell
+cd frontend
+
+# Install dependencies
+pnpm install
+
+# For migration from older pnpm versions, you may need to:
+# 1. Remove old lockfile: Remove-Item pnpm-lock.yaml
+# 2. Remove node_modules: Remove-Item node_modules -Recurse -Force
+# 3. Fresh install: pnpm install
+```
+
+### Development Commands
+
+```powershell
+# After using cd frontend:
 pnpm install
 pnpm run format
 pnpm run lint
 pnpm run check
 pnpm run prepare
 pnpm run build
+
+# Development server
+pnpm run dev
+```
+
+### pnpm v10 Migration Notes
+
+- See `PNPM_V10_MIGRATION.md` for detailed migration information
+- Lifecycle scripts are now more secure (only specified dependencies can run build scripts)
+- Test arguments no longer require `--` prefix: `pnpm test --watch` instead of `pnpm test -- --watch`

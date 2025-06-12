@@ -1,0 +1,22 @@
+# pnpm v10.12.1 Workspace Configuration
+
+# Security: Only allow specified dependencies to run lifecycle scripts
+only-built-dependencies=esbuild,sass,vite,go,@parcel/watcher,@sveltejs/kit,svelte-preprocess
+
+# Windows virtual store directory length limitation
+virtual-store-dir-max-length=60
+
+# Package manager version management
+manage-package-manager-versions=true
+
+# Hoisting configuration for common development tools
+public-hoist-pattern[]=*eslint*
+public-hoist-pattern[]=*prettier*
+public-hoist-pattern[]=*typescript*
+
+# Lockfile handling
+prefer-frozen-lockfile=false
+
+# Enhanced security and compatibility settings for v10.12.1
+strict-peer-dependencies=false
+auto-install-peers=true
