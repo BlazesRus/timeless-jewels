@@ -2,7 +2,7 @@
   "bracketSameLine": false,
   "bracketSpacing": true,
   "endOfLine": "lf",
-  "printWidth": 120,
+  "printWidth": 150,
   "quoteProps": "as-needed",
   "singleQuote": true,
   "trailingComma": "none",
@@ -15,7 +15,7 @@
       "files": "*.svelte",
       "options": {
         "parser": "svelte",
-        "printWidth": 120,
+        "printWidth": 150,
         "svelteStrictMode": false,
         "svelteAllowShorthand": true,
         "svelteIndentScriptAndStyle": true,

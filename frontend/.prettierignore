@@ -13,3 +13,6 @@ package-lock.json
 yarn.lock
 src/lib/types/*
 src/wasm_exec.js
+
+#Ignoring .svelte for now until can stop it from placing content of tag in next line
+.svelte
