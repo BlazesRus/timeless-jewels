@@ -1,5 +1,10 @@
 <script lang="ts">
-  import { Canvas, Layer, t } from 'svelte-canvas';
+
+  const measurePerformance = (): number => {
+    return window.performance.now();
+  };
+
+  import { Canvas, Layer } from 'svelte-canvas';
   import type { RenderFunc, Node } from '../skill_tree_types';
   import {
     baseJewelRadius,
@@ -29,14 +34,6 @@
   export let disabled: number[] = [];
   export let highlightJewels = false;
 
-  const slowTime = derived(t, (values) => {
-    if ((!highlighted || !highlighted.length) && !highlightJewels) {
-      return 0;
-    }
-
-    return Math.round(values / 40);
-  });
-
   const startGroups = [427, 320, 226, 227, 323, 422, 329];
 
   const titleFont = '25px Roboto Mono';
@@ -47,6 +44,8 @@
   let offsetX = 0;
   let offsetY = 0;
 
+  // Calculate jewel radius based on scaling
+  // This is a constant value that scales with the zoom level
   $: jewelRadius = baseJewelRadius / scaling;
 
   const drawScaling = 2.6;
@@ -144,6 +143,28 @@
   let mousePos: Point = {
     x: Number.MIN_VALUE,
     y: Number.MIN_VALUE
+  };
+
+  //Optional cycling gradiant that cycles between bright green and neon green
+  const cyclingGradiant = (context: CanvasRenderingContext2D): string[] => {
+    const highlightGradientCenterX = width / 2;
+    const highlightGradientCenterY = height / 2;
+    const highlightGradientInner = 90 / scaling;
+    const highlightGradientOuter = 100 / scaling;
+
+    // Precompute the highlight gradient once per render
+    // Use a generic center and radius, since the gradient is mostly for color
+    let highlightGradient: CanvasGradient = context.createRadialGradient(
+      highlightGradientCenterX,
+      highlightGradientCenterY,
+      highlightGradientInner,
+      highlightGradientCenterX,
+      highlightGradientCenterY,
+      highlightGradientOuter
+    );
+    highlightGradient.addColorStop(0, '#8cf34c'); // bright green
+    highlightGradient.addColorStop(1, '#00ff00'); // neon green
+		return highlightGradient;
   };
 
   let cursor = 'unset';
@@ -303,7 +324,12 @@
       }
 
       if (highlighted.indexOf(node.skill) >= 0 || (highlightJewels && node.isJewelSocket)) {
-        context.strokeStyle = `hsl(${$slowTime}, 100%, 50%)`;
+        if ((!highlighted || !highlighted.length) && !highlightJewels) {
+          context.strokeStyle = '#ffffff';
+        } else {
+          // Using cycling green color for visual effects or simple green color
+          context.strokeStyle = cyclingGradiant(context)??'#00ff00';
+        }
         context.lineWidth = 3;
         context.beginPath();
         context.arc(rotatedPos.x, rotatedPos.y, (touchDistance + 30) / scaling, 0, Math.PI * 2);
