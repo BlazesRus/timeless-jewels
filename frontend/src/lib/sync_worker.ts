@@ -41,7 +41,7 @@ const obj = {
           const n = parseInt(st);
           statCounts[n] = (statCounts[n] || 0) + 1;
           weight += args.stats.find((s) => s.id == n)?.weight || 0;
-          const statValue = (skillStats as Record<string, number>)[st];
+          const statValue = searchResult[seed][skillID][st];
           statTotal[n] = (statTotal[n] ?? 0) + statValue;
           totalStats += statValue;
         });

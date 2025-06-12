@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { openQueryTrade, type Query } from '$lib/utils/trade_utils';
+  import { openQueryTrade, type Query } from '../utils/trade_utils';
 
   export let queries: Query[];
   export let showTradeLinks = false;
@@ -19,8 +19,7 @@
   };
 </script>
 
-<button
-  class="p-1 px-3 bg-blue-500/40 rounded disabled:bg-blue-900/40 mr-2"
+<button class="p-1 px-3 bg-blue-500/40 rounded disabled:bg-blue-900/40 mr-2"
   on:click={handleOnClick}
   disabled={!queries}>
   {hasMultipleQueries ? (showTradeLinks ? 'Hide Trade Links' : 'Show Trade Links') : 'Trade'}

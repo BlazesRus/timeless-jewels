@@ -13,7 +13,9 @@
     label: data.TimelessJewels[k]
   }));
 
-  let selectedJewel = searchParams.has('jewel') ? jewels.find((j) => j.value == searchParams.get('jewel')) : undefined;
+  let selectedJewel = searchParams.has('jewel')
+    ? jewels.find((j) => j.value === parseInt(searchParams.get('jewel') || '0'))
+    : undefined;
 
   $: conquerors = selectedJewel
     ? Object.keys(data.TimelessJewelConquerors[selectedJewel.value]).map((k) => ({
@@ -35,10 +37,10 @@
   }));
 
   let selectedPassiveSkill: { label: string; value: number } = searchParams.has('passive_skill')
-    ? passiveSkills.find((j) => j.value == searchParams.get('passive_skill'))
+    ? passiveSkills.find((j) => j.value === parseInt(searchParams.get('passive_skill') || '0'))
     : undefined;
 
-  let seed = searchParams.has('seed') ? searchParams.get('seed') : 0;
+  let seed = searchParams.has('seed') ? parseInt(searchParams.get('seed') || '0') : 0;
 
   let result: undefined | data.AlternatePassiveSkillInformation;
 
@@ -55,7 +57,7 @@
 
   const updateUrl = () => {
     if (browser) {
-      const params: object = {};
+      const params: Record<string, any> = {};
       selectedJewel && (params.jewel = selectedJewel.value);
       selectedConqueror && (params.conqueror = selectedConqueror.value);
       selectedPassiveSkill && (params.passive_skill = selectedPassiveSkill.value);
@@ -162,15 +164,23 @@
 
     <div class="flex justify-between">
       <div class="text-right text-orange-500">
-        <a href="https://discord.gg/mfacademy" target="_blank" rel="noopener noreferrer" class="flex flex-row align-middle">
-          <img src="{assets}/mf-academy-logo.png" width="24px" alt="MF Academy"/>
+        <a
+          href="https://discord.gg/mfacademy"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="flex flex-row align-middle">
+          <img src="{assets}/mf-academy-logo.png" width="24px" alt="MF Academy" />
           <span class="ml-2">MF Academy</span>
         </a>
       </div>
 
       <div class="text-orange-500">
-        <a href="https://github.com/Vilsol/timeless-jewels" target="_blank" rel="noopener noreferrer">Official Branch Source (Github)</a>
-        <a href="https://github.com/BlazesRus/timeless-jewels" target="_blank" rel="noopener noreferrer">Source (Github)</a>
+        <a href="https://github.com/Vilsol/timeless-jewels" target="_blank" rel="noopener noreferrer">
+          Official Branch Source (Github)
+        </a>
+        <a href="https://github.com/BlazesRus/timeless-jewels" target="_blank" rel="noopener noreferrer">
+          Source (Github)
+        </a>
       </div>
     </div>
   </div>

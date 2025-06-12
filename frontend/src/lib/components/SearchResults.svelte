@@ -12,7 +12,7 @@
   const computeSize = (r: SearchWithSeed) =>
     8 + 48 + r.skills.reduce((o, s) => o + 32 + Object.keys(s.stats).length * 24, 0);
 
-  let expandedGroup = '';
+  let expandedGroup: number | null = null;
 </script>
 
 {#if groupResults}
@@ -21,9 +21,8 @@
       .map((x) => parseInt(x))
       .sort((a, b) => a - b)
       .reverse() as k}
-      <button
-        class="text-lg w-full p-2 px-4 bg-neutral-500/30 rounded flex flex-row justify-between mb-2"
-        on:click={() => (expandedGroup = expandedGroup === k ? '' : k)}>
+      <button class="text-lg w-full p-2 px-4 bg-neutral-500/30 rounded flex flex-row justify-between mb-2"
+        on:click={() => (expandedGroup = expandedGroup === k ? null : k)}>
         <span>
           {k} Match{k > 1 ? 'es' : ''} [{searchResults.grouped[k].length}]
         </span>

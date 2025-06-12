@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { openQueryTrade } from '$lib/utils/trade_utils';
+  import { openQueryTrade } from '../utils/trade_utils';
   import { constructSingleResultQuery, type SearchWithSeed } from '../skill_tree';
   import { skillTree, translateStat } from '../skill_tree';
 
@@ -9,14 +9,10 @@
   export let conqueror: string;
 
   const handleOnClick = () =>
-    highlight(
-      set.seed,
-      set.skills.map((s) => s.passive)
-    );
+    highlight(set.seed,set.skills.map((s) => s.passive));
 </script>
 
-<div
-  class="my-2 border-white/50 border p-2 flex flex-col cursor-pointer"
+<div class="my-2 border-white/50 border p-2 flex flex-col cursor-pointer"
   on:click={handleOnClick}
   on:keydown={handleOnClick}
   role="button"
@@ -27,8 +23,7 @@
     <div class="font-bold text-orange-500 text-center">
       Seed {set.seed} (weight {set.weight}) Stat Total: {set.totalStats}
     </div>
-    <button
-      class="px-3 bg-blue-500/40 rounded"
+    <button class="px-3 bg-blue-500/40 rounded"
       on:click={() => openQueryTrade(constructSingleResultQuery(jewel, conqueror, set))}>Trade</button>
   </div>
   {#each set.skills as skill}
@@ -38,7 +33,7 @@
       </span>
       <ul class="list-disc pl-6 font-bold">
         {#each Object.keys(skill.stats) as stat}
-          <li>{translateStat(stat, skill.stats[stat])}</li>
+          <li>{translateStat(parseInt(stat), skill.stats[stat])}</li>
         {/each}
       </ul>
     </div>

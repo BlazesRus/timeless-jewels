@@ -5,14 +5,18 @@
   import { goto } from '$app/navigation';
   import type { Node } from '../../lib/skill_tree_types';
   import { getAffectedNodes, skillTree, translateStat, constructQueries } from '../../lib/skill_tree';
-  import { syncWrap } from '../../lib/worker';
-  import { proxy } from 'comlink';
-  import type { Query, ReverseSearchConfig, StatConfig } from '../../lib/skill_tree';
+  import { modernWorker } from '../../lib/modern-worker';
+  import type {
+    Query,
+    SearchConfig,
+    StatConfig,
+    SearchResults as SearchResultsType
+  } from '../../lib/modern-worker-types';
   import SearchResults from '../../lib/components/SearchResults.svelte';
   import { statValues } from '../../lib/values';
   import { data, calculator } from '../../lib/types';
-  import TradeButton from '$lib/components/TradeButton.svelte';
-  import TradeLinks from '$lib/components/TradeLinks.svelte';
+  import TradeButton from '../../lib/components/TradeButton.svelte';
+  import TradeLinks from '../../lib/components/TradeLinks.svelte';
 
   const searchParams = $page.url.searchParams;
 
@@ -21,7 +25,9 @@
     label: data.TimelessJewels[k]
   }));
 
-  let selectedJewel = searchParams.has('jewel') ? jewels.find((j) => j.value == searchParams.get('jewel')) : undefined;
+  let selectedJewel = searchParams.has('jewel')
+    ? jewels.find((j) => j.value === parseInt(searchParams.get('jewel') || '0'))
+    : undefined;
 
   $: conquerors = selectedJewel
     ? Object.keys(data.TimelessJewelConquerors[selectedJewel.value]).map((k) => ({
@@ -43,10 +49,10 @@
 
   $: selectedConqueror = dropdownConqueror?.value === 'Any' ? conquerors[0] : dropdownConqueror;
 
-  let seed: number = searchParams.has('seed') ? parseInt(searchParams.get('seed')) : 0;
+  let seed: number = searchParams.has('seed') ? parseInt(searchParams.get('seed') || '0') : 0;
 
   let circledNode: number | undefined = searchParams.has('location')
-    ? parseInt(searchParams.get('location'))
+    ? parseInt(searchParams.get('location') || '0')
     : undefined;
 
   $: affectedNodes = circledNode
@@ -78,7 +84,8 @@
       selectedStats[nStat] = {
         weight: 1,
         min: 0,
-        id: nStat
+        id: nStat,
+        minStatTotal: 0
       };
     });
   }
@@ -105,7 +112,7 @@
     updateUrl();
   };
 
-  let disabled = new Set();
+  let disabled = new Set<number>();
   const clickNode = (node: Node) => {
     if (node.isJewelSocket) {
       circledNode = node.skill;
@@ -139,7 +146,8 @@
     selectedStats[stat.detail.value] = {
       weight: 1,
       min: 0,
-      id: stat.detail.value
+      id: stat.detail.value,
+      minStatTotal: 0
     };
     selectedStats = selectedStats;
     statSelector.handleClear();
@@ -163,11 +171,16 @@
   let minTotalStats = 0;
   let searching = false;
   let currentSeed = 0;
-  let searchResults: SearchResults;
+  let searchResults: SearchResultsType | undefined;
   let searchJewel = 1;
   let searchConqueror: string | null = null;
-  const search = () => {
+  const search = async () => {
     if (!circledNode) {
+      return;
+    }
+
+    if (!modernWorker || !modernWorker.isReady()) {
+      console.error('Modern worker not available or not ready');
       return;
     }
 
@@ -175,8 +188,9 @@
     searchConqueror = anyConqueror ? null : selectedConqueror.value;
     searching = true;
     searchResults = undefined;
+    currentSeed = 0;
 
-    const query: ReverseSearchConfig = {
+    const searchConfig: SearchConfig = {
       jewel: selectedJewel.value,
       conqueror: selectedConqueror.value,
       nodes: affectedNodes
@@ -189,16 +203,23 @@
       minTotalStats
     };
 
-    syncWrap
-      .search(
-        query,
-        proxy((s) => (currentSeed = s))
-      )
-      .then((result) => {
-        searchResults = result;
-        searching = false;
-        results = true;
-      });
+    try {
+      const result = await modernWorker.reverseSearch(
+        searchConfig,
+        async (seed: number) => {
+          currentSeed = seed;
+        }
+      );
+
+      searchResults = result;
+      searching = false;
+      results = true;
+      console.log(`Search completed successfully with ${result.raw.length} results`);
+    } catch (error) {
+      console.error('Search failed:', error);
+      searching = false;
+      // You might want to show an error message to the user here
+    }
   };
 
   let highlighted: number[] = [];
@@ -391,7 +412,7 @@
       return;
     }
 
-    const paste = (event.clipboardData || window.clipboardData).getData('text');
+    const paste = (event.clipboardData || (window as any).clipboardData).getData('text');
     const lines = paste.split('\n');
 
     if (lines.length < 14) {
@@ -457,7 +478,7 @@
   {highlighted}
   {seed}
   highlightJewels={!circledNode}
-  disabled={[...disabled]}>
+  disabled={Array.from(disabled)}>
   {#if !collapsed}
     <div
       class="w-screen md:w-10/12 lg:w-2/3 xl:w-1/2 2xl:w-5/12 3xl:w-1/3 4xl:w-1/4 absolute top-0 left-0 bg-black/80 backdrop-blur-sm themed rounded-br-lg max-h-screen">
@@ -558,38 +579,41 @@
                   </div>
 
                   {#if !split}
-                    <ul class="mt-4 overflow-auto" class:rainbow={colored}>
+                    <div class="mt-4 overflow-auto" class:rainbow={colored}>
                       {#each sortCombined(combineResults(seedResults, colored, 'all'), sortOrder.value) as r}
-                        <li class="cursor-pointer" on:click={() => highlight(seed, r.passives)}>
-                          <span class="font-bold" class:text-white={(statValues[r.id] || 0) < 3}
-                            >({r.passives.length})</span>
+                        <button class="cursor-pointer block w-full text-left hover:bg-gray-700/30 p-1 rounded" on:click={() => highlight(seed, r.passives)}>
+                          <span class="font-bold" class:text-white={(statValues[r.id] || 0) < 3}>
+                            ({r.passives.length})
+                          </span>
                           <span class="text-white">{@html r.stat}</span>
-                        </li>
+                        </button>
                       {/each}
-                    </ul>
+                    </div>
                   {:else}
                     <div class="overflow-auto mt-4">
                       <h3>Notables</h3>
-                      <ul class="mt-1" class:rainbow={colored}>
+                      <div class="mt-1" class:rainbow={colored}>
                         {#each sortCombined(combineResults(seedResults, colored, 'notables'), sortOrder.value) as r}
-                          <li class="cursor-pointer" on:click={() => highlight(seed, r.passives)}>
-                            <span class="font-bold" class:text-white={(statValues[r.id] || 0) < 3}
-                              >({r.passives.length})</span>
+                          <button class="cursor-pointer block w-full text-left hover:bg-gray-700/30 p-1 rounded" on:click={() => highlight(seed, r.passives)}>
+                            <span class="font-bold" class:text-white={(statValues[r.id] || 0) < 3}>
+                              ({r.passives.length})
+                            </span>
                             <span class="text-white">{@html r.stat}</span>
-                          </li>
+                          </button>
                         {/each}
-                      </ul>
+                      </div>
 
                       <h3 class="mt-2">Smalls</h3>
-                      <ul class="mt-1" class:rainbow={colored}>
+                      <div class="mt-1" class:rainbow={colored}>
                         {#each sortCombined(combineResults(seedResults, colored, 'passives'), sortOrder.value) as r}
-                          <li class="cursor-pointer" on:click={() => highlight(seed, r.passives)}>
-                            <span class="font-bold" class:text-white={(statValues[r.id] || 0) < 3}
-                              >({r.passives.length})</span>
+                          <button class="cursor-pointer block w-full text-left hover:bg-gray-700/30 p-1 rounded" on:click={() => highlight(seed, r.passives)}>
+                            <span class="font-bold" class:text-white={(statValues[r.id] || 0) < 3}>
+                              ({r.passives.length})
+                            </span>
                             <span class="text-white">{@html r.stat}</span>
-                          </li>
+                          </button>
                         {/each}
-                      </ul>
+                      </div>
                     </div>
                   {/if}
                 {/if}

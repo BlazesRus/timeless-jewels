@@ -3,6 +3,9 @@ import { data } from './types';
 import { type Filter, type Query, filterGroupsToQuery, filtersToFilterGroup } from './utils/trade_utils';
 import { chunkArray } from './utils/utils';
 
+// Re-export types for convenience
+export type { Query, Filter } from './utils/trade_utils';
+
 export let skillTree: SkillTreeData;
 
 export const drawnGroups: Record<number, Group> = {};
