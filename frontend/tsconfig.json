@@ -16,8 +16,18 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "noImplicitOverride": true,
     "useDefineForClassFields": true,
+    "verbatimModuleSyntax": true,
     "noImplicitAny": false,
-    "strictNullChecks": false
+    "strictNullChecks": false,
+    "paths": {
+      "$lib": ["src/lib"],
+      "$lib/*": ["src/lib/*"],
+      "$routes": ["src/routes"],
+      "$routes/*": ["src/routes/*"],
+      "$app": [".svelte-kit/types/app"],
+      "$app/*": [".svelte-kit/types/app/*"]
+    }
   },
   "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.js", "src/**/*.svelte"]
+
 }
