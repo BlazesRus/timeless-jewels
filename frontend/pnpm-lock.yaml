@@ -60,7 +60,7 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3(postcss-load-config@4.0.2(postcss@8.5.4))(postcss@8.5.4)(sass@1.89.2)(svelte@4.2.20)(typescript@5.8.3)
       svelte-select:
-        specifier: ^5.7.0
+        specifier: ^5.8.3
         version: 5.8.3
       svelte-tiny-virtual-list:
         specifier: ^2.0.5

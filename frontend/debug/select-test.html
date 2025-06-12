@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Test</title>
+    <style>
+        body { 
+            background: #1a1a1a; 
+            color: white; 
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        
+        .test-container {
+            max-width: 400px;
+            margin: 20px 0;
+        }
+        
+        .themed {
+            /* Main container */
+            --background: #393939;
+            --border: 1px solid #696969;
+            --border-radius: 3px;
+            --border-hover: 1px solid #c2410c;
+            --border-focus: 1px solid #c2410c;
+            --border-focus-color: #c2410c;
+            --height: 42px;
+            --font-size: 14px;
+            --value-container-padding: 0 16px;
+            --input-padding: 0;
+            --multi-select-padding: 0 16px;
+            --input-color: #ffffff;
+            --placeholder-color: #cccccc;
+            --placeholder-opacity: 1;
+
+            /* List/Dropdown */
+            --list-background: #393939;
+            --list-border: 1px solid #696969;
+            --list-border-radius: 3px;
+            --list-max-height: 252px;
+            --list-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            --list-z-index: 1000;
+
+            /* Items */
+            --item-height: 42px;
+            --item-line-height: 42px;
+            --item-padding: 0 16px;
+            --item-color: #ffffff;
+            --item-hover-bg: #c2410c;
+            --item-hover-color: #ffffff;
+            --item-is-active-bg: #696969;
+            --item-is-active-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <h1>svelte-select Component Test</h1>
+    
+    <div class="test-container">
+        <h3>Basic Select (No Theme)</h3>
+        <div id="select1"></div>
+    </div>
+    
+    <div class="test-container themed">
+        <h3>Themed Select</h3>
+        <div id="select2"></div>
+    </div>
+
+    <script type="module">
+        import Select from '/node_modules/svelte-select/Select.svelte';
+        
+        console.log('Select component loaded:', Select);
+        
+        const items = [
+            { value: 1, label: 'Option 1' },
+            { value: 2, label: 'Option 2' },
+            { value: 3, label: 'Option 3' },
+        ];
+        
+        // Test basic select
+        new Select({
+            target: document.getElementById('select1'),
+            props: {
+                items: items,
+                placeholder: 'Choose an option...'
+            }
+        });
+        
+        // Test themed select
+        new Select({
+            target: document.getElementById('select2'),
+            props: {
+                items: items,
+                placeholder: 'Choose an option...'
+            }
+        });
+    </script>
+</body>
+</html>

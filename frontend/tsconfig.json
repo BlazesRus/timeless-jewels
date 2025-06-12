@@ -9,7 +9,6 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "verbatimModuleSyntax": true,
     "baseUrl": ".",
     "moduleResolution": "bundler",
     "target": "ES2022",
