@@ -21,13 +21,84 @@ h3 {
 }
 
 .themed {
+  /* Main container */
   --background: #393939;
-  --list-background: #393939;
-  --item-hover-bg: #c2410c;
-  --item-is-active-bg: #696969;
+  --border: 1px solid #696969;
+  --border-radius: 3px;
+  --border-hover: 1px solid #c2410c;
+  --border-focus: 1px solid #c2410c;
   --border-focus-color: #c2410c;
+  --height: 42px;
+  --font-size: 14px;
+  --value-container-padding: 0 16px;
+  --input-padding: 0;
+  --multi-select-padding: 0 16px;
   --input-color: #ffffff;
-  --border: #696969;
+  --placeholder-color: #cccccc;
+  --placeholder-opacity: 1;
+
+  /* List/Dropdown */
+  --list-background: #393939;
+  --list-border: 1px solid #696969;
+  --list-border-radius: 3px;
+  --list-max-height: 252px;
+  --list-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --list-z-index: 1000;
+
+  /* Items */
+  --item-height: 42px;
+  --item-line-height: 42px;
+  --item-padding: 0 16px;
+  --item-color: #ffffff;
+  --item-hover-bg: #c2410c;
+  --item-hover-color: #ffffff;
+  --item-is-active-bg: #696969;
+  --item-is-active-color: #ffffff;
+  --item-is-not-selectable-color: #999999;
+  --item-transition: all 0.2s;
+
+  /* Clear icon */
+  --clear-icon-color: #cccccc;
+  --clear-icon-width: 20px;
+  --clear-select-width: 20px;
+
+  /* Loading icon */
+  --loading-color: #cccccc;
+  --loading-width: 20px;
+
+  /* Chevron icon */
+  --chevron-color: #cccccc;
+  --chevron-width: 20px;
+
+  /* Multi-select */
+  --multi-item-bg: #696969;
+  --multi-item-color: #ffffff;
+  --multi-item-border-radius: 3px;
+  --multi-item-margin: 2px 4px 2px 0;
+  --multi-item-padding: 4px 8px;
+  --multi-item-clear-icon-color: #ffffff;
+
+  /* Group headers */
+  --group-title-color: #cccccc;
+  --group-title-font-size: 14px;
+  --group-title-font-weight: 600;
+  --group-title-padding: 0 16px;
+  --group-item-padding-left: 32px;
+
+  /* Empty state */
+  --list-empty-color: #999999;
+  --list-empty-padding: 20px 0;
+  --list-empty-text-align: center;
+
+  /* Error state */
+  --error-background: #393939;
+  --error-border: 1px solid #dc2626;
+  --error-color: #ffffff;
+
+  /* Disabled state */
+  --disabled-background: #2a2a2a;
+  --disabled-border-color: #555555;
+  --disabled-color: #999999;
 }
 
 input {

@@ -1,24 +1,34 @@
 <script lang="ts">
+
+  import { browser } from '$app/environment';
+  import { onMount } from 'svelte';
+  import type { Page } from '@sveltejs/kit';
+  import { goto } from '$app/navigation';
+
   import '../app.scss';
   import '../wasm_exec.js';
-  import { assets } from '$app/paths';
-  import { browser } from '$app/environment';
-  import { loadSkillTree } from '../lib/skill_tree';
-  import { modernWorker } from '../lib/modern-worker';
-  import { initializeCrystalline } from '../lib/types';
 
-  let wasmLoading = true;
-  let initializationError: string | null = null;
+  import { assets } from '$app/paths';
+  import { loadSkillTree } from '../lib/skill_tree';
+  import { initializeCrystalline } from '../lib/types';
+  import { modernWorker } from '../lib/modern-worker';
 
   // eslint-disable-next-line no-undef
   const go = new (globalThis as any).Go();
 
+  // Initialize WASM in the background without blocking the UI
   if (browser) {
     const initializeApp = async () => {
       try {
+        console.log('Starting background WASM initialization...');
+        
         // Fetch WASM data
         const wasmResponse = await fetch(assets + '/calculator.wasm');
+        if (!wasmResponse.ok) {
+          throw new Error(`Failed to fetch WASM: ${wasmResponse.status} ${wasmResponse.statusText}`);
+        }
         const wasmData = await wasmResponse.arrayBuffer();
+        console.log('WASM data loaded, size:', wasmData.byteLength);
         
         // Initialize main thread WASM
         const result = await WebAssembly.instantiate(wasmData.slice(0), go.importObject);
@@ -30,42 +40,27 @@
         
         // Initialize modern worker with WASM data
         if (modernWorker) {
-          await modernWorker.boot(wasmData.slice(0)); // Clone for worker
-          console.log('Modern worker initialized successfully');
+          await modernWorker.boot(wasmData.slice(0));
         }
         
-        wasmLoading = false;
+        console.log('WASM initialization complete');
       } catch (error) {
-        console.error('Application initialization failed:', error);
-        initializationError = error instanceof Error ? error.message : 'Unknown initialization error';
-        wasmLoading = false;
+        console.error('WASM initialization failed:', error);
       }
     };
     
+    // Start initialization but don't wait for it
     initializeApp();
   }
 </script>
 
-{#if wasmLoading}
-  <div class="flex flex-row justify-center h-screen">
-    <div class="flex flex-col">
-      <div class="py-10 flex flex-col justify-between">
-        <div>
-          <h1 class="text-white mb-10 text-center">Timeless Calculator</h1>
+<!-- Always show the main content, WASM loads in background (Disable the link and selector until data finishes loading)-->
+<slot />
 
-          {#if initializationError}
-            <div class="text-red-500 text-center">
-              <h2>Initialization Error</h2>
-              <p class="mt-2 text-sm">{initializationError}</p>
-              <button class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" on:click={() => window.location.reload()}>Retry</button>
-            </div>
-          {:else}
-            <h2 class="text-center">Loading...</h2>
-          {/if}
-        </div>
-      </div>
-    </div>
-  </div>
-{:else}
-  <slot />
-{/if}
+<style>
+  div {
+    margin: 1rem 0;
+    padding: 1rem;
+    border: 1px solid #ccc;
+  }
+</style>
