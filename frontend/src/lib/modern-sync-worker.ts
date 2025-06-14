@@ -134,8 +134,8 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
       throw new Error('Invalid jewel ID');
     }
 
-    if (typeof config.conqueror !== 'number' || config.conqueror < 0) {
-      throw new Error('Invalid conqueror ID');
+    if (typeof config.conqueror !== 'string') {
+      throw new Error('Invalid conqueror - must be a string');
     }
 
     // Validate stat configurations

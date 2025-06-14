@@ -1,5 +1,6 @@
 import { browser } from '$app/environment';
 import { wrap, proxy, transfer } from 'comlink';
+import type { Remote } from 'comlink';
 import type { ModernTimelessWorker, SearchProgressCallback } from './modern-worker-types';
 
 /**
@@ -7,7 +8,7 @@ import type { ModernTimelessWorker, SearchProgressCallback } from './modern-work
  */
 class ModernWorkerManager {
   private worker: Worker | null = null;
-  private workerApi: ModernTimelessWorker | null = null;
+  private workerApi: Remote<ModernTimelessWorker> | null = null;
   private initialized = false;
 
   /**
@@ -27,8 +28,7 @@ class ModernWorkerManager {
       // Import the worker using Vite's worker import syntax
       const ModernWorker = await import('./modern-sync-worker?worker');
       this.worker = new ModernWorker.default();
-      
-      // Wrap the worker with Comlink
+        // Wrap the worker with Comlink
       this.workerApi = wrap<ModernTimelessWorker>(this.worker);
       
       console.log('Modern worker initialized successfully');
@@ -78,13 +78,9 @@ class ModernWorkerManager {
     try {
       // Create a proxied progress callback if provided
       const progressProxy = onProgress ? proxy(onProgress) : undefined;
-      
       const result = await this.workerApi.reverseSearch(config, progressProxy);
       
-      // Clean up the proxy
-      if (progressProxy) {
-        progressProxy[Symbol.dispose]?.();
-      }
+      // Proxy cleanup is handled automatically by Comlink
       
       return result;
     } catch (error) {
