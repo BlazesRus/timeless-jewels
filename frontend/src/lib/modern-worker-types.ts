@@ -12,7 +12,7 @@ export interface SearchConfig {
   nodes: number[];
   stats: StatConfig[];
   jewel: number;
-  conqueror: number;
+  conqueror: string;
   minTotalWeight: number;
   minTotalStats: number;
 }
