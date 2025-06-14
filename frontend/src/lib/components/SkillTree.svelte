@@ -34,7 +34,6 @@
     toCanvasCoords
   } from '../skill_tree';
   import type { Point } from '../skill_tree';
-  import { derived } from 'svelte/store';
   import { calculator, data } from '../types';
 
   export let clickNode: (node: Node) => void;
