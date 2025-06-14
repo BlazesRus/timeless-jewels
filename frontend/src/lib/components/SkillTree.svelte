@@ -4,7 +4,20 @@
     return window.performance.now();
   };
 
+  //import { browser } from '$app/environment';
+  import { onMount } from 'svelte';
+  //import type { Page } from '@sveltejs/kit';
+  //import { goto } from '$app/navigation';
+
+  //import { base, assets } from '$app/paths';
+  //import { data, calculator, isWasmReady } from '$lib/types/index.js';
+
+  //Remove once port to Svelte 5
+  import { derived } from 'svelte/store';
+
+  //Maybe Replace with alternative once port to Svelte 5
   import { Canvas, Layer } from 'svelte-canvas';
+
   import type { RenderFunc, Node } from '../skill_tree_types';
   import {
     baseJewelRadius,
@@ -21,7 +34,6 @@
     toCanvasCoords
   } from '../skill_tree';
   import type { Point } from '../skill_tree';
-  import { derived } from 'svelte/store';
   import { calculator, data } from '../types';
 
   export let clickNode: (node: Node) => void;
@@ -145,8 +157,8 @@
     y: Number.MIN_VALUE
   };
 
-  //Optional cycling gradiant that cycles between bright green and neon green
-  const cyclingGradiant = (context: CanvasRenderingContext2D): string[] => {
+  //Optional cycling gradiant that cycles between bright green and neon green  
+  const cyclingGradiant = (context: CanvasRenderingContext2D, width: number, height: number, scaling: number): CanvasGradient => {
     const highlightGradientCenterX = width / 2;
     const highlightGradientCenterY = height / 2;
     const highlightGradientInner = 90 / scaling;
@@ -168,8 +180,8 @@
   };
 
   let cursor = 'unset';
-
   let hoveredNode: Node | undefined;
+
   $: render = (({ context, width, height }) => {
     const start = window.performance.now();
 
@@ -328,7 +340,7 @@
           context.strokeStyle = '#ffffff';
         } else {
           // Using cycling green color for visual effects or simple green color
-          context.strokeStyle = cyclingGradiant(context)??'#00ff00';
+          context.strokeStyle = cyclingGradiant(context, width, height, scaling)??'#00ff00';
         }
         context.lineWidth = 3;
         context.beginPath();
