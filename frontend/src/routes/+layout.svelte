@@ -51,6 +51,7 @@
     
     // Start initialization but don't wait for it
     initializeApp();
+    console.log('Layout loading in browser...');
   }
 </script>
 

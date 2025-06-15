@@ -20,7 +20,8 @@ const config = {
     adapter: adapter({
       pages: 'build',
       assets: 'build',
-      fallback: 'index.html'
+      fallback: 'index.html'//,
+      //precompress: false
     }),
     paths: {
       base: '/timeless-jewels'

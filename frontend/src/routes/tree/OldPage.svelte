@@ -1,10 +1,13 @@
 <script lang="ts">
-  import SkillTree from '../../lib/components/SkillTree.svelte';
-  import Select from 'svelte-select';
+  import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
+  import { onMount } from 'svelte';
+
+  import SkillTree from '../../lib/components/SkillTree.svelte';
   import type { Node } from '../../lib/skill_tree_types';
   import { getAffectedNodes, skillTree, translateStat, constructQueries } from '../../lib/skill_tree';
+
   import { modernWorker } from '../../lib/modern-worker';
   import type {
     Query,
@@ -12,12 +15,17 @@
     StatConfig,
     SearchResults as SearchResultsType
   } from '../../lib/modern-worker-types';
+
   import SearchResults from '../../lib/components/SearchResults.svelte';
   import { statValues } from '../../lib/values';
   import { data, calculator } from '../../lib/types';
-  import TradeButton from '../../lib/components/TradeButton.svelte';
-  import TradeLinks from '../../lib/components/TradeLinks.svelte';
 
+  import TradeButton from '$lib/components/TradeButton.svelte';
+  import TradeLinks from '$lib/components/TradeLinks.svelte';
+
+  import Select from 'svelte-select';
+
+  // Store search params as reactive variable
   const searchParams = $page.url.searchParams;
 
   const jewels = Object.keys(data.TimelessJewels).map((k) => ({
@@ -113,6 +121,7 @@
   };
 
   let disabled = new Set<number>();
+
   const clickNode = (node: Node) => {
     if (node.isJewelSocket) {
       circledNode = node.skill;
@@ -471,12 +480,12 @@
 <svelte:window on:paste={onPaste} />
 
 <SkillTree
-  {clickNode}
-  {circledNode}
-  selectedJewel={selectedJewel?.value}
-  selectedConqueror={selectedConqueror?.value}
-  {highlighted}
-  {seed}
+  bind:circledNode
+  clickNode={handleNodeClick}
+  selectedJewel={selectedJewel?.value||0}
+  selectedConqueror={selectedConqueror?.value||''}
+  highlighted={affectedNodes.map(n => n.skill)}
+  seed={seed}
   highlightJewels={!circledNode}
   disabled={Array.from(disabled)}>
   {#if !collapsed}
@@ -503,47 +512,43 @@
             <div class="flex flex-row">
               {#if results}
                 <TradeButton {queries} bind:showTradeLinks />
-                <button
-                  class="p-1 px-3 bg-blue-500/40 rounded disabled:bg-blue-900/40 mr-2"
+                <button class="p-1 px-3 bg-blue-500/40 rounded disabled:bg-blue-900/40 mr-2"
                   class:grouped={groupResults}
                   on:click={() => (groupResults = !groupResults)}
-                  disabled={!searchResults}>
-                  Grouped
-                </button>
+                  disabled={!searchResults}>Grouped</button>
               {/if}
-              <button class="bg-neutral-100/20 px-4 p-1 rounded" on:click={() => (results = !results)}>
-                {results ? 'Config' : 'Results'}
-              </button>
+              <button class="bg-neutral-100/20 px-4 p-1 rounded" on:click={() => (results = !results)}>{results ? 'Config' : 'Results'}</button>
             </div>
           {/if}
         </div>
 
         {#if !results}
-          <Select items={jewels} bind:value={selectedJewel} on:change={changeJewel} />
+          <Select items={jewels} bind:value={selectedJewel} 
+          placeholder="Select jewel..."
+          on:change={changeJewel} />
 
           {#if selectedJewel}
             <div class="mt-4">
               <h3 class="mb-2">Conqueror</h3>
-              <Select items={dropdownConqs} bind:value={dropdownConqueror} on:change={updateUrl} />
+              <Select items={dropdownConqs} bind:value={dropdownConqueror}
+              placeholder="Select conqueror..."
+              on:change={updateUrl} />
             </div>
 
             {#if selectedConqueror && Object.keys(data.TimelessJewelConquerors[selectedJewel.value]).indexOf(selectedConqueror.value) >= 0}
               <div class="mt-4 w-full flex flex-row">
-                <button class="selection-button" class:selected={mode === 'seed'} on:click={() => setMode('seed')}>
-                  Enter Seed
-                </button>
-                <button class="selection-button" class:selected={mode === 'stats'} on:click={() => setMode('stats')}>
-                  Select Stats
-                </button>
+                <button class="selection-button" class:selected={mode === 'seed'} on:click={() => setMode('seed')}>Enter Seed</button>
+                <button class="selection-button" class:selected={mode === 'stats'} on:click={() => setMode('stats')}>Select Stats</button>
               </div>
 
               {#if mode === 'seed'}
                 <div class="mt-4">
                   <h3 class="mb-2">Seed</h3>
-                  <input
-                    type="number"
+                  <input type="number"
                     bind:value={seed}
+                    placeholder="Seed"
                     on:blur={updateUrl}
+                    on:input={updateUrl}
                     min={data.TimelessJewelSeedRanges[selectedJewel.value].Min}
                     max={data.TimelessJewelSeedRanges[selectedJewel.value].Max} />
                   {#if seed < data.TimelessJewelSeedRanges[selectedJewel.value].Min || seed > data.TimelessJewelSeedRanges[selectedJewel.value].Max}
@@ -561,12 +566,9 @@
                       <Select items={sortResults} bind:value={sortOrder} />
                     </div>
                     <div class="ml-2">
-                      <button
-                        class="bg-neutral-500/20 p-2 px-4 rounded"
+                      <button class="bg-neutral-500/20 p-2 px-4 rounded"
                         class:selected={colored}
-                        on:click={() => (colored = !colored)}>
-                        Colors
-                      </button>
+                        on:click={() => (colored = !colored)}>Colors</button>
                     </div>
                     <div class="ml-2">
                       <button
@@ -663,42 +665,22 @@
                   </div>
                   <div class="flex flex-col mt-4">
                     <div class="flex flex-row">
-                      <button
-                        class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2"
+                      <button class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2"
                         on:click={selectAll}
-                        disabled={searching || disabled.size == 0}>
-                        Select All
-                      </button>
-                      <button
-                        class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2"
+                        disabled={searching || disabled.size == 0}>Select All</button>
+                      <button class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2"
                         on:click={selectAllNotables}
-                        disabled={searching || disabled.size == 0}>
-                        Notables
-                      </button>
-                      <button
-                        class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2"
+                        disabled={searching || disabled.size == 0}>Notables</button>
+                      <button class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2"
                         on:click={selectAllPassives}
-                        disabled={searching || disabled.size == 0}>
-                        Passives
-                      </button>
-                      <button
-                        class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 flex-grow"
+                        disabled={searching || disabled.size == 0}>Passives</button>
+                      <button class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 flex-grow"
                         on:click={deselectAll}
-                        disabled={searching || disabled.size >= affectedNodes.length}>
-                        Deselect
-                      </button>
+                        disabled={searching || disabled.size >= affectedNodes.length}>Deselect</button>
                     </div>
                     <div class="flex flex-row mt-2">
-                      <button
-                        class="p-2 px-3 bg-green-500/40 rounded disabled:bg-green-900/40 flex-grow"
-                        on:click={() => search()}
-                        disabled={searching}>
-                        {#if searching}
-                          {currentSeed} / {data.TimelessJewelSeedRanges[selectedJewel.value].Max}
-                        {:else}
-                          Search
-                        {/if}
-                      </button>
+                      <button class="p-2 px-3 bg-green-500/40 rounded disabled:bg-green-900/40 flex-grow"
+                      on:click={handleSearch} disabled={isSearching}>{isSearching ? 'Searching...' + {currentSeed} / {data.TimelessJewelSeedRanges[selectedJewel.value].Max} : 'Search'}</button>
                     </div>
                   </div>
                 {/if}
@@ -711,21 +693,22 @@
           {/if}
         {/if}
 
-        {#if searchResults && results}
+        {#if searchResults.raw.length > 0 && results}
           {#if showTradeLinks}
             <TradeLinks {queries} />
           {/if}
-          <SearchResults {searchResults} {groupResults} {highlight} jewel={searchJewel} conqueror={searchConqueror} />
+          <SearchResultsComponent {searchResults} {groupResults} {highlight}
+          jewel={selectedJewel?.value || 0}
+          conqueror={selectedConqueror?.value || ''}/>
         {/if}
       </div>
     </div>
   {:else}
-    <button
-      class="burger-menu absolute top-0 left-0 bg-black/80 backdrop-blur-sm rounded-br-lg p-4 pt-5"
+    <button class="burger-menu absolute top-0 left-0 bg-black/80 backdrop-blur-sm rounded-br-lg p-4 pt-5"
       on:click={() => (collapsed = false)}>
-      <div />
-      <div />
-      <div />
+      <div></div>
+      <div></div>
+      <div></div>
     </button>
   {/if}
 
@@ -756,25 +739,4 @@
     disabled: bg-pink-900/40;
   }
 
-  .rainbow {
-    animation: colorRotate 2s linear 0s infinite;
-  }
-
-  @keyframes colorRotate {
-    from {
-      color: hsl(0, 100%, 50%);
-    }
-    25% {
-      color: hsl(90, 100%, 50%);
-    }
-    50% {
-      color: hsl(180, 100%, 50%);
-    }
-    75% {
-      color: hsl(270, 100%, 50%);
-    }
-    100% {
-      color: hsl(359, 100%, 50%);
-    }
-  }
 </style>
