@@ -1,0 +1,87 @@
+{
+  // Terminal Configuration for Better Copilot Integration
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.profiles.windows": {
+    "PowerShell": {
+      "source": "PowerShell",
+      "icon": "terminal-powershell",
+      "args": ["-NoLogo"]
+    }
+  },
+  
+  // Improve terminal shell integration
+  "terminal.integrated.shellIntegration.enabled": true,
+  "terminal.integrated.shellIntegration.decorationsEnabled": "both",
+  "terminal.integrated.shellIntegration.history": 100,
+  
+  // Enhanced terminal behavior for Copilot
+  "terminal.integrated.enableBell": false,
+  "terminal.integrated.scrollback": 10000,
+  "terminal.integrated.fastScrollSensitivity": 5,
+  
+  // Focus management
+  "terminal.integrated.focusAfterRun": "terminal",
+  "workbench.action.terminal.focus": true,
+    // GitHub Copilot specific settings
+  "github.copilot.enable": {
+    "*": true,
+    "yaml": true,
+    "plaintext": true,
+    "markdown": true,
+    "json": true,
+    "typescript": true,
+    "svelte": true,
+    "javascript": true,
+    "go": true
+  },
+  
+  // Enhanced Copilot Chat and terminal integration
+  "github.copilot.chat.localeOverride": "en",
+  "github.copilot.chat.welcomeMessage": "always",
+  "github.copilot.chat.useProjectTemplates": true,
+  "github.copilot.terminal.shellIntegration": true,
+  
+  // Command detection and completion improvements
+  "terminal.integrated.commandsToSkipShell": [
+    "language-julia.interrupt",
+    "workbench.action.terminal.clear"
+  ],
+  
+  // Enhanced output detection and command tracking
+  "terminal.integrated.environmentChangesIndicator": "on",
+  "terminal.integrated.environmentChangesRelaunch": false,
+  "terminal.integrated.enablePersistentSessions": true,
+  "terminal.integrated.persistentSessionReviveProcess": "onExit",
+  
+  // Improved focus management for Copilot
+  "terminal.integrated.automationProfile.windows": {
+    "path": "powershell.exe",
+    "args": ["-NoLogo", "-NoProfile"]
+  },
+  
+  // Better command completion detection
+  "terminal.integrated.detectLocale": "on",
+  "terminal.integrated.inheritEnv": true,
+  
+  // Copilot workspace trust
+  "security.workspace.trust.untrustedFiles": "open",
+  "github.copilot.advanced": {
+    "debug.overrideEngine": "codex",
+    "debug.testOverrideProxyUrl": "",
+    "debug.overrideProxyUrl": ""
+  },
+  
+  // Terminal behavior for better agent interaction
+  "terminal.integrated.allowChords": false,
+  "terminal.integrated.altClickMovesCursor": false,
+  "terminal.integrated.confirmOnExit": "never",
+  "terminal.integrated.confirmOnKill": "never",
+  
+  // Enhanced shell integration markers
+  "terminal.integrated.shellIntegration.showWelcome": false,
+  "terminal.integrated.smoothScrolling": true,
+  
+  // Auto-focus settings for Copilot workflow
+  "workbench.action.focusActiveEditorGroup": true,
+  "editor.accessibilitySupport": "off"
+}
