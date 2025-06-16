@@ -197,6 +197,101 @@ class VersionManager {
       process.exit(1);
     }
   }
+  /**
+   * Switch explicitly to Svelte 4 (only if not already using Svelte 4)
+   */
+  switchTo4() {
+    const currentVersion = this.getCurrentVersion();
+    
+    console.log(`🎯 Target: Svelte 4`);
+    console.log(`📋 Current: Svelte ${currentVersion || 'unknown'}`);
+
+    if (currentVersion === '4') {
+      console.log('✅ Already using Svelte 4. No changes needed.');
+      return false;
+    }
+
+    const sourcePackage = 'LegacyPackage.json';
+    const sourcePath = join(this.rootDir, sourcePackage);
+
+    if (!existsSync(sourcePath)) {
+      throw new Error(`Svelte 4 package file not found: ${sourcePath}`);
+    }
+
+    // Create backup before switching
+    this.createBackup();
+
+    // Copy the Svelte 4 package file
+    copyFileSync(sourcePath, this.packageJsonPath);
+    console.log(`📦 Switched to ${sourcePackage} (Svelte 4)`);
+
+    // Update version config
+    this.updateVersionConfigTo('4');
+    
+    // Install dependencies if configured
+    this.installDependencies();
+    
+    console.log('🎉 Successfully switched to Svelte 4!');
+    return true;
+  }
+
+  /**
+   * Switch explicitly to Svelte 5 (only if not already using Svelte 5)
+   */
+  switchTo5() {
+    const currentVersion = this.getCurrentVersion();
+    
+    console.log(`🎯 Target: Svelte 5`);
+    console.log(`📋 Current: Svelte ${currentVersion || 'unknown'}`);
+
+    if (currentVersion === '5') {
+      console.log('✅ Already using Svelte 5. No changes needed.');
+      return false;
+    }
+
+    const sourcePackage = 'Svelte5Package.json';
+    const sourcePath = join(this.rootDir, sourcePackage);
+
+    if (!existsSync(sourcePath)) {
+      throw new Error(`Svelte 5 package file not found: ${sourcePath}`);
+    }
+
+    // Create backup before switching
+    this.createBackup();
+
+    // Copy the Svelte 5 package file
+    copyFileSync(sourcePath, this.packageJsonPath);
+    console.log(`📦 Switched to ${sourcePackage} (Svelte 5)`);
+
+    // Update version config
+    this.updateVersionConfigTo('5');
+    
+    // Install dependencies if configured
+    this.installDependencies();
+    
+    console.log('🎉 Successfully switched to Svelte 5!');
+    return true;
+  }
+
+  /**
+   * Update version detection config for specific version
+   */
+  updateVersionConfigTo(targetVersion) {
+    const configPath = join(this.rootDir, 'src', 'lib', 'utils', 'version-config.ts');
+    
+    if (existsSync(configPath)) {
+      let content = readFileSync(configPath, 'utf8');
+      
+      // Update the default version in the config
+      content = content.replace(
+        /export const DEFAULT_SVELTE_VERSION = '[45]'/,
+        `export const DEFAULT_SVELTE_VERSION = '${targetVersion}'`
+      );
+      
+      writeFileSync(configPath, content);
+      console.log(`🔧 Updated version-config.ts to default to Svelte ${targetVersion}`);
+    }
+  }
 
   /**
    * Show current configuration status
@@ -224,6 +319,24 @@ switch (command) {
   case 'update':
     manager.run();
     break;
+  case 'switchTo4':
+    try {
+      console.log('🚀 Switching to Svelte 4...');
+      manager.switchTo4();
+    } catch (error) {
+      console.error('❌ Error switching to Svelte 4:', error.message);
+      process.exit(1);
+    }
+    break;
+  case 'switchTo5':
+    try {
+      console.log('🚀 Switching to Svelte 5...');
+      manager.switchTo5();
+    } catch (error) {
+      console.error('❌ Error switching to Svelte 5:', error.message);
+      process.exit(1);
+    }
+    break;
   case 'status':
     manager.status();
     break;
@@ -237,9 +350,11 @@ Usage:
   node scripts/version-manager.js [command]
 
 Commands:
-  switch    Switch package.json based on version.ini configuration
-  status    Show current version configuration status
-  help      Show this help message
+  switch      Switch package.json based on version.ini configuration
+  switchTo4   Explicitly switch to Svelte 4 (only if not already using Svelte 4)
+  switchTo5   Explicitly switch to Svelte 5 (only if not already using Svelte 5)
+  status      Show current version configuration status
+  help        Show this help message
 
 Configuration:
   Edit version.ini to change Svelte version and options
