@@ -12,7 +12,7 @@ export interface VersionConfig {
   
   // Fallback strategy when version detection fails
   fallbackStrategy: 'svelte4' | 'svelte5' | 'auto';
-  
+
   // UI library configurations for different Svelte versions
   uiLibraries: {
     svelte4: {
