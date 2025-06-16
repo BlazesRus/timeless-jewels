@@ -33,10 +33,13 @@ export interface VersionConfig {
   };
 }
 
+// Default version used by the INI-based system
+export const DEFAULT_SVELTE_VERSION = '5';
+
 export const versionConfig: VersionConfig = {
-  defaultSvelteVersion: '4.2.0',
+  defaultSvelteVersion: '5.33.0',
   enableVersionLogging: true,
-  fallbackStrategy: 'svelte4',
+  fallbackStrategy: 'svelte5',
   
   uiLibraries: {
     svelte4: {
@@ -48,11 +51,10 @@ export const versionConfig: VersionConfig = {
       description: 'Modern Svelte 5 compatible select component with runes'
     }
   },
-  
-  features: {
-    runes: false,        // Will be set to true for Svelte 5+
-    legacyReactivity: true,  // Will be set to false for Svelte 5+
-    modernEvents: false      // Will be set to true for Svelte 5+
+    features: {
+    runes: true,         // Svelte 5 runes syntax (default enabled for Svelte 5)
+    legacyReactivity: false,  // Svelte 4 reactivity patterns (disabled by default)
+    modernEvents: true        // Svelte 5 event handling (enabled by default)
   }
 };
 

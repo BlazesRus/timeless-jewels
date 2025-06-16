@@ -15,6 +15,9 @@
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write .",
     "test:version": "node -e \"console.log('Svelte version:', require('svelte/package.json').version)\""
+    "version:switch": "node scripts/version-manager.js switch",
+    "version:status": "node scripts/version-manager.js status",
+    "version:help": "node scripts/version-manager.js help"
   },
   "devDependencies": {
     "@eslint/js": "^9.28.0",
