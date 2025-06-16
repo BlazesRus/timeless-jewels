@@ -15,7 +15,8 @@
   "terminal.integrated.shellIntegration.history": 100,
   
   // Enhanced terminal behavior for Copilot
-  "terminal.integrated.enableBell": false,
+  "terminal.integrated.enableVisualBell": false,
+  "accessibility.signals.terminalBell": {},
   "terminal.integrated.scrollback": 10000,
   "terminal.integrated.fastScrollSensitivity": 5,
   
