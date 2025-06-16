@@ -207,3 +207,5 @@ BUILD_FIXES_COMPLETE.md
 FailedFrontend/
 
 FrontEndBackup/
+
+frontend/package.json.backup.*
