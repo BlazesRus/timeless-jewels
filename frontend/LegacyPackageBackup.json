@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "0.0.2",  "scripts": {
+  "version": "0.0.2","scripts": {
     "dev": "vite dev",
     "dev:svelte4": "node scripts/version-manager.js switchTo4 && vite dev",
     "dev:svelte5": "node scripts/version-manager.js switchTo5 && vite dev",
@@ -14,7 +14,7 @@
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write .",
-    "test:version": "node -e \"console.log('Svelte version:', require('svelte/package.json').version)\"",
+    "test:version": "node -e \"console.log('Svelte version:', require('svelte/package.json').version)\""
     "version:switch": "node scripts/version-manager.js switch",
     "version:status": "node scripts/version-manager.js status",
     "version:help": "node scripts/version-manager.js help"
