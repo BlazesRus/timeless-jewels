@@ -16,12 +16,12 @@ export interface VersionConfig {
   // UI library configurations for different Svelte versions
   uiLibraries: {
     svelte4: {
-      select: 'svelte-select';
-      description: 'Traditional svelte-select component';
+      select: string;
+      description: string;
     };
     svelte5: {
-      select: 'ModernSelect';
-      description: 'Modern Svelte 5 compatible select component';
+      select: string;
+      description: string;
     };
   };
   
