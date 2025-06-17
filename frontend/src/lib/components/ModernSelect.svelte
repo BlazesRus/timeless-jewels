@@ -1,9 +1,10 @@
 <!-- 
 Modern Select Component for Svelte 5
-This is a placeholder implementation that provides the same API as svelte-select
-but uses modern Svelte 5 features and could be replaced with a proper UI library
+Full-featured replacement for svelte-select using native Svelte 5 runes
 -->
 <script lang="ts">
+  import { tick } from 'svelte';
+
   interface SelectItem {
     value: any;
     label: string;
@@ -14,12 +15,23 @@ but uses modern Svelte 5 features and could be replaced with a proper UI library
     value?: SelectItem;
     placeholder?: string;
     onchange?: (item: SelectItem | undefined) => void;
+    onclear?: () => void;
+    disabled?: boolean;
   }
 
-  let { items, value = $bindable(), placeholder, onchange }: Props = $props();
-
+  let { 
+    items, 
+    value = $bindable(), 
+    placeholder = "Select...", 
+    onchange, 
+    onclear,
+    disabled = false 
+  }: Props = $props();
   let isOpen = $state(false);
   let searchTerm = $state('');
+  let highlightedIndex = $state(-1);
+  let containerRef = $state<HTMLDivElement>();
+  let searchInputRef = $state<HTMLInputElement>();
   
   const filteredItems = $derived(
     items.filter(item => 
@@ -27,105 +39,336 @@ but uses modern Svelte 5 features and could be replaced with a proper UI library
     )
   );
 
+  // Keyboard navigation
+  const handleKeydown = async (e: KeyboardEvent) => {
+    if (!isOpen) {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (!disabled) {
+          isOpen = true;
+          await tick();
+          searchInputRef?.focus();
+        }
+      }
+      return;
+    }
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        highlightedIndex = Math.min(highlightedIndex + 1, filteredItems.length - 1);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        highlightedIndex = Math.max(highlightedIndex - 1, -1);
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (highlightedIndex >= 0 && filteredItems[highlightedIndex]) {
+          handleSelect(filteredItems[highlightedIndex]);
+        }
+        break;
+      case 'Escape':
+        e.preventDefault();
+        close();
+        break;
+    }
+  };
   const handleSelect = (item: SelectItem) => {
     value = item;
-    isOpen = false;
-    searchTerm = '';
+    close();
     onchange?.(item);
   };
 
-  const clear = () => {
+  const clear = (e?: Event) => {
+    e?.stopPropagation();
     value = undefined;
+    close();
+    onclear?.();
     onchange?.(undefined);
   };
 
-  // Expose clear method for parent components
-  const selectRef = {
-    clear,
-    handleClear: clear // For compatibility with svelte-select API
+  const close = () => {
+    isOpen = false;
+    searchTerm = '';
+    highlightedIndex = -1;
   };
 
-  // Bind this reference to the component
-  export { selectRef as this };
+  // Click outside handler
+  const handleClickOutside = (e: Event) => {
+    if (!containerRef?.contains(e.target as Node)) {
+      close();
+    }
+  };
+
+  // API compatibility with svelte-select
+  export const handleClear = clear;
 </script>
 
-<div class="modern-select relative">
-  <button 
-    class="modern-select-trigger w-full p-2 border border-gray-300 rounded bg-white text-left flex justify-between items-center"
-    onclick={() => isOpen = !isOpen}
+<svelte:window onclick={handleClickOutside} />
+
+<div bind:this={containerRef} class="modern-select relative themed">  <button 
+    class="select-trigger"
+    class:disabled
+    onclick={() => !disabled && (isOpen = !isOpen)}
+    onkeydown={handleKeydown}
     type="button"
+    {disabled}
+    aria-expanded={isOpen}
+    aria-haspopup="listbox"
+    aria-controls="select-dropdown-{Math.random().toString(36).substr(2, 9)}"
+    role="combobox"
   >
-    <span class="modern-select-value">
-      {value?.label || placeholder || 'Select...'}
+    <span class="select-value">
+      {value?.label || placeholder}
     </span>
-    <svg 
-      class="w-4 h-4 transition-transform"
-      class:rotate-180={isOpen}
-      fill="none" 
-      stroke="currentColor" 
-      viewBox="0 0 24 24"
-    >
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-    </svg>
+    <div class="select-actions">
+      {#if value && !disabled}        <button
+          class="clear-button"
+          onclick={clear}
+          type="button"
+          tabindex="-1"
+          aria-label="Clear selection"
+        >
+          ✕
+        </button>
+      {/if}
+      <svg 
+        class="chevron"
+        class:open={isOpen}
+        fill="none" 
+        stroke="currentColor" 
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </div>
   </button>
 
-  {#if isOpen}
-    <div class="modern-select-dropdown absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-auto">
-      <div class="p-2 border-b">
-        <input
-          type="text"
+  {#if isOpen && !disabled}
+    <div class="select-dropdown" role="listbox">
+      <div class="search-container">        <input
+          bind:this={searchInputRef}
           bind:value={searchTerm}
           placeholder="Search..."
-          class="w-full p-1 border border-gray-200 rounded text-sm"
+          class="search-input"
+          onkeydown={handleKeydown}
+          type="text"
         />
       </div>
       
-      <div class="modern-select-options">
-        {#if value}
-          <button
-            class="w-full p-2 text-left hover:bg-gray-100 text-red-600 border-b"
-            onclick={clear}
-            type="button"
-          >
-            Clear selection
-          </button>
-        {/if}
-        
-        {#each filteredItems as item}
-          <button
-            class="w-full p-2 text-left hover:bg-gray-100"
-            class:bg-blue-50={value?.value === item.value}
+      <div class="options-container">
+        {#each filteredItems as item, index}          <button
+            class="select-option"
+            class:selected={value?.value === item.value}
+            class:highlighted={highlightedIndex === index}
             onclick={() => handleSelect(item)}
             type="button"
+            role="option"
+            aria-selected={value?.value === item.value}
           >
             {item.label}
           </button>
         {/each}
         
         {#if filteredItems.length === 0}
-          <div class="p-2 text-gray-500 text-sm">
-            No items found
-          </div>
+          <div class="no-options">No items found</div>
         {/if}
       </div>
     </div>
   {/if}
 </div>
 
-<!-- Click outside to close -->
-<svelte:window onclick={(e) => {
-  if (!e.target?.closest('.modern-select')) {
-    isOpen = false;
-  }
-}} />
-
 <style>
   .modern-select {
-    /* Base styles handled by Tailwind classes */
+    position: relative;
+    width: 100%;
   }
-  
-  .modern-select-dropdown {
-    /* Additional styles if needed */
+
+  .select-trigger {
+    width: 100%;
+    min-height: 42px;
+    padding: 8px 16px;
+    border: 1px solid #4a5568;
+    border-radius: 4px;
+    background: #2d3748;
+    color: white;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .select-trigger:hover {
+    border-color: #c2410c;
+  }
+
+  .select-trigger:focus {
+    border-color: #c2410c;
+    outline: none;
+  }
+
+  .select-trigger:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .select-value {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .select-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .clear-button {
+    color: #a0aec0;
+    padding: 4px;
+    border-radius: 4px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .clear-button:hover {
+    color: white;
+    background: rgba(74, 85, 104, 0.5);
+  }
+
+  .chevron {
+    width: 16px;
+    height: 16px;
+    color: #a0aec0;
+    transition: transform 0.2s;
+  }
+
+  .chevron.open {
+    transform: rotate(180deg);
+  }
+
+  .select-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    margin-top: 4px;
+    background: #2d3748;
+    border: 1px solid #4a5568;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     max-height: 240px;
+    overflow: hidden;
+  }
+
+  .search-container {
+    padding: 8px;
+    border-bottom: 1px solid #4a5568;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #4a5568;
+    border-radius: 4px;
+    font-size: 14px;
+    background: #1a202c;
+    color: white;
+    transition: border-color 0.2s;
+  }
+
+  .search-input::placeholder {
+    color: #a0aec0;
+  }
+
+  .search-input:focus {
+    border-color: #c2410c;
+    outline: none;
+  }
+
+  .options-container {
+    overflow: auto;
+    max-height: 192px;
+  }
+
+  .select-option {
+    width: 100%;
+    padding: 12px;
+    text-align: left;
+    color: white;
+    border: none;
+    border-bottom: 1px solid #4a5568;
+    background: transparent;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .select-option:last-child {
+    border-bottom: none;
+  }
+
+  .select-option:hover,
+  .select-option:focus {
+    background: rgba(194, 65, 12, 0.2);
+    outline: none;
+  }
+
+  .select-option.selected {
+    background: rgba(194, 65, 12, 0.4);
+  }
+
+  .select-option.highlighted {
+    background: rgba(194, 65, 12, 0.3);
+  }
+
+  .no-options {
+    padding: 12px;
+    color: #a0aec0;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  /* Dark theme compatibility - matches existing app styles */
+  .themed .select-trigger {
+    background: var(--background, #393939);
+    border: var(--border, 1px solid #696969);
+    color: var(--input-color, #ffffff);
+  }
+
+  .themed .select-trigger:hover {
+    border-color: var(--border-hover, #c2410c);
+  }
+
+  .themed .select-trigger:focus {
+    border-color: var(--border-focus, #c2410c);
+  }
+
+  .themed .select-dropdown {
+    background: var(--list-background, #393939);
+    border: var(--list-border, 1px solid #696969);
+  }
+
+  .themed .search-input {
+    background: var(--background, #393939);
+    border: var(--border, 1px solid #696969);
+    color: var(--input-color, #ffffff);
+  }
+
+  .themed .search-input:focus {
+    border-color: var(--border-focus, #c2410c);
+  }
+
+  .themed .select-option:hover {
+    background: var(--item-hover-bg, #c2410c);
+    color: var(--item-hover-color, #ffffff);
   }
 </style>

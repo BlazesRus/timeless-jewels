@@ -20,12 +20,11 @@
   import SearchResultsComponent from '$lib/components/SearchResults.svelte';
   import { statValues } from '$lib/values';
   import { data, calculator } from '$lib/types';
-
   import TradeButton from '$lib/components/TradeButton.svelte';
   import TradeLinks from '$lib/components/TradeLinks.svelte';
 
-  // Use svelte-select for now - will be replaced with Svelte 5 UI library later
-  import Select from 'svelte-select';
+  // Use ModernSelect for Svelte 5 compatibility
+  import ModernSelect from '$lib/components/ModernSelect.svelte';
 
   // Store search params as reactive variable
   let searchParams: URLSearchParams;
@@ -53,13 +52,11 @@
   let selectedStats = $state<Record<number, StatConfig>>({});
   let mode = $state<'seed' | 'stats' | ''>('');
 
-  // Initialize selections from URL after component mounts
-  onMount(() => {
+  // Initialize selections from URL after component mounts  onMount(() => {
     if (browser) {
       try {
-        const pageStore = $page;
-        if (pageStore?.url?.searchParams) {
-          searchParams = pageStore.url.searchParams;
+        if (page?.url?.searchParams) {
+          searchParams = page.url.searchParams;
           
           // Initialize selections from URL params
           if (searchParams.has('jewel')) {
@@ -199,11 +196,12 @@
       };
     })
     .filter((s) => !(s.value in selectedStats));
-
-  let statSelector: Select;
+  let statSelector: any; // ModernSelect component reference
   
-  const handleSelectStat = (event: CustomEvent<{ value: number; label: string }>) => {
-    const statId = event.detail.value;
+  const handleSelectStat = (item: { value: number; label: string } | undefined) => {
+    if (!item) return;
+    
+    const statId = item.value;
     selectedStats[statId] = {
       weight: 1,
       min: 0,
@@ -318,14 +316,13 @@
     affectedNodes.filter((n) => !n.isJewelSocket && !n.isMastery).forEach((n) => disabled.add(n.skill));
     disabled = disabled;
   };
-
   // Sort options
   const sortResults = [
     { label: 'Count', value: 'count' },
     { label: 'Alphabetical', value: 'alphabet' },
     { label: 'Rarity', value: 'rarity' },
     { label: 'Value', value: 'value' }
-  ] as const;
+  ];
   // Local storage handling with Svelte 5 effects
   let groupResults = $state(
     browser ? 
@@ -589,19 +586,15 @@
               <button class="bg-neutral-100/20 px-4 p-1 rounded" on:click={() => (results = !results)}>{results ? 'Config' : 'Results'}</button>
             </div>
           {/if}
-        </div>
-
-        {#if !results}
-          <Select items={jewels} bind:value={selectedJewel} 
+        </div>        {#if !results}
+          <ModernSelect items={jewels} bind:value={selectedJewel} 
           placeholder="Select jewel..."
-          on:change={changeJewel} />
-
-          {#if selectedJewel}
+          onchange={changeJewel} />          {#if selectedJewel}
             <div class="mt-4">
               <h3 class="mb-2">Conqueror</h3>
-              <Select items={dropdownConqs} bind:value={dropdownConqueror}
+              <ModernSelect items={dropdownConqs} bind:value={dropdownConqueror}
               placeholder="Select conqueror..."
-              on:change={updateUrl} />
+              onchange={updateUrl} />
             </div>
 
             {#if selectedConqueror && Object.keys(data.TimelessJewelConquerors[selectedJewel.value]).indexOf(selectedConqueror.value) >= 0}
@@ -629,10 +622,9 @@
                 </div>
 
                 {#if seed >= data.TimelessJewelSeedRanges[selectedJewel.value].Min && seed <= data.TimelessJewelSeedRanges[selectedJewel.value].Max}
-                  <div class="flex flex-row mt-4 items-end">
-                    <div class="flex-grow">
+                  <div class="flex flex-row mt-4 items-end">                    <div class="flex-grow">
                       <h3 class="mb-2">Sort Order</h3>
-                      <Select items={sortResults} bind:value={sortOrder} />
+                      <ModernSelect items={sortResults} bind:value={sortOrder} />
                     </div>
                     <div class="ml-2">
                       <button class="bg-neutral-500/20 p-2 px-4 rounded"
@@ -687,11 +679,10 @@
                       </div>
                     </div>
                   {/if}
-                {/if}
-              {:else if mode === 'stats'}
+                {/if}              {:else if mode === 'stats'}
                 <div class="mt-4">
                   <h3 class="mb-2">Add Stat</h3>
-                  <Select items={statItems} on:change={handleSelectStat} bind:this={statSelector} />
+                  <ModernSelect items={statItems} onchange={handleSelectStat} bind:this={statSelector} />
                 </div>
                 {#if Object.keys(selectedStats).length > 0}
                   <div class="mt-4 flex flex-col overflow-auto min-h-[100px]">
