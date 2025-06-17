@@ -10,7 +10,7 @@ This document provides a detailed technical overview of the Timeless Jewel Gener
 timeless-jewels_Partial/
 ├── 📄 README.md                    # Main project documentation
 ├── 📄 go.mod                       # Go module definition
-├── 📄 go.sum                       # Go dependency checksums  
+├── 📄 go.sum                       # Go dependency checksums
 ├── 📄 LICENSE                      # MIT license
 ├── 📄 jewel_test.go               # Go unit tests for jewel logic
 ├── 📄 reverse_test.go             # Reverse engineering tests
@@ -48,7 +48,7 @@ docs/
 │   ├── VERSION_AWARE_SYSTEM.md          # Version-aware architecture design
 │   └── VERSION_AWARE_IMPLEMENTATION_COMPLETE.md # Implementation summary
 │
-├── 🔄 Migration & Setup Guides  
+├── 🔄 Migration & Setup Guides
 │   ├── PNPM_V10_MIGRATION.md            # Package manager migration
 │   ├── SVELTE_5_MIGRATION_PREP.md       # Framework upgrade preparation
 │   └── QUICK_START_VERSION_AWARE.md     # Quick start guide
@@ -66,12 +66,12 @@ docs/
 
 ### **Documentation Categories**
 
-| Category | Purpose | Files |
-|----------|---------|-------|
+| Category         | Purpose                               | Files   |
+| ---------------- | ------------------------------------- | ------- |
 | **Architecture** | System design and build configuration | 3 files |
-| **Migration** | Upgrade guides and setup procedures | 3 files |
-| **Components** | UI component updates and fixes | 3 files |
-| **Tools** | Development tool integration | 3 files |
+| **Migration**    | Upgrade guides and setup procedures   | 3 files |
+| **Components**   | UI component updates and fixes        | 3 files |
+| **Tools**        | Development tool integration          | 3 files |
 
 ## 💻 Frontend Structure (`frontend/`)
 
@@ -232,11 +232,11 @@ random/
 
 ### **Package Manager & Dependencies**
 
-| File | Purpose | Technology |
-|------|---------|------------|
-| `go.mod`, `go.sum` | Go dependencies | Go modules |
-| `frontend/package.json` | Node.js dependencies | pnpm v10 |
-| `frontend/pnpm-lock.yaml` | Dependency lock | pnpm |
+| File                      | Purpose              | Technology |
+| ------------------------- | -------------------- | ---------- |
+| `go.mod`, `go.sum`        | Go dependencies      | Go modules |
+| `frontend/package.json`   | Node.js dependencies | pnpm v10   |
+| `frontend/pnpm-lock.yaml` | Dependency lock      | pnpm       |
 
 ## 🔄 Version Management System
 
@@ -268,13 +268,13 @@ frontend/
 
 ### **Technology Stack**
 
-| Layer | Technology | Purpose |
-|-------|------------|---------|
-| **Frontend** | Svelte 4/5, TypeScript, Vite | User interface |
-| **Calculation** | Go → WebAssembly | High-performance calculations |
-| **Data** | Go, JSON compression | Game data processing |
-| **Build** | pnpm, Vite, Go compiler | Development workflow |
-| **Documentation** | Markdown, organized structure | Comprehensive guides |
+| Layer             | Technology                    | Purpose                       |
+| ----------------- | ----------------------------- | ----------------------------- |
+| **Frontend**      | Svelte 4/5, TypeScript, Vite  | User interface                |
+| **Calculation**   | Go → WebAssembly              | High-performance calculations |
+| **Data**          | Go, JSON compression          | Game data processing          |
+| **Build**         | pnpm, Vite, Go compiler       | Development workflow          |
+| **Documentation** | Markdown, organized structure | Comprehensive guides          |
 
 ### **Key Architectural Decisions**
 
@@ -298,4 +298,4 @@ This structure supports both legacy compatibility and modern development practic
 
 ---
 
-*For quick navigation, see the [📋 Documentation Index](INDEX.md) or [🚀 Quick Start Guide](QUICK_START_VERSION_AWARE.md)*
+_For quick navigation, see the [📋 Documentation Index](INDEX.md) or [🚀 Quick Start Guide](QUICK_START_VERSION_AWARE.md)_

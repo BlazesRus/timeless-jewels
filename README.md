@@ -2,6 +2,7 @@
 
 A simple timeless jewel calculator with a skill tree view by Vilsol
 with some modifications for better trade search functionality
+
 - choose specific conqueror or select any conqueror if you don't care about keystone passive
 - trade search gets split into multiple links with 200 seeds per link (max poe trade site can handle)
 - fixed bug with duplicate filter groups in trade link
@@ -109,13 +110,13 @@ timeless-jewels_Partial/
 
 ### 🗂️ Key Directory Functions:
 
-| Directory | Purpose | Technology |
-|-----------|---------|------------|
-| `docs/` | 📚 Comprehensive documentation | Markdown |
-| `frontend/` | 💻 Web application | Svelte 4/5, TypeScript, Vite |
-| `calculator/` | ⚙️ Core calculations | Go → WebAssembly |
-| `data/` | 📊 Game data processing | Go, JSON |
-| `wasm/` | 🌐 WebAssembly builds | Go |
+| Directory     | Purpose                        | Technology                   |
+| ------------- | ------------------------------ | ---------------------------- |
+| `docs/`       | 📚 Comprehensive documentation | Markdown                     |
+| `frontend/`   | 💻 Web application             | Svelte 4/5, TypeScript, Vite |
+| `calculator/` | ⚙️ Core calculations           | Go → WebAssembly             |
+| `data/`       | 📊 Game data processing        | Go, JSON                     |
+| `wasm/`       | 🌐 WebAssembly builds          | Go                           |
 
 ## 📚 Documentation
 
@@ -128,6 +129,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) directory:
 - **[🔄 Version Management](docs/VERSION_AWARE_SYSTEM.md)** - Dual Svelte 4/5 support
 
 ### Key Documentation:
+
 - **System Architecture**: [Version-Aware System](docs/VERSION_AWARE_SYSTEM.md)
 - **Migration Guides**: [pnpm v10](docs/PNPM_V10_MIGRATION.md), [Svelte 5 Prep](docs/SVELTE_5_MIGRATION_PREP.md)
 - **Component Updates**: [Select Components](docs/SELECT_COMPONENT_FIX.md), [Modern Workers](docs/COMLINK_MODERNIZATION.md)
@@ -141,11 +143,11 @@ Whenever a new league is coming, the passive tree might get updated.
 
 Specifically, this project depends on the following data tables:
 
-* Alternate Passive Additions
-* Alternate Passive Skills
-* Passive Skills
-* Stats
-* Translations
+- Alternate Passive Additions
+- Alternate Passive Skills
+- Passive Skills
+- Stats
+- Translations
 
 ---------------------------------Local testing instruction------------------------
 Update golangci-lint via running in console:
@@ -160,13 +162,16 @@ golangci-lint run ./... --default=none -E errcheck
 This project uses **pnpm v10** for package management and features a **version-aware Svelte system** with comprehensive backup protection.
 
 ### 📋 System Overview
+
 - **Default**: Svelte 5 with modern runes syntax
-- **Fallback**: Svelte 4 compatibility maintained  
+- **Fallback**: Svelte 4 compatibility maintained
 - **Safety**: Multiple backup files protect against corruption
 - **Switching**: INI-based dependency management
 
 ### 🛡️ Backup Protection
+
 The system includes multiple safety layers:
+
 - `Svelte5PackageBackup.json` - Emergency Svelte 5 restore
 - `LegacyPackageBackup.json` - Emergency Svelte 4 restore
 - See `frontend/BACKUP_FILE_STRUCTURE.md` for recovery procedures
@@ -217,6 +222,7 @@ pnpm run version:switch   # Switch based on INI config
 ```
 
 ### 🔧 Emergency Recovery
+
 ```powershell
 # If package.json gets corrupted:
 cp Svelte5PackageBackup.json package.json  # Restore Svelte 5

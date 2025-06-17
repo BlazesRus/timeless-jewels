@@ -7,12 +7,14 @@ The Timeless Jewel Generator now features an advanced INI-based dependency manag
 ## Quick Start
 
 ### Default Configuration (Svelte 5)
+
 ```bash
 # The system defaults to Svelte 5 - no configuration needed!
 pnpm run dev
 ```
 
 ### Switch to Svelte 4
+
 ```bash
 # Method 1: Edit version.ini manually
 # Change: version = 5 to version = 4
@@ -25,6 +27,7 @@ node scripts/version-manager.js switch
 ```
 
 ### Check Current Status
+
 ```bash
 pnpm run version:status
 ```
@@ -63,6 +66,7 @@ fallback_version = 5
 The system manages two package.json files:
 
 ### package.json (Svelte 5 - Default)
+
 - **Svelte**: 5.33.18
 - **SvelteKit**: 2.21.3
 - **Vite**: 6.3.5
@@ -70,6 +74,7 @@ The system manages two package.json files:
 - **Features**: Runes, modern reactivity, enhanced performance
 
 ### LegacyPackage.json (Svelte 4 - Compatibility)
+
 - **Svelte**: 4.2.17
 - **SvelteKit**: 2.0.0
 - **Vite**: 6.0.0
@@ -132,24 +137,23 @@ pnpm run version:help
 The system automatically loads the appropriate components based on the detected Svelte version:
 
 ### Dynamic Loading (Default)
+
 ```typescript
 // Runtime detection and dynamic imports
-const TreePage = await import(
-  svelteVersion >= 5 
-    ? './Svelte5Page.svelte' 
-    : './Svelte4Page.svelte'
-);
+const TreePage = await import(svelteVersion >= 5 ? './Svelte5Page.svelte' : './Svelte4Page.svelte');
 ```
 
 ### Version-Specific Components
 
 #### Svelte 5 Components
+
 - Use runes syntax (`$state`, `$derived`, `$effect`)
 - Modern event handling
 - Enhanced reactivity patterns
 - `ModernSelect` component
 
-#### Svelte 4 Components  
+#### Svelte 4 Components
+
 - Traditional reactivity patterns
 - `svelte-select` component
 - Legacy event handling
@@ -158,12 +162,14 @@ const TreePage = await import(
 ## Migration Workflow
 
 ### From Svelte 4 to Svelte 5
+
 1. Current configuration should already default to Svelte 5
 2. If not, update `version.ini`: `version = 5`
 3. Run: `pnpm run version:switch`
 4. Test the application: `pnpm run dev`
 
 ### From Svelte 5 to Svelte 4 (Rollback)
+
 1. Update `version.ini`: `version = 4`
 2. Run: `pnpm run version:switch`
 3. Test with legacy setup: `pnpm run dev`
@@ -173,6 +179,7 @@ const TreePage = await import(
 ### Common Issues
 
 #### Package Switching Fails
+
 ```bash
 # Check current status
 pnpm run version:status
@@ -186,6 +193,7 @@ pnpm install
 ```
 
 #### Version Detection Issues
+
 ```bash
 # Check detected version
 pnpm run test:version
@@ -195,6 +203,7 @@ node -e "console.log(require('./src/lib/utils/version-config.ts'))"
 ```
 
 #### Component Loading Errors
+
 - Ensure all components exist for both Svelte versions
 - Check import paths in version-specific components
 - Verify component compatibility with target Svelte version
@@ -202,24 +211,28 @@ node -e "console.log(require('./src/lib/utils/version-config.ts'))"
 ### Debug Mode
 
 Enable detailed logging by setting in `version-config.ts`:
+
 ```typescript
-enableVersionLogging: true
+enableVersionLogging: true;
 ```
 
 ## Best Practices
 
 ### Development
+
 1. **Use Svelte 5 by default** - it's the future of Svelte
 2. **Test both versions** when making changes
 3. **Keep components version-specific** - don't mix syntaxes
 4. **Use the INI system** for easy switching
 
 ### Deployment
+
 1. **Build with target version** using appropriate scripts
 2. **Test builds** with both versions in CI/CD
 3. **Use static builds** for production (set `loading_strategy = static`)
 
 ### Maintenance
+
 1. **Keep both package files updated** with security patches
 2. **Update version detection logic** when adding new Svelte features
 3. **Monitor deprecation warnings** in Svelte 4 components
@@ -227,6 +240,7 @@ enableVersionLogging: true
 ## Advanced Configuration
 
 ### Custom Package Files
+
 ```ini
 [packages]
 svelte5_package = package.production.json
@@ -234,12 +248,14 @@ svelte4_package = package.legacy.json
 ```
 
 ### Build-Time Version Selection
+
 ```ini
 [components]
 loading_strategy = static
 ```
 
 ### Automated CI/CD Integration
+
 ```bash
 # In your CI/CD pipeline
 node scripts/version-manager.js switch

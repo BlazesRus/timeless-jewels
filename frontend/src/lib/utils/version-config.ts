@@ -6,10 +6,10 @@
 export interface VersionConfig {
   // Default Svelte version to assume if detection fails
   defaultSvelteVersion: string;
-  
+
   // Whether to enable version detection logging
   enableVersionLogging: boolean;
-  
+
   // Fallback strategy when version detection fails
   fallbackStrategy: 'svelte4' | 'svelte5' | 'auto';
 
@@ -24,7 +24,7 @@ export interface VersionConfig {
       description: string;
     };
   };
-  
+
   // Feature flags for version-specific features
   features: {
     runes: boolean;           // Svelte 5 runes syntax
@@ -40,7 +40,7 @@ export const versionConfig: VersionConfig = {
   defaultSvelteVersion: '5.33.0',
   enableVersionLogging: true,
   fallbackStrategy: 'svelte5',
-  
+
   uiLibraries: {
     svelte4: {
       select: 'svelte-select',
@@ -51,7 +51,7 @@ export const versionConfig: VersionConfig = {
       description: 'Modern Svelte 5 compatible select component with runes'
     }
   },
-    features: {
+  features: {
     runes: true,         // Svelte 5 runes syntax (default enabled for Svelte 5)
     legacyReactivity: false,  // Svelte 4 reactivity patterns (disabled by default)
     modernEvents: true        // Svelte 5 event handling (enabled by default)
@@ -63,7 +63,7 @@ export const versionConfig: VersionConfig = {
  */
 export function updateFeatureFlags(majorVersion: number): VersionConfig {
   const config = { ...versionConfig };
-  
+
   if (majorVersion >= 5) {
     config.features.runes = true;
     config.features.legacyReactivity = false;
@@ -73,7 +73,7 @@ export function updateFeatureFlags(majorVersion: number): VersionConfig {
     config.features.legacyReactivity = true;
     config.features.modernEvents = false;
   }
-  
+
   return config;
 }
 

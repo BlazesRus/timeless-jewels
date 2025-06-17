@@ -2,17 +2,17 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { detectSvelteVersion, isSvelte5OrHigher } from '$lib/utils/version-detection';
-  
+
   // Dynamic imports for version-specific components
   let TreePageComponent: any = null;
   let isLoading = true;
   let error: string | null = null;
-  
+
   onMount(async () => {
     try {
       const svelteVersion = detectSvelteVersion();
       console.log(`Detected Svelte version: ${svelteVersion.full}`);
-        if (isSvelte5OrHigher()) {
+      if (isSvelte5OrHigher()) {
         console.log('Loading Svelte 5 tree page implementation...');
         const module = await import('./Svelte5Page.svelte');
         TreePageComponent = module.default;
@@ -21,13 +21,13 @@
         const module = await import('./Svelte4Page.svelte');
         TreePageComponent = module.default;
       }
-      
+
       isLoading = false;
     } catch (err) {
       console.error('Failed to load tree page component:', err);
       error = `Failed to load tree page: ${err instanceof Error ? err.message : 'Unknown error'}`;
       isLoading = false;
-        // Fallback to Svelte 4 implementation
+      // Fallback to Svelte 4 implementation
       try {
         console.log('Attempting fallback to Svelte 4 implementation...');
         const module = await import('./Svelte4Page.svelte');
@@ -38,7 +38,8 @@
         error = 'Unable to load any tree page implementation';
       }
     }
-  });</script>
+  });
+</script>
 
 {#if isLoading}
   <div class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center">
@@ -53,12 +54,7 @@
     <div class="bg-red-500/20 border border-red-500 rounded-lg p-8 text-center max-w-md">
       <h2 class="text-xl text-red-400 mb-4">Error Loading Tree Page</h2>
       <p class="text-white mb-4">{error}</p>
-      <button 
-        class="bg-red-500/40 hover:bg-red-500/60 px-4 py-2 rounded text-white"
-        on:click={() => window.location.reload()}
-      >
-        Reload Page
-      </button>
+      <button class="bg-red-500/40 hover:bg-red-500/60 px-4 py-2 rounded text-white" on:click={() => window.location.reload()}>Reload Page</button>
     </div>
   </div>
 {:else if TreePageComponent}

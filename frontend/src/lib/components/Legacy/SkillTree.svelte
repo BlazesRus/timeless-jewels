@@ -1,3 +1,4 @@
+<!-- Legacy SkillTree Component - Svelte 4 Compatible -->
 <script lang="ts">
 
   const measurePerformance = (): number => {
@@ -12,13 +13,12 @@
   //import { base, assets } from '$app/paths';
   //import { data, calculator, isWasmReady } from '$lib/types/index.js';
 
-  //Remove once port to Svelte 5
+  // Svelte 4 stores
   import { derived } from 'svelte/store';
-
-  //Maybe Replace with alternative once port to Svelte 5
+  // Svelte 4 canvas library
   import { Canvas, Layer } from 'svelte-canvas';
 
-  import type { RenderFunc, Node } from '../skill_tree_types';
+  import type { RenderFunc, Node } from '../../skill_tree_types';
   import {
     baseJewelRadius,
     calculateNodePos,
@@ -32,9 +32,9 @@
     orbitAngleAt,
     skillTree,
     toCanvasCoords
-  } from '../skill_tree';
-  import type { Point } from '../skill_tree';
-  import { calculator, data } from '../types';
+  } from '../../skill_tree';
+  import type { Point } from '../../skill_tree';
+  import { calculator, data } from '../../types';
 
   export let clickNode: (node: Node) => void;
   export let circledNode: number | undefined;
@@ -56,8 +56,7 @@
   let offsetX = 0;
   let offsetY = 0;
 
-  // Calculate jewel radius based on scaling
-  // This is a constant value that scales with the zoom level
+  // Calculate jewel radius based on scaling - Svelte 4 reactive statement
   $: jewelRadius = baseJewelRadius / scaling;
 
   const drawScaling = 2.6;
@@ -182,6 +181,7 @@
   let cursor = 'unset';
   let hoveredNode: Node | undefined;
 
+  // Svelte 4 reactive statement for render function
   $: render = (({ context, width, height }) => {
     const start = window.performance.now();
 
@@ -515,19 +515,19 @@
 
   let startX = 0;
   let startY = 0;
-
   let down = false;
-  const mouseDown = (event: MouseEvent) => {
+  const mouseDown = (event: CustomEvent<any>) => {
+    const mouseEvent = event.detail as MouseEvent;
     down = true;
-    downX = event.offsetX;
-    downY = event.offsetY;
+    downX = mouseEvent.offsetX;
+    downY = mouseEvent.offsetY;
     startX = offsetX;
     startY = offsetY;
 
     // Update mouse position first
     mousePos = {
-      x: event.offsetX,
-      y: event.offsetY
+      x: mouseEvent.offsetX,
+      y: mouseEvent.offsetY
     };
 
     if (hoveredNode) {
@@ -558,24 +558,25 @@
     };
   };
 
-  const onScroll = (event: WheelEvent) => {
-    if (event.deltaY > 0) {
+  const onScroll = (event: CustomEvent<any>) => {
+    const wheelEvent = event.detail as WheelEvent;
+    if (wheelEvent.deltaY > 0) {
       if (scaling < 30) {
-        offsetX += event.offsetX;
-        offsetY += event.offsetY;
+        offsetX += wheelEvent.offsetX;
+        offsetY += wheelEvent.offsetY;
       }
     } else {
       if (scaling > 3) {
-        offsetX -= event.offsetX;
-        offsetY -= event.offsetY;
+        offsetX -= wheelEvent.offsetX;
+        offsetY -= wheelEvent.offsetY;
       }
     }
 
-    scaling = Math.min(30, Math.max(3, scaling + event.deltaY / 100));
+    scaling = Math.min(30, Math.max(3, scaling + wheelEvent.deltaY / 100));
 
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation();
+    wheelEvent.preventDefault();
+    wheelEvent.stopPropagation();
+    wheelEvent.stopImmediatePropagation();
   };
 
   let width = 0;
@@ -586,6 +587,7 @@
   };
 
   let initialized = false;
+  // Svelte 4 reactive statement for initialization
   $: {
     if (!initialized && skillTree) {
       initialized = true;
@@ -596,10 +598,12 @@
   }
 </script>
 
+<!-- Svelte 4 event handling -->
 <svelte:window on:pointerup={mouseUp} on:pointermove={mouseMove} on:resize={resize} />
 
 {#if width && height}
   <div on:resize={resize} style="touch-action: none; cursor: {cursor}">
+    <!-- Svelte 4 Canvas -->
     <Canvas {width} {height} on:pointerdown={mouseDown} on:wheel={onScroll}>
       <Layer {render} />
     </Canvas>

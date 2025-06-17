@@ -16,27 +16,32 @@ The system enables seamless support for both Svelte 4 and Svelte 5 in the same c
 ### Core Components
 
 #### 1. Version Detection (`src/lib/utils/version-detection.ts`)
+
 - Detects Svelte version at runtime using multiple strategies
 - Build-time version injection via Vite plugin
 - Runtime feature detection as fallback
 - Provides utility functions for version checking
 
 #### 2. Version Configuration (`src/lib/utils/version-config.ts`)
+
 - Centralized configuration for version-specific features
 - Feature flags for different Svelte versions
 - UI library configuration management
 
 #### 3. Vite Plugin (`src/lib/utils/vite-svelte-version-plugin.ts`)
+
 - Injects Svelte version at build time
 - Reads version from package.json
 - Makes version available as global constant
 
 #### 4. Version-Specific Implementations
+
 - **`Svelte4Page.svelte`** - Svelte 4 implementation using svelte-select
 - **`Svelte5Page.svelte`** - Svelte 5 implementation using runes and modern components
 - **`ModernSelect.svelte`** - Svelte 5 compatible select component
 
 #### 5. Main Router (`src/routes/tree/+page.svelte`)
+
 - Detects version on mount
 - Dynamically imports appropriate component
 - Provides loading states and error handling
@@ -64,7 +69,11 @@ pnpm run test:version
 ### Version Detection API
 
 ```typescript
-import { detectSvelteVersion, isSvelte5OrHigher, isSvelte4 } from '$lib/utils/version-detection';
+import {
+  detectSvelteVersion,
+  isSvelte5OrHigher,
+  isSvelte4,
+} from "$lib/utils/version-detection";
 
 // Get detailed version info
 const version = detectSvelteVersion();
@@ -81,7 +90,7 @@ if (isSvelte5OrHigher()) {
 ### Configuration
 
 ```typescript
-import { versionConfig, updateFeatureFlags } from '$lib/utils/version-config';
+import { versionConfig, updateFeatureFlags } from "$lib/utils/version-config";
 
 // Get UI library config for current version
 const uiConfig = getUILibraryConfig(5); // or 4
@@ -94,6 +103,7 @@ console.log(config.features.runes); // true for Svelte 5
 ## Key Differences Between Implementations
 
 ### Svelte 4 Implementation (`Svelte4Page.svelte`)
+
 - Uses traditional reactivity with `$:` statements
 - Event handling with `on:event` syntax
 - Component references with `bind:this`
@@ -101,6 +111,7 @@ console.log(config.features.runes); // true for Svelte 5
 - localStorage handled with reactive statements
 
 ### Svelte 5 Implementation (`Svelte5Page.svelte`)
+
 - Uses runes: `$state`, `$derived`, `$effect`
 - Event handling with `onclick` attributes
 - Modern event handler patterns
@@ -110,38 +121,45 @@ console.log(config.features.runes); // true for Svelte 5
 ### Component Differences
 
 #### Event Handling
+
 **Svelte 4:**
+
 ```svelte
 <button on:click={() => (collapsed = true)}>
 <Select on:change={handleSelectStat} />
 ```
 
 **Svelte 5:**
+
 ```svelte
 <button onclick={() => (collapsed = true)}>
 <ModernSelect onchange={handleSelectStat} />
 ```
 
 #### State Management
+
 **Svelte 4:**
+
 ```javascript
 let selectedJewel = undefined;
 $: conquerors = selectedJewel ? getConquerors(selectedJewel) : [];
-$: if (browser) localStorage.setItem('setting', value);
+$: if (browser) localStorage.setItem("setting", value);
 ```
 
 **Svelte 5:**
+
 ```javascript
 let selectedJewel = $state(undefined);
 const conquerors = $derived(selectedJewel ? getConquerors(selectedJewel) : []);
 $effect(() => {
-  if (browser) localStorage.setItem('setting', value);
+  if (browser) localStorage.setItem("setting", value);
 });
 ```
 
 ## Migration Strategy
 
 ### Phase 1: Preparation (Current)
+
 - ✅ Fixed TypeScript and compilation issues
 - ✅ Enhanced type safety
 - ✅ Improved SSR compatibility
@@ -149,18 +167,21 @@ $effect(() => {
 - ✅ Built version-specific implementations
 
 ### Phase 2: Testing
+
 - Test Svelte 4 implementation thoroughly
 - Validate version detection works correctly
 - Test dynamic component loading
 - Verify fallback mechanisms
 
 ### Phase 3: Svelte 5 Integration
+
 - Install Svelte 5 as optional dependency
 - Test Svelte 5 implementation
 - Validate runes and modern syntax
 - Test ModernSelect component
 
 ### Phase 4: Production Deployment
+
 - Choose default version (Svelte 4 for stability)
 - Deploy with version-aware system
 - Monitor for any issues
@@ -185,6 +206,7 @@ The system includes comprehensive error handling:
 ## Testing
 
 ### Manual Testing
+
 ```bash
 # Test version detection
 pnpm run test:version
@@ -197,6 +219,7 @@ pnpm run dev:svelte5
 ```
 
 ### Automated Testing
+
 - Unit tests for version detection functions
 - Component tests for both implementations
 - Integration tests for dynamic loading
@@ -215,11 +238,13 @@ pnpm run dev:svelte5
 ### Common Issues
 
 1. **Version Detection Fails**
+
    - Check if `__SVELTE_VERSION__` is defined
    - Verify Vite plugin is configured correctly
    - Check browser console for detection logs
 
 2. **Component Loading Fails**
+
    - Verify both implementation files exist
    - Check for import errors in browser console
    - Ensure fallback mechanism is working
@@ -230,6 +255,7 @@ pnpm run dev:svelte5
    - Verify runes are enabled in Svelte config
 
 ### Debug Mode
+
 Enable detailed logging by setting `enableVersionLogging: true` in version-config.ts.
 
 ## Conclusion

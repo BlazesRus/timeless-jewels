@@ -1,10 +1,11 @@
-<!-- Svelte 4 specific implementation of the tree page -->
+<!-- Svelte 5 Compatible Tree Page -->
 <script lang="ts">
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
-  import SkillTree from '$lib/components/Legacy/SkillTree.svelte';
+
+  import SkillTree from '$lib/components/Svelte5/SkillTree.svelte';
   import type { Node } from '$lib/skill_tree_types';
   import { getAffectedNodes, skillTree, translateStat, constructQueries } from '$lib/skill_tree';
 
@@ -23,13 +24,12 @@
   import TradeButton from '$lib/components/TradeButton.svelte';
   import TradeLinks from '$lib/components/TradeLinks.svelte';
 
-  // Use svelte-select for Svelte 4
+  // Use svelte-select for now - will be replaced with Svelte 5 UI library later
   import Select from 'svelte-select';
 
   // Store search params as reactive variable
   let searchParams: URLSearchParams;
   
-  // Improved typing for Svelte 4 compatibility
   interface JewelOption {
     value: number;
     label: string;
@@ -45,11 +45,11 @@
     label: data.TimelessJewels[k]
   }));
 
-  // Better typing for Svelte 4
+  // State variables
   let selectedJewel: JewelOption | undefined = undefined;
   let searchParamsInitialized = false;
   let dropdownConqueror: ConquerorOption | undefined = undefined;
-  let seed: number = 0;
+  let seed = 0;
   let circledNode: number | undefined = undefined;
   let selectedStats: Record<number, StatConfig> = {};
   let mode: 'seed' | 'stats' | '' = '';
@@ -95,7 +95,8 @@
               }
             });
           }
-            if (searchParams.has('mode')) {
+          
+          if (searchParams.has('mode')) {
             const modeParam = searchParams.get('mode') || '';
             if (modeParam === 'seed' || modeParam === 'stats') {
               mode = modeParam;
@@ -109,6 +110,8 @@
       }
     }
   });
+
+  // Reactive statements
   $: conquerors = selectedJewel && data.TimelessJewelConquerors?.[selectedJewel.value]
     ? Object.keys(data.TimelessJewelConquerors[selectedJewel.value]).map((k): ConquerorOption => ({
         value: k,
@@ -125,6 +128,7 @@
   $: affectedNodes = circledNode
     ? getAffectedNodes(skillTree.nodes[circledNode]).filter((n) => !n.isJewelSocket && !n.isMastery)
     : [];
+
   $: seedResults =
     !seed ||
     !selectedJewel ||
@@ -160,6 +164,7 @@
 
     goto(url.toString());
   };
+
   const setMode = (newMode: 'seed' | 'stats') => {
     mode = newMode;
     updateUrl();
@@ -177,13 +182,12 @@
       } else {
         disabled.add(node.skill);
       }
-      // Re-assign to update svelte
-      disabled = disabled;
+      disabled = new Set(disabled);
     }
     console.log('Node click:', node);
   };
 
-  // Add missing functions and variables that are referenced in the template
+  // Stats functionality
   const allPossibleStats: { [key: string]: { [key: string]: number } } = JSON.parse(data.PossibleStats);
 
   $: availableStats = !selectedJewel ? [] : Object.keys(allPossibleStats[selectedJewel.value]);
@@ -199,7 +203,6 @@
 
   let statSelector: Select;
   
-  // Svelte 4 compatible event handler
   const handleSelectStat = (event: CustomEvent<{ value: number; label: string }>) => {
     const statId = event.detail.value;
     selectedStats[statId] = {
@@ -208,7 +211,7 @@
       id: statId,
       minStatTotal: 0
     };
-    selectedStats = selectedStats; // Trigger reactivity in Svelte 4
+    selectedStats = selectedStats;
     if (statSelector?.handleClear) {
       statSelector.handleClear();
     }
@@ -217,7 +220,6 @@
 
   const removeStat = (id: number) => {
     delete selectedStats[id];
-    // Re-assign to update svelte
     selectedStats = selectedStats;
     updateUrl();
   };
@@ -237,9 +239,6 @@
   let searchJewel = 1;
   let searchConqueror: string | null = null;
 
-  let searchConfig: SearchConfig;
-
-  // Function for implementing search functionality
   const handleSearch = async () => {
     if (!circledNode) {
       return;
@@ -284,7 +283,6 @@
     } catch (error) {
       console.error('Search failed:', error);
       isSearching = false;
-      // You might want to show an error message to the user here
     }
   };
 
@@ -297,7 +295,6 @@
 
   const selectAll = () => {
     disabled.clear();
-    // Re-assign to update svelte
     disabled = disabled;
   };
 
@@ -307,7 +304,6 @@
         disabled.delete(n.skill);
       }
     });
-    // Re-assign to update svelte
     disabled = disabled;
   };
 
@@ -317,53 +313,46 @@
         disabled.delete(n.skill);
       }
     });
-    // Re-assign to update svelte
     disabled = disabled;
   };
+
   const deselectAll = () => {
     affectedNodes.filter((n) => !n.isJewelSocket && !n.isMastery).forEach((n) => disabled.add(n.skill));
-    // Re-assign to update svelte
     disabled = disabled;
   };
 
-  // Sort options for Svelte 4 compatibility - declare before use
+  // Sort options
   const sortResults = [
-    {
-      label: 'Count',
-      value: 'count'
-    },
-    {
-      label: 'Alphabetical',
-      value: 'alphabet'
-    },
-    {
-      label: 'Rarity',
-      value: 'rarity'
-    },
-    {
-      label: 'Value',
-      value: 'value'
-    }
+    { label: 'Count', value: 'count' },
+    { label: 'Alphabetical', value: 'alphabet' },
+    { label: 'Rarity', value: 'rarity' },
+    { label: 'Value', value: 'value' }
   ] as const;
 
-  // Local storage handling - SSR safe and Svelte 4 compatible
+  // Local storage handling
   let groupResults = browser ? 
     (localStorage.getItem('groupResults') === null ? true : localStorage.getItem('groupResults') === 'true') : 
     true;
+
   $: if (browser) localStorage.setItem('groupResults', groupResults ? 'true' : 'false');
+
   let sortOrder = sortResults.find((r) => r.value === (browser ? localStorage.getItem('sortOrder') || 'count' : 'count'));
+
   $: if (browser && sortOrder) localStorage.setItem('sortOrder', sortOrder.value);
-  
+
   let colored = browser ? 
     (localStorage.getItem('colored') === null ? true : localStorage.getItem('colored') === 'true') :
     true;
+
   $: if (browser) localStorage.setItem('colored', colored ? 'true' : 'false');
+
   let split = browser ?
     (localStorage.getItem('split') === null ? true : localStorage.getItem('split') === 'true') :
     true;
+
   $: if (browser) localStorage.setItem('split', split ? 'true' : 'false');
 
-  // Types for Svelte 4 compatibility
+  // Types
   type CombinedResult = {
     id: string;
     rawStat: string;
@@ -371,7 +360,7 @@
     passives: number[];
   };
 
-  // Color mapping for stat highlighting
+  // Color mapping
   export const colorKeys = {
     physical: '#c79d93',
     cast: '#b3f8fe',
@@ -522,7 +511,7 @@
     mode = 'seed';
     seed = newSeed;
     selectedJewel = jewel;
-    selectedConqueror = { label: conqueror, value: conqueror };
+    dropdownConqueror = { label: conqueror, value: conqueror };
     updateUrl();
     console.log('Paste event:', event);
   };
@@ -530,11 +519,9 @@
   let collapsed = false;
   let showTradeLinks = false;
   let queries: Query[] = [];
-  // Generate trade queries from search results
+
   $: if (searchResults && searchResults.raw && searchResults.raw.length > 0 && selectedJewel && selectedConqueror) {
     queries = constructQueries(searchJewel, searchConqueror, searchResults.raw);
-
-    // reset showTradeLinks to hidden if new queries is only length of 1
     if (queries.length === 1) {
       showTradeLinks = false;
     }

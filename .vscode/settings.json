@@ -1,35 +1,32 @@
 {
-  // Terminal Configuration for Better Copilot Integration
-  "terminal.integrated.defaultProfile.windows": "PowerShell",  "terminal.integrated.profiles.windows": {
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.profiles.windows": {
     "PowerShell": {
       "source": "PowerShell",
       "icon": "terminal-powershell",
-      "args": ["-NoLogo"],
+      "args": [
+        "-NoLogo"
+      ],
       "overrideName": true
     },
     "PowerShell 7": {
       "path": "pwsh.exe",
       "icon": "terminal-powershell",
-      "args": ["-NoLogo"],
+      "args": [
+        "-NoLogo"
+      ],
       "overrideName": true
     }
   },
-  
-  // Improve terminal shell integration
   "terminal.integrated.shellIntegration.enabled": true,
   "terminal.integrated.shellIntegration.decorationsEnabled": "both",
   "terminal.integrated.shellIntegration.history": 100,
-  
-  // Enhanced terminal behavior for Copilot
   "terminal.integrated.enableVisualBell": false,
   "accessibility.signals.terminalBell": {},
   "terminal.integrated.scrollback": 10000,
   "terminal.integrated.fastScrollSensitivity": 5,
-  
-  // Focus management
   "terminal.integrated.focusAfterRun": "terminal",
   "workbench.action.terminal.focus": true,
-    // GitHub Copilot specific settings
   "github.copilot.enable": {
     "*": true,
     "yaml": true,
@@ -41,55 +38,42 @@
     "javascript": true,
     "go": true
   },
-  
-  // Enhanced Copilot Chat and terminal integration
   "github.copilot.chat.localeOverride": "en",
   "github.copilot.chat.welcomeMessage": "always",
   "github.copilot.chat.useProjectTemplates": true,
   "github.copilot.terminal.shellIntegration": true,
-  
-  // Command detection and completion improvements
   "terminal.integrated.commandsToSkipShell": [
     "language-julia.interrupt",
     "workbench.action.terminal.clear"
   ],
-  
-  // Enhanced output detection and command tracking
   "terminal.integrated.environmentChangesIndicator": "on",
   "terminal.integrated.environmentChangesRelaunch": false,
   "terminal.integrated.enablePersistentSessions": true,
-  "terminal.integrated.persistentSessionReviveProcess": "onExit",  // Improved focus management for Copilot
+  "terminal.integrated.persistentSessionReviveProcess": "onExit",
   "terminal.integrated.automationProfile.windows": {
     "path": "powershell.exe",
-    "args": ["-NoLogo", "-NoProfile", "-Command"]
+    "args": [
+      "-NoLogo",
+      "-NoProfile",
+      "-Command"
+    ]
   },
-  
-  // Better command completion detection
   "terminal.integrated.detectLocale": "on",
   "terminal.integrated.inheritEnv": true,
-  
-  // Copilot workspace trust
   "security.workspace.trust.untrustedFiles": "open",
   "github.copilot.advanced": {
     "debug.overrideEngine": "codex",
     "debug.testOverrideProxyUrl": "",
     "debug.overrideProxyUrl": ""
   },
-  
-  // Terminal behavior for better agent interaction
   "terminal.integrated.allowChords": false,
   "terminal.integrated.altClickMovesCursor": false,
   "terminal.integrated.confirmOnExit": "never",
   "terminal.integrated.confirmOnKill": "never",
-  
-  // Enhanced shell integration markers
   "terminal.integrated.shellIntegration.showWelcome": false,
   "terminal.integrated.smoothScrolling": true,
-  
-  // Auto-focus settings for Copilot workflow
   "workbench.action.focusActiveEditorGroup": true,
   "editor.accessibilitySupport": "off",
-    // AI Assistant Integration Settings
   "github.copilot.chat.experimental.codeGeneration.instructions": [
     "Follow the AI_FORMATTING_GUIDELINES.md in the docs/ directory",
     "Understand the version-aware architecture with dual Svelte 4/5 support",
@@ -99,15 +83,14 @@
     "Use PowerShell command format by default for Windows commands",
     "Prefer Write-Host with color coding for output in PowerShell scripts",
     "Use proper PowerShell parameter syntax with hyphen prefixes",
-    "Include error handling with try-catch blocks in PowerShell commands"
+    "Include error handling with try-catch blocks in PowerShell commands",
+    "RESPECT CURRENT MODE: When version.ini shows version=5, focus on Svelte 5 development and avoid suggesting switchTo4",
+    "When working in Modern (Svelte 5) mode, suggest testing and development using current version only",
+    "Only suggest version switching when explicitly requested by the user"
   ],
-  
-  // Enhanced PowerShell-Specific Settings for Copilot
   "github.copilot.chat.experimental.shellCommand.enabled": true,
   "github.copilot.chat.experimental.shellCommand.defaultShell": "powershell.exe",
   "github.copilot.chat.experimental.codeGeneration.shellPreference": "PowerShell",
-  
-  // File Explorer and Visibility Controls
   "files.exclude": {
     "**/node_modules": true,
     "**/.git": true,
@@ -115,37 +98,31 @@
     "**/.hg": true,
     "**/CVS": true,
     "**/.DS_Store": true,
-    "**/Thumbs.db": true
-    // Note: Version-specific exclusions can be added here by version-manager
-    // Example: "**/*Svelte4*": true (when using Svelte 5)
-    // Example: "**/*Svelte5*": true (when using Svelte 4)
+    "**/Thumbs.db": true,
+    "**/components/Legacy*Legacy*": true,
+    "**LegacyPackage*.json": true,
+    "**/components/Legacy/**": true,
+    "**/*Legacy*": true,
+    "**/*Svelte4*": true,
+    "**/LegacyPackage*.json": true
   },
-  
-  // Search and IntelliSense Improvements for AI
   "search.exclude": {
     "**/node_modules": true,
     "**/pnpm-lock.yaml": true,
-    "**/*.wasm": true,
-    "**/*.gz": true
+    "***.gz": true
   },
-  
-  // Enhanced File Associations for Better Context
   "files.associations": {
     "*.ini": "ini",
     "version.ini": "ini",
     "*Package.json": "json",
     "*PackageBackup.json": "jsonc"
   },
-  
-  // Editor Settings for Consistent Formatting
   "editor.insertSpaces": true,
   "editor.tabSize": 2,
   "editor.detectIndentation": false,
   "editor.formatOnSave": true,
   "editor.formatOnPaste": true,
   "editor.trimAutoWhitespace": true,
-  
-  // Language-Specific Settings
   "[json]": {
     "editor.defaultFormatter": "vscode.json-language-features",
     "editor.tabSize": 2,
@@ -174,16 +151,10 @@
     "editor.tabSize": 2,
     "editor.insertSpaces": true
   },
-  
-  // Workspace-Specific AI Context
   "github.copilot.chat.experimental.contextSelection.enabled": true,
   "github.copilot.chat.experimental.contextSelection.rules": [
     {
-      "pattern": "**/*Svelte4*",
-      "context": "This file uses Svelte 4 syntax. Do not use modern runes ($state, $derived, $effect)."
-    },
-    {
-      "pattern": "**/*Svelte5*",
+      "pattern": "***Svelte5*",
       "context": "This file uses Svelte 5 syntax. Use modern runes ($state, $derived, $effect) instead of stores."
     },
     {
@@ -191,11 +162,7 @@
       "context": "INI configuration file for version management. Changes affect entire build system."
     },
     {
-      "pattern": "**/*Backup.json",
-      "context": "CRITICAL: This is a backup file. Do not edit directly. Use version-manager instead."
-    },
-    {
-      "pattern": "**/package.json",
+      "pattern": "**package.json",
       "context": "Active package configuration. May be automatically managed by version-manager.js"
     },
     {
@@ -203,33 +170,30 @@
       "context": "Version management system. Changes affect Svelte 4/5 switching functionality."
     }
   ],
-  
-  // Enhanced Error Detection
   "problems.decorations.enabled": true,
   "problems.showCurrentInStatus": true,
-  
-  // Breadcrumb Navigation for Complex Structure
   "breadcrumbs.enabled": true,
   "breadcrumbs.showFiles": true,
   "breadcrumbs.showClasses": true,
   "breadcrumbs.showFunctions": true,
-  
-  // Minimap Configuration
   "editor.minimap.enabled": true,
   "editor.minimap.showSlider": "always",
   "editor.minimap.renderCharacters": false,
-  
-  // Git Integration
   "git.enableSmartCommit": true,
   "git.confirmSync": false,
   "git.autofetch": true,
-  
-  // Extension-Specific Settings
   "svelte.enable-ts-plugin": true,
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.suggest.autoImports": true,
-  
-  // Workspace Trust for AI Features
+  "github.copilot.chat.experimental.codeGeneration.fileFiltering": {
+    "enabled": true,
+    "excludePatterns": [
+      "**/components/Legacy/**",
+      "**/*Legacy*",
+      "**/*Svelte4*",
+      "**/LegacyPackage*.json"
+    ]
+  },
   "security.workspace.trust.banner": "never",
   "security.workspace.trust.startupPrompt": "never",
   "security.workspace.trust.emptyWindow": false
