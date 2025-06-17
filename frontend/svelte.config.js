@@ -25,7 +25,8 @@ const config = {
     }),
     paths: {
       base: '/timeless-jewels'
-    },    alias: {
+    },
+    alias: {
       '$lib': 'src/lib',
       '$lib/*': 'src/lib/*',
       '$app': '.svelte-kit/types/app',
@@ -33,6 +34,11 @@ const config = {
       '$routes': 'src/routes',
       '$routes/*': 'src/routes/*'
     }
+  },
+  dynamicCompileOptions: ({ filename }) => {
+    // Enable runes for Svelte 5 based files, disable runes for Legacy(Svelte 4) Mode
+    const isSvelte5 = process.env.SVELTE_VERSION === '5';
+    return { runes: isSvelte5 };
   }
 };
 
