@@ -74,20 +74,6 @@
   "terminal.integrated.smoothScrolling": true,
   "workbench.action.focusActiveEditorGroup": true,
   "editor.accessibilitySupport": "off",
-  "github.copilot.chat.experimental.codeGeneration.instructions": [
-    "Follow the AI_FORMATTING_GUIDELINES.md in the docs/ directory",
-    "Understand the version-aware architecture with dual Svelte 4/5 support",
-    "Use appropriate syntax for target Svelte version (check filename for Svelte4 vs Svelte5)",
-    "Never edit backup files (*Backup.json)",
-    "Reference AI_ASSISTANT_CONTEXT_GUIDE.md for project understanding",
-    "Use PowerShell command format by default for Windows commands",
-    "Prefer Write-Host with color coding for output in PowerShell scripts",
-    "Use proper PowerShell parameter syntax with hyphen prefixes",
-    "Include error handling with try-catch blocks in PowerShell commands",
-    "RESPECT CURRENT MODE: When version.ini shows version=5, focus on Svelte 5 development and avoid suggesting switchTo4",
-    "When working in Modern (Svelte 5) mode, suggest testing and development using current version only",
-    "Only suggest version switching when explicitly requested by the user"
-  ],
   "github.copilot.chat.experimental.shellCommand.enabled": true,
   "github.copilot.chat.experimental.shellCommand.defaultShell": "powershell.exe",
   "github.copilot.chat.experimental.codeGeneration.shellPreference": "PowerShell",
@@ -196,5 +182,19 @@
   },
   "security.workspace.trust.banner": "never",
   "security.workspace.trust.startupPrompt": "never",
-  "security.workspace.trust.emptyWindow": false
+  "security.workspace.trust.emptyWindow": false,
+  "github.copilot.chat.codeGeneration.instructions": [
+    "Follow the AI_FORMATTING_GUIDELINES.md in the docs/ directory",
+    "Understand the version-aware architecture with dual Svelte 4/5 support",
+    "Use appropriate syntax for target Svelte version (check filename for Svelte4 vs Svelte5)",
+    "Never edit backup files (*Backup.json)",
+    "Reference AI_ASSISTANT_CONTEXT_GUIDE.md for project understanding",
+    "Use PowerShell command format by default for Windows commands",
+    "Prefer Write-Host with color coding for output in PowerShell scripts",
+    "Use proper PowerShell parameter syntax with hyphen prefixes",
+    "Include error handling with try-catch blocks in PowerShell commands",
+    "RESPECT CURRENT MODE: When version.ini shows version=5, focus on Svelte 5 development and avoid suggesting switchTo4",
+    "When working in Modern (Svelte 5) mode, suggest testing and development using current version only",
+    "Only suggest version switching when explicitly requested by the user"
+  ]
 }
