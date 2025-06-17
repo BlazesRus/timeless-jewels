@@ -74,8 +74,8 @@ timeless-jewels_Partial/
 │   │       ├── +page.svelte      # Home page
 │   │       └── 📁 tree/          # Tree page with version-aware loading
 │   │           ├── +page.svelte  # Main router with dynamic imports
-│   │           ├── TreePageSvelte4.svelte # Svelte 4 implementation
-│   │           └── TreePageSvelte5.svelte # Svelte 5 implementation
+│   │           ├── Svelte4Page.svelte    # Svelte 4 implementation
+│   │           └── Svelte5Page.svelte    # Svelte 5 implementation
 │   │
 │   ├── 📁 static/                # Static assets
 │   │   ├── calculator.wasm       # Go WebAssembly calculator
@@ -132,6 +132,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) directory:
 - **Migration Guides**: [pnpm v10](docs/PNPM_V10_MIGRATION.md), [Svelte 5 Prep](docs/SVELTE_5_MIGRATION_PREP.md)
 - **Component Updates**: [Select Components](docs/SELECT_COMPONENT_FIX.md), [Modern Workers](docs/COMLINK_MODERNIZATION.md)
 - **Development Tools**: [Copilot Integration](docs/COPILOT_INTEGRATION_SUCCESS.md)
+- **AI Assistant Guides**: [Formatting Guidelines](docs/AI_FORMATTING_GUIDELINES.md), [Context Guide](docs/AI_ASSISTANT_CONTEXT_GUIDE.md)
 
 ## Updates to new leagues
 

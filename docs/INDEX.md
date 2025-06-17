@@ -26,10 +26,15 @@ For the complete project structure overview, see **[📁 Project Structure](../R
 - **[SVELTE_SELECT_UPDATE_COMPLETE.md](SVELTE_SELECT_UPDATE_COMPLETE.md)** - Complete svelte-select update documentation
 
 ### **Modernization & Integration**
+- **[AI_ASSISTANT_INTEGRATION_COMPLETE.md](AI_ASSISTANT_INTEGRATION_COMPLETE.md)** - Complete AI assistant integration system overview
+- **[AI_FORMATTING_GUIDELINES.md](AI_FORMATTING_GUIDELINES.md)** - Comprehensive AI assistant formatting rules and project-specific guidelines
+- **[AI_ASSISTANT_CONTEXT_GUIDE.md](AI_ASSISTANT_CONTEXT_GUIDE.md)** - Quick project context guide for AI assistants
+- **[FILE_RENAMING_UPDATE_SUMMARY.md](FILE_RENAMING_UPDATE_SUMMARY.md)** - Summary of recent file renaming changes
 - **[COMLINK_MODERNIZATION.md](COMLINK_MODERNIZATION.md)** - Web Worker and Comlink modernization
 - **[COPILOT_INTEGRATION_SUCCESS.md](COPILOT_INTEGRATION_SUCCESS.md)** - GitHub Copilot integration documentation
 - **[COPILOT_TERMINAL_FIX.md](COPILOT_TERMINAL_FIX.md)** - Terminal integration fixes for Copilot
 - **[COPILOT_TERMINAL_INTEGRATION_FIXED.md](COPILOT_TERMINAL_INTEGRATION_FIXED.md)** - Complete terminal integration solution
+- **[POWERSHELL_COPILOT_ENHANCEMENT_COMPLETE.md](POWERSHELL_COPILOT_ENHANCEMENT_COMPLETE.md)** - PowerShell command standardization for Copilot optimization
 
 ## 📋 Document Categories
 
@@ -58,6 +63,9 @@ For the complete project structure overview, see **[📁 Project Structure](../R
 ### **🤖 Development Tools**
 | Document | Tool | Status |
 |----------|------|--------|
+| AI_ASSISTANT_INTEGRATION_COMPLETE.md | Complete AI system | ✅ Complete |
+| AI_FORMATTING_GUIDELINES.md | File formatting rules | ✅ Complete |
+| AI_ASSISTANT_CONTEXT_GUIDE.md | Project context guide | ✅ Complete |
 | COPILOT_INTEGRATION_SUCCESS.md | GitHub Copilot | ✅ Complete |
 | COPILOT_TERMINAL_FIX.md | Terminal integration | ✅ Complete |
 | COPILOT_TERMINAL_INTEGRATION_FIXED.md | Complete solution | ✅ Complete |
@@ -72,8 +80,9 @@ For the complete project structure overview, see **[📁 Project Structure](../R
 
 ### **Development Setup**
 1. **[PNPM_V10_MIGRATION.md](PNPM_V10_MIGRATION.md)** - Package manager setup
-2. **[COPILOT_INTEGRATION_SUCCESS.md](COPILOT_INTEGRATION_SUCCESS.md)** - AI-assisted development
-3. **[SVELTE_5_MIGRATION_PREP.md](SVELTE_5_MIGRATION_PREP.md)** - Modern framework features
+2. **[AI_ASSISTANT_CONTEXT_GUIDE.md](AI_ASSISTANT_CONTEXT_GUIDE.md)** - AI-assisted development context
+3. **[COPILOT_INTEGRATION_SUCCESS.md](COPILOT_INTEGRATION_SUCCESS.md)** - AI-assisted development
+4. **[SVELTE_5_MIGRATION_PREP.md](SVELTE_5_MIGRATION_PREP.md)** - Modern framework features
 
 ### **Component Development**
 1. **[SELECT_COMPONENT_FIX.md](SELECT_COMPONENT_FIX.md)** - UI component patterns
@@ -82,11 +91,11 @@ For the complete project structure overview, see **[📁 Project Structure](../R
 
 ## 📊 Documentation Statistics
 
-- **Total Documents**: 13
+- **Total Documents**: 16
 - **Implementation Guides**: 4
 - **Migration Docs**: 3  
 - **Component Updates**: 3
-- **Tool Integration**: 3
+- **Tool Integration**: 6
 - **Status**: All Complete ✅
 
 ## 🔗 Related Documentation

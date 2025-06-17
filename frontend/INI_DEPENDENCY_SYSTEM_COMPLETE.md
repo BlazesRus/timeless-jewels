@@ -109,9 +109,8 @@ fallback_version = 5       # Default when detection fails
 
 ### Component Architecture
 - **Dynamic Loading**: Runtime import based on detected version
-- **Separate Implementations**: 
-  - `TreePageSvelte4.svelte` (traditional syntax)
-  - `TreePageSvelte5.svelte` (runes syntax)
+- **Separate Implementations**:   - `Svelte4Page.svelte` (traditional syntax)
+  - `Svelte5Page.svelte` (runes syntax)
 - **Fallback Handling**: Graceful degradation with error boundaries
 
 ### Dependency Management
@@ -271,7 +270,7 @@ pnpm run test:version
 ## 📝 Next Steps
 
 ### Component Fixes (Pending)
-1. Fix missing imports in `TreePageSvelte4.svelte`
+1. Fix missing imports in `Svelte4Page.svelte`
 2. Resolve Svelte 5 runes syntax in legacy components
 3. Complete `ModernSelect` component compatibility
 

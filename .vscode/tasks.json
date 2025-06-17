@@ -46,6 +46,147 @@
                 "focus": false
             },
             "problemMatcher": []
+        },
+        {
+            "label": "Check Version Configuration",
+            "type": "shell",
+            "command": "cd frontend; Write-Host '🎯 Current Version Configuration:' -ForegroundColor Cyan; node scripts/version-manager.js status; Write-Host ''; Write-Host '📋 Package Files:' -ForegroundColor Yellow; Get-ChildItem -Name '*Package*.json' | ForEach-Object { Write-Host \"  $_\" }",
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Switch to Svelte 4",
+            "type": "shell",
+            "command": "cd frontend; Write-Host '🔄 Switching to Svelte 4...' -ForegroundColor Yellow; node scripts/version-manager.js switchTo4; if ($LASTEXITCODE -eq 0) { Write-Host '✅ Switched to Svelte 4 successfully!' -ForegroundColor Green } else { Write-Host '❌ Switch failed!' -ForegroundColor Red }",
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Switch to Svelte 5",
+            "type": "shell",
+            "command": "cd frontend; Write-Host '🔄 Switching to Svelte 5...' -ForegroundColor Yellow; node scripts/version-manager.js switchTo5; if ($LASTEXITCODE -eq 0) { Write-Host '✅ Switched to Svelte 5 successfully!' -ForegroundColor Green } else { Write-Host '❌ Switch failed!' -ForegroundColor Red }",
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Dev Server (Auto-detect Version)",
+            "type": "shell",
+            "command": "cd frontend; Write-Host '🚀 Starting development server with auto-detected version...' -ForegroundColor Green; pnpm run dev",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "dedicated"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "vite",
+                "pattern": {
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "Local:",
+                    "endsPattern": "ready in"
+                }
+            }
+        },
+        {
+            "label": "Build (Current Version)",
+            "type": "shell",
+            "command": "cd frontend; Write-Host '🏗️ Building with current version...' -ForegroundColor Cyan; node scripts/version-manager.js status; Write-Host ''; pnpm run build",
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": {
+                "owner": "vite",
+                "pattern": {
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+            }
+        },
+        {
+            "label": "Install Dependencies",
+            "type": "shell",
+            "command": "cd frontend; Write-Host '📦 Installing dependencies for current version...' -ForegroundColor Blue; pnpm install",
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Validate Project Structure",
+            "type": "shell",
+            "command": "Write-Host '🔍 Validating project structure...' -ForegroundColor Magenta; Write-Host ''; Write-Host '📁 Key directories:' -ForegroundColor Yellow; @('docs', 'frontend', 'frontend/src', 'frontend/scripts') | ForEach-Object { if (Test-Path $_) { Write-Host \"  ✅ $_\" -ForegroundColor Green } else { Write-Host \"  ❌ $_\" -ForegroundColor Red } }; Write-Host ''; Write-Host '📋 Configuration files:' -ForegroundColor Yellow; @('frontend/version.ini', 'frontend/package.json', 'frontend/Svelte5Package.json', 'frontend/LegacyPackage.json') | ForEach-Object { if (Test-Path $_) { Write-Host \"  ✅ $_\" -ForegroundColor Green } else { Write-Host \"  ❌ $_\" -ForegroundColor Red } }; Write-Host ''; Write-Host '🛡️ Backup files:' -ForegroundColor Yellow; @('frontend/Svelte5PackageBackup.json', 'frontend/LegacyPackageBackup.json') | ForEach-Object { if (Test-Path $_) { Write-Host \"  ✅ $_\" -ForegroundColor Green } else { Write-Host \"  ❌ $_\" -ForegroundColor Red } }",
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
         }
     ]
 }

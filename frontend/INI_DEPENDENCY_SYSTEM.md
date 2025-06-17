@@ -136,8 +136,8 @@ The system automatically loads the appropriate components based on the detected 
 // Runtime detection and dynamic imports
 const TreePage = await import(
   svelteVersion >= 5 
-    ? './TreePageSvelte5.svelte' 
-    : './TreePageSvelte4.svelte'
+    ? './Svelte5Page.svelte' 
+    : './Svelte4Page.svelte'
 );
 ```
 

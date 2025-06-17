@@ -1,11 +1,17 @@
 {
   // Terminal Configuration for Better Copilot Integration
-  "terminal.integrated.defaultProfile.windows": "PowerShell",
-  "terminal.integrated.profiles.windows": {
+  "terminal.integrated.defaultProfile.windows": "PowerShell",  "terminal.integrated.profiles.windows": {
     "PowerShell": {
       "source": "PowerShell",
       "icon": "terminal-powershell",
-      "args": ["-NoLogo"]
+      "args": ["-NoLogo"],
+      "overrideName": true
+    },
+    "PowerShell 7": {
+      "path": "pwsh.exe",
+      "icon": "terminal-powershell",
+      "args": ["-NoLogo"],
+      "overrideName": true
     }
   },
   
@@ -52,12 +58,10 @@
   "terminal.integrated.environmentChangesIndicator": "on",
   "terminal.integrated.environmentChangesRelaunch": false,
   "terminal.integrated.enablePersistentSessions": true,
-  "terminal.integrated.persistentSessionReviveProcess": "onExit",
-  
-  // Improved focus management for Copilot
+  "terminal.integrated.persistentSessionReviveProcess": "onExit",  // Improved focus management for Copilot
   "terminal.integrated.automationProfile.windows": {
     "path": "powershell.exe",
-    "args": ["-NoLogo", "-NoProfile"]
+    "args": ["-NoLogo", "-NoProfile", "-Command"]
   },
   
   // Better command completion detection
@@ -84,5 +88,149 @@
   
   // Auto-focus settings for Copilot workflow
   "workbench.action.focusActiveEditorGroup": true,
-  "editor.accessibilitySupport": "off"
+  "editor.accessibilitySupport": "off",
+    // AI Assistant Integration Settings
+  "github.copilot.chat.experimental.codeGeneration.instructions": [
+    "Follow the AI_FORMATTING_GUIDELINES.md in the docs/ directory",
+    "Understand the version-aware architecture with dual Svelte 4/5 support",
+    "Use appropriate syntax for target Svelte version (check filename for Svelte4 vs Svelte5)",
+    "Never edit backup files (*Backup.json)",
+    "Reference AI_ASSISTANT_CONTEXT_GUIDE.md for project understanding",
+    "Use PowerShell command format by default for Windows commands",
+    "Prefer Write-Host with color coding for output in PowerShell scripts",
+    "Use proper PowerShell parameter syntax with hyphen prefixes",
+    "Include error handling with try-catch blocks in PowerShell commands"
+  ],
+  
+  // Enhanced PowerShell-Specific Settings for Copilot
+  "github.copilot.chat.experimental.shellCommand.enabled": true,
+  "github.copilot.chat.experimental.shellCommand.defaultShell": "powershell.exe",
+  "github.copilot.chat.experimental.codeGeneration.shellPreference": "PowerShell",
+  
+  // File Explorer and Visibility Controls
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true
+    // Note: Version-specific exclusions can be added here by version-manager
+    // Example: "**/*Svelte4*": true (when using Svelte 5)
+    // Example: "**/*Svelte5*": true (when using Svelte 4)
+  },
+  
+  // Search and IntelliSense Improvements for AI
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/pnpm-lock.yaml": true,
+    "**/*.wasm": true,
+    "**/*.gz": true
+  },
+  
+  // Enhanced File Associations for Better Context
+  "files.associations": {
+    "*.ini": "ini",
+    "version.ini": "ini",
+    "*Package.json": "json",
+    "*PackageBackup.json": "jsonc"
+  },
+  
+  // Editor Settings for Consistent Formatting
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.trimAutoWhitespace": true,
+  
+  // Language-Specific Settings
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features",
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features",
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features",
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "[svelte]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "[markdown]": {
+    "editor.wordWrap": "on",
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "[ini]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  
+  // Workspace-Specific AI Context
+  "github.copilot.chat.experimental.contextSelection.enabled": true,
+  "github.copilot.chat.experimental.contextSelection.rules": [
+    {
+      "pattern": "**/*Svelte4*",
+      "context": "This file uses Svelte 4 syntax. Do not use modern runes ($state, $derived, $effect)."
+    },
+    {
+      "pattern": "**/*Svelte5*",
+      "context": "This file uses Svelte 5 syntax. Use modern runes ($state, $derived, $effect) instead of stores."
+    },
+    {
+      "pattern": "**/version.ini",
+      "context": "INI configuration file for version management. Changes affect entire build system."
+    },
+    {
+      "pattern": "**/*Backup.json",
+      "context": "CRITICAL: This is a backup file. Do not edit directly. Use version-manager instead."
+    },
+    {
+      "pattern": "**/package.json",
+      "context": "Active package configuration. May be automatically managed by version-manager.js"
+    },
+    {
+      "pattern": "**/scripts/version-manager.*",
+      "context": "Version management system. Changes affect Svelte 4/5 switching functionality."
+    }
+  ],
+  
+  // Enhanced Error Detection
+  "problems.decorations.enabled": true,
+  "problems.showCurrentInStatus": true,
+  
+  // Breadcrumb Navigation for Complex Structure
+  "breadcrumbs.enabled": true,
+  "breadcrumbs.showFiles": true,
+  "breadcrumbs.showClasses": true,
+  "breadcrumbs.showFunctions": true,
+  
+  // Minimap Configuration
+  "editor.minimap.enabled": true,
+  "editor.minimap.showSlider": "always",
+  "editor.minimap.renderCharacters": false,
+  
+  // Git Integration
+  "git.enableSmartCommit": true,
+  "git.confirmSync": false,
+  "git.autofetch": true,
+  
+  // Extension-Specific Settings
+  "svelte.enable-ts-plugin": true,
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.suggest.autoImports": true,
+  
+  // Workspace Trust for AI Features
+  "security.workspace.trust.banner": "never",
+  "security.workspace.trust.startupPrompt": "never",
+  "security.workspace.trust.emptyWindow": false
 }
