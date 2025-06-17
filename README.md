@@ -18,6 +18,121 @@ Source of ImHamba Branch(Github):[https://github.com/ImHamba/timeless-jewels](ht
 
 Uses data extracted with https://github.com/Vilsol/go-pob-data
 
+## 📁 Project Structure
+
+```
+timeless-jewels_Partial/
+├── 📄 README.md                    # Main project documentation
+├── 📄 go.mod, go.sum              # Go module dependencies
+├── 📄 LICENSE                     # Project license
+│
+├── 📁 docs/                       # 📚 Comprehensive documentation
+│   ├── 📋 INDEX.md               # Documentation index and navigation
+│   ├── 🏗️ BUILD_FIXES_COMPLETE.md # Build system with dual Svelte support
+│   ├── 🔄 VERSION_AWARE_SYSTEM.md # Version-aware architecture
+│   ├── 🚀 QUICK_START_VERSION_AWARE.md # Quick start guide
+│   ├── 📦 PNPM_V10_MIGRATION.md  # Package manager migration
+│   ├── 🎯 SVELTE_5_MIGRATION_PREP.md # Framework upgrade guide
+│   ├── 🔧 COMLINK_MODERNIZATION.md # Web Worker modernization
+│   ├── 🎨 SELECT_COMPONENT_FIX.md # Component updates
+│   └── 🤖 COPILOT_*.md           # AI development tools integration
+│
+├── 📁 frontend/                   # 💻 Svelte frontend application
+│   ├── 📦 package.json           # Active package config (Svelte 5 default)
+│   ├── 📦 Svelte5Package.json    # Svelte 5 template
+│   ├── 📦 LegacyPackage.json     # Svelte 4 template
+│   ├── 🛡️ Svelte5PackageBackup.json # Svelte 5 safety backup
+│   ├── 🛡️ LegacyPackageBackup.json  # Svelte 4 safety backup
+│   ├── ⚙️ version.ini            # INI-based version configuration
+│   ├── 🔧 vite.config.js         # Vite build configuration
+│   ├── 🎨 tailwind.config.cjs    # TailwindCSS configuration
+│   ├── 📝 tsconfig.json          # TypeScript configuration
+│   │
+│   ├── 📁 scripts/               # Build and version management
+│   │   ├── version-manager.js    # Node.js version manager
+│   │   └── version-manager.ps1   # PowerShell wrapper
+│   │
+│   ├── 📁 src/                   # Source code
+│   │   ├── 🏠 app.html           # HTML template
+│   │   ├── 🎨 app.scss           # Global styles
+│   │   ├── 🔧 wasm_exec.js       # WebAssembly support
+│   │   │
+│   │   ├── 📁 lib/               # Shared libraries
+│   │   │   ├── 🔄 skill_tree.ts  # Skill tree logic
+│   │   │   ├── 👷 *worker*.ts    # Web Workers with Comlink
+│   │   │   ├── 📁 components/    # Svelte components
+│   │   │   │   ├── ModernSelect.svelte # Modern select component
+│   │   │   │   └── SearchResult.svelte # Search result display
+│   │   │   ├── 📁 types/         # TypeScript type definitions
+│   │   │   └── 📁 utils/         # Utility functions
+│   │   │       ├── version-detection.ts # Runtime version detection
+│   │   │       ├── version-config.ts    # Version configuration
+│   │   │       └── vite-svelte-version-plugin.ts # Build-time plugin
+│   │   │
+│   │   └── 📁 routes/            # SvelteKit routes
+│   │       ├── +layout.svelte    # Layout component
+│   │       ├── +page.svelte      # Home page
+│   │       └── 📁 tree/          # Tree page with version-aware loading
+│   │           ├── +page.svelte  # Main router with dynamic imports
+│   │           ├── TreePageSvelte4.svelte # Svelte 4 implementation
+│   │           └── TreePageSvelte5.svelte # Svelte 5 implementation
+│   │
+│   ├── 📁 static/                # Static assets
+│   │   ├── calculator.wasm       # Go WebAssembly calculator
+│   │   ├── favicon.png           # Site icon
+│   │   └── *.png                 # Additional images
+│   │
+│   └── 📁 docs/                  # Frontend-specific documentation
+│       ├── BACKUP_FILE_STRUCTURE.md   # Backup system guide
+│       ├── INI_DEPENDENCY_SYSTEM_COMPLETE.md # INI system docs
+│       └── BACKUP_QUICK_REFERENCE.md  # Emergency recovery guide
+│
+├── 📁 calculator/                # ⚙️ Go WebAssembly calculator
+│   ├── main.go                   # Calculator entry point
+│   └── tree_manager.go           # Tree management logic
+│
+├── 📁 data/                      # 📊 Path of Exile game data
+│   ├── *.json.gz                 # Compressed game data files
+│   ├── main.go                   # Data processing entry point
+│   ├── manager.go                # Data management
+│   ├── jewels.go                 # Jewel-specific logic
+│   └── types.go                  # Data type definitions
+│
+├── 📁 wasm/                      # 🌐 WebAssembly build targets
+│   ├── main.go                   # WASM main entry
+│   └── 📁 exposition/            # Exposition/export functionality
+│       └── main.go
+│
+└── 📁 random/                    # 🎲 Random utilities
+    └── main.go                   # Random number generation
+```
+
+### 🗂️ Key Directory Functions:
+
+| Directory | Purpose | Technology |
+|-----------|---------|------------|
+| `docs/` | 📚 Comprehensive documentation | Markdown |
+| `frontend/` | 💻 Web application | Svelte 4/5, TypeScript, Vite |
+| `calculator/` | ⚙️ Core calculations | Go → WebAssembly |
+| `data/` | 📊 Game data processing | Go, JSON |
+| `wasm/` | 🌐 WebAssembly builds | Go |
+
+## 📚 Documentation
+
+Comprehensive documentation is available in the [`docs/`](docs/) directory:
+
+- **[📋 Documentation Index](docs/INDEX.md)** - Complete documentation overview
+- **[📁 Project Structure](docs/PROJECT_STRUCTURE.md)** - Detailed technical structure guide
+- **[🚀 Quick Start Guide](docs/QUICK_START_VERSION_AWARE.md)** - Get started quickly
+- **[🏗️ Build System Guide](docs/BUILD_FIXES_COMPLETE.md)** - Build system and fixes
+- **[🔄 Version Management](docs/VERSION_AWARE_SYSTEM.md)** - Dual Svelte 4/5 support
+
+### Key Documentation:
+- **System Architecture**: [Version-Aware System](docs/VERSION_AWARE_SYSTEM.md)
+- **Migration Guides**: [pnpm v10](docs/PNPM_V10_MIGRATION.md), [Svelte 5 Prep](docs/SVELTE_5_MIGRATION_PREP.md)
+- **Component Updates**: [Select Components](docs/SELECT_COMPONENT_FIX.md), [Modern Workers](docs/COMLINK_MODERNIZATION.md)
+- **Development Tools**: [Copilot Integration](docs/COPILOT_INTEGRATION_SUCCESS.md)
+
 ## Updates to new leagues
 
 Whenever a new league is coming, the passive tree might get updated.
