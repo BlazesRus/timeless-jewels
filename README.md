@@ -41,7 +41,19 @@ golangci-lint run ./... --default=none -E errcheck
 
 ## Frontend Development
 
-This project uses **pnpm v10** for package management. Please ensure you have pnpm v10 installed:
+This project uses **pnpm v10** for package management and features a **version-aware Svelte system** with comprehensive backup protection.
+
+### 📋 System Overview
+- **Default**: Svelte 5 with modern runes syntax
+- **Fallback**: Svelte 4 compatibility maintained  
+- **Safety**: Multiple backup files protect against corruption
+- **Switching**: INI-based dependency management
+
+### 🛡️ Backup Protection
+The system includes multiple safety layers:
+- `Svelte5PackageBackup.json` - Emergency Svelte 5 restore
+- `LegacyPackageBackup.json` - Emergency Svelte 4 restore
+- See `frontend/BACKUP_FILE_STRUCTURE.md` for recovery procedures
 
 ```powershell
 # Install or update to pnpm v10
@@ -76,8 +88,24 @@ pnpm run check
 pnpm run prepare
 pnpm run build
 
-# Development server
+# Development server (uses default Svelte 5)
 pnpm run dev
+
+# Version-specific development
+pnpm run dev:svelte5  # Svelte 5 with runes
+pnpm run dev:svelte4  # Svelte 4 compatibility
+
+# Version management
+pnpm run version:status   # Check current version
+pnpm run version:switch   # Switch based on INI config
+```
+
+### 🔧 Emergency Recovery
+```powershell
+# If package.json gets corrupted:
+cp Svelte5PackageBackup.json package.json  # Restore Svelte 5
+cp LegacyPackageBackup.json package.json   # Restore Svelte 4
+pnpm install  # Reinstall dependencies
 ```
 
 ### pnpm v10 Migration Notes

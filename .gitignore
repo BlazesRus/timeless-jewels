@@ -195,17 +195,16 @@ $RECYCLE.BIN/
 /build/bin/
 .vs/
 
-/2024FrontEnd/**
-frontend/package.json.backup
+# Keep template files in version control
+!Svelte5Package.json
+!LegacyPackage.json
+
+# Keep backup files in version control (safety)
+!Svelte5PackageBackup.json
+!LegacyPackageBackup.json
+
+# But ignore temporary backup files created by tools
+package.json.backup.*
+*.backup.json
+
 CorrectFrontPage.png
-FailedFrontPage.png
-ErrorInBuildWindow.png
-HowNodeClicksShouldBe.png
-
-BUILD_FIXES_COMPLETE.md
-
-FailedFrontend/
-
-FrontEndBackup/
-
-frontend/package.json.backup.*

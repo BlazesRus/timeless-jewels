@@ -13,8 +13,10 @@ The Timeless Jewel Generator now features a complete INI-based dependency manage
 
 ### 2. Package Management Files
 - **`package.json`**: Current active package (defaults to Svelte 5)
-- **`Svelte5Package.json`**: Backup for Svelte 5 dependencies
-- **`LegacyPackage.json`**: Svelte 4 dependencies for backward compatibility
+- **`Svelte5Package.json`**: Template for Svelte 5 dependencies (used by version manager)
+- **`LegacyPackage.json`**: Template for Svelte 4 dependencies (used by version manager)
+- **`Svelte5PackageBackup.json`**: 🛡️ Safety backup for Svelte 5 configuration
+- **`LegacyPackageBackup.json`**: 🛡️ Safety backup for Svelte 4 configuration
 
 ### 3. Version Manager Script
 - **File**: `scripts/version-manager.js`
@@ -128,8 +130,70 @@ fallback_version = 5       # Default when detection fails
 
 ### Package Priority
 1. Current `package.json` (active configuration)
-2. `Svelte5Package.json` (Svelte 5 backup)
-3. `LegacyPackage.json` (Svelte 4 fallback)
+2. `Svelte5Package.json` (Svelte 5 template used by version manager)
+3. `LegacyPackage.json` (Svelte 4 template used by version manager)
+4. `Svelte5PackageBackup.json` (Safety backup for manual recovery)
+5. `LegacyPackageBackup.json` (Safety backup for manual recovery)
+
+## 🛡️ Backup and Recovery System
+
+### File Structure
+```
+frontend/
+├── package.json                 # 🎯 Active package configuration
+├── version.ini                  # ⚙️ Configuration file
+│
+├── Svelte5Package.json         # 📋 Svelte 5 template (used by version manager)
+├── LegacyPackage.json          # 📋 Svelte 4 template (used by version manager)
+│
+├── Svelte5PackageBackup.json   # 🛡️ Svelte 5 safety backup
+└── LegacyPackageBackup.json    # 🛡️ Svelte 4 safety backup
+```
+
+### Backup Strategy
+- **Template Files**: Used by version manager for switching
+- **Backup Files**: Manual recovery safety net
+- **No Auto-Backup**: System disabled to prevent file clutter
+
+### Manual Recovery
+```bash
+# Emergency restore to Svelte 5
+cp Svelte5PackageBackup.json package.json
+pnpm install
+
+# Emergency restore to Svelte 4
+cp LegacyPackageBackup.json package.json
+pnpm install
+```
+
+### Backup Maintenance
+```bash
+# Update backups after major dependency changes
+# When using Svelte 5:
+cp package.json Svelte5PackageBackup.json
+
+# Switch to Svelte 4 and update backup:
+node scripts/version-manager.js switchTo4
+cp package.json LegacyPackageBackup.json
+
+# Return to default:
+node scripts/version-manager.js switchTo5
+```
+
+### Version Control Recommendations
+```gitignore
+# Keep template files (required for version manager)
+!Svelte5Package.json
+!LegacyPackage.json
+
+# Keep backup files (safety net)
+!Svelte5PackageBackup.json
+!LegacyPackageBackup.json
+
+# Ignore temporary backup files
+package.json.backup.*
+*.backup.json
+```
 
 ## 🔍 Status Monitoring
 
@@ -158,10 +222,31 @@ Fallback Version: 5
 - **Configuration Errors**: Graceful fallback to defaults
 - **Install Failures**: Clear error messages with manual instructions
 
+### Error Handling
+
+### Intelligent Prevention
+- **Duplicate Switching**: Prevents switching to already active version
+- **Missing Files**: Validates package files before switching
+- **Configuration Errors**: Graceful fallback to defaults
+- **Install Failures**: Clear error messages with manual instructions
+
 ### Validation
 - **Version Numbers**: Only accepts '4' or '5'
 - **File Existence**: Checks for required package files
 - **JSON Syntax**: Validates package.json structure
+
+### Recovery Options
+```bash
+# If version manager fails, manual recovery:
+cp Svelte5PackageBackup.json package.json  # Restore to Svelte 5
+cp LegacyPackageBackup.json package.json   # Restore to Svelte 4
+
+# Then reinstall dependencies:
+pnpm install
+
+# Check if recovery was successful:
+pnpm run test:version
+```
 
 ## 🎉 Benefits
 
@@ -172,14 +257,16 @@ Fallback Version: 5
 - **Windows Integration**: PowerShell wrapper for Windows developers
 
 ### Backward Compatibility
-- **Legacy Support**: Full Svelte 4 compatibility maintained
+- **Legacy Support**: Full Svelte 4 compatibility maintained via LegacyPackage.json
 - **Gradual Migration**: Easy testing of Svelte 5 features
 - **Fallback Safety**: Automatic fallback to working configurations
+- **Manual Recovery**: Backup files provide additional safety net
 
 ### Performance
-- **No Backup Overhead**: Streamlined switching without backup creation
+- **No Backup Overhead**: Streamlined switching without automatic backup creation
 - **Smart Detection**: Only switches when actually needed
 - **Fast Operations**: Minimal file operations required
+- **Safety First**: Manual backups available for critical recovery scenarios
 
 ## 📝 Next Steps
 
