@@ -3,30 +3,30 @@
 ## Emergency Recovery Commands
 
 ### Package.json Corrupted?
-```bash
+```powershell
 # Restore to Svelte 5 (default)
-cp Svelte5PackageBackup.json package.json
+Copy-Item Svelte5PackageBackup.json package.json
 pnpm install
 
 # Restore to Svelte 4 (compatibility)
-cp LegacyPackageBackup.json package.json
+Copy-Item LegacyPackageBackup.json package.json
 pnpm install
 ```
 
 ### Version Manager Not Working?
-```bash
+```powershell
 # Check file integrity
-ls -la *Package*.json
+Get-ChildItem *Package*.json
 
 # Restore template files
-cp Svelte5PackageBackup.json Svelte5Package.json
-cp LegacyPackageBackup.json LegacyPackage.json
+Copy-Item Svelte5PackageBackup.json Svelte5Package.json
+Copy-Item LegacyPackageBackup.json LegacyPackage.json
 ```
 
 ### Complete System Reset
-```bash
+```powershell
 # 1. Restore to known working state
-cp Svelte5PackageBackup.json package.json
+Copy-Item Svelte5PackageBackup.json package.json
 
 # 2. Clean install
 rm -rf node_modules pnpm-lock.yaml
@@ -53,7 +53,7 @@ node scripts/version-manager.js status
 
 ## Status Check Commands
 
-```bash
+```powershell
 # Current version
 pnpm run test:version
 
@@ -66,13 +66,13 @@ node -e "JSON.parse(require('fs').readFileSync('package.json', 'utf8')); console
 
 ## Backup Maintenance
 
-```bash
+```powershell
 # Update Svelte 5 backup (when using Svelte 5)
-cp package.json Svelte5PackageBackup.json
+Copy-Item package.json Svelte5PackageBackup.json
 
 # Switch to 4, update backup, return to 5
 node scripts/version-manager.js switchTo4
-cp package.json LegacyPackageBackup.json
+Copy-Item package.json LegacyPackageBackup.json
 node scripts/version-manager.js switchTo5
 ```
 

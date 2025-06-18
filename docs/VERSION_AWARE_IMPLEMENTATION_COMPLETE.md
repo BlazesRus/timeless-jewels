@@ -51,7 +51,7 @@ frontend/src/
 
 ### Development Commands
 
-```bash
+```powershell
 # Default Svelte 4 development
 pnpm run dev
 pnpm run dev:svelte4
@@ -166,7 +166,7 @@ enableVersionLogging: true;
 
 ### Development Tools
 
-```bash
+```powershell
 # Check versions
 pnpm run test:version
 

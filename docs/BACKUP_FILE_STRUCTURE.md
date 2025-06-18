@@ -61,39 +61,39 @@ frontend/
 ## 🚨 Recovery Procedures
 
 ### Scenario 1: Version Manager Corrupts package.json
-```bash
+```powershell
 # Quick restore to last known working state
-cp Svelte5PackageBackup.json package.json
+Copy-Item Svelte5PackageBackup.json package.json
 pnpm install
 pnpm run test:version  # Verify: should show Svelte 5.x
 ```
 
 ### Scenario 2: Need Svelte 4 After Corruption
-```bash
+```powershell
 # Restore to Svelte 4 backup
-cp LegacyPackageBackup.json package.json
+Copy-Item LegacyPackageBackup.json package.json
 pnpm install
 pnpm run test:version  # Verify: should show Svelte 4.x
 ```
 
 ### Scenario 3: Template Files Corrupted
-```bash
+```powershell
 # Use backup files to restore templates
-cp Svelte5PackageBackup.json Svelte5Package.json
-cp LegacyPackageBackup.json LegacyPackage.json
+Copy-Item Svelte5PackageBackup.json Svelte5Package.json
+Copy-Item LegacyPackageBackup.json LegacyPackage.json
 
 # Test version manager
 node scripts/version-manager.js status
 ```
 
 ### Scenario 4: Complete System Recovery
-```bash
+```powershell
 # Step 1: Restore to known working Svelte 5 state
-cp Svelte5PackageBackup.json package.json
+Copy-Item Svelte5PackageBackup.json package.json
 
 # Step 2: Restore templates if needed
-cp Svelte5PackageBackup.json Svelte5Package.json
-cp LegacyPackageBackup.json LegacyPackage.json
+Copy-Item Svelte5PackageBackup.json Svelte5Package.json
+Copy-Item LegacyPackageBackup.json LegacyPackage.json
 
 # Step 3: Clean install
 pnpm install
@@ -112,20 +112,20 @@ pnpm run test:version
 4. **After Verifying Stable Configuration**
 
 ### Update Procedure
-```bash
+```powershell
 # Update Svelte 5 backup (when using Svelte 5)
-cp package.json Svelte5PackageBackup.json
+Copy-Item package.json Svelte5PackageBackup.json
 
 # Switch to Svelte 4 and update its backup
 node scripts/version-manager.js switchTo4
-cp package.json LegacyPackageBackup.json
+Copy-Item package.json LegacyPackageBackup.json
 
 # Return to default Svelte 5
 node scripts/version-manager.js switchTo5
 ```
 
 ### Validation After Updates
-```bash
+```powershell
 # Verify JSON syntax
 node -e "JSON.parse(require('fs').readFileSync('Svelte5PackageBackup.json', 'utf8')); console.log('✅ Svelte 5 backup valid')"
 node -e "JSON.parse(require('fs').readFileSync('LegacyPackageBackup.json', 'utf8')); console.log('✅ Svelte 4 backup valid')"
@@ -168,17 +168,17 @@ package.json.backup.*
 ## 🔍 Verification Commands
 
 ### Check File Integrity
-```bash
+```powershell
 # Verify all package files exist
-ls -la *Package*.json
+Get-ChildItem *Package*.json
 
 # Check JSON syntax
-node -c Svelte5Package.json 2>/dev/null && echo "✅ Svelte5Package.json valid" || echo "❌ Svelte5Package.json invalid"
-node -c LegacyPackage.json 2>/dev/null && echo "✅ LegacyPackage.json valid" || echo "❌ LegacyPackage.json invalid"
+node -c Svelte5Package.json 2>$null; if ($LASTEXITCODE -eq 0) { Write-Host "✅ Svelte5Package.json valid" } else { Write-Host "❌ Svelte5Package.json invalid" }
+node -c LegacyPackage.json 2>$null; if ($LASTEXITCODE -eq 0) { Write-Host "✅ LegacyPackage.json valid" } else { Write-Host "❌ LegacyPackage.json invalid" }
 ```
 
 ### Test Version Manager
-```bash
+```powershell
 # Check system status
 node scripts/version-manager.js status
 

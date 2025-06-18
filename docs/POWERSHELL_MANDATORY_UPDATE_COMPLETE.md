@@ -38,7 +38,7 @@ Updated the AI formatting guidelines to make PowerShell syntax absolutely mandat
 
 ### **Command Chaining**
 
-```bash
+```powershell
 # ❌ BEFORE - Would cause failures
 npm install && npm run dev
 cd frontend && pnpm install && pnpm run dev
@@ -52,7 +52,7 @@ cd frontend; pnpm install; pnpm run dev
 
 ### **Conditional Execution**
 
-```bash
+```powershell
 # ❌ BEFORE - Not supported in PowerShell
 command1 && command2 || command3
 ```
@@ -64,7 +64,7 @@ command1; if ($LASTEXITCODE -eq 0) { command2 } else { command3 }
 
 ### **File Operations**
 
-```bash
+```powershell
 # ❌ BEFORE - Bash commands
 ls | grep package
 cp source dest && echo "copied"

@@ -53,7 +53,7 @@ const result = isValid && hasPermission && isReady;
 
 #### **✅ PERFECTLY FINE - Language-Specific Files:**
 
-```bash
+```powershell
 #!/bin/bash
 # ✅ && works fine in bash script files
 npm install && npm run dev
@@ -977,7 +977,7 @@ This project uses **PowerShell as the EXCLUSIVE command interface**. All termina
 
 **❌ THESE COMMANDS WILL FAIL:**
 
-```bash
+```powershell
 # ❌ FATAL ERROR - && operator does not exist in PowerShell
 npm install && npm run dev  # WILL FAIL!
 

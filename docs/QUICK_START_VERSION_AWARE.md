@@ -12,7 +12,7 @@ The Timeless Jewel Generator now supports both Svelte 4 and Svelte 5 through an 
 
 ## ⚡ Quick Commands
 
-```bash
+```powershell
 # Install dependencies
 pnpm install
 
@@ -29,7 +29,7 @@ pnpm run build
 ## 🔧 Version Management
 
 ### Current Setup (Svelte 4)
-```bash
+```powershell
 # Default development
 pnpm run dev
 # or explicitly
@@ -40,7 +40,7 @@ pnpm run build:svelte4
 ```
 
 ### Future Svelte 5 Support
-```bash
+```powershell
 # When ready for Svelte 5
 pnpm run dev:svelte5
 pnpm run build:svelte5
@@ -113,7 +113,7 @@ The system logs helpful information:
 ```
 
 ### Version Status
-```bash
+```powershell
 # Check current versions
 pnpm run test:version
 pnpm list svelte

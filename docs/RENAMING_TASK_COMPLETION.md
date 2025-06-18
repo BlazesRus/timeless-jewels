@@ -89,7 +89,7 @@ frontend/src/routes/tree/
 
 ### **Reference Validation**
 
-```bash
+```powershell
 # Search results show only intentional references in summary docs
 grep "TreePageSvelte" → 4 matches (all in FILE_RENAMING_UPDATE_SUMMARY.md)
 ```

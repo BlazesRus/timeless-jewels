@@ -128,7 +128,7 @@ Create two implementations following the naming convention:
 
 #### **Method 1: Using Version Manager (Recommended)**
 
-```bash
+```powershell
 # Switch to specific version
 node scripts/version-manager.js switchTo5
 

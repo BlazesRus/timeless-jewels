@@ -54,7 +54,7 @@ The Timeless Jewel Generator now features a complete INI-based dependency manage
 
 ### Quick Development Start
 
-```bash
+```powershell
 # Start with Svelte 5 (default)
 pnpm run dev:svelte5
 
@@ -67,7 +67,7 @@ pnpm run version:status
 
 ### Manual Version Management
 
-```bash
+```powershell
 # Switch to specific version
 node scripts/version-manager.js switchTo5
 node scripts/version-manager.js switchTo4
@@ -173,26 +173,26 @@ frontend/
 
 ### Manual Recovery
 
-```bash
+```powershell
 # Emergency restore to Svelte 5
-cp Svelte5PackageBackup.json package.json
+Copy-Item Svelte5PackageBackup.json package.json
 pnpm install
 
 # Emergency restore to Svelte 4
-cp LegacyPackageBackup.json package.json
+Copy-Item LegacyPackageBackup.json package.json
 pnpm install
 ```
 
 ### Backup Maintenance
 
-```bash
+```powershell
 # Update backups after major dependency changes
 # When using Svelte 5:
-cp package.json Svelte5PackageBackup.json
+Copy-Item package.json Svelte5PackageBackup.json
 
 # Switch to Svelte 4 and update backup:
 node scripts/version-manager.js switchTo4
-cp package.json LegacyPackageBackup.json
+Copy-Item package.json LegacyPackageBackup.json
 
 # Return to default:
 node scripts/version-manager.js switchTo5
@@ -218,7 +218,7 @@ package.json.backup.*
 
 ### Current Configuration Check
 
-```bash
+```powershell
 pnpm run version:status
 ```
 
@@ -261,10 +261,10 @@ Fallback Version: 5
 
 ### Recovery Options
 
-```bash
+```powershell
 # If version manager fails, manual recovery:
-cp Svelte5PackageBackup.json package.json  # Restore to Svelte 5
-cp LegacyPackageBackup.json package.json   # Restore to Svelte 4
+Copy-Item Svelte5PackageBackup.json package.json  # Restore to Svelte 5
+Copy-Item LegacyPackageBackup.json package.json   # Restore to Svelte 4
 
 # Then reinstall dependencies:
 pnpm install

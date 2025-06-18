@@ -68,12 +68,12 @@ pnpm run build
 Note: In pnpm v10, arguments after `pnpm test` are now passed directly to the script. The `--` prefix is no longer needed.
 
 **Before (pnpm v9):**
-```bash
+```powershell
 pnpm test -- --watch
 ```
 
 **Now (pnpm v10):**
-```bash
+```powershell
 pnpm test --watch
 ```
 

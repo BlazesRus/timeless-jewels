@@ -190,7 +190,7 @@ Create separate implementations:
 
 #### **Adding Dependencies**
 
-```bash
+```powershell
 # Method 1: Version Manager (Recommended)
 cd frontend
 node scripts/version-manager.js switchTo5
@@ -199,7 +199,7 @@ pnpm add new-package
 
 #### **Updating Dependencies**
 
-```bash
+```powershell
 # Check current version first
 node scripts/version-manager.js status
 

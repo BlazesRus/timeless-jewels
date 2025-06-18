@@ -52,7 +52,7 @@ The system enables seamless support for both Svelte 4 and Svelte 5 in the same c
 
 The package.json includes version-specific scripts:
 
-```bash
+```powershell
 # Default (Svelte 4)
 pnpm run dev
 
@@ -207,7 +207,7 @@ The system includes comprehensive error handling:
 
 ### Manual Testing
 
-```bash
+```powershell
 # Test version detection
 pnpm run test:version
 

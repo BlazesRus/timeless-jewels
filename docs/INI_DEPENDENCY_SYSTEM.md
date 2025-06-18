@@ -8,14 +8,14 @@ The Timeless Jewel Generator now features an advanced INI-based dependency manag
 
 ### Default Configuration (Svelte 5)
 
-```bash
+```powershell
 # The system defaults to Svelte 5 - no configuration needed!
 pnpm run dev
 ```
 
 ### Switch to Svelte 4
 
-```bash
+```powershell
 # Method 1: Edit version.ini manually
 # Change: version = 5 to version = 4
 
@@ -28,7 +28,7 @@ node scripts/version-manager.js switch
 
 ### Check Current Status
 
-```bash
+```powershell
 pnpm run version:status
 ```
 
@@ -85,7 +85,7 @@ The system manages two package.json files:
 
 ### Development Scripts
 
-```bash
+```powershell
 # Start with current configuration (default: Svelte 5)
 pnpm run dev
 
@@ -105,7 +105,7 @@ pnpm run build:svelte5
 
 ### Version Management Commands
 
-```bash
+```powershell
 # Switch package based on version.ini
 pnpm run version:switch
 
@@ -180,7 +180,7 @@ const TreePage = await import(svelteVersion >= 5 ? './Svelte5Page.svelte' : './S
 
 #### Package Switching Fails
 
-```bash
+```powershell
 # Check current status
 pnpm run version:status
 
@@ -188,13 +188,13 @@ pnpm run version:status
 pnpm install
 
 # Force clean install
-rm -rf node_modules
+Remove-Item -Recurse -Force node_modules
 pnpm install
 ```
 
 #### Version Detection Issues
 
-```bash
+```powershell
 # Check detected version
 pnpm run test:version
 
@@ -256,7 +256,7 @@ loading_strategy = static
 
 ### Automated CI/CD Integration
 
-```bash
+```powershell
 # In your CI/CD pipeline
 node scripts/version-manager.js switch
 pnpm install

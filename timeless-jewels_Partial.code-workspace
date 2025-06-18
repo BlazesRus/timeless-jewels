@@ -3,6 +3,98 @@
 		{
 			"path": "."
 		}
-	],
-	"settings": {}
+  ],
+  "settings": {
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "terminal.integrated.profiles.windows": {
+      "PowerShell": {
+        "source": "PowerShell",
+        "icon": "terminal-powershell",
+        "args": [
+          "-NoLogo"
+        ],
+        "overrideName": true
+      },
+      "PowerShell 7": {
+        "path": "pwsh.exe",
+        "icon": "terminal-powershell",
+        "args": [
+          "-NoLogo"
+        ],
+        "overrideName": true
+      }
+    },
+    "terminal.integrated.shellIntegration.enabled": true,
+    "terminal.integrated.shellIntegration.decorationsEnabled": "both",
+    "terminal.integrated.shellIntegration.history": 100,
+    "terminal.integrated.enableVisualBell": false,
+    "terminal.integrated.scrollback": 10000,
+    "terminal.integrated.fastScrollSensitivity": 5,
+    "terminal.integrated.focusAfterRun": "terminal",
+    "github.copilot.enable": {
+      "*": true,
+      "yaml": true,
+      "plaintext": true,
+      "markdown": true,
+      "json": true,
+      "typescript": true,
+      "svelte": true,
+      "javascript": true,
+      "go": true
+    },
+    "github.copilot.chat.localeOverride": "en",
+    "github.copilot.chat.useProjectTemplates": true,
+    "terminal.integrated.commandsToSkipShell": [
+      "language-julia.interrupt",
+      "workbench.action.terminal.clear"
+    ],
+    "terminal.integrated.environmentChangesIndicator": "on",
+    "terminal.integrated.environmentChangesRelaunch": false,
+    "terminal.integrated.enablePersistentSessions": true,
+    "terminal.integrated.persistentSessionReviveProcess": "onExit",
+    "terminal.integrated.automationProfile.windows": {
+      "path": "powershell.exe",
+      "args": [
+        "-NoLogo",
+        "-NoProfile",
+        "-Command"
+      ]
+    },
+    "terminal.integrated.detectLocale": "on",
+    "github.copilot.advanced": {
+      "debug.overrideEngine": "codex",
+      "debug.testOverrideProxyUrl": "",
+      "debug.overrideProxyUrl": ""
+    },
+    "terminal.integrated.allowChords": false,
+    "terminal.integrated.altClickMovesCursor": false,
+    "terminal.integrated.confirmOnExit": "never",
+    "terminal.integrated.confirmOnKill": "never",
+    "terminal.integrated.smoothScrolling": true,
+    "files.associations": {
+      "*.ini": "ini",
+      "version.ini": "ini",
+      "*Package.json": "json",
+      "*PackageBackup.json": "jsonc"
+    },
+    "problems.decorations.enabled": true,
+    "problems.showCurrentInStatus": true,
+    "breadcrumbs.enabled": true,
+    "git.confirmSync": false,
+    "svelte.enable-ts-plugin": true,
+    "github.copilot.chat.codeGeneration.instructions": [
+      "Follow the AI_FORMATTING_GUIDELINES.md in the docs/ directory",
+      "Understand the version-aware architecture with dual Svelte 4/5 support",
+      "Use appropriate syntax for target Svelte version (check filename for Svelte4 vs Svelte5)",
+      "Never edit backup files (*Backup.json)",
+      "Reference AI_ASSISTANT_CONTEXT_GUIDE.md for project understanding",
+      "Use PowerShell command format by default for Windows commands",
+      "Prefer Write-Host with color coding for output in PowerShell scripts",
+      "Use proper PowerShell parameter syntax with hyphen prefixes",
+      "Include error handling with try-catch blocks in PowerShell commands",
+      "RESPECT CURRENT MODE: When version.ini shows version=5, focus on Svelte 5 development and avoid suggesting switchTo4",
+      "When working in Modern (Svelte 5) mode, suggest testing and development using current version only",
+      "Only suggest version switching when explicitly requested by the user"
+    ]
+  }
 }
