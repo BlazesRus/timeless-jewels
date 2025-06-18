@@ -281,6 +281,9 @@ class VersionManager {  constructor() {
     
     // Update VS Code file hiding based on version
     this.updateFileHiding(targetVersion);
+    
+    // Update VSCode settings for the new version
+    this.updateVSCodeSettings();
   }
 
   /**
@@ -378,6 +381,22 @@ class VersionManager {  constructor() {
     } catch (error) {
       console.error('⚠️ Failed to update VS Code file hiding:', error.message);
       console.log('💡 You may need to manually update .vscode/settings.json');
+    }
+  }
+  /**
+   * Update VSCode settings using the dedicated settings manager
+   */
+  updateVSCodeSettings() {
+    try {
+      console.log('🔧 Updating VSCode settings for current version...');
+      const settingsScript = join(__dirname, 'vscode-settings.js');
+      execSync(`node "${settingsScript}" update`, { 
+        cwd: this.rootDir,
+        stdio: 'inherit' 
+      });
+    } catch (error) {
+      console.warn(`⚠️ Could not update VSCode settings: ${error.message}`);
+      console.log('💡 You can manually run: node scripts/vscode-settings.js update');
     }
   }
   /**
