@@ -13,8 +13,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-class VersionManager {
-  constructor() {
+class VersionManager {  constructor() {
     this.rootDir = join(__dirname, '..');
     this.configPath = join(this.rootDir, 'version.ini');
     this.packageJsonPath = join(this.rootDir, 'package.json');
@@ -143,9 +142,7 @@ class VersionManager {
     }
 
     // Create backup before switching
-    this.createBackup();
-
-    // Copy the appropriate package file
+    this.createBackup();    // Copy the appropriate package file
     copyFileSync(sourcePath, this.packageJsonPath);
     console.log(`📦 Switched to ${sourcePackage} (Svelte ${targetVersion})`);
 
@@ -227,9 +224,7 @@ class VersionManager {
     }
 
     // Create backup before switching
-    this.createBackup();
-
-    // Copy the Svelte 4 package file
+    this.createBackup();    // Copy the Svelte 4 package file
     copyFileSync(sourcePath, this.packageJsonPath);
     console.log(`📦 Switched to ${sourcePackage} (Svelte 4)`);
 
@@ -265,9 +260,7 @@ class VersionManager {
     }
 
     // Create backup before switching
-    this.createBackup();
-
-    // Copy the Svelte 5 package file
+    this.createBackup();    // Copy the Svelte 5 package file
     copyFileSync(sourcePath, this.packageJsonPath);
     console.log(`📦 Switched to ${sourcePackage} (Svelte 5)`);
 
@@ -387,14 +380,14 @@ class VersionManager {
       console.log('💡 You may need to manually update .vscode/settings.json');
     }
   }
-
   /**
    * Show current configuration status
-   */  status() {
+   */status() {
     console.log('📊 Current Version Configuration:');
     console.log('==================================');
     console.log(`Target Svelte Version: ${this.getTargetVersion()}`);
     console.log(`Current Svelte Version: ${this.getCurrentVersion() || 'unknown'}`);
+    console.log(`PostCSS Config: ${this.getPostCSSStatus()}`);
     console.log(`Auto Install: ${this.config.options?.auto_install || 'false'}`);
     console.log(`Respect Current Mode: ${this.config.options?.respect_current_mode || 'false'}`);
     console.log(`Testing Mode: ${this.config.options?.testing_mode || 'false'}`);
@@ -416,6 +409,43 @@ class VersionManager {
       console.log('🧪 TESTING MODE ENABLED');
       console.log('   • All version switching is disabled');
       console.log('   • Tests will run against currently installed version');
+    }
+  }  /**
+   * Get current PostCSS configuration status based on Svelte version
+   */
+  getPostCSSStatus() {
+    const currentVersion = this.getCurrentVersion();
+    const targetVersion = this.getTargetVersion();
+    
+    // Determine the correct PostCSS config path based on Svelte version
+    const configPath = currentVersion === '5' 
+      ? join(this.rootDir, 'ModernMode', 'postcss.config.cjs')
+      : join(this.rootDir, 'LegacyMode', 'postcss.config.cjs');
+    
+    const modeName = currentVersion === '5' ? 'Modern' : 'Legacy';
+    const expectedPath = currentVersion === '5' ? 'ModernMode/postcss.config.cjs' : 'LegacyMode/postcss.config.cjs';
+    
+    if (!existsSync(configPath)) {
+      return `${expectedPath} not found`;
+    }
+
+    try {
+      const content = readFileSync(configPath, 'utf8');
+      
+      // Check if PostCSS config matches current Svelte version
+      const hasModernConfig = content.includes('@tailwindcss/postcss');
+      const hasLegacyConfig = content.includes('tailwindcss: {}');
+      
+      if (currentVersion === '5' && hasModernConfig) {
+        return `${expectedPath} (✅ Modern Mode)`;
+      } else if (currentVersion === '4' && hasLegacyConfig) {
+        return `${expectedPath} (✅ Legacy Mode)`;
+      } else {
+        return `${expectedPath} (⚠️ config mismatch)`;
+      }
+      
+    } catch (error) {
+      return `${expectedPath} (error reading)`;
     }
   }
 }

@@ -62,7 +62,7 @@
     "pnpm": ">=10.0.0"
   },
   "type": "module",
-  "packageManager": "pnpm@10.11.0",
+  "packageManager": "pnpm@10.12.0",
   "pnpm": {
     "onlyBuiltDependencies": []
   }

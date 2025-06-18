@@ -87,6 +87,8 @@
     "**/Thumbs.db": true,
     "**/components/Legacy*Legacy*": true,
     "**LegacyPackage*.json": true,
+    "**/components/Svelte5*Svelte5*": true,
+    "**Svelte5Package*.json": true,
     "**/components/Legacy/**": true,
     "**/*Legacy*": true,
     "**/*Svelte4*": true,
