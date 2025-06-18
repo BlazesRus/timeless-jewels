@@ -1,6 +1,5 @@
 <!-- Modern SkillTree Component - Svelte 5 Ready (Progressive Enhancement) -->
 <script lang="ts">
-
   const measurePerformance = (): number => {
     return window.performance.now();
   };
@@ -54,14 +53,8 @@
 
   const spriteCache: Record<string, HTMLImageElement> = {};
   const spriteCacheActive: Record<string, HTMLImageElement> = {};
-  
-  const drawSprite = (
-    context: CanvasRenderingContext2D,
-    path: string,
-    pos: Point,
-    active = false,
-    mirrored = false
-  ) => {
+
+  const drawSprite = (context: CanvasRenderingContext2D, path: string, pos: Point, active = false, mirrored = false) => {
     let sprite = active ? inverseSpritesActive[path] : inverseSprites[path];
 
     if (!sprite && active) {
@@ -89,33 +82,13 @@
       finalY = topLeftY - newHeight / 2;
     }
 
-    context.drawImage(
-      (active ? spriteCacheActive : spriteCache)[spriteSheetUrl],
-      self.x,
-      self.y,
-      self.w,
-      self.h,
-      topLeftX,
-      finalY,
-      newWidth,
-      newHeight
-    );
+    context.drawImage((active ? spriteCacheActive : spriteCache)[spriteSheetUrl], self.x, self.y, self.w, self.h, topLeftX, finalY, newWidth, newHeight);
 
     if (mirrored) {
       context.save();
       context.translate(topLeftX, topLeftY);
       context.rotate(Math.PI);
-      context.drawImage(
-        (active ? spriteCacheActive : spriteCache)[spriteSheetUrl],
-        self.x,
-        self.y,
-        self.w,
-        self.h,
-        -newWidth,
-        -(newHeight / 2),
-        newWidth,
-        -newHeight
-      );
+      context.drawImage((active ? spriteCacheActive : spriteCache)[spriteSheetUrl], self.x, self.y, self.w, self.h, -newWidth, -(newHeight / 2), newWidth, -newHeight);
       context.restore();
     }
   };
@@ -123,7 +96,7 @@
   const wrapText = (text: string, context: CanvasRenderingContext2D, width: number): string[] => {
     const result = [];
     let currentWord = '';
-    
+
     text.split(' ').forEach((word) => {
       if (context.measureText(currentWord + word).width < width) {
         currentWord += ' ' + word;
@@ -161,7 +134,7 @@
     );
     highlightGradient.addColorStop(0, '#8cf34c'); // bright green
     highlightGradient.addColorStop(1, '#00ff00'); // neon green
-		return highlightGradient;
+    return highlightGradient;
   };
   let cursor = 'unset';
   let hoveredNode: Node | undefined;
@@ -325,7 +298,7 @@
           context.strokeStyle = '#ffffff';
         } else {
           // Using cycling green color for visual effects or simple green color
-          context.strokeStyle = cyclingGradiant(context, width, height, scaling)??'#00ff00';
+          context.strokeStyle = cyclingGradiant(context, width, height, scaling) ?? '#00ff00';
         }
         context.lineWidth = 3;
         context.beginPath();
@@ -359,12 +332,7 @@
 
       if (!hoveredNode.isJewelSocket && hoveredNodeActive) {
         if (hoveredNode.skill && seed && selectedJewel && selectedConqueror) {
-          const result = calculator.Calculate(
-            data.TreeToPassive[hoveredNode.skill].Index,
-            seed,
-            selectedJewel,
-            selectedConqueror
-          );
+          const result = calculator.Calculate(data.TreeToPassive[hoveredNode.skill].Index, seed, selectedJewel, selectedConqueror);
 
           if (result) {
             if ('AlternatePassiveSkill' in result && result.AlternatePassiveSkill) {
@@ -490,7 +458,8 @@
     context.textAlign = 'right';
     context.font = '12px Roboto Mono';
 
-    const end = window.performance.now();    context.fillText(`${(end - start).toFixed(1)}ms`, width - 5, 17);
+    const end = window.performance.now();
+    context.fillText(`${(end - start).toFixed(1)}ms`, width - 5, 17);
   }) as RenderFunc;
 
   // Modern state management - ready for Svelte 5 conversion
@@ -564,14 +533,14 @@
 
   let width = 0;
   let height = 0;
-  
+
   const resize = () => {
     width = window.innerWidth;
     height = window.innerHeight;
   };
 
   let initialized = false;
-  
+
   // Reactive initialization - will be converted to $effect in full Svelte 5
   $: {
     if (!initialized && skillTree) {

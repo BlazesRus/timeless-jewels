@@ -1,6 +1,5 @@
 <!-- Legacy SkillTree Component - Svelte 4 Compatible -->
 <script lang="ts">
-
   const measurePerformance = (): number => {
     return window.performance.now();
   };
@@ -63,13 +62,7 @@
 
   const spriteCache: Record<string, HTMLImageElement> = {};
   const spriteCacheActive: Record<string, HTMLImageElement> = {};
-  const drawSprite = (
-    context: CanvasRenderingContext2D,
-    path: string,
-    pos: Point,
-    active = false,
-    mirrored = false
-  ) => {
+  const drawSprite = (context: CanvasRenderingContext2D, path: string, pos: Point, active = false, mirrored = false) => {
     let sprite = active ? inverseSpritesActive[path] : inverseSprites[path];
 
     if (!sprite && active) {
@@ -97,17 +90,7 @@
       finalY = topLeftY - newHeight / 2;
     }
 
-    context.drawImage(
-      (active ? spriteCacheActive : spriteCache)[spriteSheetUrl],
-      self.x,
-      self.y,
-      self.w,
-      self.h,
-      topLeftX,
-      finalY,
-      newWidth,
-      newHeight
-    );
+    context.drawImage((active ? spriteCacheActive : spriteCache)[spriteSheetUrl], self.x, self.y, self.w, self.h, topLeftX, finalY, newWidth, newHeight);
 
     if (mirrored) {
       context.save();
@@ -115,17 +98,7 @@
       context.translate(topLeftX, topLeftY);
       context.rotate(Math.PI);
 
-      context.drawImage(
-        (active ? spriteCacheActive : spriteCache)[spriteSheetUrl],
-        self.x,
-        self.y,
-        self.w,
-        self.h,
-        -newWidth,
-        -(newHeight / 2),
-        newWidth,
-        -newHeight
-      );
+      context.drawImage((active ? spriteCacheActive : spriteCache)[spriteSheetUrl], self.x, self.y, self.w, self.h, -newWidth, -(newHeight / 2), newWidth, -newHeight);
 
       context.restore();
     }
@@ -156,7 +129,7 @@
     y: Number.MIN_VALUE
   };
 
-  //Optional cycling gradiant that cycles between bright green and neon green  
+  //Optional cycling gradiant that cycles between bright green and neon green
   const cyclingGradiant = (context: CanvasRenderingContext2D, width: number, height: number, scaling: number): CanvasGradient => {
     const highlightGradientCenterX = width / 2;
     const highlightGradientCenterY = height / 2;
@@ -175,7 +148,7 @@
     );
     highlightGradient.addColorStop(0, '#8cf34c'); // bright green
     highlightGradient.addColorStop(1, '#00ff00'); // neon green
-		return highlightGradient;
+    return highlightGradient;
   };
 
   let cursor = 'unset';
@@ -340,7 +313,7 @@
           context.strokeStyle = '#ffffff';
         } else {
           // Using cycling green color for visual effects or simple green color
-          context.strokeStyle = cyclingGradiant(context, width, height, scaling)??'#00ff00';
+          context.strokeStyle = cyclingGradiant(context, width, height, scaling) ?? '#00ff00';
         }
         context.lineWidth = 3;
         context.beginPath();
@@ -374,12 +347,7 @@
 
       if (!hoveredNode.isJewelSocket && hoveredNodeActive) {
         if (hoveredNode.skill && seed && selectedJewel && selectedConqueror) {
-          const result = calculator.Calculate(
-            data.TreeToPassive[hoveredNode.skill].Index,
-            seed,
-            selectedJewel,
-            selectedConqueror
-          );
+          const result = calculator.Calculate(data.TreeToPassive[hoveredNode.skill].Index, seed, selectedJewel, selectedConqueror);
 
           if (result) {
             if ('AlternatePassiveSkill' in result && result.AlternatePassiveSkill) {

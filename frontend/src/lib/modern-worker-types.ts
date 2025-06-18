@@ -54,19 +54,19 @@ export interface ModernTimelessWorker {
    * @param config Configuration containing WASM buffer
    */
   initialize(config: WorkerInitConfig): Promise<void>;
-  
+
   /**
    * Perform a reverse search with progress callback
    * @param config Search configuration
    * @param onProgress Progress callback function
    */
   reverseSearch(config: SearchConfig, onProgress?: SearchProgressCallback): Promise<SearchResults>;
-  
+
   /**
    * Check if the worker is initialized
    */
   isInitialized(): boolean;
-  
+
   /**
    * Get worker health status
    */

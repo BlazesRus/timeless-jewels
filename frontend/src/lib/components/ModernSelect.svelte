@@ -19,25 +19,14 @@ Full-featured replacement for svelte-select using native Svelte 5 runes
     disabled?: boolean;
   }
 
-  let { 
-    items, 
-    value = $bindable(), 
-    placeholder = "Select...", 
-    onchange, 
-    onclear,
-    disabled = false 
-  }: Props = $props();
+  let { items, value = $bindable(), placeholder = 'Select...', onchange, onclear, disabled = false }: Props = $props();
   let isOpen = $state(false);
   let searchTerm = $state('');
   let highlightedIndex = $state(-1);
   let containerRef = $state<HTMLDivElement>();
   let searchInputRef = $state<HTMLInputElement>();
-  
-  const filteredItems = $derived(
-    items.filter(item => 
-      item.label.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
+
+  const filteredItems = $derived(items.filter((item) => item.label.toLowerCase().includes(searchTerm.toLowerCase())));
 
   // Keyboard navigation
   const handleKeydown = async (e: KeyboardEvent) => {
@@ -107,11 +96,8 @@ Full-featured replacement for svelte-select using native Svelte 5 runes
 
 <svelte:window onclick={handleClickOutside} />
 
-<div bind:this={containerRef} class="modern-select relative themed">  <button 
-    class="select-trigger"
-    class:disabled
-    onclick={() => !disabled && (isOpen = !isOpen)}
-    onkeydown={handleKeydown}
+<div bind:this={containerRef} class="modern-select relative themed">
+  <button class="select-trigger" class:disabled onclick={() => !disabled && (isOpen = !isOpen)} onkeydown={handleKeydown}
     type="button"
     {disabled}
     aria-expanded={isOpen}
@@ -123,24 +109,10 @@ Full-featured replacement for svelte-select using native Svelte 5 runes
       {value?.label || placeholder}
     </span>
     <div class="select-actions">
-      {#if value && !disabled}        <button
-          class="clear-button"
-          onclick={clear}
-          type="button"
-          tabindex="-1"
-          aria-label="Clear selection"
-        >
-          ✕
-        </button>
+      {#if value && !disabled}
+        <button class="clear-button" onclick={clear} type="button" tabindex="-1" aria-label="Clear selection">✕</button>
       {/if}
-      <svg 
-        class="chevron"
-        class:open={isOpen}
-        fill="none" 
-        stroke="currentColor" 
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-      >
+      <svg class="chevron" class:open={isOpen} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
       </svg>
     </div>
@@ -148,18 +120,13 @@ Full-featured replacement for svelte-select using native Svelte 5 runes
 
   {#if isOpen && !disabled}
     <div class="select-dropdown" role="listbox">
-      <div class="search-container">        <input
-          bind:this={searchInputRef}
-          bind:value={searchTerm}
-          placeholder="Search..."
-          class="search-input"
-          onkeydown={handleKeydown}
-          type="text"
-        />
+      <div class="search-container">
+        <input bind:this={searchInputRef} bind:value={searchTerm} placeholder="Search..." class="search-input" onkeydown={handleKeydown} type="text" />
       </div>
-      
+
       <div class="options-container">
-        {#each filteredItems as item, index}          <button
+        {#each filteredItems as item, index}
+          <button
             class="select-option"
             class:selected={value?.value === item.value}
             class:highlighted={highlightedIndex === index}
@@ -171,7 +138,7 @@ Full-featured replacement for svelte-select using native Svelte 5 runes
             {item.label}
           </button>
         {/each}
-        
+
         {#if filteredItems.length === 0}
           <div class="no-options">No items found</div>
         {/if}

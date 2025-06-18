@@ -19,8 +19,6 @@
   };
 </script>
 
-<button class="p-1 px-3 bg-blue-500/40 rounded disabled:bg-blue-900/40 mr-2"
-  on:click={handleOnClick}
-  disabled={!queries}>
+<button class="p-1 px-3 bg-blue-500/40 rounded disabled:bg-blue-900/40 mr-2" on:click={handleOnClick} disabled={!queries}>
   {hasMultipleQueries ? (showTradeLinks ? 'Hide Trade Links' : 'Show Trade Links') : 'Trade'}
 </button>

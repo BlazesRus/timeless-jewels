@@ -26,22 +26,22 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
     try {
       // Use the Go WASM runtime
       const go = new (globalThis as any).Go();
-      
+
       // Instantiate WASM module
       const result = await WebAssembly.instantiate(config.wasmBuffer, go.importObject);
-      
+
       // Run the Go program
       go.run(result.instance);
-      
+
       // Initialize crystalline data structures
       initializeCrystalline();
-      
+
       // Load skill tree data
       loadSkillTree();
-      
+
       this.initialized = true;
       this.ready = true;
-      
+
       console.log('TimelessJewel Worker initialized successfully');
     } catch (error) {
       console.error('Failed to initialize TimelessJewel Worker:', error);
@@ -69,10 +69,7 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
   /**
    * Perform reverse search with modern async/await pattern
    */
-  async reverseSearch(
-    config: SearchConfig,
-    onProgress?: SearchProgressCallback
-  ): Promise<SearchResults> {
+  async reverseSearch(config: SearchConfig, onProgress?: SearchProgressCallback): Promise<SearchResults> {
     if (!this.initialized) {
       throw new Error('Worker not initialized. Call initialize() first.');
     }
@@ -86,7 +83,7 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
       this.validateSearchConfig(config);
 
       // Create progress callback wrapper with error handling
-      const progressCallback = onProgress 
+      const progressCallback = onProgress
         ? async (seed: number) => {
             try {
               await onProgress(seed);
@@ -95,7 +92,9 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
               // Don't throw - allow search to continue
             }
           }
-        : async () => { /* no-op */ };
+        : async () => {
+            /* no-op */
+          };
 
       // Perform the search using the calculator
       const searchResult = await calculator.ReverseSearch(
@@ -110,7 +109,7 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
       const processedResults = this.processSearchResults(searchResult, config);
 
       console.log(`Search completed. Found ${processedResults.raw.length} results.`);
-      
+
       return processedResults;
     } catch (error) {
       console.error('Search failed:', error);
@@ -158,16 +157,13 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
   /**
    * Process raw search results into grouped format
    */
-  private processSearchResults(
-    searchResult: Record<string, Record<string, Record<string, number>>>,
-    config: SearchConfig
-  ): SearchResults {
+  private processSearchResults(searchResult: Record<string, Record<string, Record<string, number>>>, config: SearchConfig): SearchResults {
     const searchGrouped: Record<number, SearchWithSeed[]> = {};
 
     // Process each seed result
     Object.keys(searchResult).forEach((seedStr) => {
       const seed = parseInt(seedStr, 10);
-      
+
       let weight = 0;
       let totalStats = 0;
       const statCounts: Record<number, number> = {};
@@ -176,17 +172,17 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
       // Process skills for this seed
       const skills = Object.keys(searchResult[seed] ?? {}).map((skillIDStr) => {
         const skillID = parseInt(skillIDStr, 10);
-        
+
         // Process stats for this skill
         Object.keys(searchResult[seed][skillID]).forEach((statIdStr) => {
           const statId = parseInt(statIdStr, 10);
           const statValue = searchResult[seed][skillID][statIdStr];
-          
+
           // Update counters
           statCounts[statId] = (statCounts[statId] || 0) + 1;
           statTotal[statId] = (statTotal[statId] ?? 0) + statValue;
           totalStats += statValue;
-          
+
           // Calculate weight
           const statConfig = config.stats.find((s) => s.id === statId);
           if (statConfig) {
@@ -219,7 +215,7 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
     // Filter and sort results
     Object.keys(searchGrouped).forEach((skillCountStr) => {
       const skillCount = parseInt(skillCountStr, 10);
-      
+
       // Filter based on criteria
       searchGrouped[skillCount] = searchGrouped[skillCount].filter((result) => {
         return this.matchesSearchCriteria(result, config);
