@@ -3,6 +3,7 @@
 ## Emergency Recovery Commands
 
 ### Package.json Corrupted?
+
 ```powershell
 # Restore to Svelte 5 (default)
 Copy-Item Svelte5PackageBackup.json package.json
@@ -14,6 +15,7 @@ pnpm install
 ```
 
 ### Version Manager Not Working?
+
 ```powershell
 # Check file integrity
 Get-ChildItem *Package*.json
@@ -24,6 +26,7 @@ Copy-Item LegacyPackageBackup.json LegacyPackage.json
 ```
 
 ### Complete System Reset
+
 ```powershell
 # 1. Restore to known working state
 Copy-Item Svelte5PackageBackup.json package.json

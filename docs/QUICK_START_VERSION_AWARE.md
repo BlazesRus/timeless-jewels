@@ -6,7 +6,7 @@ The Timeless Jewel Generator now supports both Svelte 4 and Svelte 5 through an 
 
 ## 📋 Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - pnpm 10+
 - Modern browser with JavaScript enabled
 
@@ -29,6 +29,7 @@ pnpm run build
 ## 🔧 Version Management
 
 ### Current Setup (Svelte 4)
+
 ```powershell
 # Default development
 pnpm run dev
@@ -40,6 +41,7 @@ pnpm run build:svelte4
 ```
 
 ### Future Svelte 5 Support
+
 ```powershell
 # When ready for Svelte 5
 pnpm run dev:svelte5
@@ -49,6 +51,7 @@ pnpm run build:svelte5
 ## 🌐 Accessing the Application
 
 Once the dev server starts, visit:
+
 - **Main App**: http://localhost:5173/timeless-jewels
 - **Tree Page**: http://localhost:5173/timeless-jewels/tree
 
@@ -62,12 +65,14 @@ Once the dev server starts, visit:
 ## 📱 User Experience
 
 ### Loading Sequence
+
 1. Page shows loading spinner with version detection message
 2. System determines Svelte version (usually < 100ms)
 3. Appropriate implementation loads dynamically
 4. Full application interface becomes available
 
 ### Error Handling
+
 - If version detection fails → Falls back to Svelte 4
 - If component loading fails → Shows error with reload button
 - All errors are logged to console for debugging
@@ -75,12 +80,18 @@ Once the dev server starts, visit:
 ## 🛠 Development Features
 
 ### Version Detection API
+
 ```typescript
-import { detectSvelteVersion, isSvelte5OrHigher } from '$lib/utils/version-detection';
+import {
+  detectSvelteVersion,
+  isSvelte5OrHigher,
+} from "$lib/utils/version-detection";
 
 // Get version info
 const version = detectSvelteVersion();
-console.log(`Running Svelte ${version.major}.${version.minor}.${version.patch}`);
+console.log(
+  `Running Svelte ${version.major}.${version.minor}.${version.patch}`
+);
 
 // Version checks
 if (isSvelte5OrHigher()) {
@@ -91,8 +102,9 @@ if (isSvelte5OrHigher()) {
 ```
 
 ### Configuration
+
 ```typescript
-import { versionConfig } from '$lib/utils/version-config';
+import { versionConfig } from "$lib/utils/version-config";
 
 // Check feature availability
 if (versionConfig.features.runes) {
@@ -105,7 +117,9 @@ if (versionConfig.features.runes) {
 ## 📊 Monitoring
 
 ### Browser Console
+
 The system logs helpful information:
+
 ```
 [Version Detection] Detected Svelte version: 4.2.20
 [Component Loader] Loading Svelte 4 tree page implementation...
@@ -113,6 +127,7 @@ The system logs helpful information:
 ```
 
 ### Version Status
+
 ```powershell
 # Check current versions
 pnpm run test:version
@@ -129,7 +144,9 @@ pnpm list @sveltejs/kit
 3. **Build Errors**: Ensure all dependencies are installed
 
 ### Debug Mode
+
 Enable detailed logging in `src/lib/utils/version-config.ts`:
+
 ```typescript
 export const versionConfig = {
   enableVersionLogging: true, // Set to true for debug info
@@ -138,12 +155,14 @@ export const versionConfig = {
 ```
 
 ### Manual Override
+
 If needed, you can force a specific version:
+
 ```typescript
 // In version-detection.ts
 export function detectSvelteVersion(): SvelteVersion {
   // Force Svelte 4 for testing
-  return { major: 4, minor: 2, patch: 0, full: '4.2.0' };
+  return { major: 4, minor: 2, patch: 0, full: "4.2.0" };
 }
 ```
 
@@ -158,6 +177,7 @@ export function detectSvelteVersion(): SvelteVersion {
 ## 📞 Support
 
 If you encounter issues:
+
 1. Check the browser console for error messages
 2. Verify all dependencies are installed (`pnpm install`)
 3. Try restarting the dev server
