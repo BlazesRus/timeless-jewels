@@ -10,20 +10,16 @@
   import { getAffectedNodes, skillTree, translateStat, constructQueries } from '$lib/skill_tree';
 
   import { modernWorker } from '../../lib/modern-worker';
-  import type {
-    Query,
-    SearchConfig,
-    StatConfig,
-    SearchResults as SearchResultsType
-  } from '$lib/modern-worker-types';
+  import type { Query, SearchConfig, StatConfig, SearchResults as SearchResultsType } from '$lib/modern-worker-types';
 
   import SearchResultsComponent from '$lib/components/SearchResults.svelte';
   import { statValues } from '$lib/values';
   import { data, calculator } from '$lib/types';
+
   import TradeButton from '$lib/components/TradeButton.svelte';
   import TradeLinks from '$lib/components/TradeLinks.svelte';
 
-  // Use ModernSelect for Svelte 5 compatibility
+  // Use ModernSelect for Svelte 5 compatibility instead of svelte-select
   import ModernSelect from '$lib/components/ModernSelect.svelte';
 
   // Store search params as reactive variable
@@ -43,6 +39,7 @@
     value: parseInt(k),
     label: data.TimelessJewels[k]
   }));
+
   // State variables with Svelte 5 runes
   let selectedJewel = $state<JewelOption | undefined>(undefined);
   let searchParamsInitialized = $state(false);
@@ -52,7 +49,8 @@
   let selectedStats = $state<Record<number, StatConfig>>({});
   let mode = $state<'seed' | 'stats' | ''>('');
 
-  // Initialize selections from URL after component mounts  onMount(() => {
+  // Initialize selections from URL after component mounts
+  onMount(() => {
     if (browser) {
       try {
         if (page?.url?.searchParams) {
@@ -109,11 +107,8 @@
 
   // Reactive statements
   $: conquerors = selectedJewel && data.TimelessJewelConquerors?.[selectedJewel.value]
-    ? Object.keys(data.TimelessJewelConquerors[selectedJewel.value]).map((k): ConquerorOption => ({
-        value: k,
-        label: k
-      }))
-    : [];
+    ? Object.keys(data.TimelessJewelConquerors[selectedJewel.value]).map((k):
+    ConquerorOption => ({value: k, label: k})): [];
 
   $: dropdownConqs = conquerors.concat([{ value: 'Any', label: 'Any' }]);
 
@@ -121,9 +116,7 @@
 
   $: selectedConqueror = dropdownConqueror?.value === 'Any' ? conquerors[0] : dropdownConqueror;
 
-  $: affectedNodes = circledNode
-    ? getAffectedNodes(skillTree.nodes[circledNode]).filter((n) => !n.isJewelSocket && !n.isMastery)
-    : [];
+  $: affectedNodes = circledNode ? getAffectedNodes(skillTree.nodes[circledNode]).filter((n) => !n.isJewelSocket && !n.isMastery) : [];
 
   $: seedResults =
     !seed ||
@@ -136,12 +129,8 @@
           .filter((n) => data.TreeToPassive?.[n.skill])
           .map((n) => ({
             node: n.skill,
-            result: calculator.Calculate(
-              data.TreeToPassive[n.skill].Index,
-              seed,
-              selectedJewel.value,
-              selectedConqueror.value
-            )
+            result: calculator.Calculate(data.TreeToPassive[n.skill].Index, seed, selectedJewel.value,
+            selectedConqueror.value)
           }));
 
   const updateUrl = () => {
@@ -196,12 +185,11 @@
       };
     })
     .filter((s) => !(s.value in selectedStats));
+
   let statSelector: any; // ModernSelect component reference
   
-  const handleSelectStat = (item: { value: number; label: string } | undefined) => {
-    if (!item) return;
-    
-    const statId = item.value;
+  const handleSelectStat = (event: CustomEvent<{ value: number; label: string }>) => {
+    const statId = event.detail.value;
     selectedStats[statId] = {
       weight: 1,
       min: 0,
@@ -225,6 +213,7 @@
     selectedStats = {};
     updateUrl();
   };
+
   // Search functionality with Svelte 5 runes
   let results = $state(false);
   let minTotalWeight = $state(0);
@@ -265,12 +254,7 @@
     };
 
     try {
-      const result = await modernWorker.reverseSearch(
-        searchConfig,
-        async (seed: number) => {
-          currentSeed = seed;
-        }
-      );
+      const result = await modernWorker.reverseSearch(searchConfig, async (seed: number) => {currentSeed = seed;});
 
       searchResults = result;
       isSearching = false;
@@ -324,43 +308,25 @@
     { label: 'Value', value: 'value' }
   ];
   // Local storage handling with Svelte 5 effects
-  let groupResults = $state(
-    browser ? 
-      (localStorage.getItem('groupResults') === null ? true : localStorage.getItem('groupResults') === 'true') : 
-      true
-  );
+  let groupResults = $state(browser ? 
+      (localStorage.getItem('groupResults') === null ? true : localStorage.getItem('groupResults') === 'true') : true);
 
-  $effect(() => {
-    if (browser) localStorage.setItem('groupResults', groupResults ? 'true' : 'false');
-  });
+  $effect(() => { if (browser) localStorage.setItem('groupResults', groupResults ? 'true' : 'false'); });
 
   let sortOrder = $state(
-    sortResults.find((r) => r.value === (browser ? localStorage.getItem('sortOrder') || 'count' : 'count'))
-  );
+    sortResults.find((r) => r.value === (browser ? localStorage.getItem('sortOrder') || 'count' : 'count')));
 
-  $effect(() => {
-    if (browser && sortOrder) localStorage.setItem('sortOrder', sortOrder.value);
-  });
+  $effect(() => { if (browser && sortOrder) localStorage.setItem('sortOrder', sortOrder.value); });
 
-  let colored = $state(
-    browser ? 
-      (localStorage.getItem('colored') === null ? true : localStorage.getItem('colored') === 'true') :
-      true
-  );
+  let colored = $state( browser ? 
+      (localStorage.getItem('colored') === null ? true : localStorage.getItem('colored') === 'true') : true);
 
-  $effect(() => {
-    if (browser) localStorage.setItem('colored', colored ? 'true' : 'false');
-  });
+  $effect(() => { if (browser) localStorage.setItem('colored', colored ? 'true' : 'false'); });
 
-  let split = $state(
-    browser ?
-      (localStorage.getItem('split') === null ? true : localStorage.getItem('split') === 'true') :
-      true
-  );
+  let split = $state( browser ? 
+    (localStorage.getItem('split') === null ? true : localStorage.getItem('split') === 'true') : true );
 
-  $effect(() => {
-    if (browser) localStorage.setItem('split', split ? 'true' : 'false');
-  });
+  $effect(() => { if (browser) localStorage.setItem('split', split ? 'true' : 'false'); });
 
   // Types
   type CombinedResult = {
@@ -554,7 +520,8 @@
   {highlighted}
   {seed}
   highlightJewels={!circledNode}
-  disabled={Array.from(disabled)}>
+  disabled={Array.from(disabled)}
+>
   {#if !collapsed}
     <div class="w-screen md:w-10/12 lg:w-2/3 xl:w-1/2 2xl:w-5/12 3xl:w-1/3 4xl:w-1/4 absolute top-0 left-0 bg-black/80 backdrop-blur-sm themed rounded-br-lg max-h-screen">
       <div class="p-4 max-h-screen flex flex-col">
@@ -578,23 +545,20 @@
             <div class="flex flex-row">
               {#if results}
                 <TradeButton {queries} bind:showTradeLinks />
-                <button class="p-1 px-3 bg-blue-500/40 rounded disabled:bg-blue-900/40 mr-2"
-                  class:grouped={groupResults}
-                  on:click={() => (groupResults = !groupResults)}
-                  disabled={!searchResults}>Grouped</button>
+                <button class="p-1 px-3 bg-blue-500/40 rounded disabled:bg-blue-900/40 mr-2" class:grouped={groupResults} on:click={() => (groupResults = !groupResults)} disabled={!searchResults}>
+                  Grouped
+                </button>
               {/if}
               <button class="bg-neutral-100/20 px-4 p-1 rounded" on:click={() => (results = !results)}>{results ? 'Config' : 'Results'}</button>
             </div>
           {/if}
-        </div>        {#if !results}
-          <ModernSelect items={jewels} bind:value={selectedJewel} 
-          placeholder="Select jewel..."
-          onchange={changeJewel} />          {#if selectedJewel}
+        </div>
+        {#if !results}
+          <ModernSelect items={jewels} bind:value={selectedJewel} placeholder="Select jewel..." onchange={changeJewel} />
+          {#if selectedJewel}
             <div class="mt-4">
               <h3 class="mb-2">Conqueror</h3>
-              <ModernSelect items={dropdownConqs} bind:value={dropdownConqueror}
-              placeholder="Select conqueror..."
-              onchange={updateUrl} />
+              <ModernSelect items={dropdownConqs} bind:value={dropdownConqueror} placeholder="Select conqueror..." onchange={updateUrl} />
             </div>
 
             {#if selectedConqueror && Object.keys(data.TimelessJewelConquerors[selectedJewel.value]).indexOf(selectedConqueror.value) >= 0}
@@ -606,13 +570,15 @@
               {#if mode === 'seed'}
                 <div class="mt-4">
                   <h3 class="mb-2">Seed</h3>
-                  <input type="number"
+                  <input
+                    type="number"
                     bind:value={seed}
                     placeholder="Seed"
                     on:blur={updateUrl}
                     on:input={updateUrl}
                     min={data.TimelessJewelSeedRanges[selectedJewel.value].Min}
-                    max={data.TimelessJewelSeedRanges[selectedJewel.value].Max} />
+                    max={data.TimelessJewelSeedRanges[selectedJewel.value].Max}
+                  />
                   {#if seed < data.TimelessJewelSeedRanges[selectedJewel.value].Min || seed > data.TimelessJewelSeedRanges[selectedJewel.value].Max}
                     <div class="mt-2">
                       Seed must be between {data.TimelessJewelSeedRanges[selectedJewel.value].Min}
@@ -622,22 +588,16 @@
                 </div>
 
                 {#if seed >= data.TimelessJewelSeedRanges[selectedJewel.value].Min && seed <= data.TimelessJewelSeedRanges[selectedJewel.value].Max}
-                  <div class="flex flex-row mt-4 items-end">                    <div class="flex-grow">
+                  <div class="flex flex-row mt-4 items-end">
+                    <div class="flex-grow">
                       <h3 class="mb-2">Sort Order</h3>
                       <ModernSelect items={sortResults} bind:value={sortOrder} />
                     </div>
                     <div class="ml-2">
-                      <button class="bg-neutral-500/20 p-2 px-4 rounded"
-                        class:selected={colored}
-                        on:click={() => (colored = !colored)}>Colors</button>
+                      <button class="bg-neutral-500/20 p-2 px-4 rounded" class:selected={colored} on:click={() => (colored = !colored)}> Colors </button>
                     </div>
                     <div class="ml-2">
-                      <button
-                        class="bg-neutral-500/20 p-2 px-4 rounded"
-                        class:selected={split}
-                        on:click={() => (split = !split)}>
-                        Split
-                      </button>
+                      <button class="bg-neutral-500/20 p-2 px-4 rounded" class:selected={split} on:click={() => (split = !split)}>Split</button>
                     </div>
                   </div>
 
@@ -679,7 +639,8 @@
                       </div>
                     </div>
                   {/if}
-                {/if}              {:else if mode === 'stats'}
+                {/if}
+              {:else if mode === 'stats'}
                 <div class="mt-4">
                   <h3 class="mb-2">Add Stat</h3>
                   <ModernSelect items={statItems} onchange={handleSelectStat} bind:this={statSelector} />
@@ -689,11 +650,7 @@
                     {#each Object.keys(selectedStats) as s}
                       <div class="mb-4 flex flex-row items-start flex-col border-neutral-100/40 border-b pb-4">
                         <div>
-                          <button
-                            class="p-2 px-4 bg-red-500/40 rounded mr-2"
-                            on:click={() => removeStat(selectedStats[s].id)}>
-                            -
-                          </button>
+                          <button class="p-2 px-4 bg-red-500/40 rounded mr-2" on:click={() => removeStat(selectedStats[s].id)}>-</button>
                           <span>{translateStat(selectedStats[s].id)}</span>
                         </div>
                         <div class="mt-2 flex flex-row">
@@ -725,27 +682,20 @@
                   </div>
                   <div class="flex flex-col mt-4">
                     <div class="flex flex-row">
-                      <button class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2"
-                        on:click={selectAll}
-                        disabled={isSearching || disabled.size == 0}>Select All</button>
-                      <button class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2"
-                        on:click={selectAllNotables}
-                        disabled={isSearching || disabled.size == 0}>Notables</button>
-                      <button class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2"
-                        on:click={selectAllPassives}
-                        disabled={isSearching || disabled.size == 0}>Passives</button>
-                      <button class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 flex-grow"
-                        on:click={deselectAll}
-                        disabled={isSearching || disabled.size >= affectedNodes.length}>Deselect</button>
+                      <button class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2" on:click={selectAll} disabled={isSearching || disabled.size == 0}> Select All </button>
+                      <button class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2" on:click={selectAllNotables} disabled={isSearching || disabled.size == 0}> Notables </button>
+                      <button class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2" on:click={selectAllPassives} disabled={isSearching || disabled.size == 0}> Passives </button>
+                      <button class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 flex-grow" on:click={deselectAll} disabled={isSearching || disabled.size >= affectedNodes.length}>
+                        Deselect
+                      </button>
                     </div>
                     <div class="flex flex-row mt-2">
-                      <button class="p-2 px-3 bg-green-500/40 rounded disabled:bg-green-900/40 flex-grow"
-                      on:click={handleSearch} disabled={isSearching}>
-                      {#if isSearching}
-                        Searching... {currentSeed} / {data.TimelessJewelSeedRanges[selectedJewel.value].Max}
-                      {:else}
-                        Search
-                      {/if}
+                      <button class="p-2 px-3 bg-green-500/40 rounded disabled:bg-green-900/40 flex-grow" on:click={handleSearch} disabled={isSearching}>
+                        {#if isSearching}
+                          Searching... {currentSeed} / {data.TimelessJewelSeedRanges[selectedJewel.value].Max}
+                        {:else}
+                          Search
+                        {/if}
                       </button>
                     </div>
                   </div>
@@ -763,15 +713,12 @@
           {#if showTradeLinks}
             <TradeLinks {queries} />
           {/if}
-          <SearchResultsComponent {searchResults} {groupResults} {highlight}
-          jewel={searchJewel}
-          conqueror={searchConqueror}/>
+          <SearchResultsComponent {searchResults} {groupResults} {highlight} jewel={searchJewel} conqueror={searchConqueror} />
         {/if}
       </div>
     </div>
   {:else}
-    <button class="burger-menu absolute top-0 left-0 bg-black/80 backdrop-blur-sm rounded-br-lg p-4 pt-5"
-      on:click={() => (collapsed = false)}>
+    <button class="burger-menu absolute top-0 left-0 bg-black/80 backdrop-blur-sm rounded-br-lg p-4 pt-5" on:click={() => (collapsed = false)}>
       <div></div>
       <div></div>
       <div></div>

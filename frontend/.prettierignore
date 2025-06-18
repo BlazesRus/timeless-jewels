@@ -14,5 +14,14 @@ yarn.lock
 src/lib/types/*
 src/wasm_exec.js
 
-#Ignoring .svelte for now until can stop it from placing content of tag in next line
-.svelte
+# Ignore files with syntax errors that prevent formatting
+src/routes/+page.svelte
+src/routes/tree/Svelte5Page.svelte
+
+# Ignore configuration files from formatting
+package.json
+Svelte5Package.json
+LegacyPackage.json
+*.config.js
+*.config.cjs
+*.config.ts

@@ -3,6 +3,7 @@ import preprocess from 'svelte-preprocess';
 import { readFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { getCompilerOptions } from './src/lib/svelte5-compatibility.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -14,12 +15,12 @@ function getCurrentSvelteVersion() {
   try {
     const packageJsonPath = join(__dirname, 'package.json');
     if (!existsSync(packageJsonPath)) return '5'; // Default to Svelte 5
-    
+
     const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
     const svelteVersion = packageJson.devDependencies?.svelte;
-    
+
     if (!svelteVersion) return '5';
-    
+
     // Extract major version
     const match = svelteVersion.match(/(\^|~)?(\d+)/);
     return match ? match[2] : '5';
@@ -33,9 +34,7 @@ function getCurrentSvelteVersion() {
  * Get PostCSS config path based on Svelte version
  */
 function getPostCSSConfigPath(svelteVersion) {
-  return svelteVersion === '5' 
-    ? join(__dirname, 'ModernMode', 'postcss.config.cjs')
-    : join(__dirname, 'LegacyMode', 'postcss.config.cjs');
+  return svelteVersion === '5' ? join(__dirname, 'ModernMode', 'postcss.config.cjs') : join(__dirname, 'LegacyMode', 'postcss.config.cjs');
 }
 
 // Detect current Svelte version
@@ -63,25 +62,24 @@ const config = {
     adapter: adapter({
       pages: 'build',
       assets: 'build',
-      fallback: 'index.html'//,
+      fallback: 'index.html' //,
       //precompress: false
     }),
     paths: {
       base: '/timeless-jewels'
     },
     alias: {
-      '$lib': 'src/lib',
+      $lib: 'src/lib',
       '$lib/*': 'src/lib/*',
-      '$app': '.svelte-kit/types/app',
+      $app: '.svelte-kit/types/app',
       '$app/*': '.svelte-kit/types/app/*',
-      '$routes': 'src/routes',
+      $routes: 'src/routes',
       '$routes/*': 'src/routes/*'
     }
   },
   dynamicCompileOptions: ({ filename }) => {
-    // Enable runes for Svelte 5 based files, disable runes for Legacy(Svelte 4) Mode
-    const isSvelte5 = process.env.SVELTE_VERSION === '5';
-    return { runes: isSvelte5 };
+    // Use the compatibility configuration to get proper compiler options
+    return getCompilerOptions(filename);
   }
 };
 

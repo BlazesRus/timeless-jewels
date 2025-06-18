@@ -1,5 +1,4 @@
 <script lang="ts">
-
   import { browser } from '$app/environment';
   import { onMount } from 'svelte';
   import type { Page } from '@sveltejs/kit';
@@ -21,7 +20,7 @@
     const initializeApp = async () => {
       try {
         console.log('Starting background WASM initialization...');
-        
+
         // Fetch WASM data
         const wasmResponse = await fetch(assets + '/calculator.wasm');
         if (!wasmResponse.ok) {
@@ -29,26 +28,26 @@
         }
         const wasmData = await wasmResponse.arrayBuffer();
         console.log('WASM data loaded, size:', wasmData.byteLength);
-        
+
         // Initialize main thread WASM
         const result = await WebAssembly.instantiate(wasmData.slice(0), go.importObject);
         go.run(result.instance);
-        
+
         // Initialize main thread data structures
         initializeCrystalline();
         loadSkillTree();
-        
+
         // Initialize modern worker with WASM data
         if (modernWorker) {
           await modernWorker.boot(wasmData.slice(0));
         }
-        
+
         console.log('WASM initialization complete');
       } catch (error) {
         console.error('WASM initialization failed:', error);
       }
     };
-    
+
     // Start initialization but don't wait for it
     initializeApp();
     console.log('Layout loading in browser...');

@@ -2,7 +2,7 @@ import { sveltekit } from '@sveltejs/kit/vite';
 
 // Since we're using a .js config file, we need to import the plugin differently
 // or convert this to a .ts file. For now, let's use a simpler approach
-/** @type {import('vite').UserConfig} */  
+/** @type {import('vite').UserConfig} */
 const config = {
   plugins: [sveltekit()],
   define: {

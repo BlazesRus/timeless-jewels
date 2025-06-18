@@ -32,13 +32,13 @@ function detectSvelteVersionRuntime(): SvelteVersion {
   // Check for Svelte 5 specific features
   if (typeof globalThis !== 'undefined' && globalThis.__SVELTE__) {
     const svelteGlobal = globalThis.__SVELTE__ as any;
-    
+
     // Svelte 5 has different internal structure
     if (svelteGlobal.runes !== undefined || svelteGlobal.effect !== undefined) {
       return { major: 5, minor: 0, patch: 0, full: '5.0.0' };
     }
   }
-  
+
   // Check for Svelte 4 specific features
   if (typeof window !== 'undefined') {
     // Check for Svelte 4 compiler features
@@ -52,7 +52,7 @@ function detectSvelteVersionRuntime(): SvelteVersion {
       // Ignore errors in detection
     }
   }
-  
+
   // Default fallback to Svelte 4
   return { major: 4, minor: 2, patch: 0, full: '4.2.0' };
 }
@@ -63,7 +63,7 @@ function detectSvelteVersionRuntime(): SvelteVersion {
 function parseSvelteVersion(versionString: string): SvelteVersion {
   const cleanVersion = versionString.replace(/[^0-9.]/g, '');
   const parts = cleanVersion.split('.').map(Number);
-  
+
   return {
     major: parts[0] || 4,
     minor: parts[1] || 0,

@@ -15,12 +15,23 @@
       "files": "*.svelte",
       "options": {
         "parser": "svelte",
-        "printWidth": 150,
+        "printWidth": 200,
         "svelteStrictMode": false,
         "svelteAllowShorthand": true,
         "svelteIndentScriptAndStyle": true,
-        "htmlWhitespaceSensitivity": "ignore",
-        "bracketSameLine": true
+        "htmlWhitespaceSensitivity": "css",
+        "bracketSameLine": false,
+        "singleAttributePerLine": false,
+        "bracketSpacing": true,
+        "proseWrap": "never",
+        "svelteSortOrder": "options-scripts-markup-styles",
+        "singleQuote": true
+      }
+    },
+    {
+      "files": ["*.js", "*.ts"],
+      "options": {
+        "endOfLine": "lf"
       }
     }
   ]

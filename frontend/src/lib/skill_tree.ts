@@ -59,44 +59,24 @@ export const loadSkillTree = () => {
     });
   });
 
-  Object.keys(skillTree.sprites.keystoneInactive['0.3835'].coords).forEach(
-    (c) => (inverseSprites[c] = skillTree.sprites.keystoneInactive['0.3835'])
-  );
-  Object.keys(skillTree.sprites.notableInactive['0.3835'].coords).forEach(
-    (c) => (inverseSprites[c] = skillTree.sprites.notableInactive['0.3835'])
-  );
-  Object.keys(skillTree.sprites.normalInactive['0.3835'].coords).forEach(
-    (c) => (inverseSprites[c] = skillTree.sprites.normalInactive['0.3835'])
-  );
-  Object.keys(skillTree.sprites.masteryInactive['0.3835'].coords).forEach(
-    (c) => (inverseSprites[c] = skillTree.sprites.masteryInactive['0.3835'])
-  );
+  Object.keys(skillTree.sprites.keystoneInactive['0.3835'].coords).forEach((c) => (inverseSprites[c] = skillTree.sprites.keystoneInactive['0.3835']));
+  Object.keys(skillTree.sprites.notableInactive['0.3835'].coords).forEach((c) => (inverseSprites[c] = skillTree.sprites.notableInactive['0.3835']));
+  Object.keys(skillTree.sprites.normalInactive['0.3835'].coords).forEach((c) => (inverseSprites[c] = skillTree.sprites.normalInactive['0.3835']));
+  Object.keys(skillTree.sprites.masteryInactive['0.3835'].coords).forEach((c) => (inverseSprites[c] = skillTree.sprites.masteryInactive['0.3835']));
 
   Object.keys(skillTree.sprites.keystoneActive['0.3835'].coords).forEach(
     (c) => (inverseSpritesActive[c] = skillTree.sprites.keystoneActive['0.3835'])
   );
-  Object.keys(skillTree.sprites.notableActive['0.3835'].coords).forEach(
-    (c) => (inverseSpritesActive[c] = skillTree.sprites.notableActive['0.3835'])
-  );
-  Object.keys(skillTree.sprites.normalActive['0.3835'].coords).forEach(
-    (c) => (inverseSpritesActive[c] = skillTree.sprites.normalActive['0.3835'])
-  );
+  Object.keys(skillTree.sprites.notableActive['0.3835'].coords).forEach((c) => (inverseSpritesActive[c] = skillTree.sprites.notableActive['0.3835']));
+  Object.keys(skillTree.sprites.normalActive['0.3835'].coords).forEach((c) => (inverseSpritesActive[c] = skillTree.sprites.normalActive['0.3835']));
   Object.keys(skillTree.sprites.masteryInactive['0.3835'].coords).forEach(
     (c) => (inverseSpritesActive[c] = skillTree.sprites.masteryInactive['0.3835'])
   );
 
-  Object.keys(skillTree.sprites.groupBackground['0.3835'].coords).forEach(
-    (c) => (inverseSprites[c] = skillTree.sprites.groupBackground['0.3835'])
-  );
-  Object.keys(skillTree.sprites.frame['0.3835'].coords).forEach(
-    (c) => (inverseSprites[c] = skillTree.sprites.frame['0.3835'])
-  );
+  Object.keys(skillTree.sprites.groupBackground['0.3835'].coords).forEach((c) => (inverseSprites[c] = skillTree.sprites.groupBackground['0.3835']));
+  Object.keys(skillTree.sprites.frame['0.3835'].coords).forEach((c) => (inverseSprites[c] = skillTree.sprites.frame['0.3835']));
 
-  const translationFiles = [
-    data.StatTranslationsJSON,
-    data.PassiveSkillStatTranslationsJSON,
-    data.PassiveSkillAuraStatTranslationsJSON
-  ];
+  const translationFiles = [data.StatTranslationsJSON, data.PassiveSkillStatTranslationsJSON, data.PassiveSkillAuraStatTranslationsJSON];
 
   translationFiles.forEach((f) => {
     const translations: TranslationFile = JSON.parse(f);
@@ -194,8 +174,8 @@ export const rotateAroundPoint = (center: Point, target: Point, angle: number): 
 
 export const orbit16Angles = [0, 30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330];
 export const orbit40Angles = [
-  0, 10, 20, 30, 40, 45, 50, 60, 70, 80, 90, 100, 110, 120, 130, 135, 140, 150, 160, 170, 180, 190, 200, 210, 220, 225,
-  230, 240, 250, 260, 270, 280, 290, 300, 310, 315, 320, 330, 340, 350
+  0, 10, 20, 30, 40, 45, 50, 60, 70, 80, 90, 100, 110, 120, 130, 135, 140, 150, 160, 170, 180, 190, 200, 210, 220, 225, 230, 240, 250, 260, 270, 280,
+  290, 300, 310, 315, 320, 330, 340, 350
 ];
 
 export const orbitAngleAt = (orbit: number, index: number): number => {
@@ -218,18 +198,11 @@ export const calculateNodePos = (node: Node, offsetX: number, offsetY: number, s
   const targetAngle = orbitAngleAt(node.orbit, node.orbitIndex);
 
   const targetGroupPos = toCanvasCoords(targetGroup.x, targetGroup.y, offsetX, offsetY, scaling);
-  const targetNodePos = toCanvasCoords(
-    targetGroup.x,
-    targetGroup.y - skillTree.constants.orbitRadii[node.orbit],
-    offsetX,
-    offsetY,
-    scaling
-  );
+  const targetNodePos = toCanvasCoords(targetGroup.x, targetGroup.y - skillTree.constants.orbitRadii[node.orbit], offsetX, offsetY, scaling);
   return rotateAroundPoint(targetGroupPos, targetNodePos, targetAngle);
 };
 
-export const distance = (p1: Point, p2: Point): number =>
-  Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+export const distance = (p1: Point, p2: Point): number => Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
 
 export const formatStats = (translation: Translation, stat: number): string | undefined => {
   let selectedTranslation = -1;
@@ -464,9 +437,7 @@ export const constructQueries = (jewel: number, conqueror: string | null, result
 
   // group filters into groups of max_query_length, where each group is further grouped into chunks of max_filter_length
   // this represents multiple trade links, where each trade link has multiple filter groups, and each filter group has multiple filters
-  const queryFilterGroups = chunkArray(allFilters, max_query_length).map((chunk) =>
-    chunkArray(chunk, max_filter_length)
-  );
+  const queryFilterGroups = chunkArray(allFilters, max_query_length).map((chunk) => chunkArray(chunk, max_filter_length));
 
   // map filters groups to queries
   const tradeQueries = queryFilterGroups.map((queryFilterGroup) => {

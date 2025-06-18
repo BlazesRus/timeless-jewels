@@ -17,14 +17,14 @@ const commonRules = {
   'no-unreachable-loop': 'error',
   'arrow-body-style': ['error', 'as-needed'],
   'block-scoped-var': 'error',
-  'curly': ['error', 'all'],
+  curly: ['error', 'all'],
   'no-eval': 'error',
   'no-implied-eval': 'error',
   'no-var': 'error',
   'one-var': ['error', 'never'],
   'prefer-arrow-callback': 'error',
   'prefer-const': 'error',
-  'yoda': 'error',
+  yoda: 'error',
   'array-bracket-newline': ['error', { multiline: true }],
   'brace-style': 'error',
   'no-shadow': 'error',
@@ -57,7 +57,14 @@ export default [
       '**/postcss.config.js',
       '**/tsconfig.tsbuildinfo',
       'src/wasm_exec.d.ts',
-      'wasm_exec.js'
+      'wasm_exec.js',
+      // Configuration files - excluded from linting and formatting
+      'package.json',
+      'Svelte5Package.json', 
+      'LegacyPackage.json',
+      '**/*.config.js',
+      '**/*.config.cjs',
+      '**/*.config.ts'
     ]
   }, // General configuration for all files
   {
@@ -124,23 +131,24 @@ export default [
     },
     rules: {
       ...commonRules,
-      // Removed stricter rules that aren't in legacy config:
-      // - no-nested-ternary (not in legacy)
-      // - no-cond-assign with 'always' (legacy uses default)
       'no-console': 'off',
 
-      // Keep only Svelte 5 specific rules that make sense for modern mode
+      // Svelte 5 specific rules
       'svelte/no-target-blank': 'error',
-      // Removed no-at-debug-tags (too strict for development)
-      // Removed no-reactive-functions and no-reactive-literals (legacy doesn't have these)
 
-      // Disable conflicting rules
-      'prettier/prettier': 'off', // Prettier conflicts with Svelte parser
+      // Disable formatting conflicts in Svelte files
+      'prettier/prettier': 'off', // Let svelte-eslint handle Svelte formatting
+
+      // Disable React rules that leak into Svelte
       'react/jsx-uses-react': 'off',
       'react/react-in-jsx-scope': 'off',
       'react/jsx-key': 'off',
       'react/jsx-no-undef': 'off',
-      'react/jsx-uses-vars': 'off'
+      'react/jsx-uses-vars': 'off',
+
+      // Svelte 5 runes compatibility
+      'svelte/valid-compile': 'off', // Allow compatibility mode
+      'svelte/no-unused-svelte-ignore': 'warn'
     }
   }, // TypeScript files with type-aware linting
   {

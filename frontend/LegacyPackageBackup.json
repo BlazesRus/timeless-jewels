@@ -6,7 +6,7 @@
     "dev:svelte4": "node scripts/version-manager.js switchTo4 && vite dev",
     "dev:svelte5": "node scripts/version-manager.js switchTo5 && vite dev",
     "build": "vite build",
-    "build:svelte4": "node scripts/version-manager.js switchTo4 && vite build", 
+    "build:svelte4": "node scripts/version-manager.js switchTo4 && vite build",
     "build:svelte5": "node scripts/version-manager.js switchTo5 && vite build",
     "package": "svelte-kit package",
     "preview": "vite preview",
@@ -54,7 +54,7 @@
     "tslib": "^2.6.2",
     "typescript": "^5.8.3",
     "vite": "^6.0.0"
-	},
+  },
   "engines": {
     "node": ">=18.0.0",
     "pnpm": ">=10.0.0"

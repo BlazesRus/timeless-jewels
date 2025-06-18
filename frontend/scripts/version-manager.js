@@ -13,7 +13,8 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-class VersionManager {  constructor() {
+class VersionManager {
+  constructor() {
     this.rootDir = join(__dirname, '..');
     this.configPath = join(this.rootDir, 'version.ini');
     this.packageJsonPath = join(this.rootDir, 'package.json');
@@ -32,19 +33,19 @@ class VersionManager {  constructor() {
     const config = {};
     let currentSection = null;
 
-    content.split('\n').forEach(line => {
+    content.split('\n').forEach((line) => {
       line = line.trim();
-      
+
       // Skip comments and empty lines
       if (line.startsWith('#') || line === '') return;
-      
+
       // Section headers
       if (line.startsWith('[') && line.endsWith(']')) {
         currentSection = line.slice(1, -1);
         config[currentSection] = {};
         return;
       }
-      
+
       // Key-value pairs
       if (currentSection && line.includes('=')) {
         const [key, ...valueParts] = line.split('=');
@@ -75,9 +76,9 @@ class VersionManager {  constructor() {
     try {
       const packageJson = JSON.parse(readFileSync(this.packageJsonPath, 'utf8'));
       const svelteVersion = packageJson.devDependencies?.svelte;
-      
+
       if (!svelteVersion) return null;
-      
+
       // Extract major version
       const match = svelteVersion.match(/(\^|~)?(\d+)/);
       return match ? match[2] : null;
@@ -112,7 +113,7 @@ class VersionManager {  constructor() {
     if (this.config.options?.skip_version_validation === 'true') {
       console.log('⏭️ Version validation skipped (skip_version_validation = true)');
       return false;
-    }    // Check if we should respect current mode (prevent switching during testing)
+    } // Check if we should respect current mode (prevent switching during testing)
     if (this.config.options?.respect_current_mode === 'true' && currentVersion === targetVersion) {
       console.log(`🔒 Respect Current Mode: Already using Svelte ${targetVersion}. Staying in current mode.`);
       return false;
@@ -131,9 +132,10 @@ class VersionManager {  constructor() {
     }
 
     // Determine source package file
-    const sourcePackage = targetVersion === '5' 
-      ? this.config.packages?.svelte5_package || 'Svelte5Package.json'
-      : this.config.packages?.svelte4_package || 'LegacyPackage.json';
+    const sourcePackage =
+      targetVersion === '5'
+        ? this.config.packages?.svelte5_package || 'Svelte5Package.json'
+        : this.config.packages?.svelte4_package || 'LegacyPackage.json';
 
     const sourcePath = join(this.rootDir, sourcePackage);
 
@@ -142,7 +144,7 @@ class VersionManager {  constructor() {
     }
 
     // Create backup before switching
-    this.createBackup();    // Copy the appropriate package file
+    this.createBackup(); // Copy the appropriate package file
     copyFileSync(sourcePath, this.packageJsonPath);
     console.log(`📦 Switched to ${sourcePackage} (Svelte ${targetVersion})`);
 
@@ -165,41 +167,41 @@ class VersionManager {  constructor() {
     } else {
       console.log('💡 Run "pnpm install" to install the new dependencies');
     }
-  }  /**
+  } /**
    * Update version detection config for runtime
    */
   updateVersionConfig() {
     const targetVersion = this.getTargetVersion();
-    
+
     // Update version.ini to reflect the current target version
     this.updateVersionIni(targetVersion);
-    
+
     // Update file hiding based on the target version
     this.updateFileHiding(targetVersion);
-  }  /**
+  } /**
    * Run the complete package switching process
    */
   run() {
     try {
       console.log('🚀 Starting package version management...');
       console.log('📖 Reading configuration from version.ini...');
-      
+
       const switched = this.switchPackage();
-      
+
       if (switched) {
         this.updateVersionConfig();
         this.installDependencies();
         console.log('🎉 Package switching completed successfully!');
         console.log(`📌 Now using Svelte ${this.getTargetVersion()}`);
       }
-      
     } catch (error) {
       console.error('❌ Error during package switching:', error.message);
       process.exit(1);
     }
-  }  /**
+  }
+  /**
    * Switch explicitly to Svelte 4 (only if not already using Svelte 4)
-   */  switchTo4() {
+   */ switchTo4() {
     // Check testing mode only (allow manual switching unless in testing mode)
     if (this.config.options?.testing_mode === 'true') {
       console.log('🧪 Testing Mode: Version switching disabled during testing operations.');
@@ -207,7 +209,7 @@ class VersionManager {  constructor() {
     }
 
     const currentVersion = this.getCurrentVersion();
-    
+
     console.log(`🎯 Target: Svelte 4`);
     console.log(`📋 Current: Svelte ${currentVersion || 'unknown'}`);
 
@@ -224,16 +226,16 @@ class VersionManager {  constructor() {
     }
 
     // Create backup before switching
-    this.createBackup();    // Copy the Svelte 4 package file
+    this.createBackup(); // Copy the Svelte 4 package file
     copyFileSync(sourcePath, this.packageJsonPath);
     console.log(`📦 Switched to ${sourcePackage} (Svelte 4)`);
 
     // Update version config
     this.updateVersionConfigTo('4');
-    
+
     // Install dependencies if configured
     this.installDependencies();
-    
+
     console.log('🎉 Successfully switched to Svelte 4!');
     return true;
   }
@@ -243,7 +245,7 @@ class VersionManager {  constructor() {
    */
   switchTo5() {
     const currentVersion = this.getCurrentVersion();
-    
+
     console.log(`🎯 Target: Svelte 5`);
     console.log(`📋 Current: Svelte ${currentVersion || 'unknown'}`);
 
@@ -260,28 +262,28 @@ class VersionManager {  constructor() {
     }
 
     // Create backup before switching
-    this.createBackup();    // Copy the Svelte 5 package file
+    this.createBackup(); // Copy the Svelte 5 package file
     copyFileSync(sourcePath, this.packageJsonPath);
     console.log(`📦 Switched to ${sourcePackage} (Svelte 5)`);
 
     // Update version config
     this.updateVersionConfigTo('5');
-    
+
     // Install dependencies if configured
     this.installDependencies();
-    
+
     console.log('🎉 Successfully switched to Svelte 5!');
     return true;
-  }  /**
+  } /**
    * Update version detection config for specific version
    */
   updateVersionConfigTo(targetVersion) {
     // Update version.ini to reflect the specified target version
     this.updateVersionIni(targetVersion);
-    
+
     // Update VS Code file hiding based on version
     this.updateFileHiding(targetVersion);
-    
+
     // Update VSCode settings for the new version
     this.updateVSCodeSettings();
   }
@@ -292,13 +294,10 @@ class VersionManager {  constructor() {
   updateVersionIni(targetVersion) {
     try {
       let content = readFileSync(this.configPath, 'utf8');
-      
+
       // Update the version in the [svelte] section
-      content = content.replace(
-        /^version\s*=\s*[45]$/m,
-        `version = ${targetVersion}`
-      );
-      
+      content = content.replace(/^version\s*=\s*[45]$/m, `version = ${targetVersion}`);
+
       writeFileSync(this.configPath, content);
       console.log(`🔧 Updated version.ini to version = ${targetVersion}`);
     } catch (error) {
@@ -311,7 +310,7 @@ class VersionManager {  constructor() {
    */
   updateFileHiding(targetVersion) {
     const vsCodeSettingsPath = join(this.rootDir, '..', '.vscode', 'settings.json');
-    
+
     if (!existsSync(vsCodeSettingsPath)) {
       console.log('⚠️ VS Code settings.json not found, skipping file hiding update');
       return;
@@ -319,7 +318,7 @@ class VersionManager {  constructor() {
 
     try {
       let content = readFileSync(vsCodeSettingsPath, 'utf8');
-      
+
       // Remove comments for JSON parsing
       const jsonContent = content.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '');
       let settings = JSON.parse(jsonContent);
@@ -377,7 +376,6 @@ class VersionManager {  constructor() {
       const updatedContent = JSON.stringify(settings, null, 2);
       writeFileSync(vsCodeSettingsPath, updatedContent);
       console.log(`🔧 Updated VS Code file hiding for Svelte ${targetVersion} mode`);
-      
     } catch (error) {
       console.error('⚠️ Failed to update VS Code file hiding:', error.message);
       console.log('💡 You may need to manually update .vscode/settings.json');
@@ -390,9 +388,9 @@ class VersionManager {  constructor() {
     try {
       console.log('🔧 Updating VSCode settings for current version...');
       const settingsScript = join(__dirname, 'vscode-settings.js');
-      execSync(`node "${settingsScript}" update`, { 
+      execSync(`node "${settingsScript}" update`, {
         cwd: this.rootDir,
-        stdio: 'inherit' 
+        stdio: 'inherit'
       });
     } catch (error) {
       console.warn(`⚠️ Could not update VSCode settings: ${error.message}`);
@@ -401,7 +399,7 @@ class VersionManager {  constructor() {
   }
   /**
    * Show current configuration status
-   */status() {
+   */ status() {
     console.log('📊 Current Version Configuration:');
     console.log('==================================');
     console.log(`Target Svelte Version: ${this.getTargetVersion()}`);
@@ -414,7 +412,7 @@ class VersionManager {  constructor() {
     console.log(`Backup Current: ${this.config.options?.backup_current || 'false'}`);
     console.log(`Loading Strategy: ${this.config.components?.loading_strategy || 'dynamic'}`);
     console.log(`Fallback Version: ${this.config.components?.fallback_version || '5'}`);
-    
+
     if (this.config.options?.respect_current_mode === 'true') {
       console.log('');
       console.log('🔒 RESPECT CURRENT MODE ENABLED');
@@ -429,32 +427,31 @@ class VersionManager {  constructor() {
       console.log('   • All version switching is disabled');
       console.log('   • Tests will run against currently installed version');
     }
-  }  /**
+  } /**
    * Get current PostCSS configuration status based on Svelte version
    */
   getPostCSSStatus() {
     const currentVersion = this.getCurrentVersion();
     const targetVersion = this.getTargetVersion();
-    
+
     // Determine the correct PostCSS config path based on Svelte version
-    const configPath = currentVersion === '5' 
-      ? join(this.rootDir, 'ModernMode', 'postcss.config.cjs')
-      : join(this.rootDir, 'LegacyMode', 'postcss.config.cjs');
-    
+    const configPath =
+      currentVersion === '5' ? join(this.rootDir, 'ModernMode', 'postcss.config.cjs') : join(this.rootDir, 'LegacyMode', 'postcss.config.cjs');
+
     const modeName = currentVersion === '5' ? 'Modern' : 'Legacy';
     const expectedPath = currentVersion === '5' ? 'ModernMode/postcss.config.cjs' : 'LegacyMode/postcss.config.cjs';
-    
+
     if (!existsSync(configPath)) {
       return `${expectedPath} not found`;
     }
 
     try {
       const content = readFileSync(configPath, 'utf8');
-      
+
       // Check if PostCSS config matches current Svelte version
       const hasModernConfig = content.includes('@tailwindcss/postcss');
       const hasLegacyConfig = content.includes('tailwindcss: {}');
-      
+
       if (currentVersion === '5' && hasModernConfig) {
         return `${expectedPath} (✅ Modern Mode)`;
       } else if (currentVersion === '4' && hasLegacyConfig) {
@@ -462,7 +459,6 @@ class VersionManager {  constructor() {
       } else {
         return `${expectedPath} (⚠️ config mismatch)`;
       }
-      
     } catch (error) {
       return `${expectedPath} (error reading)`;
     }

@@ -27,9 +27,9 @@ export interface VersionConfig {
 
   // Feature flags for version-specific features
   features: {
-    runes: boolean;           // Svelte 5 runes syntax
+    runes: boolean; // Svelte 5 runes syntax
     legacyReactivity: boolean; // Svelte 4 reactivity patterns
-    modernEvents: boolean;    // Svelte 5 event handling
+    modernEvents: boolean; // Svelte 5 event handling
   };
 }
 
@@ -52,9 +52,9 @@ export const versionConfig: VersionConfig = {
     }
   },
   features: {
-    runes: true,         // Svelte 5 runes syntax (default enabled for Svelte 5)
-    legacyReactivity: false,  // Svelte 4 reactivity patterns (disabled by default)
-    modernEvents: true        // Svelte 5 event handling (enabled by default)
+    runes: true, // Svelte 5 runes syntax (default enabled for Svelte 5)
+    legacyReactivity: false, // Svelte 4 reactivity patterns (disabled by default)
+    modernEvents: true // Svelte 5 event handling (enabled by default)
   }
 };
 

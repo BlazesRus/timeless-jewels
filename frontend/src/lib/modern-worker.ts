@@ -28,9 +28,9 @@ class ModernWorkerManager {
       // Import the worker using Vite's worker import syntax
       const ModernWorker = await import('./modern-sync-worker?worker');
       this.worker = new ModernWorker.default();
-        // Wrap the worker with Comlink
+      // Wrap the worker with Comlink
       this.workerApi = wrap<ModernTimelessWorker>(this.worker);
-      
+
       console.log('Modern worker initialized successfully');
     } catch (error) {
       console.error('Failed to initialize modern worker:', error);
@@ -55,7 +55,7 @@ class ModernWorkerManager {
       await this.workerApi.initialize({
         wasmBuffer: transfer(wasmBuffer, [wasmBuffer])
       });
-      
+
       this.initialized = true;
       console.log('Worker booted successfully');
     } catch (error) {
@@ -79,9 +79,9 @@ class ModernWorkerManager {
       // Create a proxied progress callback if provided
       const progressProxy = onProgress ? proxy(onProgress) : undefined;
       const result = await this.workerApi.reverseSearch(config, progressProxy);
-      
+
       // Proxy cleanup is handled automatically by Comlink
-      
+
       return result;
     } catch (error) {
       console.error('Reverse search failed:', error);
