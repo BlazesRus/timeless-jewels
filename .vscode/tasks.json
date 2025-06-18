@@ -49,7 +49,8 @@
         "focus": false
       },
       "problemMatcher": []
-    },    {
+    },
+    {
       "label": "Check Version Configuration",
       "type": "shell",
       "command": "Set-Location c:\\UserFiles\\Github\\TimelessJewelGenerator\\timeless-jewels_Partial\\frontend; Write-Host \"🎯 Current Version Status:\" -ForegroundColor Cyan; node scripts/version-manager.js status",

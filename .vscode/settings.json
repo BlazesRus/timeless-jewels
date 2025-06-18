@@ -89,10 +89,16 @@
     "**LegacyPackage*.json": true,
     "**/components/Svelte5*Svelte5*": true,
     "**Svelte5Package*.json": true,
+    "LegacyPackage.json": true,
+    "LegacyPackageBackup.json": true,
     "**/components/Legacy/**": true,
     "**/*Legacy*": true,
     "**/*Svelte4*": true,
-    "**/LegacyPackage*.json": true
+    "**/LegacyPackage*.json": true,
+    "frontend/.eslintrc.cjs": true,
+    "frontend/.eslintignore": true,
+    "frontend/LegacyPackage.json": true,
+    "frontend/LegacyPackageBackup.json": true
   },
   "search.exclude": {
     "**/node_modules": true,
@@ -198,5 +204,6 @@
     "RESPECT CURRENT MODE: When version.ini shows version=5, focus on Svelte 5 development and avoid suggesting switchTo4",
     "When working in Modern (Svelte 5) mode, suggest testing and development using current version only",
     "Only suggest version switching when explicitly requested by the user"
-  ]
+  ],
+  "eslint.useFlatConfig": true
 }

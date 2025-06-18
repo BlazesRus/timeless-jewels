@@ -10,11 +10,11 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-class VSCodeSettingsManager {
-  constructor() {
+class VSCodeSettingsManager {  constructor() {
     this.rootDir = join(__dirname, '..');
     this.configPath = join(this.rootDir, 'version.ini');
-    this.vscodeDir = join(this.rootDir, '.vscode');
+    // VSCode settings should be in workspace root, not frontend folder
+    this.vscodeDir = join(this.rootDir, '..', '.vscode');
     this.settingsPath = join(this.vscodeDir, 'settings.json');
   }
 
@@ -58,44 +58,43 @@ class VSCodeSettingsManager {
     // Ensure .vscode directory exists
     if (!existsSync(this.vscodeDir)) {
       mkdirSync(this.vscodeDir, { recursive: true });
-    }
-
-    // Configure file exclusions based on version
-    if (version === '5') {
-      // Modern Mode (Svelte 5) - Hide legacy ESLint config
+    }    // Configure file exclusions based on version
+    if (version === '5') {      // Modern Mode (Svelte 5) - Hide legacy ESLint config and related files
       settings['files.exclude'] = {
         ...settings['files.exclude'],
-        '.eslintrc.cjs': true,
-        'LegacyPackage.json': true,
-        'LegacyPackageBackup.json': true
+        'frontend/.eslintrc.cjs': true,
+        'frontend/.eslintignore': true,
+        'frontend/LegacyPackage.json': true,
+        'frontend/LegacyPackageBackup.json': true
       };
       
       // Set ESLint to use flat config
-      settings['eslint.experimental.useFlatConfig'] = true;
+      settings['eslint.useFlatConfig'] = true;
       
       console.log('🔧 VSCode configured for Modern Mode (Svelte 5)');
-      console.log('   - Hidden: .eslintrc.cjs, LegacyPackage.json');
+      console.log('   - Hidden: frontend/.eslintrc.cjs, frontend/.eslintignore, frontend/LegacyPackage.json');
       console.log('   - ESLint: Using flat config (eslint.config.js)');
     } else {
       // Legacy Mode (Svelte 4) - Hide modern configs
       settings['files.exclude'] = {
         ...settings['files.exclude'],
-        'eslint.config.js': true,
-        'Svelte5Package.json': true,
-        'Svelte5PackageBackup.json': true
-      };
-      
-      // Delete the legacy .eslintrc.cjs from exclusions if it exists
-      if (settings['files.exclude']?.['.eslintrc.cjs']) {
-        delete settings['files.exclude']['.eslintrc.cjs'];
+        'frontend/eslint.config.js': true,
+        'frontend/Svelte5Package.json': true,
+        'frontend/Svelte5PackageBackup.json': true
+      };      // Delete the legacy ESLint files from exclusions if they exist
+      if (settings['files.exclude']?.['frontend/.eslintrc.cjs']) {
+        delete settings['files.exclude']['frontend/.eslintrc.cjs'];
+      }
+      if (settings['files.exclude']?.['frontend/.eslintignore']) {
+        delete settings['files.exclude']['frontend/.eslintignore'];
       }
       
       // Set ESLint to use legacy config
-      settings['eslint.experimental.useFlatConfig'] = false;
+      settings['eslint.useFlatConfig'] = false;
       
       console.log('🔧 VSCode configured for Legacy Mode (Svelte 4)');
-      console.log('   - Hidden: eslint.config.js, Svelte5Package.json');
-      console.log('   - ESLint: Using legacy config (.eslintrc.cjs)');
+      console.log('   - Hidden: frontend/eslint.config.js, frontend/Svelte5Package.json');
+      console.log('   - ESLint: Using legacy config (.eslintrc.cjs, .eslintignore)');
     }
 
     // Write updated settings
