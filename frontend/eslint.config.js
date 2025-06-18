@@ -41,7 +41,9 @@ export default [
   js.configs.recommended,
   ...tsEslint.configs.recommended, // Changed from strict to recommended to match legacy config
   ...svelte.configs['flat/recommended'],
-  eslintPluginPrettierRecommended, // must be last to override conflicting rules.// Global ignores
+  eslintPluginPrettierRecommended, // must be last to override conflicting rules.
+
+  // Global ignores
   {
     ignores: [
       '**/*.env*',
@@ -57,7 +59,7 @@ export default [
       'src/wasm_exec.d.ts',
       'wasm_exec.js'
     ]
-  },  // General configuration for all files
+  }, // General configuration for all files
   {
     languageOptions: {
       ecmaVersion: 2022,
@@ -76,23 +78,23 @@ export default [
         CanvasRenderingContext2D: 'readonly',
         WebAssembly: 'readonly',
         navigator: 'readonly',
-        
+
         // Node.js globals
         process: 'readonly',
         module: 'readonly',
         require: 'readonly',
         __dirname: 'readonly',
         global: 'readonly',
-        
+
         // Timers
         setTimeout: 'readonly',
         clearTimeout: 'readonly',
         setInterval: 'readonly',
         clearInterval: 'readonly',
-        
+
         // Standard globals
         Promise: 'readonly',
-        
+
         // Event types
         ClipboardEvent: 'readonly',
         MouseEvent: 'readonly',
@@ -102,7 +104,7 @@ export default [
         CustomEvent: 'readonly',
         DataTransfer: 'readonly',
         Window: 'readonly',
-        
+
         // Project specific
         Go: 'readonly' // Go WASM global
       }
@@ -110,7 +112,7 @@ export default [
     rules: {
       'sort-imports': 'off' // Disabled as it conflicts with prettier
     }
-  },  // Svelte files configuration
+  }, // Svelte files configuration
   {
     files: ['**/*.svelte'],
     languageOptions: {
@@ -119,18 +121,19 @@ export default [
         parser: '@typescript-eslint/parser',
         extraFileExtensions: ['.svelte']
       }
-    },    rules: {
+    },
+    rules: {
       ...commonRules,
       // Removed stricter rules that aren't in legacy config:
       // - no-nested-ternary (not in legacy)
       // - no-cond-assign with 'always' (legacy uses default)
       'no-console': 'off',
-      
+
       // Keep only Svelte 5 specific rules that make sense for modern mode
       'svelte/no-target-blank': 'error',
       // Removed no-at-debug-tags (too strict for development)
       // Removed no-reactive-functions and no-reactive-literals (legacy doesn't have these)
-      
+
       // Disable conflicting rules
       'prettier/prettier': 'off', // Prettier conflicts with Svelte parser
       'react/jsx-uses-react': 'off',
@@ -139,7 +142,7 @@ export default [
       'react/jsx-no-undef': 'off',
       'react/jsx-uses-vars': 'off'
     }
-  },  // TypeScript files with type-aware linting
+  }, // TypeScript files with type-aware linting
   {
     files: ['**/*.ts', '**/*.tsx'],
     ignores: ['src/lib/**/*', 'src/routes/**/*'], // Exclude lib and routes for performance
