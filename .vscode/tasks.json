@@ -49,20 +49,16 @@
         "focus": false
       },
       "problemMatcher": []
-    },
-    {
+    },    {
       "label": "Check Version Configuration",
       "type": "shell",
-      "command": "cd frontend; Write-Host '🎯 Current Version Configuration:' -ForegroundColor Cyan; node scripts/version-manager.js status; Write-Host ''; Write-Host '📋 Package Files:' -ForegroundColor Yellow; Get-ChildItem -Name '*Package*.json' | ForEach-Object { Write-Host \"  $_\" }",
+      "command": "Set-Location c:\\UserFiles\\Github\\TimelessJewelGenerator\\timeless-jewels_Partial\\frontend; Write-Host \"🎯 Current Version Status:\" -ForegroundColor Cyan; node scripts/version-manager.js status",
       "group": "build",
       "presentation": {
         "echo": true,
         "reveal": "always",
         "focus": false,
         "panel": "shared"
-      },
-      "options": {
-        "cwd": "${workspaceFolder}"
       },
       "problemMatcher": []
     },
