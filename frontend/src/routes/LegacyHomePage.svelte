@@ -23,7 +23,7 @@
 
   let JewelsAreNotInitialized: boolean = false;
 
-  // Initialize search params reactively instead of at module level
+  // Initialize search params reactively instead of at module level(can't use globalThis.$page in svelte 4)
   $: searchParams = browser ? $page.url.searchParams : new URLSearchParams();
 
   // Initialize search params after component mounts

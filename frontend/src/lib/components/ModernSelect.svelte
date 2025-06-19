@@ -26,7 +26,7 @@ Full-featured replacement for svelte-select using native Svelte 5 runes
   let containerRef = $state<HTMLDivElement>();
   let searchInputRef = $state<HTMLInputElement>();
 
-  const filteredItems = $derived(items.filter((item) => item.label.toLowerCase().includes(searchTerm.toLowerCase())));
+  const filteredItems = $derived(items.filter(item => item.label.toLowerCase().includes(searchTerm.toLowerCase())));
 
   // Keyboard navigation
   const handleKeydown = async (e: KeyboardEvent) => {
@@ -97,18 +97,7 @@ Full-featured replacement for svelte-select using native Svelte 5 runes
 <svelte:window onclick={handleClickOutside} />
 
 <div bind:this={containerRef} class="modern-select relative themed">
-  <button
-    class="select-trigger"
-    class:disabled={disabled}
-    onclick={() => !disabled && (isOpen = !isOpen)}
-    onkeydown={handleKeydown}
-    type="button"
-    disabled={disabled}
-    aria-expanded={isOpen}
-    aria-haspopup="listbox"
-    aria-controls="select-dropdown-{Math.random().toString(36).substr(2, 9)}"
-    role="combobox"
-  >
+  <button class="select-trigger" class:disabled={disabled} onclick={() => !disabled && (isOpen = !isOpen)} onkeydown={handleKeydown} type="button" disabled={disabled} aria-expanded={isOpen} aria-haspopup="listbox" aria-controls="select-dropdown-{Math.random().toString(36).substr(2, 9)}" role="combobox">
     <span class="select-value">
       {value?.label || placeholder}
     </span>
@@ -130,15 +119,7 @@ Full-featured replacement for svelte-select using native Svelte 5 runes
 
       <div class="options-container">
         {#each filteredItems as item, index}
-          <button
-            class="select-option"
-            class:selected={value?.value === item.value}
-            class:highlighted={highlightedIndex === index}
-            onclick={() => handleSelect(item)}
-            type="button"
-            role="option"
-            aria-selected={value?.value === item.value}
-          >
+          <button class="select-option" class:selected={value?.value === item.value} class:highlighted={highlightedIndex === index} onclick={() => handleSelect(item)} type="button" role="option" aria-selected={value?.value === item.value}>
             {item.label}
           </button>
         {/each}

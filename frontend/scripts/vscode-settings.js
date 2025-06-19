@@ -118,7 +118,7 @@ class VSCodeSettingsManager {
 
     if (settings['files.exclude']) {
       console.log(`\n📁 Hidden Files:`);
-      Object.keys(settings['files.exclude']).forEach((file) => {
+      Object.keys(settings['files.exclude']).forEach(file => {
         if (settings['files.exclude'][file]) {
           console.log(`   - ${file}`);
         }

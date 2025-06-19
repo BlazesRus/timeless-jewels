@@ -67,10 +67,7 @@ class ModernWorkerManager {
   /**
    * Perform reverse search with progress callback
    */
-  async reverseSearch(
-    config: Parameters<ModernTimelessWorker['reverseSearch']>[0],
-    onProgress?: SearchProgressCallback
-  ): Promise<ReturnType<ModernTimelessWorker['reverseSearch']>> {
+  async reverseSearch(config: Parameters<ModernTimelessWorker['reverseSearch']>[0], onProgress?: SearchProgressCallback): Promise<ReturnType<ModernTimelessWorker['reverseSearch']>> {
     if (!this.workerApi || !this.initialized) {
       throw new Error('Worker not initialized. Call boot() first.');
     }

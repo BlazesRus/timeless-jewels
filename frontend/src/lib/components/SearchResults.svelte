@@ -17,7 +17,7 @@
 {#if groupResults}
   <div class="flex flex-col overflow-auto">
     {#each Object.keys(searchResults.grouped)
-      .map((x) => parseInt(x))
+      .map(x => parseInt(x))
       .sort((a, b) => a - b)
       .reverse() as k}
       <button class="text-lg w-full p-2 px-4 bg-neutral-500/30 rounded flex flex-row justify-between mb-2" on:click={() => (expandedGroup = expandedGroup === k ? null : k)}>

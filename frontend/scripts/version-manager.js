@@ -33,7 +33,7 @@ class VersionManager {
     const config = {};
     let currentSection = null;
 
-    content.split('\n').forEach((line) => {
+    content.split('\n').forEach(line => {
       line = line.trim();
 
       // Skip comments and empty lines
@@ -132,10 +132,7 @@ class VersionManager {
     }
 
     // Determine source package file
-    const sourcePackage =
-      targetVersion === '5'
-        ? this.config.packages?.svelte5_package || 'Svelte5Package.json'
-        : this.config.packages?.svelte4_package || 'LegacyPackage.json';
+    const sourcePackage = targetVersion === '5' ? this.config.packages?.svelte5_package || 'Svelte5Package.json' : this.config.packages?.svelte4_package || 'LegacyPackage.json';
 
     const sourcePath = join(this.rootDir, sourcePackage);
 
@@ -356,19 +353,9 @@ class VersionManager {
       // Update Copilot file filtering if it exists
       if (settings['github.copilot.chat.experimental.codeGeneration.fileFiltering']) {
         if (targetVersion === '5') {
-          settings['github.copilot.chat.experimental.codeGeneration.fileFiltering'].excludePatterns = [
-            '**/components/Legacy/**',
-            '**/*Legacy*',
-            '**/*Svelte4*',
-            '**/LegacyPackage*.json'
-          ];
+          settings['github.copilot.chat.experimental.codeGeneration.fileFiltering'].excludePatterns = ['**/components/Legacy/**', '**/*Legacy*', '**/*Svelte4*', '**/LegacyPackage*.json'];
         } else {
-          settings['github.copilot.chat.experimental.codeGeneration.fileFiltering'].excludePatterns = [
-            '**/components/Svelte5/**',
-            '**/*Svelte5*',
-            '**/*Modern*',
-            '**/Svelte5Package*.json'
-          ];
+          settings['github.copilot.chat.experimental.codeGeneration.fileFiltering'].excludePatterns = ['**/components/Svelte5/**', '**/*Svelte5*', '**/*Modern*', '**/Svelte5Package*.json'];
         }
       }
 
@@ -435,8 +422,7 @@ class VersionManager {
     const targetVersion = this.getTargetVersion();
 
     // Determine the correct PostCSS config path based on Svelte version
-    const configPath =
-      currentVersion === '5' ? join(this.rootDir, 'ModernMode', 'postcss.config.cjs') : join(this.rootDir, 'LegacyMode', 'postcss.config.cjs');
+    const configPath = currentVersion === '5' ? join(this.rootDir, 'ModernMode', 'postcss.config.cjs') : join(this.rootDir, 'LegacyMode', 'postcss.config.cjs');
 
     const modeName = currentVersion === '5' ? 'Modern' : 'Legacy';
     const expectedPath = currentVersion === '5' ? 'ModernMode/postcss.config.cjs' : 'LegacyMode/postcss.config.cjs';

@@ -2,14 +2,7 @@ import { expose } from 'comlink';
 import '../wasm_exec.js';
 import { loadSkillTree, passiveToTree } from './skill_tree';
 import { calculator, initializeCrystalline } from './types';
-import type {
-  ModernTimelessWorker,
-  SearchConfig,
-  SearchResults,
-  SearchWithSeed,
-  SearchProgressCallback,
-  WorkerInitConfig
-} from './modern-worker-types';
+import type { ModernTimelessWorker, SearchConfig, SearchResults, SearchWithSeed, SearchProgressCallback, WorkerInitConfig } from './modern-worker-types';
 
 /**
  * Modern TimelessJewel Worker implementation with better error handling,
@@ -99,7 +92,7 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
       // Perform the search using the calculator
       const searchResult = await calculator.ReverseSearch(
         config.nodes,
-        config.stats.map((s) => s.id),
+        config.stats.map(s => s.id),
         config.jewel,
         config.conqueror,
         progressCallback
@@ -161,7 +154,7 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
     const searchGrouped: Record<number, SearchWithSeed[]> = {};
 
     // Process each seed result
-    Object.keys(searchResult).forEach((seedStr) => {
+    Object.keys(searchResult).forEach(seedStr => {
       const seed = parseInt(seedStr, 10);
 
       let weight = 0;
@@ -170,11 +163,11 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
       const statTotal: Record<number, number> = {};
 
       // Process skills for this seed
-      const skills = Object.keys(searchResult[seed] ?? {}).map((skillIDStr) => {
+      const skills = Object.keys(searchResult[seed] ?? {}).map(skillIDStr => {
         const skillID = parseInt(skillIDStr, 10);
 
         // Process stats for this skill
-        Object.keys(searchResult[seed][skillID]).forEach((statIdStr) => {
+        Object.keys(searchResult[seed][skillID]).forEach(statIdStr => {
           const statId = parseInt(statIdStr, 10);
           const statValue = searchResult[seed][skillID][statIdStr];
 
@@ -184,7 +177,7 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
           totalStats += statValue;
 
           // Calculate weight
-          const statConfig = config.stats.find((s) => s.id === statId);
+          const statConfig = config.stats.find(s => s.id === statId);
           if (statConfig) {
             weight += statConfig.weight;
           }
@@ -213,11 +206,11 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
     });
 
     // Filter and sort results
-    Object.keys(searchGrouped).forEach((skillCountStr) => {
+    Object.keys(searchGrouped).forEach(skillCountStr => {
       const skillCount = parseInt(skillCountStr, 10);
 
       // Filter based on criteria
-      searchGrouped[skillCount] = searchGrouped[skillCount].filter((result) => {
+      searchGrouped[skillCount] = searchGrouped[skillCount].filter(result => {
         return this.matchesSearchCriteria(result, config);
       });
 

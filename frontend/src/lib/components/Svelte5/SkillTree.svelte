@@ -10,20 +10,7 @@
   import { Canvas, Layer } from 'svelte-canvas';
 
   import type { RenderFunc, Node } from '../../skill_tree_types';
-  import {
-    baseJewelRadius,
-    calculateNodePos,
-    distance,
-    drawnGroups,
-    drawnNodes,
-    formatStats,
-    inverseSprites,
-    inverseSpritesActive,
-    inverseTranslations,
-    orbitAngleAt,
-    skillTree,
-    toCanvasCoords
-  } from '../../skill_tree';
+  import { baseJewelRadius, calculateNodePos, distance, drawnGroups, drawnNodes, formatStats, inverseSprites, inverseSpritesActive, inverseTranslations, orbitAngleAt, skillTree, toCanvasCoords } from '../../skill_tree';
   import type { Point } from '../../skill_tree';
   import { calculator, data } from '../../types';
 
@@ -97,7 +84,7 @@
     const result = [];
     let currentWord = '';
 
-    text.split(' ').forEach((word) => {
+    text.split(' ').forEach(word => {
       if (context.measureText(currentWord + word).width < width) {
         currentWord += ' ' + word;
       } else {
@@ -124,14 +111,7 @@
     const highlightGradientInner = 90 / scaling;
     const highlightGradientOuter = 100 / scaling;
 
-    let highlightGradient: CanvasGradient = context.createRadialGradient(
-      highlightGradientCenterX,
-      highlightGradientCenterY,
-      highlightGradientInner,
-      highlightGradientCenterX,
-      highlightGradientCenterY,
-      highlightGradientOuter
-    );
+    let highlightGradient: CanvasGradient = context.createRadialGradient(highlightGradientCenterX, highlightGradientCenterY, highlightGradientInner, highlightGradientCenterX, highlightGradientCenterY, highlightGradientOuter);
     highlightGradient.addColorStop(0, '#8cf34c'); // bright green
     highlightGradient.addColorStop(1, '#00ff00'); // neon green
     return highlightGradient;
@@ -149,7 +129,7 @@
     context.fillRect(0, 0, width, height);
 
     const connected = {};
-    Object.keys(drawnGroups).forEach((groupId) => {
+    Object.keys(drawnGroups).forEach(groupId => {
       const group = drawnGroups[groupId];
       const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
 
@@ -166,12 +146,12 @@
       }
     });
 
-    Object.keys(drawnNodes).forEach((nodeId) => {
+    Object.keys(drawnNodes).forEach(nodeId => {
       const node = drawnNodes[nodeId];
       const angle = orbitAngleAt(node.orbit, node.orbitIndex);
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
 
-      node.out?.forEach((o) => {
+      node.out?.forEach(o => {
         if (!drawnNodes[parseInt(o)]) {
           return;
         }
@@ -234,7 +214,7 @@
 
     let hoveredNodeActive = false;
     let newHoverNode: Node | undefined;
-    Object.keys(drawnNodes).forEach((nodeId) => {
+    Object.keys(drawnNodes).forEach(nodeId => {
       const node = drawnNodes[nodeId];
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
       let touchDistance = 0;
@@ -325,7 +305,7 @@
 
     if (hoveredNode) {
       let nodeName = hoveredNode.name;
-      let nodeStats: { text: string; special: boolean }[] = (hoveredNode.stats || []).map((s) => ({
+      let nodeStats: { text: string; special: boolean }[] = (hoveredNode.stats || []).map(s => ({
         text: s,
         special: false
       }));
@@ -354,7 +334,7 @@
             }
 
             if (result.AlternatePassiveAdditionInformations) {
-              result.AlternatePassiveAdditionInformations.forEach((info) => {
+              result.AlternatePassiveAdditionInformations.forEach(info => {
                 if ('StatsKeys' in info.AlternatePassiveAddition) {
                   info.AlternatePassiveAddition.StatsKeys.forEach((statId, i) => {
                     const stat = data.GetStatByIndex(statId);
@@ -391,18 +371,18 @@
       let offset = 85;
 
       if (nodeStats && nodeStats.length > 0) {
-        nodeStats.forEach((stat) => {
+        nodeStats.forEach(stat => {
           if (allLines.length > 0) {
             offset += 5;
           }
 
-          stat.text.split('\n').forEach((line) => {
+          stat.text.split('\n').forEach(line => {
             if (allLines.length > 0) {
               offset += 10;
             }
 
             const lines = wrapText(line, context, maxWidth - padding);
-            lines.forEach((l) => {
+            lines.forEach(l => {
               allLines.push({
                 text: l,
                 offset,
@@ -437,7 +417,7 @@
 
       context.font = statsFont;
       context.textAlign = 'left';
-      allLines.forEach((l) => {
+      allLines.forEach(l => {
         if (l.special) {
           context.fillStyle = '#8cf34c';
         } else {

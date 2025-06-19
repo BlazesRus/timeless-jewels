@@ -45,7 +45,7 @@ export const prettierIgnorePatterns = ['node_modules/svelte-tiny-virtual-list/**
  * @returns boolean indicating if it's a Svelte 4.x library
  */
 export function isSvelte4Library(filePath) {
-  return svelte4Libraries.some((lib) => filePath?.includes(`node_modules/${lib}`) || filePath?.includes(`/${lib}/`));
+  return svelte4Libraries.some(lib => filePath?.includes(`node_modules/${lib}`) || filePath?.includes(`/${lib}/`));
 }
 
 /**

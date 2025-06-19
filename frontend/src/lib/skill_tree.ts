@@ -22,9 +22,9 @@ export const loadSkillTree = () => {
   skillTree = JSON.parse(data.SkillTree);
   console.log('Loaded skill tree', skillTree);
 
-  Object.keys(skillTree.groups).forEach((groupId) => {
+  Object.keys(skillTree.groups).forEach(groupId => {
     const group = skillTree.groups[groupId];
-    group.nodes.forEach((nodeId) => {
+    group.nodes.forEach(nodeId => {
       const node = skillTree.nodes[nodeId];
 
       // Do not care about proxy passives
@@ -59,30 +59,26 @@ export const loadSkillTree = () => {
     });
   });
 
-  Object.keys(skillTree.sprites.keystoneInactive['0.3835'].coords).forEach((c) => (inverseSprites[c] = skillTree.sprites.keystoneInactive['0.3835']));
-  Object.keys(skillTree.sprites.notableInactive['0.3835'].coords).forEach((c) => (inverseSprites[c] = skillTree.sprites.notableInactive['0.3835']));
-  Object.keys(skillTree.sprites.normalInactive['0.3835'].coords).forEach((c) => (inverseSprites[c] = skillTree.sprites.normalInactive['0.3835']));
-  Object.keys(skillTree.sprites.masteryInactive['0.3835'].coords).forEach((c) => (inverseSprites[c] = skillTree.sprites.masteryInactive['0.3835']));
+  Object.keys(skillTree.sprites.keystoneInactive['0.3835'].coords).forEach(c => (inverseSprites[c] = skillTree.sprites.keystoneInactive['0.3835']));
+  Object.keys(skillTree.sprites.notableInactive['0.3835'].coords).forEach(c => (inverseSprites[c] = skillTree.sprites.notableInactive['0.3835']));
+  Object.keys(skillTree.sprites.normalInactive['0.3835'].coords).forEach(c => (inverseSprites[c] = skillTree.sprites.normalInactive['0.3835']));
+  Object.keys(skillTree.sprites.masteryInactive['0.3835'].coords).forEach(c => (inverseSprites[c] = skillTree.sprites.masteryInactive['0.3835']));
 
-  Object.keys(skillTree.sprites.keystoneActive['0.3835'].coords).forEach(
-    (c) => (inverseSpritesActive[c] = skillTree.sprites.keystoneActive['0.3835'])
-  );
-  Object.keys(skillTree.sprites.notableActive['0.3835'].coords).forEach((c) => (inverseSpritesActive[c] = skillTree.sprites.notableActive['0.3835']));
-  Object.keys(skillTree.sprites.normalActive['0.3835'].coords).forEach((c) => (inverseSpritesActive[c] = skillTree.sprites.normalActive['0.3835']));
-  Object.keys(skillTree.sprites.masteryInactive['0.3835'].coords).forEach(
-    (c) => (inverseSpritesActive[c] = skillTree.sprites.masteryInactive['0.3835'])
-  );
+  Object.keys(skillTree.sprites.keystoneActive['0.3835'].coords).forEach(c => (inverseSpritesActive[c] = skillTree.sprites.keystoneActive['0.3835']));
+  Object.keys(skillTree.sprites.notableActive['0.3835'].coords).forEach(c => (inverseSpritesActive[c] = skillTree.sprites.notableActive['0.3835']));
+  Object.keys(skillTree.sprites.normalActive['0.3835'].coords).forEach(c => (inverseSpritesActive[c] = skillTree.sprites.normalActive['0.3835']));
+  Object.keys(skillTree.sprites.masteryInactive['0.3835'].coords).forEach(c => (inverseSpritesActive[c] = skillTree.sprites.masteryInactive['0.3835']));
 
-  Object.keys(skillTree.sprites.groupBackground['0.3835'].coords).forEach((c) => (inverseSprites[c] = skillTree.sprites.groupBackground['0.3835']));
-  Object.keys(skillTree.sprites.frame['0.3835'].coords).forEach((c) => (inverseSprites[c] = skillTree.sprites.frame['0.3835']));
+  Object.keys(skillTree.sprites.groupBackground['0.3835'].coords).forEach(c => (inverseSprites[c] = skillTree.sprites.groupBackground['0.3835']));
+  Object.keys(skillTree.sprites.frame['0.3835'].coords).forEach(c => (inverseSprites[c] = skillTree.sprites.frame['0.3835']));
 
   const translationFiles = [data.StatTranslationsJSON, data.PassiveSkillStatTranslationsJSON, data.PassiveSkillAuraStatTranslationsJSON];
 
-  translationFiles.forEach((f) => {
+  translationFiles.forEach(f => {
     const translations: TranslationFile = JSON.parse(f);
 
-    translations.descriptors.forEach((t) => {
-      t.ids.forEach((id) => {
+    translations.descriptors.forEach(t => {
+      t.ids.forEach(id => {
         if (!(id in inverseTranslations)) {
           inverseTranslations[id] = t;
         }
@@ -92,7 +88,7 @@ export const loadSkillTree = () => {
 
   //Checks if data.TreeToPassive is null before running code
   if (data.TreeToPassive) {
-    Object.keys(data.TreeToPassive ?? {}).forEach((k) => {
+    Object.keys(data.TreeToPassive ?? {}).forEach(k => {
       const treeToPassiveEntry = data.TreeToPassive?.[parseInt(k)];
       if (treeToPassiveEntry && typeof treeToPassiveEntry.Index !== 'undefined') {
         passiveToTree[treeToPassiveEntry.Index] = parseInt(k);
@@ -173,10 +169,7 @@ export const rotateAroundPoint = (center: Point, target: Point, angle: number): 
 };
 
 export const orbit16Angles = [0, 30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330];
-export const orbit40Angles = [
-  0, 10, 20, 30, 40, 45, 50, 60, 70, 80, 90, 100, 110, 120, 130, 135, 140, 150, 160, 170, 180, 190, 200, 210, 220, 225, 230, 240, 250, 260, 270, 280,
-  290, 300, 310, 315, 320, 330, 340, 350
-];
+export const orbit40Angles = [0, 10, 20, 30, 40, 45, 50, 60, 70, 80, 90, 100, 110, 120, 130, 135, 140, 150, 160, 170, 180, 190, 200, 210, 220, 225, 230, 240, 250, 260, 270, 280, 290, 300, 310, 315, 320, 330, 340, 350];
 
 export const orbitAngleAt = (orbit: number, index: number): number => {
   const nodesInOrbit = skillTree.constants.skillsPerOrbit[orbit];
@@ -247,20 +240,18 @@ export const formatStats = (translation: Translation, stat: number): string | un
   if (datum.index_handlers !== undefined) {
     if (Array.isArray(datum.index_handlers)) {
       if (datum.index_handlers?.length > 0) {
-        datum.index_handlers[0].forEach((handler) => {
+        datum.index_handlers[0].forEach(handler => {
           finalStat = finalStat / (indexHandlers[handler] || 1);
         });
       }
     } else {
-      Object.keys(datum.index_handlers).forEach((handler) => {
+      Object.keys(datum.index_handlers).forEach(handler => {
         finalStat = finalStat / (indexHandlers[handler] || 1);
       });
     }
   }
 
-  return datum.string
-    .replace(/\{0(?::(.*?)d(.*?))\}/, '$1' + finalStat.toString() + '$2')
-    .replace(`{0}`, parseFloat(finalStat.toFixed(2)).toString());
+  return datum.string.replace(/\{0(?::(.*?)d(.*?))\}/, '$1' + finalStat.toString() + '$2').replace(`{0}`, parseFloat(finalStat.toFixed(2)).toString());
 };
 
 export const baseJewelRadius = 1800;
@@ -399,7 +390,7 @@ const tradeStatNames: { [key: number]: { [key: string]: string } } = {
 export const constructSingleResultQuery = (jewel: number, conqueror: string | null, result: SearchWithSeed): Query => {
   const anyConqueror = conqueror === null;
 
-  const filters: Filter[] = Object.keys(tradeStatNames[jewel]).map((conq) => ({
+  const filters: Filter[] = Object.keys(tradeStatNames[jewel]).map(conq => ({
     id: tradeStatNames[jewel][conq],
     value: {
       min: result.seed,
@@ -418,7 +409,7 @@ const constructSearchFilter = (jewel: number, conqueror: string | null, result: 
   const anyConqueror = conqueror === null;
   const conquerors = anyConqueror ? Object.keys(tradeStatNames[jewel]) : [conqueror];
 
-  return conquerors.map((conq) => ({
+  return conquerors.map(conq => ({
     id: tradeStatNames[jewel][conq],
     value: {
       min: result.seed,
@@ -433,14 +424,14 @@ export const constructQueries = (jewel: number, conqueror: string | null, result
   const max_query_length = max_filter_length * max_filters;
 
   // convert all results into filters
-  const allFilters = results.flatMap((result) => constructSearchFilter(jewel, conqueror, result));
+  const allFilters = results.flatMap(result => constructSearchFilter(jewel, conqueror, result));
 
   // group filters into groups of max_query_length, where each group is further grouped into chunks of max_filter_length
   // this represents multiple trade links, where each trade link has multiple filter groups, and each filter group has multiple filters
-  const queryFilterGroups = chunkArray(allFilters, max_query_length).map((chunk) => chunkArray(chunk, max_filter_length));
+  const queryFilterGroups = chunkArray(allFilters, max_query_length).map(chunk => chunkArray(chunk, max_filter_length));
 
   // map filters groups to queries
-  const tradeQueries = queryFilterGroups.map((queryFilterGroup) => {
+  const tradeQueries = queryFilterGroups.map(queryFilterGroup => {
     // for each query, map the chunks within it to filter groups
     const tradeFilterGroups = queryFilterGroup.map((filters, index) => filtersToFilterGroup(filters, index !== 0));
     const tradeQuery: Query = filterGroupsToQuery(tradeFilterGroups);

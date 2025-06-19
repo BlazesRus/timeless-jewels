@@ -11,7 +11,7 @@
   const handleOnClick = () =>
     highlight(
       set.seed,
-      set.skills.map((s) => s.passive)
+      set.skills.map(s => s.passive)
     );
 </script>
 
