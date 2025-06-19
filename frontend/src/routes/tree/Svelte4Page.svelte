@@ -506,12 +506,12 @@
 <svelte:window on:paste={onPaste} />
 
 <SkillTree
-  bind:circledNode
+  bind:circledNode={circledNode}
   clickNode={handleNodeClick}
   selectedJewel={selectedJewel?.value || 0}
   selectedConqueror={selectedConqueror?.value || ''}
-  {highlighted}
-  {seed}
+  highlighted={highlighted}
+  seed={seed}
   highlightJewels={!circledNode}
   disabled={Array.from(disabled)}
 >
@@ -537,7 +537,7 @@
           {#if searchResults}
             <div class="flex flex-row">
               {#if results}
-                <TradeButton {queries} bind:showTradeLinks />
+                <TradeButton queries={queries} bind:showTradeLinks={showTradeLinks} />
                 <button class="p-1 px-3 bg-blue-500/40 rounded disabled:bg-blue-900/40 mr-2" class:grouped={groupResults} on:click={() => (groupResults = !groupResults)} disabled={!searchResults}>
                   Grouped
                 </button>
@@ -589,7 +589,7 @@
                       <Select items={sortResults} bind:value={sortOrder} />
                     </div>
                     <div class="ml-2">
-                      <button class="bg-neutral-500/20 p-2 px-4 rounded" class:selected={colored} on:click={() => (colored = !colored)}> Colors </button>
+                      <button class="bg-neutral-500/20 p-2 px-4 rounded" class:selected={colored} on:click={() => (colored = !colored)}>Colors</button>
                     </div>
                     <div class="ml-2">
                       <button class="bg-neutral-500/20 p-2 px-4 rounded" class:selected={split} on:click={() => (split = !split)}>Split</button>
@@ -677,9 +677,9 @@
                   </div>
                   <div class="flex flex-col mt-4">
                     <div class="flex flex-row">
-                      <button class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2" on:click={selectAll} disabled={isSearching || disabled.size == 0}> Select All </button>
-                      <button class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2" on:click={selectAllNotables} disabled={isSearching || disabled.size == 0}> Notables </button>
-                      <button class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2" on:click={selectAllPassives} disabled={isSearching || disabled.size == 0}> Passives </button>
+                      <button class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2" on:click={selectAll} disabled={isSearching || disabled.size == 0}>Select All</button>
+                      <button class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2" on:click={selectAllNotables} disabled={isSearching || disabled.size == 0}>Notables</button>
+                      <button class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 mr-2" on:click={selectAllPassives} disabled={isSearching || disabled.size == 0}>Passives</button>
                       <button class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 flex-grow" on:click={deselectAll} disabled={isSearching || disabled.size >= affectedNodes.length}>
                         Deselect
                       </button>
@@ -706,9 +706,9 @@
 
         {#if searchResults && results}
           {#if showTradeLinks}
-            <TradeLinks {queries} />
+            <TradeLinks queries={queries} />
           {/if}
-          <SearchResultsComponent {searchResults} {groupResults} {highlight} jewel={searchJewel} conqueror={searchConqueror} />
+          <SearchResultsComponent searchResults={searchResults} groupResults={groupResults} highlight={highlight} jewel={searchJewel} conqueror={searchConqueror} />
         {/if}
       </div>
     </div>

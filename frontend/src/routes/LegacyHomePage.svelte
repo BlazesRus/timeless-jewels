@@ -1,14 +1,13 @@
-<script lang="ts"></script>
-
+<script lang="ts">
   import { browser } from '$app/environment';
   import { onMount } from 'svelte';
+  import { page } from '$app/stores';
   import type { Page } from '@sveltejs/kit';
   import { goto } from '$app/navigation';
 
   import Select from 'svelte-select';
-
   import { base, assets } from '$app/paths';
-  import { data, calculator, isWasmReady } from '$lib/types/index.js';
+  import { data, calculator } from '$lib/types/index.js';
 
   console.log('Main page loading...');
 
@@ -51,7 +50,7 @@
   });
 
   // Only populate data when WASM is ready
-  $: if (isWasmReady() && data && browser) {
+  $: if (calculator && data && browser) {
     //Make sure if jewel or passiveskill data breaks that recreate new data 
     if(!JewelsAreNotInitialized && (jewels==undefined || passiveSkills==undefined))
       JewelsAreNotInitialized = true;
@@ -103,8 +102,8 @@
   }
 
   // Update available conquerors when jewel selection changes
-  $: if (selectedJewel && isWasmReady() && data.TimelessJewelConquerors && browser) {
-    if(availableConquerors==[])
+  $: if (selectedJewel && calculator && data.TimelessJewelConquerors && browser) {
+    if(availableConquerors.length === 0)
     {
       const conquerorData = data.TimelessJewelConquerors[selectedJewel.value];
       if (conquerorData) {
@@ -125,7 +124,7 @@
   }
 
   // Reactive calculation
-  $: if (selectedPassiveSkill && seed && selectedJewel && selectedConqueror && isWasmReady()) {
+  $: if (selectedPassiveSkill && seed && selectedJewel && selectedConqueror && calculator) {
     try {
       console.log('Performing calculation...');
       result = calculator.Calculate(
@@ -166,7 +165,7 @@
 <div class="flex flex-row justify-center">
   <h1 class="text-3xl font-bold mb-6">Timeless Jewel Calculator</h1>
 </div>
-{#if !isWasmReady()}
+{#if !calculator}
   <div class="flex flex-row justify-center">
     <p class="text-white">Loading WASM data, please wait...</p>
     <div class="mt-4">
@@ -178,7 +177,7 @@
   <div class="flex flex-col justify-between w-1/3">
     <div class="mt-10">
       <h3 class="mb-2">Debug Info:</h3>
-      <p>WASM Ready: {isWasmReady()}</p>
+      <p>WASM Ready: {calculator ? 'Yes' : 'No'}</p>
       <p>Browser: {browser ? 'Available' : 'Not available'}</p>
       <p>Jewels loaded: {jewels.length}</p>
       <p>Passive skills loaded: {passiveSkills.length}</p>

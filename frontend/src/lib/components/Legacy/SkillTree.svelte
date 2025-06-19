@@ -572,8 +572,8 @@
 {#if width && height}
   <div on:resize={resize} style="touch-action: none; cursor: {cursor}">
     <!-- Svelte 4 Canvas -->
-    <Canvas {width} {height} on:pointerdown={mouseDown} on:wheel={onScroll}>
-      <Layer {render} />
+    <Canvas width={width} height={height} on:pointerdown={mouseDown} on:wheel={onScroll}>
+      <Layer render={render} />
     </Canvas>
     <slot />
   </div>

@@ -97,9 +97,13 @@ Full-featured replacement for svelte-select using native Svelte 5 runes
 <svelte:window onclick={handleClickOutside} />
 
 <div bind:this={containerRef} class="modern-select relative themed">
-  <button class="select-trigger" class:disabled onclick={() => !disabled && (isOpen = !isOpen)} onkeydown={handleKeydown}
+  <button
+    class="select-trigger"
+    class:disabled={disabled}
+    onclick={() => !disabled && (isOpen = !isOpen)}
+    onkeydown={handleKeydown}
     type="button"
-    {disabled}
+    disabled={disabled}
     aria-expanded={isOpen}
     aria-haspopup="listbox"
     aria-controls="select-dropdown-{Math.random().toString(36).substr(2, 9)}"

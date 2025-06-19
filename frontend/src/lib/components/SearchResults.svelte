@@ -32,8 +32,8 @@
       {#if expandedGroup === k}
         <div class="flex flex-col overflow-auto min-h-[200px] mb-2">
           <VirtualList height="auto" overscanCount={10} itemCount={searchResults.grouped[k].length} itemSize={searchResults.grouped[k].map(computeSize)}>
-            <div slot="item" let:index let:style {style}>
-              <SearchResult set={searchResults.grouped[k][index]} {highlight} {jewel} {conqueror} />
+            <div slot="item" let:index let:style style={style}>
+              <SearchResult set={searchResults.grouped[k][index]} highlight={highlight} jewel={jewel} conqueror={conqueror} />
             </div>
           </VirtualList>
         </div>
@@ -43,8 +43,8 @@
 {:else}
   <div class="mt-4 flex flex-col overflow-auto">
     <VirtualList height="auto" overscanCount={15} itemCount={searchResults.raw.length} itemSize={searchResults.raw.map(computeSize)}>
-      <div slot="item" let:index let:style {style}>
-        <SearchResult set={searchResults.raw[index]} {highlight} {jewel} {conqueror} />
+      <div slot="item" let:index let:style style={style}>
+        <SearchResult set={searchResults.raw[index]} highlight={highlight} jewel={jewel} conqueror={conqueror} />
       </div>
     </VirtualList>
   </div>
