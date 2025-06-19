@@ -2,13 +2,14 @@
   "bracketSameLine": false,
   "bracketSpacing": true,
   "endOfLine": "lf",
-  "printWidth": 150,
+  "printWidth": 500,
   "quoteProps": "as-needed",
   "singleQuote": true,
   "trailingComma": "none",
   "useTabs": false,
   "tabWidth": 2,
   "semi": true,
+  "arrowParens": "avoid",
   "plugins": [
     "prettier-plugin-svelte"
   ],
@@ -38,7 +39,10 @@
         "*.ts"
       ],
       "options": {
-        "endOfLine": "lf"
+        "endOfLine": "lf",
+        "printWidth": 500,
+        "bracketSameLine": true,
+        "arrowParens": "avoid"
       }
     }
   ]
