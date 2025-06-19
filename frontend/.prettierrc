@@ -10,9 +10,7 @@
   "tabWidth": 2,
   "semi": true,
   "arrowParens": "avoid",
-  "plugins": [
-    "prettier-plugin-svelte"
-  ],
+  "plugins": ["prettier-plugin-svelte"],
   "overrides": [
     {
       "files": "*.svelte",
@@ -34,10 +32,7 @@
       }
     },
     {
-      "files": [
-        "*.js",
-        "*.ts"
-      ],
+      "files": ["*.js", "*.ts"],
       "options": {
         "endOfLine": "lf",
         "printWidth": 500,
