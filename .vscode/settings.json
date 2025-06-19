@@ -91,14 +91,17 @@
     "**Svelte5Package*.json": true,
     "LegacyPackage.json": true,
     "LegacyPackageBackup.json": true,
+    "frontend/LegacyPackage.json": true,
+    "frontend/LegacyPackageBackup.json": true,
+    "frontend/eslint.config.js": true,
+    "frontend/Svelte5Package.json": true,
+    "frontend/Svelte5PackageBackup.json": true,
     "**/components/Legacy/**": true,
     "**/*Legacy*": true,
     "**/*Svelte4*": true,
     "**/LegacyPackage*.json": true,
     "frontend/.eslintrc.cjs": true,
-    "frontend/.eslintignore": true,
-    "frontend/LegacyPackage.json": true,
-    "frontend/LegacyPackageBackup.json": true
+    "frontend/.eslintignore": true
   },
   "search.exclude": {
     "**/node_modules": true,
@@ -114,8 +117,8 @@
   "editor.insertSpaces": true,
   "editor.tabSize": 2,
   "editor.detectIndentation": false,
-  "editor.formatOnSave": true,
-  "editor.formatOnPaste": true,
+  "editor.formatOnSave": false,
+  "editor.formatOnPaste": false,
   "editor.trimAutoWhitespace": true,
   "[json]": {
     "editor.defaultFormatter": "vscode.json-language-features",
@@ -185,7 +188,6 @@
     "global_reference_invalid": "ignore",
     "global-reference-invalid": "ignore"
   },
-  // Aggressive suppression for Legacy files when in Modern Mode
   "svelte.plugin.svelte.format.config": {
     "svelteSortOrder": "options-scripts-markup-styles",
     "svelteStrictMode": false,
@@ -196,7 +198,6 @@
   "svelte.plugin.svelte.completions.enable": true,
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.suggest.autoImports": true,
-  // TypeScript diagnostic overrides for Legacy files
   "typescript.preferences.includePackageJsonAutoImports": "auto",
   "typescript.suggest.includeAutomaticOptionalChainCompletions": true,
   "typescript.validate.enable": true,
@@ -238,8 +239,7 @@
         {
           "files": [
             "**/Legacy*",
-            "**/*Legacy*",
-            "**/Svelte4*"
+            "**Svelte4*"
           ],
           "rules": {
             "@typescript-eslint/no-unused-vars": "off",
@@ -251,21 +251,15 @@
       ]
     }
   },
-  // File-specific diagnostic overrides for Legacy files
   "svelte.plugin.svelte.diagnostics.fileOverrides": {
     "**/Legacy*.svelte": {
       "enable": false
     },
-    "**/*Legacy*.svelte": {
-      "enable": false
-    },
-    "**/Svelte4*.svelte": {
+    "**Svelte4*.svelte": {
       "enable": false
     }
   },
-  // File-specific error suppression for Legacy files when in Modern Mode
   "problems.suppressWhenNoErrors": false,
-  // Complete diagnostic suppression for specific Legacy files
   "svelte.plugin.svelte.diagnostics.exclude": [
     "**/LegacyHomePage.svelte",
     "**/Legacy*.svelte",

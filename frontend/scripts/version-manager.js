@@ -366,11 +366,58 @@ class VersionManager {
       const updatedContent = JSON.stringify(settings, null, 2);
       writeFileSync(vsCodeSettingsPath, updatedContent);
       console.log(`🔧 Updated VS Code file hiding for Svelte ${targetVersion} mode`);
-    } catch (error) {
-      console.error('⚠️ Failed to update VS Code file hiding:', error.message);
+    } catch (error) {      console.error('⚠️ Failed to update VS Code file hiding:', error.message);
       console.log('💡 You may need to manually update .vscode/settings.json');
     }
   }
+
+  /**
+   * Update TypeScript configuration to use mode-specific settings
+   */  updateTypeScriptConfig(targetVersion) {
+    try {
+      console.log(`🔧 Updating TypeScript configuration for Svelte ${targetVersion} mode...`);
+      
+      const tsconfigPath = join(this.rootDir, 'tsconfig.json');
+      
+      // Determine which config to extend based on target version
+      const targetConfig = targetVersion === '4' ? './tsconfig.legacy.json' : './tsconfig.modern.json';
+      
+      // Read current main tsconfig.json
+      let tsconfig;
+      if (existsSync(tsconfigPath)) {
+        const content = readFileSync(tsconfigPath, 'utf8');
+        tsconfig = JSON.parse(content);
+      } else {
+        // Create a default structure if it doesn't exist
+        tsconfig = {
+          "extends": "./tsconfig.base.json",
+          "compilerOptions": {},
+          "include": [],
+          "exclude": [
+            "node_modules/**/*",
+            ".svelte-kit/**/*",
+            "build/**/*",
+            "dist/**/*",
+            "static/**/*"
+          ]
+        };
+      }
+      
+      // Update the extends property to include both base and mode-specific config
+      tsconfig.extends = ["./tsconfig.base.json", targetConfig];
+      
+      // Write the updated configuration
+      const updatedContent = JSON.stringify(tsconfig, null, 2);
+      writeFileSync(tsconfigPath, updatedContent);
+      
+      console.log(`✅ TypeScript configuration updated to extend ${targetConfig}`);
+      
+    } catch (error) {
+      console.error('⚠️ Failed to update TypeScript configuration:', error.message);
+      console.log('💡 You may need to manually update tsconfig.json');
+    }
+  }
+
   /**
    * Update VSCode settings using the dedicated settings manager
    */
