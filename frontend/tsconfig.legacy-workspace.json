@@ -1,5 +1,8 @@
 {
-  "extends": "./tsconfig.base.json",
+  "extends": [
+    "./tsconfig.base.json",
+    "./tsconfig.legacy.json"
+  ],
   "compilerOptions": {},
   "include": [
     "src/**/*.d.ts",
@@ -12,6 +15,9 @@
     ".svelte-kit/**/*",
     "build/**/*",
     "dist/**/*",
-    "static/**/*"
+    "static/**/*",
+    "src/**/*Modern*.svelte",
+    "src/**/*Svelte5*.svelte",
+    "ModernMode/**/*"
   ]
 }

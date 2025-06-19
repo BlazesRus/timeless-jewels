@@ -201,7 +201,7 @@
   "typescript.preferences.includePackageJsonAutoImports": "auto",
   "typescript.suggest.includeAutomaticOptionalChainCompletions": true,
   "typescript.validate.enable": true,
-  "typescript.reportStyleChecksAsWarnings": false,
+  "typescript.reportStyleChecksAsWarnings": true,
   "typescript.preferences.noSemantic": false,
   "github.copilot.chat.experimental.codeGeneration.fileFiltering": {
     "enabled": true,
@@ -264,5 +264,7 @@
     "**/LegacyHomePage.svelte",
     "**/Legacy*.svelte",
     "**/*Legacy*.svelte"
-  ]
+  ],
+  "typescript.preferences.project": "frontend/tsconfig.modern-mode.json",
+  "typescript.suggest.completeFunctionCalls": true
 }

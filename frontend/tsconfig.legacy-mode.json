@@ -1,9 +1,8 @@
 {
-  "extends": ["./tsconfig.base.json"],
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    // Legacy (Svelte 4) specific overrides - more permissive
+    // Legacy (Svelte 4) specific overrides - permissive rules
     "strict": false,
-    "checkJs": false,
     "noImplicitAny": false,
     "strictNullChecks": false,
     "noImplicitReturns": false,
@@ -16,7 +15,23 @@
     "suppressImplicitAnyIndexErrors": true,
     "suppressExcessPropertyErrors": true,
     "noImplicitOverride": false,
-    "useDefineForClassFields": true,
     "verbatimModuleSyntax": false
-  }
+  },
+  "include": [
+    "src/**/*.d.ts",
+    "src/**/*.ts", 
+    "src/**/*.js",
+    "src/**/*.svelte"
+  ],
+  "exclude": [
+    "node_modules/**/*",
+    ".svelte-kit/**/*", 
+    "build/**/*",
+    "dist/**/*",
+    "static/**/*",
+    // Exclude Modern mode files in Legacy mode
+    "src/**/*Modern*.svelte",
+    "src/**/*Svelte5*.svelte",
+    "ModernMode/**/*"
+  ]
 }
