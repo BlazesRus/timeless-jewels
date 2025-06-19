@@ -1,4 +1,5 @@
-<script lang="ts">  import { browser } from '$app/environment';
+<script lang="ts">
+  import { browser } from '$app/environment';
   import { onMount } from 'svelte';
   import type { Page } from '@sveltejs/kit';
   import { goto } from '$app/navigation';
@@ -20,7 +21,7 @@
   let seed = $state(0);
   let result = $state<any>(undefined);
 
-  let JewelsAreNotInitialized = $state(false);  // Initialize search params as derived value
+  let JewelsAreNotInitialized = $state(false); // Initialize search params as derived value
   const searchParams = $derived(browser ? (globalThis as any).$page?.url?.searchParams || new URLSearchParams() : new URLSearchParams());
 
   // Initialize search params after component mounts
@@ -53,12 +54,12 @@
       if (!JewelsAreNotInitialized && (jewels == undefined || passiveSkills == undefined)) JewelsAreNotInitialized = true;
 
       if (JewelsAreNotInitialized) {
-        console.log('WASM is ready, populating jewel and passive skill UI data...');        // Initialize jewels
+        console.log('WASM is ready, populating jewel and passive skill UI data...'); // Initialize jewels
         jewels = Object.keys(data.TimelessJewels || {}).map(k => ({
           value: parseInt(k),
           label: (data.TimelessJewels as any)[k]
         }));
-        console.log('Jewels loaded:', jewels.length);        // Initialize passive skills
+        console.log('Jewels loaded:', jewels.length); // Initialize passive skills
         passiveSkills = (data.PassiveSkills || [])
           .filter(skill => skill !== undefined)
           .map(skill => ({
@@ -68,14 +69,12 @@
         console.log('Passive skills loaded:', passiveSkills.length);
 
         JewelsAreNotInitialized = false;
-      }      // Populate passive skills
+      } // Populate passive skills
       if (data.PassiveSkills && Array.isArray(data.PassiveSkills)) {
-        passiveSkills = data.PassiveSkills
-          .filter(skill => skill !== undefined)
-          .map(skill => ({
-            value: skill!.PassiveSkillGraphID,
-            label: skill!.Name
-          }));
+        passiveSkills = data.PassiveSkills.filter(skill => skill !== undefined).map(skill => ({
+          value: skill!.PassiveSkillGraphID,
+          label: skill!.Name
+        }));
         console.log('Passive skills loaded:', passiveSkills.length);
       }
 

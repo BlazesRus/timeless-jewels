@@ -366,54 +366,52 @@ class VersionManager {
       const updatedContent = JSON.stringify(settings, null, 2);
       writeFileSync(vsCodeSettingsPath, updatedContent);
       console.log(`🔧 Updated VS Code file hiding for Svelte ${targetVersion} mode`);
-    } catch (error) {      console.error('⚠️ Failed to update VS Code file hiding:', error.message);
+    } catch (error) {
+      console.error('⚠️ Failed to update VS Code file hiding:', error.message);
       console.log('💡 You may need to manually update .vscode/settings.json');
     }
   }
   /**
    * Update TypeScript configuration to use mode-specific settings via VS Code workspace
-   */  updateTypeScriptConfig(targetVersion) {
+   */ updateTypeScriptConfig(targetVersion) {
     try {
       console.log(`🔧 Updating TypeScript workspace configuration for Svelte ${targetVersion} mode...`);
-      
+
       // Determine which config file to reference (no file modification)
-      const configFile = targetVersion === '4' ? 
-        'tsconfig.legacy-mode.json' : 
-        'tsconfig.modern-mode.json';
-      
+      const configFile = targetVersion === '4' ? 'tsconfig.legacy-mode.json' : 'tsconfig.modern-mode.json';
+
       // Update VS Code settings to use the appropriate TypeScript configuration
       const vsCodeSettingsPath = join(this.rootDir, '..', '.vscode', 'settings.json');
-      
+
       if (existsSync(vsCodeSettingsPath)) {
         const settingsContent = readFileSync(vsCodeSettingsPath, 'utf8');
         const settings = JSON.parse(settingsContent);
-        
+
         // Set TypeScript configuration to use mode-specific config
         settings['typescript.preferences.project'] = `frontend/${configFile}`;
-        
+
         // Enable workspace-aware TypeScript
         settings['typescript.preferences.includePackageJsonAutoImports'] = 'auto';
-        
+
         // Mode-specific TypeScript settings
         if (targetVersion === '4') {
           // Legacy mode - more permissive
           settings['typescript.suggest.completeFunctionCalls'] = false;
           settings['typescript.reportStyleChecksAsWarnings'] = false;
         } else {
-          // Modern mode - more strict  
+          // Modern mode - more strict
           settings['typescript.suggest.completeFunctionCalls'] = true;
           settings['typescript.reportStyleChecksAsWarnings'] = true;
         }
-        
+
         // Write back the updated settings
         const updatedContent = JSON.stringify(settings, null, 2);
         writeFileSync(vsCodeSettingsPath, updatedContent);
-        
+
         console.log(`✅ TypeScript workspace configured to use ${configFile} (zero tsconfig.json modifications)`);
       } else {
         console.log('⚠️ VS Code settings not found, TypeScript will use default tsconfig.json');
       }
-      
     } catch (error) {
       console.error('⚠️ Failed to update TypeScript workspace configuration:', error.message);
       console.log('💡 TypeScript will fall back to default tsconfig.json');

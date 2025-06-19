@@ -53,8 +53,7 @@
   // Only populate data when WASM is ready
   $: if (calculator && data && browser) {
     //Make sure if jewel or passiveskill data breaks that recreate new data
-    if (!JewelsAreNotInitialized && (jewels == undefined || passiveSkills == undefined))
-      JewelsAreNotInitialized = true;
+    if (!JewelsAreNotInitialized && (jewels == undefined || passiveSkills == undefined)) JewelsAreNotInitialized = true;
 
     if (JewelsAreNotInitialized) {
       console.log('WASM is ready, populating jewel and passive skill UI data...');

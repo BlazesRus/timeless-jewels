@@ -1,23 +1,6 @@
 {
-  "extends": [
-    "./tsconfig.base.json",
-    "./tsconfig.legacy.json"
-  ],
+  "extends": ["./tsconfig.base.json", "./tsconfig.legacy.json"],
   "compilerOptions": {},
-  "include": [
-    "src/**/*.d.ts",
-    "src/**/*.ts",
-    "src/**/*.js",
-    "src/**/*.svelte"
-  ],
-  "exclude": [
-    "node_modules/**/*",
-    ".svelte-kit/**/*",
-    "build/**/*",
-    "dist/**/*",
-    "static/**/*",
-    "src/**/*Modern*.svelte",
-    "src/**/*Svelte5*.svelte",
-    "ModernMode/**/*"
-  ]
+  "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.js", "src/**/*.svelte"],
+  "exclude": ["node_modules/**/*", ".svelte-kit/**/*", "build/**/*", "dist/**/*", "static/**/*", "src/**/*Modern*.svelte", "src/**/*Svelte5*.svelte", "ModernMode/**/*"]
 }
