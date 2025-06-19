@@ -281,6 +281,9 @@ class VersionManager {
     // Update VS Code file hiding based on version
     this.updateFileHiding(targetVersion);
 
+    // Update TypeScript configuration for the new version
+    this.updateTypeScriptConfig(targetVersion);
+
     // Update VSCode settings for the new version
     this.updateVSCodeSettings();
   }

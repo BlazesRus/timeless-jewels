@@ -1,0 +1,55 @@
+{
+  "extends": ["./tsconfig.base.json"],
+  "compilerOptions": {
+    // Legacy (Svelte 4) specific overrides - more permissive
+    "strict": false,
+    "checkJs": false,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": false,
+    "noUncheckedIndexedAccess": false,
+    "noImplicitThis": false,
+    "alwaysStrict": false,
+    "allowUnreachableCode": true,
+    "allowUnusedLabels": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "suppressExcessPropertyErrors": true,
+    "noImplicitOverride": false,
+    "useDefineForClassFields": true,
+    "verbatimModuleSyntax": false
+  },
+  "include": [
+    // Base includes from tsconfig.base.json, plus Legacy-specific files
+    "src/**/*Legacy*.svelte",
+    "src/**/Legacy*.svelte", 
+    "src/**/*Svelte4*.svelte",
+    "LegacyMode/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    ".svelte-kit",
+    "build",
+    "dist",
+    // Exclude Modern mode specific files when in Legacy mode
+    "src/**/*Modern*.svelte",
+    "src/**/*Svelte5*.svelte",
+    "ModernMode/**/*"
+  ]
+}
+  "include": [
+    "src/**/*.d.ts", 
+    "src/**/*.ts", 
+    "src/**/*.js", 
+    "src/**/*.svelte",
+    "src/**/*Legacy*.svelte",
+    "src/**/Legacy*.svelte",
+    "src/**/*Svelte4*.svelte"
+  ],
+  "exclude": [
+    "node_modules",
+    ".svelte-kit",
+    "build",
+    "dist"
+  ]
+}

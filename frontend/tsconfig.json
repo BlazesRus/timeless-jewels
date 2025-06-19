@@ -1,28 +1,23 @@
 {
-  "extends": "./.svelte-kit/tsconfig.json",
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "allowJs": true,
-    "checkJs": false,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "strict": true,
-    "moduleResolution": "bundler",
-    "target": "ES2022",
-    "module": "ESNext",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "noImplicitOverride": true,
-    "useDefineForClassFields": true,
-    "verbatimModuleSyntax": true,
-    "noImplicitAny": false,
-    "strictNullChecks": false
+    // Mode-specific overrides applied by version-manager
+    // Current mode: dynamically updated
   },
-  "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.js", "src/**/*.svelte"],
+  "include": [//Only few if any should use this
+  ],
   "exclude": [
+    "node_modules/**/*",
+    ".svelte-kit/**/*",
+    "build/**/*",
+    "dist/**/*",
+    "static/**/*",
+    // Exclude mode-specific files - they'll be handled by their respective configs
     "src/**/*Legacy*.svelte",
-    "src/**/Legacy*.svelte",
-    "src/**/*Svelte4*.svelte"
+    "src/**/*Modern*.svelte",
+    "src/**/*Svelte4*.svelte",
+    "src/**/*Svelte5*.svelte",
+    "LegacyMode/**/*",
+    "ModernMode/**/*"
   ]
 }
