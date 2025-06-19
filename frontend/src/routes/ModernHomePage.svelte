@@ -33,15 +33,15 @@
       // Initialize from URL parameters
       if (searchParams.has('jewel')) {
         const jewelId = parseInt(searchParams.get('jewel') || '0');
-        selectedJewel = jewels.find((j) => j.value === jewelId);
+        selectedJewel = jewels.find(j => j.value === jewelId);
       }
       if (searchParams.has('conqueror')) {
         const conquerorValue = searchParams.get('conqueror');
-        selectedConqueror = availableConquerors.find((c) => c.value === conquerorValue);
+        selectedConqueror = availableConquerors.find(c => c.value === conquerorValue);
       }
       if (searchParams.has('passive')) {
         const passiveId = parseInt(searchParams.get('passive') || '0');
-        selectedPassiveSkill = passiveSkills.find((p) => p.value === passiveId);
+        selectedPassiveSkill = passiveSkills.find(p => p.value === passiveId);
       }
       if (searchParams.has('seed')) {
         seed = parseInt(searchParams.get('seed') || '0');
@@ -52,13 +52,14 @@
   // Only populate data when WASM is ready
   $: if (calculator && data && browser) {
     //Make sure if jewel or passiveskill data breaks that recreate new data
-    if (!JewelsAreNotInitialized && (jewels == undefined || passiveSkills == undefined)) JewelsAreNotInitialized = true;
+    if (!JewelsAreNotInitialized && (jewels == undefined || passiveSkills == undefined))
+      JewelsAreNotInitialized = true;
 
     if (JewelsAreNotInitialized) {
       console.log('WASM is ready, populating jewel and passive skill UI data...');
 
       // Initialize jewels
-      jewels = Object.keys(data.TimelessJewels || {}).map((k) => ({
+      jewels = Object.keys(data.TimelessJewels || {}).map(k => ({
         value: parseInt(k),
         label: data.TimelessJewels[k]
       }));
@@ -66,8 +67,8 @@
 
       // Initialize passive skills
       passiveSkills = (data.PassiveSkills || [])
-        .filter((skill) => skill !== undefined)
-        .map((skill) => ({
+        .filter(skill => skill !== undefined)
+        .map(skill => ({
           value: skill.Index,
           label: skill.Name
         }));
@@ -78,7 +79,7 @@
 
     // Populate passive skills
     if (data.PassiveSkills && Array.isArray(data.PassiveSkills)) {
-      passiveSkills = data.PassiveSkills.map((skill) => ({
+      passiveSkills = data.PassiveSkills.map(skill => ({
         value: skill.PassiveSkillGraphID,
         label: skill.Name
       }));
@@ -88,12 +89,12 @@
     // Restore selections from URL params
     if (searchParams.has('jewel') && jewels.length > 0) {
       const jewelValue = parseInt(searchParams.get('jewel') || '0');
-      selectedJewel = jewels.find((j) => j.value === jewelValue);
+      selectedJewel = jewels.find(j => j.value === jewelValue);
     }
 
     if (searchParams.has('passive_skill') && passiveSkills.length > 0) {
       const skillValue = parseInt(searchParams.get('passive_skill') || '0');
-      selectedPassiveSkill = passiveSkills.find((s) => s.value === skillValue);
+      selectedPassiveSkill = passiveSkills.find(s => s.value === skillValue);
     }
 
     if (searchParams.has('seed')) {
@@ -106,7 +107,7 @@
     if (availableConquerors.length === 0) {
       const conquerorData = data.TimelessJewelConquerors[selectedJewel.value];
       if (conquerorData) {
-        availableConquerors = Object.keys(conquerorData).map((k) => ({
+        availableConquerors = Object.keys(conquerorData).map(k => ({
           value: k,
           label: k
         }));
@@ -116,7 +117,7 @@
     // Set initial conqueror from URL params
     if (searchParams.has('conqueror')) {
       const conquerorValue = searchParams.get('conqueror');
-      selectedConqueror = availableConquerors.find((c) => c.value === conquerorValue);
+      selectedConqueror = availableConquerors.find(c => c.value === conquerorValue);
     }
   } else {
     availableConquerors = [];

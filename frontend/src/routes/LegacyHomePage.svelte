@@ -12,20 +12,20 @@
   console.log('Main page loading...');
 
   // State variables
-  let jewels: Array<{value: number, label: string}> = [];
-  let selectedJewel: {value: number, label: string} | undefined = undefined;
-  let availableConquerors: Array<{value: string, label: string}> = [];
-  let selectedConqueror: {value: string, label: string} | undefined = undefined;
-  let passiveSkills: Array<{value: number, label: string}> = [];
-  let selectedPassiveSkill: {value: number, label: string} | undefined = undefined;
+  let jewels: Array<{ value: number; label: string }> = [];
+  let selectedJewel: { value: number; label: string } | undefined = undefined;
+  let availableConquerors: Array<{ value: string; label: string }> = [];
+  let selectedConqueror: { value: string; label: string } | undefined = undefined;
+  let passiveSkills: Array<{ value: number; label: string }> = [];
+  let selectedPassiveSkill: { value: number; label: string } | undefined = undefined;
   let seed = 0;
   let result: any = undefined;
 
   let JewelsAreNotInitialized: boolean = false;
-  
+
   // Initialize search params reactively instead of at module level
   $: searchParams = browser ? $page.url.searchParams : new URLSearchParams();
-  
+
   // Initialize search params after component mounts
   onMount(() => {
     if (browser) {
@@ -51,12 +51,11 @@
 
   // Only populate data when WASM is ready
   $: if (calculator && data && browser) {
-    //Make sure if jewel or passiveskill data breaks that recreate new data 
-    if(!JewelsAreNotInitialized && (jewels==undefined || passiveSkills==undefined))
+    //Make sure if jewel or passiveskill data breaks that recreate new data
+    if (!JewelsAreNotInitialized && (jewels == undefined || passiveSkills == undefined))
       JewelsAreNotInitialized = true;
 
-    if(JewelsAreNotInitialized)
-    {
+    if (JewelsAreNotInitialized) {
       console.log('WASM is ready, populating jewel and passive skill UI data...');
 
       // Initialize jewels
@@ -67,30 +66,32 @@
       console.log('Jewels loaded:', jewels.length);
 
       // Initialize passive skills
-      passiveSkills = (data.PassiveSkills || []).filter(skill => skill !== undefined)
+      passiveSkills = (data.PassiveSkills || [])
+        .filter(skill => skill !== undefined)
         .map(skill => ({
           value: skill.Index,
-          label: skill.Name}));
+          label: skill.Name
+        }));
       console.log('Passive skills loaded:', passiveSkills.length);
 
       JewelsAreNotInitialized = false;
     }
- 
+
     // Populate passive skills
     if (data.PassiveSkills && Array.isArray(data.PassiveSkills)) {
-      passiveSkills = data.PassiveSkills.map((skill) => ({
+      passiveSkills = data.PassiveSkills.map(skill => ({
         value: skill.PassiveSkillGraphID,
         label: skill.Name
       }));
       console.log('Passive skills loaded:', passiveSkills.length);
     }
-    
+
     // Restore selections from URL params
     if (searchParams.has('jewel') && jewels.length > 0) {
       const jewelValue = parseInt(searchParams.get('jewel') || '0');
       selectedJewel = jewels.find(j => j.value === jewelValue);
     }
-    
+
     if (searchParams.has('passive_skill') && passiveSkills.length > 0) {
       const skillValue = parseInt(searchParams.get('passive_skill') || '0');
       selectedPassiveSkill = passiveSkills.find(s => s.value === skillValue);
@@ -103,8 +104,7 @@
 
   // Update available conquerors when jewel selection changes
   $: if (selectedJewel && calculator && data.TimelessJewelConquerors && browser) {
-    if(availableConquerors.length === 0)
-    {
+    if (availableConquerors.length === 0) {
       const conquerorData = data.TimelessJewelConquerors[selectedJewel.value];
       if (conquerorData) {
         availableConquerors = Object.keys(conquerorData).map(k => ({
@@ -127,12 +127,7 @@
   $: if (selectedPassiveSkill && seed && selectedJewel && selectedConqueror && calculator) {
     try {
       console.log('Performing calculation...');
-      result = calculator.Calculate(
-        selectedPassiveSkill.value,
-        seed,
-        selectedJewel.value,
-        selectedConqueror.value
-      );
+      result = calculator.Calculate(selectedPassiveSkill.value, seed, selectedJewel.value, selectedConqueror.value);
       console.log('Calculation result:', result);
     } catch (error) {
       console.error('Calculation error:', error);
@@ -142,7 +137,7 @@
 
   const updateUrl = () => {
     if (!browser) return;
-    
+
     const url = new URL(window.location.href);
     url.searchParams.delete('jewel');
     url.searchParams.delete('conqueror');
@@ -173,23 +168,23 @@
     </div>
   </div>
 {:else}
-<div class="py-10 flex flex-row justify-center w-screen h-screen">
-  <div class="flex flex-col justify-between w-1/3">
-    <div class="mt-10">
-      <h3 class="mb-2">Debug Info:</h3>
-      <p>WASM Ready: {calculator ? 'Yes' : 'No'}</p>
-      <p>Browser: {browser ? 'Available' : 'Not available'}</p>
-      <p>Jewels loaded: {jewels.length}</p>
-      <p>Passive skills loaded: {passiveSkills.length}</p>
-      <p>Available conquerors: {availableConquerors.length}</p>
-    </div>
-    <div></div>
-    <div class="flex flex-col">
-      <div class="py-10 flex flex-col justify-between">
-        <a href="{base}/tree">
-          <h2 class="text-white mb-10 text-center underline text-orange-500">Skill Tree View</h2>
-        </a>
-        <div class="themed">
+  <div class="py-10 flex flex-row justify-center w-screen h-screen">
+    <div class="flex flex-col justify-between w-1/3">
+      <div class="mt-10">
+        <h3 class="mb-2">Debug Info:</h3>
+        <p>WASM Ready: {calculator ? 'Yes' : 'No'}</p>
+        <p>Browser: {browser ? 'Available' : 'Not available'}</p>
+        <p>Jewels loaded: {jewels.length}</p>
+        <p>Passive skills loaded: {passiveSkills.length}</p>
+        <p>Available conquerors: {availableConquerors.length}</p>
+      </div>
+      <div></div>
+      <div class="flex flex-col">
+        <div class="py-10 flex flex-col justify-between">
+          <a href="{base}/tree">
+            <h2 class="text-white mb-10 text-center underline text-orange-500">Skill Tree View</h2>
+          </a>
+          <div class="themed">
             <h3 class="mb-2">Timeless Jewel</h3>
             <Select items={jewels} bind:value={selectedJewel} on:select={updateUrl} />
 
@@ -208,8 +203,7 @@
                 {#if selectedPassiveSkill}
                   <div class="mt-4">
                     <label for="seed">Seed</label>
-                    <input type="number" id="seed" bind:value={seed} on:input={updateUrl}
-                      class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"/>
+                    <input type="number" id="seed" bind:value={seed} on:input={updateUrl} class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" />
                   </div>
 
                   {#if result}
@@ -221,18 +215,19 @@
                 {/if}
               {/if}
             {/if}
+          </div>
         </div>
-    </div>
 
-    <div class="flex justify-between pt-10">
-      <div class="text-right text-orange-500">
-        <a href="https://discord.gg/mfacademy" target="_blank" rel="noopener noreferrer" class="flex flex-row align-middle">
-          <img src="{assets}/mf-academy-logo.png" width="24px" alt="MF Academy" />
-          <span class="ml-2">MF Academy</span>
-        </a>
-        <a href="https://github.com/BlazesRus/timeless-jewels" target="_blank" rel="noopener noreferrer">Source (Github)</a>
+        <div class="flex justify-between pt-10">
+          <div class="text-right text-orange-500">
+            <a href="https://discord.gg/mfacademy" target="_blank" rel="noopener noreferrer" class="flex flex-row align-middle">
+              <img src="{assets}/mf-academy-logo.png" width="24px" alt="MF Academy" />
+              <span class="ml-2">MF Academy</span>
+            </a>
+            <a href="https://github.com/BlazesRus/timeless-jewels" target="_blank" rel="noopener noreferrer">Source (Github)</a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 {/if}
