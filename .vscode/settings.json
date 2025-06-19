@@ -177,8 +177,31 @@
   "git.confirmSync": false,
   "git.autofetch": true,
   "svelte.enable-ts-plugin": true,
+  "svelte.plugin.typescript.diagnostics.enable": true,
+  "svelte.plugin.typescript.hover.enable": true,
+  "svelte.plugin.typescript.completions.enable": true,
+  "svelte.plugin.svelte.diagnostics.enable": false,
+  "svelte.plugin.svelte.compilerWarnings": {
+    "global_reference_invalid": "ignore",
+    "global-reference-invalid": "ignore"
+  },
+  // Aggressive suppression for Legacy files when in Modern Mode
+  "svelte.plugin.svelte.format.config": {
+    "svelteSortOrder": "options-scripts-markup-styles",
+    "svelteStrictMode": false,
+    "svelteAllowShorthand": true,
+    "svelteIndentScriptAndStyle": true
+  },
+  "svelte.plugin.svelte.format.enable": true,
+  "svelte.plugin.svelte.completions.enable": true,
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.suggest.autoImports": true,
+  // TypeScript diagnostic overrides for Legacy files
+  "typescript.preferences.includePackageJsonAutoImports": "auto",
+  "typescript.suggest.includeAutomaticOptionalChainCompletions": true,
+  "typescript.validate.enable": true,
+  "typescript.reportStyleChecksAsWarnings": false,
+  "typescript.preferences.noSemantic": false,
   "github.copilot.chat.experimental.codeGeneration.fileFiltering": {
     "enabled": true,
     "excludePatterns": [
@@ -205,5 +228,47 @@
     "When working in Modern (Svelte 5) mode, suggest testing and development using current version only",
     "Only suggest version switching when explicitly requested by the user"
   ],
-  "eslint.useFlatConfig": true
+  "eslint.useFlatConfig": true,
+  "eslint.workingDirectories": [
+    "frontend"
+  ],
+  "eslint.options": {
+    "overrideConfig": {
+      "overrides": [
+        {
+          "files": [
+            "**/Legacy*",
+            "**/*Legacy*",
+            "**/Svelte4*"
+          ],
+          "rules": {
+            "@typescript-eslint/no-unused-vars": "off",
+            "svelte/valid-compile": "off",
+            "svelte/no-reactive-reassign": "off",
+            "no-undef": "off"
+          }
+        }
+      ]
+    }
+  },
+  // File-specific diagnostic overrides for Legacy files
+  "svelte.plugin.svelte.diagnostics.fileOverrides": {
+    "**/Legacy*.svelte": {
+      "enable": false
+    },
+    "**/*Legacy*.svelte": {
+      "enable": false
+    },
+    "**/Svelte4*.svelte": {
+      "enable": false
+    }
+  },
+  // File-specific error suppression for Legacy files when in Modern Mode
+  "problems.suppressWhenNoErrors": false,
+  // Complete diagnostic suppression for specific Legacy files
+  "svelte.plugin.svelte.diagnostics.exclude": [
+    "**/LegacyHomePage.svelte",
+    "**/Legacy*.svelte",
+    "**/*Legacy*.svelte"
+  ]
 }

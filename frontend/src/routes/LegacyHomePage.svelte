@@ -1,3 +1,4 @@
+<!-- Svelte 4 Legacy HomePage - Ignore Svelte 5 page store warnings when in Modern Mode -->
 <script lang="ts">
   import { browser } from '$app/environment';
   import { onMount } from 'svelte';
