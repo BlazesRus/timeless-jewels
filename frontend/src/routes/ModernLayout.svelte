@@ -39,17 +39,40 @@
           throw new Error(`Failed to fetch WASM: ${wasmResponse.status} ${wasmResponse.statusText}`);
         }
         const wasmData = await wasmResponse.arrayBuffer();
-        console.log('WASM data loaded, size:', wasmData.byteLength);
-
-        // Initialize main thread WASM
+        console.log('WASM data loaded, size:', wasmData.byteLength);        // Initialize main thread WASM
         console.log('Instantiating WASM...');
         const result = await WebAssembly.instantiate(wasmData.slice(0), go.importObject);
         console.log('Running Go WASM...');
-        go.run(result.instance);
-
-        // Initialize main thread data structures
+        
+        // Run Go WASM and wait for it to export functions
+        const runPromise = go.run(result.instance);
+          // Wait for Go exports to be available
+        console.log('Waiting for Go exports to be available...');
+        let retries = 0;
+        const maxRetries = 50; // 5 second timeout
+        
+        while (retries < maxRetries) {
+          if (typeof (globalThis as any)['go']?.['timeless-jewels']?.calculator?.Calculate === 'function') {
+            console.log('Go exports detected, initializing data structures...');
+            break;
+          }
+          await new Promise(resolve => setTimeout(resolve, 100));
+          retries++;
+        }
+        
+        if (retries >= maxRetries) {
+          throw new Error('Timeout waiting for Go exports to be available');
+        }        // Initialize main thread data structures
         console.log('Initializing data structures...');
         initializeCrystalline();
+        
+        // Verify initialization worked
+        console.log('Checking if stores were updated...');
+        const testGlobal = globalThis as any;
+        console.log('Global go structure available:', !!testGlobal['go']?.['timeless-jewels']);
+        console.log('Calculator functions:', Object.keys(testGlobal['go']?.['timeless-jewels']?.calculator || {}));
+        console.log('Data properties:', Object.keys(testGlobal['go']?.['timeless-jewels']?.data || {}).slice(0, 10));
+        
         loadSkillTree();
 
         // Initialize modern worker with WASM data

@@ -7,21 +7,40 @@
 
   import ModernSelect from '$lib/components/ModernSelect.svelte';
   import { base, assets } from '$app/paths';  import { data, calculator } from '$lib/types/ModernTypes.js';
-  
-  // Use store subscriptions directly - this should be reactive
+    // Use store subscriptions directly - this should be reactive
   let calculatorValue = $state<any>(null);
   let dataValue = $state<any>(null);
+  let wasmStatus = $state<string>('Initializing...');
+  let lastError = $state<string>('');
   
-  // Subscribe to store updates
+  // Subscribe to store updates with more detailed logging
   calculator.subscribe(value => {
     calculatorValue = value;
     console.log('Calculator store updated:', value ? 'Available' : 'Not available');
+    if (value) {
+      console.log('Calculator functions:', Object.keys(value));
+      wasmStatus = 'WASM loaded successfully';
+    }
   });
   
   data.subscribe(value => {
     dataValue = value;
     console.log('Data store updated:', value ? 'Available' : 'Not available');
+    if (value) {
+      console.log('Data properties available:', Object.keys(value).slice(0, 5), '...(and more)');
+      wasmStatus = 'Data loaded successfully';
+    }
   });
+
+  // Listen for WASM errors
+  if (browser) {
+    window.addEventListener('error', (e) => {
+      if (e.message.includes('wasm') || e.message.includes('WASM') || e.message.includes('Go')) {
+        lastError = e.message;
+        wasmStatus = 'WASM Error: ' + e.message;
+      }
+    });
+  }
 
   console.log('Main page loading...');
 
@@ -188,10 +207,29 @@
       <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
     </div>
     <div class="mt-4 text-sm text-gray-300">
+      <p>Status: {wasmStatus}</p>
+      {#if lastError}
+        <p class="text-red-400">Error: {lastError}</p>
+      {/if}
       <p>Calculator available: {calculatorValue ? 'Yes' : 'No'}</p>
       <p>Data available: {dataValue ? 'Yes' : 'No'}</p>
       <p>Browser ready: {browser ? 'Yes' : 'No'}</p>
-      <p>Go object: {typeof (globalThis as any).Go !== 'undefined' ? 'Available' : 'Not found'}</p>
+      <p>Go object: {typeof (globalThis as any).Go !== 'undefined' ? 'Available' : 'Not found'}</p>      <p>Go exports: {typeof (globalThis as any)['go'] !== 'undefined' ? 'Available' : 'Not found'}</p>
+      <p>Timeless Jewels: {typeof (globalThis as any)['go']?.['timeless-jewels'] !== 'undefined' ? 'Available' : 'Not found'}</p>
+      <button 
+        class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        onclick={() => {
+          console.log('Manual debug check triggered');
+          console.log('globalThis keys:', Object.keys(globalThis).filter(k => k.includes('go') || k.includes('Go')));
+          console.log('globalThis.go:', (globalThis as any)['go']);
+          console.log('globalThis.Go:', (globalThis as any).Go);
+          if ((globalThis as any)['go']) {
+            console.log('go keys:', Object.keys((globalThis as any)['go']));
+          }
+        }}
+      >
+        Debug GlobalThis
+      </button>
       <p class="mt-2 text-xs">Check browser console for detailed loading progress...</p>
     </div>
   </div>
