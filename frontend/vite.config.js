@@ -20,32 +20,40 @@ console.log(`Building with Svelte ${currentVersion}`);
 // or convert this to a .ts file. For now, let's use a simpler approach
 /** @type {import('vite').UserConfig} */
 const config = {
-  plugins: [
-    sveltekit(),
-    // Exclude legacy files when building in modern mode
-    ...(currentVersion >= 5 ? [{
-      name: 'exclude-legacy-files',
-      resolveId(id) {
-        if (id.includes('LegacyHomePage') || id.includes('LegacyPage')) {
-          return false; // Don't process legacy files in modern builds
-        }
-      }
-    }] : [])
-  ],
+  plugins: [sveltekit()],
+  build: {
+    rollupOptions: {
+      external: currentVersion >= 5 ? [
+        // Exclude Legacy files when building in modern mode
+        /.*Legacy.*\.svelte$/,
+        /.*LegacyHomePage\.svelte$/,
+        /.*LegacyPage\.svelte$/
+      ] : [
+        // Exclude Modern files when building in legacy mode  
+        /.*Modern.*\.svelte$/,
+        /.*ModernHomePage\.svelte$/,
+        /.*ModernPage\.svelte$/,
+        /.*ModernPage.*\.svelte$/
+      ]
+    }
+  },
   define: {
     // Inject Svelte version at build time
     __SVELTE_VERSION__: JSON.stringify(process.env.npm_package_devDependencies_svelte || '4.2.0')
-  },
-  // Updated worker config for Vite 6
+  },  // Updated worker config for Vite 6
   worker: {
     plugins: () => [
       {
         name: 'remove-manifest',
         configResolved(c) {
-          const manifestPlugin = c.worker.plugins.findIndex((p) => p.name === 'vite:manifest');
-          if (manifestPlugin >= 0) c.worker.plugins.splice(manifestPlugin, 1);
-          const ssrManifestPlugin = c.worker.plugins.findIndex((p) => p.name === 'vite:ssr-manifest');
-          if (ssrManifestPlugin >= 0) c.plugins.splice(ssrManifestPlugin, 1);
+          if (c.worker && c.worker.plugins && Array.isArray(c.worker.plugins)) {
+            const manifestPlugin = c.worker.plugins.findIndex((p) => p && p.name === 'vite:manifest');
+            if (manifestPlugin >= 0) c.worker.plugins.splice(manifestPlugin, 1);
+          }
+          if (c.plugins && Array.isArray(c.plugins)) {
+            const ssrManifestPlugin = c.plugins.findIndex((p) => p && p.name === 'vite:ssr-manifest');
+            if (ssrManifestPlugin >= 0) c.plugins.splice(ssrManifestPlugin, 1);
+          }
         }
       }
     ]

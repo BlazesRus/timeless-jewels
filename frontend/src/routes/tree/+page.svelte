@@ -27,16 +27,6 @@
       console.error('Failed to load tree page component:', err);
       error = `Failed to load tree page: ${err instanceof Error ? err.message : 'Unknown error'}`;
       isLoading = false;
-      // Fallback to Svelte 4 implementation
-      try {
-        console.log('Attempting fallback to Svelte 4 implementation...');
-        const module = await import('./LegacyPage.svelte');
-        TreePageComponent = module.default;
-        error = null;
-      } catch (fallbackErr) {
-        console.error('Fallback also failed:', fallbackErr);
-        error = 'Unable to load any tree page implementation';
-      }
     }
   });
 </script>
