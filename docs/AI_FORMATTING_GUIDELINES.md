@@ -80,8 +80,8 @@ This project uses a unique **version-aware architecture** with dual Svelte 4/5 s
 #### **Version-Aware Components**
 
 - **Main Router**: `src/routes/tree/+page.svelte` - Version detection and dynamic imports
-- **Svelte 4 Implementation**: `src/routes/tree/Svelte4Page.svelte` - Legacy compatibility
-- **Svelte 5 Implementation**: `src/routes/tree/Svelte5Page.svelte` - Modern features
+- **Svelte 4 Implementation**: `src/routes/tree/LegacyPage.svelte` - Legacy compatibility
+- **Svelte 5 Implementation**: `src/routes/tree/ModernPage.svelte` - Modern features
 - **Modern Components**: `src/lib/components/ModernSelect.svelte` - Cross-version compatibility
 
 #### **File Naming Conventions**
@@ -95,8 +95,8 @@ This project uses a unique **version-aware architecture** with dual Svelte 4/5 s
 
 **Examples:**
 
-- `Svelte4Page.svelte` → Use Svelte 4 syntax (`let data = []`, `$: reactive`)
-- `Svelte5Page.svelte` → Use Svelte 5 syntax (`let data = $state([])`, `$derived`)
+- `LegacyPage.svelte` → Use Svelte 4 syntax (`let data = []`, `$: reactive`)
+- `ModernPage.svelte` → Use Svelte 5 syntax (`let data = $state([])`, `$derived`)
 - `components/Legacy/Select.svelte` → Use Svelte 4 syntax
 - `components/Svelte5/Select.svelte` → Use Svelte 5 syntax
 
@@ -139,11 +139,11 @@ When editing version-specific components, understand the target:
 - **Files in `Svelte5/` folders** → Use **Svelte 5** syntax only
 
 ```typescript
-// ✅ GOOD - Svelte 5 syntax in Svelte5Page.svelte
+// ✅ GOOD - Svelte 5 syntax in ModernPage.svelte
 let data = $state([]);
 let loading = $state(false);
 
-// ✅ GOOD - Svelte 4 syntax in Svelte4Page.svelte
+// ✅ GOOD - Svelte 4 syntax in LegacyPage.svelte
 let data = [];
 let loading = false;
 
@@ -186,7 +186,7 @@ version = 5
 
 ```
 🔴 LEGACY (Svelte 4) Files - Use Traditional Syntax:
-├── Svelte4Page.svelte               ← "Svelte4" in filename
+├── LegacyPage.svelte               ← "Svelte4" in filename
 ├── ComponentSvelte4.svelte          ← "Svelte4" in filename
 ├── Legacy/
 │   ├── Select.svelte                ← "Legacy/" folder
@@ -195,7 +195,7 @@ version = 5
     └── ModernSelect.svelte          ← "Legacy/" folder
 
 🟢 MODERN (Svelte 5) Files - Use Runes Syntax:
-├── Svelte5Page.svelte               ← "Svelte5" in filename
+├── ModernPage.svelte               ← "Svelte5" in filename
 ├── ComponentSvelte5.svelte          ← "Svelte5" in filename
 ├── Svelte5/
 │   ├── Select.svelte                ← "Svelte5/" folder
@@ -341,10 +341,10 @@ NO
     try {
       version = await detectSvelteVersion();
         if (version === 4) {
-        const module = await import('./Svelte4Page.svelte');
+        const module = await import('./LegacyPage.svelte');
         TreeComponent = module.default;
       } else {
-        const module = await import('./Svelte5Page.svelte');
+        const module = await import('./ModernPage.svelte');
         TreeComponent = module.default;
       }
     } catch (err) {
@@ -652,12 +652,12 @@ oldString: `  "devDependencies": {
 
 ```typescript
 // ✅ GOOD - Include version context for component files
-oldString: `// Svelte5Page.svelte - Svelte 5 implementation
+oldString: `// ModernPage.svelte - Svelte 5 implementation
 <script lang="ts">
   let data = $state([]);
   let loading = $state(false);`;
 
-newString: `// Svelte5Page.svelte - Svelte 5 implementation  
+newString: `// ModernPage.svelte - Svelte 5 implementation  
 <script lang="ts">
   let data = $state([]);
   let loading = $state(false);
@@ -717,7 +717,7 @@ export class VersionManager {
 ```svelte
 <!-- ✅ GOOD - Use appropriate Svelte syntax for target version -->
 
-<!-- For Svelte 5 files (Svelte5Page.svelte OR Svelte5/*.svelte) -->
+<!-- For Svelte 5 files (ModernPage.svelte OR Svelte5/*.svelte) -->
 <script lang="ts">
   // ...existing code...
   let newFeature = $state(false);
@@ -725,7 +725,7 @@ export class VersionManager {
   // ...existing code...
 </script>
 
-<!-- For Svelte 4 files (Svelte4Page.svelte OR Legacy/*.svelte) -->
+<!-- For Svelte 4 files (LegacyPage.svelte OR Legacy/*.svelte) -->
 <script lang="ts">
   // ...existing code...
   let newFeature = false;
@@ -814,12 +814,12 @@ class Example {
 ❌ **Wrong syntax for target version:**
 
 ```svelte
-<!-- In Svelte4Page.svelte - DON'T use Svelte 5 syntax -->
+<!-- In LegacyPage.svelte - DON'T use Svelte 5 syntax -->
 <script>
   let data = $state([]); // ❌ $state is Svelte 5 only
 </script>
 
-<!-- In Svelte5Page.svelte - DON'T use outdated patterns -->
+<!-- In ModernPage.svelte - DON'T use outdated patterns -->
 <script>
   import { writable } from 'svelte/store'; // ❌ Use $state instead
   let data = writable([]);
@@ -840,7 +840,7 @@ class Example {
 ✅ **Correct syntax for each version:**
 
 ```svelte
-<!-- Svelte4Page.svelte OR Legacy/ComponentName.svelte -->
+<!-- LegacyPage.svelte OR Legacy/ComponentName.svelte -->
 <script>
   let data = [];
   $: loading = false;
@@ -848,7 +848,7 @@ class Example {
   $: doubled = count * 2;
 </script>
 
-<!-- Svelte5Page.svelte OR Svelte5/ComponentName.svelte -->
+<!-- ModernPage.svelte OR Svelte5/ComponentName.svelte -->
 <script>
   let data = $state([]);
   let loading = $state(false);

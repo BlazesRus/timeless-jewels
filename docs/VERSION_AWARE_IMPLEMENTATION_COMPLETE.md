@@ -21,8 +21,8 @@ Successfully implemented a comprehensive version-aware page naming system for th
 
 ### ✅ Version-Specific Implementations
 
-- **Svelte 4 Implementation**: `Svelte4Page.svelte` with traditional patterns
-- **Svelte 5 Implementation**: `Svelte5Page.svelte` with runes and modern syntax
+- **Svelte 4 Implementation**: `LegacyPage.svelte` with traditional patterns
+- **Svelte 5 Implementation**: `ModernPage.svelte` with runes and modern syntax
 - **UI Library Adaptation**: svelte-select for Svelte 4, ModernSelect for Svelte 5
 
 ### ✅ Build System Updates
@@ -43,8 +43,8 @@ frontend/src/
 ├── lib/components/
 │   └── ModernSelect.svelte       # Svelte 5 compatible select component
 └── routes/tree/
-    ├── +page.svelte              # Main version-aware router    ├── Svelte4Page.svelte        # Svelte 4 implementation
-    └── Svelte5Page.svelte        # Svelte 5 implementation
+    ├── +page.svelte              # Main version-aware router    ├── LegacyPage.svelte        # Svelte 4 implementation
+    └── ModernPage.svelte        # Svelte 5 implementation
 ```
 
 ## 🛠 Usage

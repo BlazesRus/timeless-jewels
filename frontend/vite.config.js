@@ -1,10 +1,37 @@
 import { sveltekit } from '@sveltejs/kit/vite';
+import fs from 'fs';
+import path from 'path';
+
+// Read version configuration
+function getCurrentSvelteVersion() {
+  try {
+    const versionConfig = fs.readFileSync(path.resolve('./version.ini'), 'utf8');
+    const versionMatch = versionConfig.match(/version\s*=\s*(\d+)/);
+    return versionMatch ? parseInt(versionMatch[1]) : 5;
+  } catch {
+    return 5; // Default to Svelte 5
+  }
+}
+
+const currentVersion = getCurrentSvelteVersion();
+console.log(`Building with Svelte ${currentVersion}`);
 
 // Since we're using a .js config file, we need to import the plugin differently
 // or convert this to a .ts file. For now, let's use a simpler approach
 /** @type {import('vite').UserConfig} */
 const config = {
-  plugins: [sveltekit()],
+  plugins: [
+    sveltekit(),
+    // Exclude legacy files when building in modern mode
+    ...(currentVersion >= 5 ? [{
+      name: 'exclude-legacy-files',
+      resolveId(id) {
+        if (id.includes('LegacyHomePage') || id.includes('LegacyPage')) {
+          return false; // Don't process legacy files in modern builds
+        }
+      }
+    }] : [])
+  ],
   define: {
     // Inject Svelte version at build time
     __SVELTE_VERSION__: JSON.stringify(process.env.npm_package_devDependencies_svelte || '4.2.0')

@@ -36,8 +36,8 @@ The system enables seamless support for both Svelte 4 and Svelte 5 in the same c
 
 #### 4. Version-Specific Implementations
 
-- **`Svelte4Page.svelte`** - Svelte 4 implementation using svelte-select
-- **`Svelte5Page.svelte`** - Svelte 5 implementation using runes and modern components
+- **`LegacyPage.svelte`** - Svelte 4 implementation using svelte-select
+- **`ModernPage.svelte`** - Svelte 5 implementation using runes and modern components
 - **`ModernSelect.svelte`** - Svelte 5 compatible select component
 
 #### 5. Main Router (`src/routes/tree/+page.svelte`)
@@ -102,7 +102,7 @@ console.log(config.features.runes); // true for Svelte 5
 
 ## Key Differences Between Implementations
 
-### Svelte 4 Implementation (`Svelte4Page.svelte`)
+### Svelte 4 Implementation (`LegacyPage.svelte`)
 
 - Uses traditional reactivity with `$:` statements
 - Event handling with `on:event` syntax
@@ -110,7 +110,7 @@ console.log(config.features.runes); // true for Svelte 5
 - svelte-select for dropdown components
 - localStorage handled with reactive statements
 
-### Svelte 5 Implementation (`Svelte5Page.svelte`)
+### Svelte 5 Implementation (`ModernPage.svelte`)
 
 - Uses runes: `$state`, `$derived`, `$effect`
 - Event handling with `onclick` attributes

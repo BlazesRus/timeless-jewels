@@ -40,8 +40,8 @@ frontend/
 ```
 src/routes/tree/
 ├── +page.svelte              # 🔄 Router (detects version, loads component)
-├── Svelte4Page.svelte        # 📱 Svelte 4 implementation
-└── Svelte5Page.svelte        # 🚀 Svelte 5 implementation
+├── LegacyPage.svelte        # 📱 Svelte 4 implementation
+└── ModernPage.svelte        # 🚀 Svelte 5 implementation
 ```
 
 **Pattern**: Main router detects Svelte version and dynamically imports appropriate component.
@@ -59,8 +59,8 @@ src/routes/tree/
 
 **Examples:**
 
-- `Svelte4Page.svelte` → `let data = []`, `$: reactive = data.length`
-- `Svelte5Page.svelte` → `let data = $state([])`, `const reactive = $derived(data.length)`
+- `LegacyPage.svelte` → `let data = []`, `$: reactive = data.length`
+- `ModernPage.svelte` → `let data = $state([])`, `const reactive = $derived(data.length)`
 - `components/Legacy/Select.svelte` → Traditional syntax only
 - `components/Svelte5/Select.svelte` → Modern runes syntax only
 

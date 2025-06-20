@@ -14,11 +14,11 @@
       console.log(`Detected Svelte version: ${svelteVersion.full}`);
       if (isSvelte5OrHigher()) {
         console.log('Loading Svelte 5 tree page implementation...');
-        const module = await import('./Svelte5Page.svelte');
+        const module = await import('./ModernPage.svelte');
         TreePageComponent = module.default;
       } else {
         console.log('Loading Svelte 4 tree page implementation...');
-        const module = await import('./Svelte4Page.svelte');
+        const module = await import('./LegacyPage.svelte');
         TreePageComponent = module.default;
       }
 
@@ -30,7 +30,7 @@
       // Fallback to Svelte 4 implementation
       try {
         console.log('Attempting fallback to Svelte 4 implementation...');
-        const module = await import('./Svelte4Page.svelte');
+        const module = await import('./LegacyPage.svelte');
         TreePageComponent = module.default;
         error = null;
       } catch (fallbackErr) {

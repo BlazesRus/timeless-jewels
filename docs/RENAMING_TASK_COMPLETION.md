@@ -8,8 +8,8 @@ All file renaming tasks and documentation updates have been successfully complet
 
 ### **🔄 Files Renamed**
 
-- **`TreePageSvelte4.svelte`** ➜ **`Svelte4Page.svelte`**
-- **`TreePageSvelte5.svelte`** ➜ **`Svelte5Page.svelte`**
+- **`TreePageSvelte4.svelte`** ➜ **`LegacyPage.svelte`**
+- **`TreePageSvelte5.svelte`** ➜ **`ModernPage.svelte`**
 
 ### **📁 Location**
 
@@ -17,8 +17,8 @@ All file renaming tasks and documentation updates have been successfully complet
 frontend/src/routes/tree/
 ├── +page.svelte        # ✅ Updated with new imports
 ├── +page.ts           # ✅ Unchanged (no updates needed)
-├── Svelte4Page.svelte # ✅ Renamed and verified
-└── Svelte5Page.svelte # ✅ Renamed and verified
+├── LegacyPage.svelte # ✅ Renamed and verified
+└── ModernPage.svelte # ✅ Renamed and verified
 ```
 
 ## 🔧 **Code Updates Completed**
@@ -29,11 +29,11 @@ frontend/src/routes/tree/
 
 ```typescript
 // Primary loading
-const module = await import("./Svelte5Page.svelte");
-const module = await import("./Svelte4Page.svelte");
+const module = await import("./ModernPage.svelte");
+const module = await import("./LegacyPage.svelte");
 
 // Fallback loading
-const module = await import("./Svelte4Page.svelte");
+const module = await import("./LegacyPage.svelte");
 ```
 
 ### **Documentation Files Updated**
@@ -59,7 +59,7 @@ const module = await import("./Svelte4Page.svelte");
 ### **1. Improved Naming Convention**
 
 - **Before**: `TreePageSvelte4.svelte`, `TreePageSvelte5.svelte`
-- **After**: `Svelte4Page.svelte`, `Svelte5Page.svelte`
+- **After**: `LegacyPage.svelte`, `ModernPage.svelte`
 
 ### **2. Better Consistency**
 
@@ -83,8 +83,8 @@ const module = await import("./Svelte4Page.svelte");
 frontend/src/routes/tree/
 ├── +page.svelte        ✅
 ├── +page.ts           ✅
-├── Svelte4Page.svelte ✅
-└── Svelte5Page.svelte ✅
+├── LegacyPage.svelte ✅
+└── ModernPage.svelte ✅
 ```
 
 ### **Reference Validation**

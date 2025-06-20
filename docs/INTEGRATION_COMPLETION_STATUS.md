@@ -24,15 +24,15 @@
 - **Directory Structure**: Created `components/Legacy/` and `components/Svelte5/` directories
 - **Legacy Component**: `components/Legacy/SkillTree.svelte` with Svelte 4 compatibility
 - **Modern Component**: `components/Svelte5/SkillTree.svelte` with Svelte 5 patterns
-- **Page Integration**: Updated `Svelte4Page.svelte` and `Svelte5Page.svelte` imports
+- **Page Integration**: Updated `LegacyPage.svelte` and `ModernPage.svelte` imports
 
 #### **Implementation Details:**
 
 ```typescript
-// Svelte4Page.svelte
+// LegacyPage.svelte
 import SkillTree from "$lib/components/Legacy/SkillTree.svelte";
 
-// Svelte5Page.svelte
+// ModernPage.svelte
 import SkillTree from "$lib/components/Svelte5/SkillTree.svelte";
 ```
 
@@ -125,8 +125,8 @@ frontend/
 │   ├── Legacy/SkillTree.svelte      ← Svelte 4 compatible
 │   └── Svelte5/SkillTree.svelte     ← Svelte 5 ready
 ├── src/routes/tree/
-│   ├── Svelte4Page.svelte           ← Uses Legacy components
-│   └── Svelte5Page.svelte           ← Uses Svelte5 components
+│   ├── LegacyPage.svelte           ← Uses Legacy components
+│   └── ModernPage.svelte           ← Uses Svelte5 components
 └── scripts/version-manager.js       ← Dynamic switching
 ```
 

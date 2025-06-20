@@ -75,8 +75,8 @@ The Timeless Jewel Generator now includes comprehensive AI assistant integration
 ```
 src/routes/tree/
 ├── +page.svelte              # 🔄 Router (version detection)
-├── Svelte4Page.svelte        # 📱 Svelte 4 implementation
-└── Svelte5Page.svelte        # 🚀 Svelte 5 implementation
+├── LegacyPage.svelte        # 📱 Svelte 4 implementation
+└── ModernPage.svelte        # 🚀 Svelte 5 implementation
 ```
 
 **Key Pattern**: Main router detects version and dynamically imports appropriate component.

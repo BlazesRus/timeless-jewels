@@ -16,7 +16,7 @@ src/wasm_exec.js
 
 # Ignore files with syntax errors that prevent formatting
 src/routes/+page.svelte
-src/routes/tree/Svelte5Page.svelte
+src/routes/tree/ModernPage.svelte
 
 # Ignore configuration files from formatting
 package.json

@@ -141,7 +141,7 @@ The system automatically loads the appropriate components based on the detected 
 ```typescript
 // Runtime detection and dynamic imports
 const TreePage = await import(
-  svelteVersion >= 5 ? "./Svelte5Page.svelte" : "./Svelte4Page.svelte"
+  svelteVersion >= 5 ? "./ModernPage.svelte" : "./LegacyPage.svelte"
 );
 ```
 

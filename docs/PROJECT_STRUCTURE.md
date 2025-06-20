@@ -151,8 +151,8 @@ src/
 │   │
 │   └── 📁 tree/                        # Tree Page (Version-Aware)
 │       ├── +page.svelte                # Main router with dynamic imports
-│       ├── Svelte4Page.svelte         # Svelte 4 implementation
-│       └── Svelte5Page.svelte         # Svelte 5 implementation
+│       ├── LegacyPage.svelte         # Svelte 4 implementation
+│       └── ModernPage.svelte         # Svelte 5 implementation
 │
 └── 📁 static/                          # Static Assets
     ├── calculator.wasm                  # Go WebAssembly calculator

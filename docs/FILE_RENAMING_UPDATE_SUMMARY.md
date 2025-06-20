@@ -4,8 +4,8 @@
 
 ### **File Renaming**
 
-- **`TreePageSvelte4.svelte`** → **`Svelte4Page.svelte`**
-- **`TreePageSvelte5.svelte`** → **`Svelte5Page.svelte`**
+- **`TreePageSvelte4.svelte`** → **`LegacyPage.svelte`**
+- **`TreePageSvelte5.svelte`** → **`ModernPage.svelte`**
 
 ### **Updated References**
 
@@ -27,8 +27,8 @@
 
 ### **Consistent Pattern**
 
-- **`Svelte4Page.svelte`** - Legacy (Svelte 4) implementation
-- **`Svelte5Page.svelte`** - Modern (Svelte 5) implementation
+- **`LegacyPage.svelte`** - Legacy (Svelte 4) implementation
+- **`ModernPage.svelte`** - Modern (Svelte 5) implementation
 
 ### **Benefits**
 
@@ -45,8 +45,8 @@
 frontend/src/routes/tree/
 ├── +page.svelte        # ✅ Updated with new imports
 ├── +page.ts           # ✅ Unchanged
-├── Svelte4Page.svelte # ✅ Renamed from TreePageSvelte4.svelte
-└── Svelte5Page.svelte # ✅ Renamed from TreePageSvelte5.svelte
+├── LegacyPage.svelte # ✅ Renamed from TreePageSvelte4.svelte
+└── ModernPage.svelte # ✅ Renamed from TreePageSvelte5.svelte
 ```
 
 ### **Import Structure**
@@ -54,15 +54,15 @@ frontend/src/routes/tree/
 ```typescript
 // Updated dynamic imports in +page.svelte
 if (isSvelte5OrHigher()) {
-  const module = await import("./Svelte5Page.svelte");
+  const module = await import("./ModernPage.svelte");
   TreePageComponent = module.default;
 } else {
-  const module = await import("./Svelte4Page.svelte");
+  const module = await import("./LegacyPage.svelte");
   TreePageComponent = module.default;
 }
 
 // Fallback also updated
-const module = await import("./Svelte4Page.svelte");
+const module = await import("./LegacyPage.svelte");
 ```
 
 ## 📚 Documentation Impact
@@ -84,8 +84,8 @@ const module = await import("./Svelte4Page.svelte");
 
 All file references have been successfully updated to use the new naming convention:
 
-- **`Svelte4Page.svelte`** for Svelte 4 implementations
-- **`Svelte5Page.svelte`** for Svelte 5 implementations
+- **`LegacyPage.svelte`** for Svelte 4 implementations
+- **`ModernPage.svelte`** for Svelte 5 implementations
 
 The version-aware routing system continues to work seamlessly with the new file names, maintaining full compatibility while providing clearer, more consistent naming.
 

@@ -75,8 +75,8 @@ timeless-jewels_Partial/
 │   │       ├── +page.svelte      # Home page
 │   │       └── 📁 tree/          # Tree page with version-aware loading
 │   │           ├── +page.svelte  # Main router with dynamic imports
-│   │           ├── Svelte4Page.svelte    # Svelte 4 implementation
-│   │           └── Svelte5Page.svelte    # Svelte 5 implementation
+│   │           ├── LegacyPage.svelte    # Svelte 4 implementation
+│   │           └── ModernPage.svelte    # Svelte 5 implementation
 │   │
 │   ├── 📁 static/                # Static assets
 │   │   ├── calculator.wasm       # Go WebAssembly calculator
