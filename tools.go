@@ -117,15 +117,30 @@ func generateTypes() {
 		panic(err)
 	}
 
+	// Create base files with eslint-disable
 	tsFile = "/* eslint-disable */\n" + tsFile
 	jsFile = "/* eslint-disable */\n" + jsFile
 
+	// Create directory
 	if err := os.MkdirAll("./frontend/src/lib/types", 0777); err != nil {
 		if !os.IsExist(err) {
 			panic(err)
 		}
 	}
 
+	// Generate Legacy version (Svelte 4 with stores)
+	legacyJsFile := generateLegacyTypes(jsFile)
+	if err := os.WriteFile("./frontend/src/lib/types/LegacyTypes.js", []byte(legacyJsFile), 0777); err != nil {
+		panic(err)
+	}
+
+	// Generate Modern version (Svelte 5 with runes)
+	modernJsFile := generateModernTypes(jsFile)
+	if err := os.WriteFile("./frontend/src/lib/types/ModernTypes.js", []byte(modernJsFile), 0777); err != nil {
+		panic(err)
+	}
+
+	// Keep original files for backward compatibility (for now)
 	if err := os.WriteFile("./frontend/src/lib/types/index.js", []byte(jsFile), 0777); err != nil {
 		panic(err)
 	}
@@ -133,4 +148,97 @@ func generateTypes() {
 	if err := os.WriteFile("./frontend/src/lib/types/index.d.ts", []byte(tsFile), 0777); err != nil {
 		panic(err)
 	}
+}
+
+func generateLegacyTypes(originalJs string) string {
+	// Replace the original export pattern with Svelte 4 store-based pattern
+	legacyTemplate := `/* eslint-disable */
+// @ts-nocheck
+import { writable } from 'svelte/store';
+
+// Use Svelte stores for reactivity in Svelte 4
+export const calculator = writable(null);
+export const data = writable(null);
+
+export const initializeCrystalline = () => {
+  // Access WASM exports through globalThis
+  const wasmGlobal = /** @type {any} */ (globalThis);
+  
+  const calculatorValue = {
+    Calculate: wasmGlobal["go"]["timeless-jewels"]["calculator"]["Calculate"],
+    ReverseSearch: wasmGlobal["go"]["timeless-jewels"]["calculator"]["ReverseSearch"],
+  };
+  
+  const dataValue = {
+    GetAlternatePassiveAdditionByIndex: wasmGlobal["go"]["timeless-jewels"]["data"]["GetAlternatePassiveAdditionByIndex"],
+    GetAlternatePassiveSkillByIndex: wasmGlobal["go"]["timeless-jewels"]["data"]["GetAlternatePassiveSkillByIndex"],
+    GetPassiveSkillByIndex: wasmGlobal["go"]["timeless-jewels"]["data"]["GetPassiveSkillByIndex"],
+    GetStatByIndex: wasmGlobal["go"]["timeless-jewels"]["data"]["GetStatByIndex"],
+    PassiveSkillAuraStatTranslationsJSON: wasmGlobal["go"]["timeless-jewels"]["data"]["PassiveSkillAuraStatTranslationsJSON"],
+    PassiveSkillStatTranslationsJSON: wasmGlobal["go"]["timeless-jewels"]["data"]["PassiveSkillStatTranslationsJSON"],
+    PassiveSkills: wasmGlobal["go"]["timeless-jewels"]["data"]["PassiveSkills"],
+    PossibleStats: wasmGlobal["go"]["timeless-jewels"]["data"]["PossibleStats"],
+    SkillTree: wasmGlobal["go"]["timeless-jewels"]["data"]["SkillTree"],
+    StatTranslationsJSON: wasmGlobal["go"]["timeless-jewels"]["data"]["StatTranslationsJSON"],
+    TimelessJewelConquerors: wasmGlobal["go"]["timeless-jewels"]["data"]["TimelessJewelConquerors"],
+    TimelessJewelSeedRanges: wasmGlobal["go"]["timeless-jewels"]["data"]["TimelessJewelSeedRanges"],
+    TimelessJewels: wasmGlobal["go"]["timeless-jewels"]["data"]["TimelessJewels"],
+    TreeToPassive: wasmGlobal["go"]["timeless-jewels"]["data"]["TreeToPassive"],
+  };
+  
+  // Update the stores
+  calculator.set(calculatorValue);
+  data.set(dataValue);
+  
+  console.log('WASM calculator and data initialized and stores updated (Legacy/Svelte 4)');
+};`
+
+	return legacyTemplate
+}
+
+func generateModernTypes(originalJs string) string {
+	// Replace the original export pattern with Svelte 5 store-based pattern
+	// Using stores for cross-component reactivity compatibility
+	modernTemplate := `/* eslint-disable */
+// @ts-nocheck
+import { writable } from 'svelte/store';
+
+// Use Svelte stores for reactivity in Svelte 5 (for cross-component compatibility)
+export const calculator = writable(null);
+export const data = writable(null);
+
+export const initializeCrystalline = () => {
+  // Access WASM exports through globalThis
+  const wasmGlobal = /** @type {any} */ (globalThis);
+  
+  const calculatorValue = {
+    Calculate: wasmGlobal["go"]["timeless-jewels"]["calculator"]["Calculate"],
+    ReverseSearch: wasmGlobal["go"]["timeless-jewels"]["calculator"]["ReverseSearch"],
+  };
+  
+  const dataValue = {
+    GetAlternatePassiveAdditionByIndex: wasmGlobal["go"]["timeless-jewels"]["data"]["GetAlternatePassiveAdditionByIndex"],
+    GetAlternatePassiveSkillByIndex: wasmGlobal["go"]["timeless-jewels"]["data"]["GetAlternatePassiveSkillByIndex"],
+    GetPassiveSkillByIndex: wasmGlobal["go"]["timeless-jewels"]["data"]["GetPassiveSkillByIndex"],
+    GetStatByIndex: wasmGlobal["go"]["timeless-jewels"]["data"]["GetStatByIndex"],
+    PassiveSkillAuraStatTranslationsJSON: wasmGlobal["go"]["timeless-jewels"]["data"]["PassiveSkillAuraStatTranslationsJSON"],
+    PassiveSkillStatTranslationsJSON: wasmGlobal["go"]["timeless-jewels"]["data"]["PassiveSkillStatTranslationsJSON"],
+    PassiveSkills: wasmGlobal["go"]["timeless-jewels"]["data"]["PassiveSkills"],
+    PossibleStats: wasmGlobal["go"]["timeless-jewels"]["data"]["PossibleStats"],
+    SkillTree: wasmGlobal["go"]["timeless-jewels"]["data"]["SkillTree"],
+    StatTranslationsJSON: wasmGlobal["go"]["timeless-jewels"]["data"]["StatTranslationsJSON"],
+    TimelessJewelConquerors: wasmGlobal["go"]["timeless-jewels"]["data"]["TimelessJewelConquerors"],
+    TimelessJewelSeedRanges: wasmGlobal["go"]["timeless-jewels"]["data"]["TimelessJewelSeedRanges"],
+    TimelessJewels: wasmGlobal["go"]["timeless-jewels"]["data"]["TimelessJewels"],
+    TreeToPassive: wasmGlobal["go"]["timeless-jewels"]["data"]["TreeToPassive"],
+  };
+  
+  // Update the stores
+  calculator.set(calculatorValue);
+  data.set(dataValue);
+  
+  console.log('WASM calculator and data initialized and stores updated (Modern/Svelte 5)');
+};`
+
+	return modernTemplate
 }

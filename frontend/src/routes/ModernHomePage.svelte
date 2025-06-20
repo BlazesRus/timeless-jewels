@@ -6,8 +6,12 @@
   import { page } from '$app/stores';
 
   import ModernSelect from '$lib/components/ModernSelect.svelte';
-  import { base, assets } from '$app/paths';
-  import { data, calculator } from '$lib/types/index.js';
+  import { base, assets } from '$app/paths';  import { data, calculator } from '$lib/types/ModernTypes.js';
+  import { get } from 'svelte/store';
+  
+  // Reactive store values for use in the component with proper typing
+  const calculatorValue = $derived(get(calculator) as any);
+  const dataValue = $derived(get(data) as any);
 
   console.log('Main page loading...');
 
@@ -21,7 +25,7 @@
   let seed = $state(0);
   let result = $state<any>(undefined);
 
-  let JewelsAreNotInitialized = $state(false); // Initialize search params as derived value
+  let JewelsAreNotInitialized = $state(true); // Start as true to trigger initial data load
   const searchParams = $derived(browser ? (globalThis as any).$page?.url?.searchParams || new URLSearchParams() : new URLSearchParams());
 
   // Initialize search params after component mounts
@@ -47,46 +51,57 @@
     }
   });
 
-  // Data initialization effect
+  // Data initialization effect - reactively respond to WASM data loading
   $effect(() => {
-    if (calculator && data && browser) {
-      //Make sure if jewel or passiveskill data breaks that recreate new data
-      if (!JewelsAreNotInitialized && (jewels == undefined || passiveSkills == undefined)) JewelsAreNotInitialized = true;
-
-      if (JewelsAreNotInitialized) {
-        console.log('WASM is ready, populating jewel and passive skill UI data...'); // Initialize jewels
-        jewels = Object.keys(data.TimelessJewels || {}).map(k => ({
-          value: parseInt(k),
-          label: (data.TimelessJewels as any)[k]
-        }));
-        console.log('Jewels loaded:', jewels.length); // Initialize passive skills
-        passiveSkills = (data.PassiveSkills || [])
-          .filter(skill => skill !== undefined)
-          .map(skill => ({
-            value: skill!.Index,
-            label: skill!.Name
-          }));
-        console.log('Passive skills loaded:', passiveSkills.length);
-
-        JewelsAreNotInitialized = false;
-      } // Populate passive skills
-      if (data.PassiveSkills && Array.isArray(data.PassiveSkills)) {
-        passiveSkills = data.PassiveSkills.filter(skill => skill !== undefined).map(skill => ({
-          value: skill!.PassiveSkillGraphID,
-          label: skill!.Name
-        }));
-        console.log('Passive skills loaded:', passiveSkills.length);
+    // Use store values directly with $ syntax (works in both Svelte 4 and 5)
+    if (calculatorValue && dataValue && browser) {
+      console.log('WASM data detected, calculator and data are available');
+      
+      // Make sure if jewel or passiveskill data breaks that we recreate new data
+      if (!JewelsAreNotInitialized && (jewels.length === 0 || passiveSkills.length === 0)) {
+        JewelsAreNotInitialized = true;
       }
 
-      // Restore selections from URL params
+      if (JewelsAreNotInitialized) {
+        console.log('WASM is ready, populating jewel and passive skill UI dataValue...');
+          // Initialize jewels
+        if (dataValue.TimelessJewels) {
+          jewels = Object.keys(dataValue.TimelessJewels).map(k => ({
+            value: parseInt(k),
+            label: (dataValue.TimelessJewels as any)[k]
+          }));
+          console.log('Jewels loaded:', jewels.length);
+        }
+        
+        // Initialize passive skills
+        if (dataValue.PassiveSkills && Array.isArray(dataValue.PassiveSkills)) {
+          passiveSkills = dataValue.PassiveSkills
+            .filter(skill => skill !== undefined)
+            .map(skill => ({
+              value: skill!.PassiveSkillGraphID,
+              label: skill!.Name
+            }));
+          console.log('Passive skills loaded:', passiveSkills.length);
+        }
+
+        JewelsAreNotInitialized = false;
+      }
+
+      // Restore selections from URL params after data is loaded
       if (searchParams.has('jewel') && jewels.length > 0) {
         const jewelValue = parseInt(searchParams.get('jewel') || '0');
-        selectedJewel = jewels.find(j => j.value === jewelValue);
+        const foundJewel = jewels.find(j => j.value === jewelValue);
+        if (foundJewel && selectedJewel !== foundJewel) {
+          selectedJewel = foundJewel;
+        }
       }
 
       if (searchParams.has('passive_skill') && passiveSkills.length > 0) {
         const skillValue = parseInt(searchParams.get('passive_skill') || '0');
-        selectedPassiveSkill = passiveSkills.find(s => s.value === skillValue);
+        const foundSkill = passiveSkills.find(s => s.value === skillValue);
+        if (foundSkill && selectedPassiveSkill !== foundSkill) {
+          selectedPassiveSkill = foundSkill;
+        }
       }
 
       if (searchParams.has('seed')) {
@@ -94,12 +109,11 @@
       }
     }
   });
-
   // Conqueror selection effect
   $effect(() => {
-    if (selectedJewel && calculator && data.TimelessJewelConquerors && browser) {
+    if (selectedJewel && calculatorValue && dataValue?.TimelessJewelConquerors && browser) {
       if (availableConquerors.length === 0) {
-        const conquerorData = data.TimelessJewelConquerors[selectedJewel.value];
+        const conquerorData = dataValue.TimelessJewelConquerors[selectedJewel.value];
         if (conquerorData) {
           availableConquerors = Object.keys(conquerorData).map(k => ({
             value: k,
@@ -120,10 +134,10 @@
 
   // Calculation effect
   $effect(() => {
-    if (selectedPassiveSkill && seed && selectedJewel && selectedConqueror && calculator) {
+    if (selectedPassiveSkill && seed && selectedJewel && selectedConqueror && calculatorValue) {
       try {
         console.log('Performing calculation...');
-        result = calculator.Calculate(selectedPassiveSkill.value, seed, selectedJewel.value, selectedConqueror.value);
+        result = calculatorValue.Calculate(selectedPassiveSkill.value, seed, selectedJewel.value, selectedConqueror.value);
         console.log('Calculation result:', result);
       } catch (error) {
         console.error('Calculation error:', error);
@@ -157,11 +171,16 @@
 <div class="flex flex-row justify-center">
   <h1 class="text-3xl font-bold mb-6">Timeless Jewel Calculator</h1>
 </div>
-{#if !calculator}
-  <div class="flex flex-row justify-center">
-    <p class="text-white">Loading WASM data, please wait...</p>
+{#if !calculatorValue}
+  <div class="flex flex-col items-center justify-center">
+    <p class="text-white">Loading WASM data in modern mode, please wait...</p>
     <div class="mt-4">
       <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+    </div>
+    <div class="mt-4 text-sm text-gray-300">
+      <p>Calculator available: {calculatorValue ? 'Yes' : 'No'}</p>
+      <p>Data available: {dataValue ? 'Yes' : 'No'}</p>
+      <p>Browser ready: {browser ? 'Yes' : 'No'}</p>
     </div>
   </div>
 {:else}
@@ -169,7 +188,7 @@
     <div class="flex flex-col justify-between w-1/3">
       <div class="mt-10">
         <h3 class="mb-2">Debug Info:</h3>
-        <p>WASM Ready: {calculator ? 'Yes' : 'No'}</p>
+        <p>WASM Ready: {calculatorValue ? 'Yes' : 'No'}</p>
         <p>Browser: {browser ? 'Available' : 'Not available'}</p>
         <p>Jewels loaded: {jewels.length}</p>
         <p>Passive skills loaded: {passiveSkills.length}</p>

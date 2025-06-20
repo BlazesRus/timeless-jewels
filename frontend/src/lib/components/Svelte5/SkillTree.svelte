@@ -11,18 +11,33 @@
 
   import type { RenderFunc, Node } from '../../skill_tree_types';
   import { baseJewelRadius, calculateNodePos, distance, drawnGroups, drawnNodes, formatStats, inverseSprites, inverseSpritesActive, inverseTranslations, orbitAngleAt, skillTree, toCanvasCoords } from '../../skill_tree';
-  import type { Point } from '../../skill_tree';
-  import { calculator, data } from '../../types';
+  import type { Point } from '../../skill_tree';  import { calculator, data } from '../../types/ModernTypes';
+  import { get } from 'svelte/store';
+    // Reactive store values for use in the component with proper typing
+  const calculatorValue = $derived(get(calculator) as any);
+  const dataValue = $derived(get(data) as any);
+  // Modern prop definitions using Svelte 5 $props()
+  interface Props {
+    clickNode: (node: Node) => void;
+    circledNode?: number | undefined;
+    selectedJewel: number;
+    selectedConqueror: string;
+    seed: number;
+    highlighted?: number[];
+    disabled?: number[];
+    highlightJewels?: boolean;
+  }
 
-  // Modern prop definitions - compatible with both Svelte 4/5
-  export let clickNode: (node: Node) => void;
-  export let circledNode: number | undefined = undefined;
-  export let selectedJewel: number;
-  export let selectedConqueror: string;
-  export let seed: number;
-  export let highlighted: number[] = [];
-  export let disabled: number[] = [];
-  export let highlightJewels = false;
+  let {
+    clickNode,
+    circledNode = $bindable(undefined),
+    selectedJewel,
+    selectedConqueror,
+    seed,
+    highlighted = [],
+    disabled = [],
+    highlightJewels = false
+  }: Props = $props();
 
   const startGroups = [427, 320, 226, 227, 323, 422, 329];
   const titleFont = '25px Roboto Mono';
@@ -84,7 +99,7 @@
     const result = [];
     let currentWord = '';
 
-    text.split(' ').forEach(word => {
+    text.split(' ').forEach((word: string) => {
       if (context.measureText(currentWord + word).width < width) {
         currentWord += ' ' + word;
       } else {
@@ -129,7 +144,7 @@
     context.fillRect(0, 0, width, height);
 
     const connected = {};
-    Object.keys(drawnGroups).forEach(groupId => {
+    Object.keys(drawnGroups).forEach((groupId: string) => {
       const group = drawnGroups[groupId];
       const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
 
@@ -144,14 +159,12 @@
         drawSprite(context, 'PSGroupBackground3', groupPos, false, true);
         // drawMirror(context, $PSGroupBackground3, groupPos);
       }
-    });
-
-    Object.keys(drawnNodes).forEach(nodeId => {
+    });    Object.keys(drawnNodes).forEach((nodeId: string) => {
       const node = drawnNodes[nodeId];
       const angle = orbitAngleAt(node.orbit, node.orbitIndex);
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
 
-      node.out?.forEach(o => {
+      node.out?.forEach((o: any) => {
         if (!drawnNodes[parseInt(o)]) {
           return;
         }
@@ -204,23 +217,19 @@
         context.strokeStyle = `#524518`;
         context.stroke();
       });
-    });
-
-    let circledNodePos: Point;
-    if (circledNode) {
+    });    let circledNodePos: Point | undefined;
+    if (circledNode && drawnNodes[circledNode]) {
       circledNodePos = calculateNodePos(drawnNodes[circledNode], offsetX, offsetY, scaling);
       context.strokeStyle = '#ad2b2b';
     }
 
     let hoveredNodeActive = false;
     let newHoverNode: Node | undefined;
-    Object.keys(drawnNodes).forEach(nodeId => {
+    Object.keys(drawnNodes).forEach((nodeId: string) => {
       const node = drawnNodes[nodeId];
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
-      let touchDistance = 0;
-
-      let active = false;
-      if (circledNode) {
+      let touchDistance = 0;      let active = false;
+      if (circledNode && circledNodePos) {
         if (distance(rotatedPos, circledNodePos) < jewelRadius) {
           active = true;
         }
@@ -298,9 +307,10 @@
     if (circledNode) {
       context.strokeStyle = '#ad2b2b';
       context.lineWidth = 1;
-      context.beginPath();
+      context.beginPath();    if (circledNodePos) {
       context.arc(circledNodePos.x, circledNodePos.y, jewelRadius, 0, Math.PI * 2);
       context.stroke();
+    }
     }
 
     if (hoveredNode) {
@@ -311,8 +321,8 @@
       }));
 
       if (!hoveredNode.isJewelSocket && hoveredNodeActive) {
-        if (hoveredNode.skill && seed && selectedJewel && selectedConqueror) {
-          const result = calculator.Calculate(data.TreeToPassive[hoveredNode.skill].Index, seed, selectedJewel, selectedConqueror);
+        if (hoveredNode.skill && seed && selectedJewel && selectedConqueror && calculatorValue && dataValue) {
+          const result = calculatorValue.Calculate(dataValue.TreeToPassive[hoveredNode.skill].Index, seed, selectedJewel, selectedConqueror);
 
           if (result) {
             if ('AlternatePassiveSkill' in result && result.AlternatePassiveSkill) {
@@ -320,8 +330,8 @@
               nodeName = result.AlternatePassiveSkill.Name;
 
               if ('StatsKeys' in result.AlternatePassiveSkill) {
-                result.AlternatePassiveSkill.StatsKeys.forEach((statId, i) => {
-                  const stat = data.GetStatByIndex(statId);
+                result.AlternatePassiveSkill.StatsKeys.forEach((statId: any, i: number) => {
+                  const stat = dataValue.GetStatByIndex(statId);
                   const translation = inverseTranslations[stat.ID] || '';
                   if (translation) {
                     nodeStats.push({
@@ -333,11 +343,10 @@
               }
             }
 
-            if (result.AlternatePassiveAdditionInformations) {
-              result.AlternatePassiveAdditionInformations.forEach(info => {
+            if (result.AlternatePassiveAdditionInformations) {              result.AlternatePassiveAdditionInformations.forEach((info: any) => {
                 if ('StatsKeys' in info.AlternatePassiveAddition) {
-                  info.AlternatePassiveAddition.StatsKeys.forEach((statId, i) => {
-                    const stat = data.GetStatByIndex(statId);
+                  info.AlternatePassiveAddition.StatsKeys.forEach((statId: any, i: number) => {
+                    const stat = dataValue.GetStatByIndex(statId);
                     const translation = inverseTranslations[stat.ID] || '';
                     if (translation) {
                       nodeStats.push({
@@ -351,10 +360,8 @@
             }
           }
         }
-      }
-
-      context.font = titleFont;
-      const textMetrics = context.measureText(nodeName);
+      }      context.font = titleFont;
+      const textMetrics = context.measureText(nodeName || '');
 
       const maxWidth = Math.max(textMetrics.width + 50, 600);
 
@@ -410,7 +417,7 @@
       context.fillStyle = '#ffffff';
       context.font = titleFont;
       context.textAlign = 'center';
-      context.fillText(nodeName, mousePos.x + maxWidth / 2, mousePos.y + 35);
+      context.fillText(nodeName || '', mousePos.x + maxWidth / 2, mousePos.y + 35);
 
       context.fillStyle = 'rgba(0,0,0,0.8)';
       context.fillRect(mousePos.x, mousePos.y + titleHeight, maxWidth, offset - titleHeight);

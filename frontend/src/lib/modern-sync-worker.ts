@@ -1,7 +1,7 @@
 import { expose } from 'comlink';
 import '../wasm_exec.js';
 import { loadSkillTree, passiveToTree } from './skill_tree';
-import { calculator, initializeCrystalline } from './types';
+import { calculator, initializeCrystalline } from './types/ModernTypes';
 import type { ModernTimelessWorker, SearchConfig, SearchResults, SearchWithSeed, SearchProgressCallback, WorkerInitConfig } from './modern-worker-types';
 
 /**
@@ -90,7 +90,14 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
           };
 
       // Perform the search using the calculator
-      const searchResult = await calculator.ReverseSearch(
+      let calculatorValue: any;
+      calculator.subscribe(value => calculatorValue = value)();
+      
+      if (!calculatorValue) {
+        throw new Error('Calculator not initialized');
+      }
+      
+      const searchResult = await calculatorValue.ReverseSearch(
         config.nodes,
         config.stats.map(s => s.id),
         config.jewel,

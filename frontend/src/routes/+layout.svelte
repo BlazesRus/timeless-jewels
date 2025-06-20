@@ -12,36 +12,25 @@
     try {
       const svelteVersion = detectSvelteVersion();
       console.log(`Detected Svelte version: ${svelteVersion.full}`);
+      console.log(`Build version constant: ${(globalThis as any).__SVELTE_BUILD_VERSION__}`);
       
+      // Load the appropriate layout based on build configuration
+      // The build system excludes incompatible components, so we only try to load what should be available
       if (isSvelte5OrHigher()) {
-        console.log('Loading Modern (Svelte 5) layout implementation...');
-        try {
-          const module = await import('./ModernLayout.svelte');
-          LayoutComponent = module.default;
-        } catch (modernErr) {
-          console.warn('Modern layout not available, using fallback');
-          error = 'Modern layout component not available in this build';
-        }
+        console.log('Loading Modern (Svelte 5) layout - this should be available in Svelte 5 builds');
+        const module = await import('./ModernLayout.svelte');
+        LayoutComponent = module.default;
       } else {
-        console.log('Loading Legacy (Svelte 4) layout implementation...');
-        try {
-          const module = await import('./LegacyLayout.svelte');
-          LayoutComponent = module.default;
-        } catch (legacyErr) {
-          console.warn('Legacy layout not available, trying modern fallback');
-          try {
-            const module = await import('./ModernLayout.svelte');
-            LayoutComponent = module.default;
-          } catch (fallbackErr) {
-            error = 'No compatible layout component available';
-          }
-        }
+        console.log('Loading Legacy (Svelte 4) layout - this should be available in Svelte 4 builds');
+        const module = await import('./LegacyLayout.svelte');
+        LayoutComponent = module.default;
       }
       
       isLoading = false;
     } catch (err) {
       console.error('Failed to load layout component:', err);
-      error = err instanceof Error ? err.message : 'Unknown error occurred';
+      console.error('This suggests a mismatch between version detection and available components');
+      error = `Layout loading failed: ${err instanceof Error ? err.message : 'Unknown error'}. This may indicate a build configuration issue.`;
       isLoading = false;
     }
   });

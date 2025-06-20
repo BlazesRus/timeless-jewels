@@ -1,5 +1,6 @@
 import type { Translation, Node, SkillTreeData, Group, Sprite, TranslationFile } from './skill_tree_types';
-import { data } from './types';
+import { data } from './types/LegacyTypes';
+import { get } from 'svelte/store';
 import { type Filter, type Query, filterGroupsToQuery, filtersToFilterGroup } from './utils/trade_utils';
 import { chunkArray } from './utils/utils';
 
@@ -19,7 +20,13 @@ export const inverseTranslations: Record<string, Translation> = {};
 export const passiveToTree: Record<number, number> = {};
 
 export const loadSkillTree = () => {
-  skillTree = JSON.parse(data.SkillTree);
+  const dataValue = get(data) as any;
+  if (!dataValue) {
+    console.error('Data not available for skill tree loading');
+    return;
+  }
+  
+  skillTree = JSON.parse(dataValue.SkillTree);
   console.log('Loaded skill tree', skillTree);
 
   Object.keys(skillTree.groups).forEach(groupId => {
@@ -72,7 +79,8 @@ export const loadSkillTree = () => {
   Object.keys(skillTree.sprites.groupBackground['0.3835'].coords).forEach(c => (inverseSprites[c] = skillTree.sprites.groupBackground['0.3835']));
   Object.keys(skillTree.sprites.frame['0.3835'].coords).forEach(c => (inverseSprites[c] = skillTree.sprites.frame['0.3835']));
 
-  const translationFiles = [data.StatTranslationsJSON, data.PassiveSkillStatTranslationsJSON, data.PassiveSkillAuraStatTranslationsJSON];
+  const dataForTranslations = get(data) as any;
+  const translationFiles = [dataForTranslations.StatTranslationsJSON, dataForTranslations.PassiveSkillStatTranslationsJSON, dataForTranslations.PassiveSkillAuraStatTranslationsJSON];
 
   translationFiles.forEach(f => {
     const translations: TranslationFile = JSON.parse(f);
@@ -86,10 +94,11 @@ export const loadSkillTree = () => {
     });
   });
 
-  //Checks if data.TreeToPassive is null before running code
-  if (data.TreeToPassive) {
-    Object.keys(data.TreeToPassive ?? {}).forEach(k => {
-      const treeToPassiveEntry = data.TreeToPassive?.[parseInt(k)];
+  // Checks if TreeToPassive is available before running code
+  const dataForPassive = get(data) as any;
+  if (dataForPassive && dataForPassive.TreeToPassive) {
+    Object.keys(dataForPassive.TreeToPassive ?? {}).forEach(k => {
+      const treeToPassiveEntry = dataForPassive.TreeToPassive?.[parseInt(k)];
       if (treeToPassiveEntry && typeof treeToPassiveEntry.Index !== 'undefined') {
         passiveToTree[treeToPassiveEntry.Index] = parseInt(k);
       }
@@ -276,9 +285,10 @@ type Stat = { Index: number; ID: string; Text: string };
 const statCache: Record<number, Stat> = {};
 export const getStat = (id: number | string): Stat => {
   const nId = typeof id === 'string' ? parseInt(id) : id;
-  //Checks if stat is valid before running code
+  // Checks if stat is valid before running code
   if (!(nId in statCache)) {
-    const stat = data.GetStatByIndex(nId);
+    const dataForStat = get(data) as any;
+    const stat = dataForStat.GetStatByIndex(nId);
     if (!stat) {
       throw new Error(`Stat not found for id: ${nId}`);
     }

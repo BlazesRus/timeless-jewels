@@ -11,12 +11,18 @@ interface SvelteVersion {
 
 /**
  * Detects the current Svelte version from build configuration
- * Since we're building with Svelte 5, we can assume Svelte 5 features are available
+ * Uses build-time constants to determine which version was used to build the app
  */
 export function detectSvelteVersion(): SvelteVersion {
-  // For static builds, we know the version at build time
-  // Since the build completed successfully with Svelte 5, we can assume Svelte 5
-  return { major: 5, minor: 33, patch: 18, full: '5.33.18' };
+  // Use build-time constant injected by Vite
+  const buildVersion = (globalThis as any).__SVELTE_BUILD_VERSION__ || 5;
+  
+  // Return version information based on build configuration
+  if (buildVersion >= 5) {
+    return { major: 5, minor: 33, patch: 18, full: '5.33.18' };
+  } else {
+    return { major: 4, minor: 2, patch: 19, full: '4.2.19' };
+  }
 }
 
 /**

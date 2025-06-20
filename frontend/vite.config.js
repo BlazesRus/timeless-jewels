@@ -21,6 +21,10 @@ console.log(`Building with Svelte ${currentVersion}`);
 /** @type {import('vite').UserConfig} */
 const config = {
   plugins: [sveltekit()],
+  define: {
+    // Inject the build-time Svelte version into the client code
+    __SVELTE_BUILD_VERSION__: currentVersion
+  },
   build: {
     rollupOptions: {
       external: currentVersion >= 5 ? [

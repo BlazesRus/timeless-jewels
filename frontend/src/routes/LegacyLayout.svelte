@@ -7,7 +7,7 @@
 
   import { assets } from '$app/paths';
   import { loadSkillTree } from '../lib/skill_tree';
-  import { initializeCrystalline } from '../lib/types';
+  import { initializeCrystalline } from '../lib/types/LegacyTypes';
   import { modernWorker } from '../lib/modern-worker';
 
   // eslint-disable-next-line no-undef

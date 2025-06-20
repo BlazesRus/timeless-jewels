@@ -2,7 +2,7 @@ import { expose } from 'comlink';
 import '../wasm_exec.js';
 import { loadSkillTree, passiveToTree } from './skill_tree';
 import type { SearchWithSeed, ReverseSearchConfig, SearchResults } from './skill_tree';
-import { calculator, initializeCrystalline } from './types';
+import { calculator, initializeCrystalline } from './types/LegacyTypes';
 
 const obj = {
   boot(wasm: ArrayBuffer) {
@@ -18,7 +18,14 @@ const obj = {
     });
   },
   async search(args: ReverseSearchConfig, callback: (seed: number) => Promise<void>): Promise<SearchResults> {
-    const searchResult = await calculator.ReverseSearch(
+    let calculatorValue: any;
+    calculator.subscribe(value => calculatorValue = value)();
+    
+    if (!calculatorValue) {
+      throw new Error('Calculator not initialized');
+    }
+    
+    const searchResult = await calculatorValue.ReverseSearch(
       args.nodes,
       args.stats.map(s => s.id),
       args.jewel,
