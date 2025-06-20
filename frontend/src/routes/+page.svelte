@@ -27,16 +27,6 @@
       console.error('Failed to load home page component:', err);
       error = `Failed to load home page: ${err instanceof Error ? err.message : 'Unknown error'}`;
       isLoading = false;
-      // Fallback to Legacy implementation
-      try {
-        console.log('Attempting fallback to Legacy (Svelte 4) implementation...');
-        const module = await import('./LegacyHomePage.svelte');
-        HomePageComponent = module.default;
-        error = null;
-      } catch (fallbackErr) {
-        console.error('Fallback also failed:', fallbackErr);
-        error = 'Unable to load any home page implementation';
-      }
     }
   });
 </script>

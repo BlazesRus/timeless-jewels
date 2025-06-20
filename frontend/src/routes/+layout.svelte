@@ -1,66 +1,85 @@
+<!-- Version-aware Layout - Dynamically loads appropriate layout based on Svelte version -->
 <script lang="ts">
-  import { browser } from '$app/environment';
   import { onMount } from 'svelte';
-  import type { Page } from '@sveltejs/kit';
-  import { goto } from '$app/navigation';
+  import { detectSvelteVersion, isSvelte5OrHigher } from '$lib/utils/version-detection';
 
-  import '../app.scss';
-  import '../wasm_exec.js';
+  // Dynamic imports for version-specific layouts
+  let LayoutComponent: any = null;
+  let isLoading = true;
+  let error: string | null = null;
 
-  import { assets } from '$app/paths';
-  import { loadSkillTree } from '../lib/skill_tree';
-  import { initializeCrystalline } from '../lib/types';
-  import { modernWorker } from '../lib/modern-worker';
-
-  // eslint-disable-next-line no-undef
-  const go = new (globalThis as any).Go();
-
-  // Initialize WASM in the background without blocking the UI
-  if (browser) {
-    const initializeApp = async () => {
-      try {
-        console.log('Starting background WASM initialization...');
-
-        // Fetch WASM data
-        const wasmResponse = await fetch(assets + '/calculator.wasm');
-        if (!wasmResponse.ok) {
-          throw new Error(`Failed to fetch WASM: ${wasmResponse.status} ${wasmResponse.statusText}`);
-        }
-        const wasmData = await wasmResponse.arrayBuffer();
-        console.log('WASM data loaded, size:', wasmData.byteLength);
-
-        // Initialize main thread WASM
-        const result = await WebAssembly.instantiate(wasmData.slice(0), go.importObject);
-        go.run(result.instance);
-
-        // Initialize main thread data structures
-        initializeCrystalline();
-        loadSkillTree();
-
-        // Initialize modern worker with WASM data
-        if (modernWorker) {
-          await modernWorker.boot(wasmData.slice(0));
-        }
-
-        console.log('WASM initialization complete');
-      } catch (error) {
-        console.error('WASM initialization failed:', error);
+  onMount(async () => {
+    try {
+      const svelteVersion = detectSvelteVersion();
+      console.log(`Detected Svelte version: ${svelteVersion.full}`);
+      
+      if (isSvelte5OrHigher()) {
+        console.log('Loading Modern (Svelte 5) layout implementation...');
+        const module = await import('./ModernLayout.svelte');
+        LayoutComponent = module.default;
+      } else {
+        console.log('Loading Legacy (Svelte 4) layout implementation...');
+        const module = await import('./LegacyLayout.svelte');
+        LayoutComponent = module.default;
       }
-    };
-
-    // Start initialization but don't wait for it
-    initializeApp();
-    console.log('Layout loading in browser...');
-  }
+      
+      isLoading = false;
+    } catch (err) {
+      console.error('Failed to load layout component:', err);
+      error = err instanceof Error ? err.message : 'Unknown error occurred';
+      isLoading = false;
+    }
+  });
 </script>
 
-<!-- Always show the main content, WASM loads in background (Disable the link and selector until data finishes loading)-->
-<slot />
+{#if isLoading}
+  <div class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading layout...</p>
+  </div>
+{:else if error}
+  <div class="error-container">
+    <h2>Error Loading Layout</h2>
+    <p>{error}</p>
+    <p>Please refresh the page to try again.</p>
+  </div>
+{:else if LayoutComponent}
+  <svelte:component this={LayoutComponent}>
+    <slot />
+  </svelte:component>
+{/if}
 
 <style>
-  div {
-    margin: 1rem 0;
-    padding: 1rem;
-    border: 1px solid #ccc;
+  .loading-container, .error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .error-container {
+    color: #dc3545;
+  }
+
+  .error-container h2 {
+    margin-bottom: 1rem;
   }
 </style>
