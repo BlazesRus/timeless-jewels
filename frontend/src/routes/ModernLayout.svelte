@@ -2,29 +2,39 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import type { Snippet } from 'svelte';
-
   import '../app.scss';
-  import '../wasm_exec.js';
 
   import { assets } from '$app/paths';
   import { loadSkillTree } from '../lib/skill_tree';
   import { initializeCrystalline } from '../lib/types/ModernTypes';
   import { modernWorker } from '../lib/modern-worker';
-
   // Svelte 5 children prop instead of slot  
   let { children }: { children: Snippet } = $props();
 
-  // eslint-disable-next-line no-undef
-  const go = new (globalThis as any).Go();
   // Initialize WASM in the background without blocking the UI
   if (browser) {
     const initializeApp = async () => {
-      try {
-        console.log('Starting background WASM initialization...');
-
-        // Fetch WASM data
-        console.log('Fetching WASM from:', assets + '/calculator.wasm');
-        const wasmResponse = await fetch(assets + '/calculator.wasm');
+      try {        console.log('Starting background WASM initialization...');
+        
+        // Check if Go is available
+        console.log('Checking Go availability...');
+        console.log('globalThis type:', typeof globalThis);
+        console.log('globalThis.Go type:', typeof (globalThis as any).Go);
+        
+        if (typeof (globalThis as any).Go === 'undefined') {
+          throw new Error('Go object not found. wasm_exec.js may not have loaded properly.');
+        }
+        
+        console.log('Creating Go instance...');
+        // eslint-disable-next-line no-undef
+        const go = new (globalThis as any).Go();
+        console.log('Go instance created successfully');// Fetch WASM data
+        const wasmUrl = assets + '/calculator.wasm';
+        console.log('Fetching WASM from:', wasmUrl);
+        console.log('Base path:', assets);
+        
+        const wasmResponse = await fetch(wasmUrl);
+        console.log('WASM fetch response status:', wasmResponse.status);
         if (!wasmResponse.ok) {
           throw new Error(`Failed to fetch WASM: ${wasmResponse.status} ${wasmResponse.statusText}`);
         }
@@ -49,9 +59,11 @@
         }
 
         console.log('WASM initialization complete');
-      } catch (error) {
+      } catch (error: unknown) {
         console.error('WASM initialization failed:', error);
-        console.error('Error details:', error.message, error.stack);
+        if (error instanceof Error) {
+          console.error('Error details:', error.message, error.stack);
+        }
       }
     };
 

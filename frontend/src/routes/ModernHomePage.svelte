@@ -7,11 +7,21 @@
 
   import ModernSelect from '$lib/components/ModernSelect.svelte';
   import { base, assets } from '$app/paths';  import { data, calculator } from '$lib/types/ModernTypes.js';
-  import { get } from 'svelte/store';
   
-  // Reactive store values for use in the component with proper typing
-  const calculatorValue = $derived(get(calculator) as any);
-  const dataValue = $derived(get(data) as any);
+  // Use store subscriptions directly - this should be reactive
+  let calculatorValue = $state<any>(null);
+  let dataValue = $state<any>(null);
+  
+  // Subscribe to store updates
+  calculator.subscribe(value => {
+    calculatorValue = value;
+    console.log('Calculator store updated:', value ? 'Available' : 'Not available');
+  });
+  
+  data.subscribe(value => {
+    dataValue = value;
+    console.log('Data store updated:', value ? 'Available' : 'Not available');
+  });
 
   console.log('Main page loading...');
 
@@ -181,6 +191,8 @@
       <p>Calculator available: {calculatorValue ? 'Yes' : 'No'}</p>
       <p>Data available: {dataValue ? 'Yes' : 'No'}</p>
       <p>Browser ready: {browser ? 'Yes' : 'No'}</p>
+      <p>Go object: {typeof (globalThis as any).Go !== 'undefined' ? 'Available' : 'Not found'}</p>
+      <p class="mt-2 text-xs">Check browser console for detailed loading progress...</p>
     </div>
   </div>
 {:else}
