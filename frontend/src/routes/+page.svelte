@@ -7,19 +7,34 @@
   let HomePageComponent: any = null;
   let isLoading = true;
   let error: string | null = null;
-
   onMount(async () => {
     try {
       const svelteVersion = detectSvelteVersion();
       console.log(`Detected Svelte version: ${svelteVersion.full}`);
       if (isSvelte5OrHigher()) {
         console.log('Loading Modern (Svelte 5) home page implementation...');
-        const module = await import('./ModernHomePage.svelte');
-        HomePageComponent = module.default;
+        try {
+          const module = await import('./ModernHomePage.svelte');
+          HomePageComponent = module.default;
+        } catch (modernErr) {
+          console.warn('Modern component not available, using fallback');
+          // Fallback to a basic component or error page
+          error = 'Modern home page component not available in this build';
+        }
       } else {
         console.log('Loading Legacy (Svelte 4) home page implementation...');
-        const module = await import('./LegacyHomePage.svelte');
-        HomePageComponent = module.default;
+        try {
+          const module = await import('./LegacyHomePage.svelte');
+          HomePageComponent = module.default;
+        } catch (legacyErr) {
+          console.warn('Legacy component not available, trying modern fallback');
+          try {
+            const module = await import('./ModernHomePage.svelte');
+            HomePageComponent = module.default;
+          } catch (fallbackErr) {
+            error = 'No compatible home page component available';
+          }
+        }
       }
 
       isLoading = false;

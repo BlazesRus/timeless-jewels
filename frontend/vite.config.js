@@ -24,23 +24,17 @@ const config = {
   build: {
     rollupOptions: {
       external: currentVersion >= 5 ? [
-        // Exclude Legacy files when building in modern mode
-        /.*Legacy.*\.svelte$/,
-        /.*LegacyHomePage\.svelte$/,
-        /.*LegacyPage\.svelte$/
+        // Exclude Legacy files when building in modern mode (Svelte 5)
+        // These will be handled gracefully at runtime
+        /.*Legacy.*\.svelte$/
       ] : [
-        // Exclude Modern files when building in legacy mode  
+        // Exclude Modern files when building in legacy mode (Svelte 4)
         /.*Modern.*\.svelte$/,
-        /.*ModernHomePage\.svelte$/,
-        /.*ModernPage\.svelte$/,
-        /.*ModernPage.*\.svelte$/
+        /.*Svelte5.*\.svelte$/
       ]
     }
   },
-  define: {
-    // Inject Svelte version at build time
-    __SVELTE_VERSION__: JSON.stringify(process.env.npm_package_devDependencies_svelte || '4.2.0')
-  },  // Updated worker config for Vite 6
+  // Updated worker config for Vite 6
   worker: {
     plugins: () => [
       {

@@ -15,12 +15,27 @@
       
       if (isSvelte5OrHigher()) {
         console.log('Loading Modern (Svelte 5) layout implementation...');
-        const module = await import('./ModernLayout.svelte');
-        LayoutComponent = module.default;
+        try {
+          const module = await import('./ModernLayout.svelte');
+          LayoutComponent = module.default;
+        } catch (modernErr) {
+          console.warn('Modern layout not available, using fallback');
+          error = 'Modern layout component not available in this build';
+        }
       } else {
         console.log('Loading Legacy (Svelte 4) layout implementation...');
-        const module = await import('./LegacyLayout.svelte');
-        LayoutComponent = module.default;
+        try {
+          const module = await import('./LegacyLayout.svelte');
+          LayoutComponent = module.default;
+        } catch (legacyErr) {
+          console.warn('Legacy layout not available, trying modern fallback');
+          try {
+            const module = await import('./ModernLayout.svelte');
+            LayoutComponent = module.default;
+          } catch (fallbackErr) {
+            error = 'No compatible layout component available';
+          }
+        }
       }
       
       isLoading = false;
