@@ -66,6 +66,12 @@
     "debug.testOverrideProxyUrl": "",
     "debug.overrideProxyUrl": ""
   },
+  "debug.terminal.clearBeforeReusing": true,
+  "debug.console.fontSize": 12,
+  "debug.console.wordWrap": false,
+  "debug.internalConsoleOptions": "neverOpen",
+  "debug.allowBreakpointsEverywhere": false,
+  "debug.showBreakpointsInOverviewRuler": true,
   "terminal.integrated.allowChords": false,
   "terminal.integrated.altClickMovesCursor": false,
   "terminal.integrated.confirmOnExit": "never",
@@ -112,7 +118,8 @@
     "*.ini": "ini",
     "version.ini": "ini",
     "*Package.json": "json",
-    "*PackageBackup.json": "jsonc"
+    "*PackageBackup.json": "jsonc",
+    "*.svelte": "svelte"
   },
   "editor.insertSpaces": true,
   "editor.tabSize": 2,
@@ -151,7 +158,7 @@
   "github.copilot.chat.experimental.contextSelection.enabled": true,
   "github.copilot.chat.experimental.contextSelection.rules": [
     {
-      "pattern": "***Svelte5*",
+      "pattern": "***Modern*",
       "context": "This file uses Svelte 5 syntax. Use modern runes ($state, $derived, $effect) instead of stores."
     },
     {
@@ -180,6 +187,7 @@
   "git.confirmSync": false,
   "git.autofetch": true,
   "svelte.enable-ts-plugin": true,
+  "svelte.plugin.typescript.enable": true,
   "svelte.plugin.typescript.diagnostics.enable": true,
   "svelte.plugin.typescript.hover.enable": true,
   "svelte.plugin.typescript.completions.enable": true,
@@ -208,7 +216,6 @@
     "excludePatterns": [
       "**/components/Legacy/**",
       "**/*Legacy*",
-      "**/*Svelte4*",
       "**/LegacyPackage*.json"
     ]
   },
@@ -238,8 +245,7 @@
       "overrides": [
         {
           "files": [
-            "**/Legacy*",
-            "**Svelte4*"
+            "**/Legacy*"
           ],
           "rules": {
             "@typescript-eslint/no-unused-vars": "off",
@@ -255,9 +261,6 @@
     "**/Legacy*.svelte": {
       "enable": false
     },
-    "**Svelte4*.svelte": {
-      "enable": false
-    }
   },
   "problems.suppressWhenNoErrors": false,
   "svelte.plugin.svelte.diagnostics.exclude": [
