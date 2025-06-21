@@ -30,13 +30,21 @@ export const initializeCrystalline = () => {
   console.log('globalThis.go:', typeof wasmGlobal['go']);
   console.log('globalThis.go["timeless-jewels"]:', typeof wasmGlobal['go']?.['timeless-jewels']);
   
+  if(!wasmGlobal['go']['timeless-jewels'])
+    console.error('timeless-jewels data not found');
+  const timelessExports = wasmGlobal['go']['timeless-jewels'];
+  const dataExports = timelessExports.data;
+
   if (wasmGlobal['go']) {
     console.log('Go object keys:', Object.keys(wasmGlobal['go']));
-    if (wasmGlobal['go']['timeless-jewels']) {
-      console.log('Timeless jewels keys:', Object.keys(wasmGlobal['go']['timeless-jewels']));
-      console.log('calculator:', typeof wasmGlobal['go']['timeless-jewels']['calculator']);
-      console.log('data:', typeof wasmGlobal['go']['timeless-jewels']['data']);
-    }
+      const timelessExports = wasmGlobal['go']['timeless-jewels'];
+      console.log('Timeless jewels keys:', Object.keys(timelessExports));
+      console.log('Calculate function type:', typeof timelessExports.Calculate);
+      console.log('ReverseSearch function type:', typeof timelessExports.ReverseSearch);
+      console.log('data object type:', typeof timelessExports.data);
+      if (timelessExports.data) {
+        console.log('data keys:', Object.keys(timelessExports.data));
+      }
   }
   
   if (!wasmGlobal['go'] || !wasmGlobal['go']['timeless-jewels']) {
@@ -45,27 +53,25 @@ export const initializeCrystalline = () => {
     return;
   }
   
-  const calculatorExports = wasmGlobal['go']['timeless-jewels']['calculator'];
-  const dataExports = wasmGlobal['go']['timeless-jewels']['data'];
-  
-  if (!calculatorExports || !dataExports) {
-    console.error('Calculator or data exports not found');
-    console.log('Available calculator functions:', Object.keys(calculatorExports || {}));
-    console.log('Available data functions:', Object.keys(dataExports || {}));
+  if (!timelessExports.Calculate || !timelessExports.ReverseSearch || !dataExports) {
+    console.error('Required functions or data not found');
+    console.log('Calculate available:', typeof timelessExports.Calculate === 'function');
+    console.log('ReverseSearch available:', typeof timelessExports.ReverseSearch === 'function');
+    console.log('Data available:', !!dataExports);
     return;
   }
   
   console.log('Creating wrapped functions...');
   const calculatorValue = {
-    Calculate: wrap(calculatorExports.Calculate),
-    ReverseSearch: wrap(calculatorExports.ReverseSearch),
+    Calculate: wrap(timelessExports.Calculate),
+    ReverseSearch: wrap(timelessExports.ReverseSearch),
   };
   
   const dataValue = {
-    GetAlternatePassiveAdditionByIndex: wrap(dataExports.GetAlternatePassiveAdditionByIndex),
-    GetAlternatePassiveSkillByIndex: wrap(dataExports.GetAlternatePassiveSkillByIndex),
-    GetPassiveSkillByIndex: wrap(dataExports.GetPassiveSkillByIndex),
-    GetStatByIndex: wrap(dataExports.GetStatByIndex),
+    GetAlternatePassiveAdditionByIndex: wrap(timelessExports.GetAlternatePassiveAdditionByIndex),
+    GetAlternatePassiveSkillByIndex: wrap(timelessExports.GetAlternatePassiveSkillByIndex),
+    GetPassiveSkillByIndex: wrap(timelessExports.GetPassiveSkillByIndex),
+    GetStatByIndex: wrap(timelessExports.GetStatByIndex),
     PassiveSkillAuraStatTranslationsJSON: dataExports.PassiveSkillAuraStatTranslationsJSON,
     PassiveSkillStatTranslationsJSON: dataExports.PassiveSkillStatTranslationsJSON,
     PassiveSkills: dataExports.PassiveSkills,
