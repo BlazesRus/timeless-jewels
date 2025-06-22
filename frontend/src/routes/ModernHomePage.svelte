@@ -18,23 +18,8 @@
 
   //Attempting to initialize state from ModernTypes in case wasm load takes too long
   //Will attempt to load during wasm initialization in case initial value fails
-  let calculatorValue = $state<any>(calculator?);
-  let dataValue = $state<any>(data?);
-
-  // Subscribe to store updates with more detailed logging
-  calculator.subscribe(value => {
-    console.log('Calculator store updated:', value ? 'Available' : 'Not available');
-    if (value) {
-      console.log('Calculator functions:', Object.keys(value));
-    }
-  });
-  
-  data.subscribe(value => {
-    console.log('Data store updated:', value ? 'Available' : 'Not available');
-    if (value) {
-      console.log('Data properties:', Object.keys(value));
-    }
-  });
+  let calculatorValue = $state<any>(calculator??undefined);
+  let dataValue = $state<any>(data??undefined);
 
   // Listen for WASM errors
   if (browser) {
@@ -61,16 +46,18 @@
             console.log('Failed to load calculator value on wasm initialization');
           } else if(calculatorValue==undefined){
             calculatorValue = exports.calculator;
+            console.log('Calculator functions:', Object.keys(calculatorValue));
           } else {
-            console.log('Already loaded calculator functions during initial load:', Object.keys(value));
+            console.log('Already loaded calculator functions during initial load:', Object.keys(calculatorValue));
           }
           //Debugging to make sure gets data value gets imported
           if(!exports.data||exports.data==undefined){
             console.log('Failed to load data value on wasm initialization');
           } else if(dataValue==undefined){
             dataValue = exports.data;
+            console.log('Data properties:', Object.keys(dataValue));
           } else {
-            console.log('Already loaded data properties during initial load:', Object.keys(value));
+            console.log('Already loaded data properties during initial load:', Object.keys(dataValue));
           }
           wasmStatus = 'WASM loaded successfully!';
           isWasmLoading = false;  
