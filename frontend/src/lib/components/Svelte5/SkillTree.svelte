@@ -1,4 +1,5 @@
-<!-- Modern SkillTree Component - Svelte 5 Ready (Progressive Enhancement) -->
+<!-- Modern SkillTree Component - Svelte 5 Compliant -->
+<!-- Features: Runes ($state, $derived, $effect), TypeScript, Canvas rendering -->
 <script lang="ts">
   const measurePerformance = (): number => {
     return window.performance.now();
@@ -12,10 +13,18 @@
   import type { RenderFunc, Node } from '../../skill_tree_types';
   import { baseJewelRadius, calculateNodePos, distance, drawnGroups, drawnNodes, formatStats, inverseSprites, inverseSpritesActive, inverseTranslations, orbitAngleAt, skillTree, toCanvasCoords } from '../../skill_tree';
   import type { Point } from '../../skill_tree';  import { calculator, data } from '../../types/ModernTypes';
-  import { get } from 'svelte/store';
-    // Reactive store values for use in the component with proper typing
-  const calculatorValue = $derived(get(calculator) as any);
-  const dataValue = $derived(get(data) as any);
+  import { get } from 'svelte/store';  // Modern state management using Svelte 5 runes
+  let scaling = $state(10);
+  let offsetX = $state(0);
+  let offsetY = $state(0);
+
+  // Reactive store values for use in the component with proper typing
+  const calculatorValue = $derived(get(calculator));
+  const dataValue = $derived(get(data));
+  
+  // Derived values (Svelte 5 style)
+  const jewelRadius = $derived(baseJewelRadius / scaling);
+
   // Modern prop definitions using Svelte 5 $props()
   interface Props {
     clickNode: (node: Node) => void;
@@ -26,6 +35,7 @@
     highlighted?: number[];
     disabled?: number[];
     highlightJewels?: boolean;
+    children?: import('svelte').Snippet;
   }
 
   let {
@@ -36,21 +46,13 @@
     seed,
     highlighted = [],
     disabled = [],
-    highlightJewels = false
+    highlightJewels = false,
+    children
   }: Props = $props();
 
   const startGroups = [427, 320, 226, 227, 323, 422, 329];
   const titleFont = '25px Roboto Mono';
   const statsFont = '17px Roboto Mono';
-
-  // Modern state management - ready for Svelte 5 runes migration
-  let scaling = 10;
-  let offsetX = 0;
-  let offsetY = 0;
-
-  // Reactive statements (will be converted to $derived in full Svelte 5)
-  $: jewelRadius = baseJewelRadius / scaling;
-
   const drawScaling = 2.6;
 
   const spriteCache: Record<string, HTMLImageElement> = {};
@@ -130,22 +132,16 @@
     highlightGradient.addColorStop(0, '#8cf34c'); // bright green
     highlightGradient.addColorStop(1, '#00ff00'); // neon green
     return highlightGradient;
-  };
-  let cursor = 'unset';
-  let hoveredNode: Node | undefined;
-
-  // Reactive render function - will be converted to $derived in full Svelte 5
-  $: render = (({ context, width, height }) => {
-    const start = window.performance.now();
+  };  let cursor = $state('unset');
+  let hoveredNode = $state<Node | undefined>(undefined);  // Derived render function (Svelte 5 style)
+  const render: RenderFunc = $derived((({ context, width, height }) => {
+    const start = measurePerformance();
 
     context.clearRect(0, 0, width, height);
 
     context.fillStyle = '#080c11';
-    context.fillRect(0, 0, width, height);
-
-    const connected = {};
-    Object.keys(drawnGroups).forEach((groupId: string) => {
-      const group = drawnGroups[groupId];
+    context.fillRect(0, 0, width, height);    const connected: Record<string, boolean> = {};    Object.keys(drawnGroups).forEach((groupId: string) => {
+      const group = drawnGroups[groupId as any];
       const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
 
       const maxOrbit = Math.max(...group.orbits);
@@ -160,7 +156,9 @@
         // drawMirror(context, $PSGroupBackground3, groupPos);
       }
     });    Object.keys(drawnNodes).forEach((nodeId: string) => {
-      const node = drawnNodes[nodeId];
+      const node = drawnNodes[nodeId as any];
+      if (!node.orbit || node.orbitIndex === undefined) return;
+      
       const angle = orbitAngleAt(node.orbit, node.orbitIndex);
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
 
@@ -179,7 +177,7 @@
         connected[joined] = true;
 
         const targetNode = drawnNodes[parseInt(o)];
-        if (!targetNode) {
+        if (!targetNode || !targetNode.orbit || targetNode.orbitIndex === undefined) {
           return;
         }
 
@@ -191,9 +189,7 @@
         const targetAngle = orbitAngleAt(targetNode.orbit, targetNode.orbitIndex);
         const targetRotatedPos = calculateNodePos(targetNode, offsetX, offsetY, scaling);
 
-        context.beginPath();
-
-        if (node.group != targetNode.group || node.orbit != targetNode.orbit) {
+        context.beginPath();        if (node.group != targetNode.group || node.orbit != targetNode.orbit) {
           context.moveTo(rotatedPos.x, rotatedPos.y);
           context.lineTo(targetRotatedPos.x, targetRotatedPos.y);
         } else {
@@ -208,9 +204,11 @@
           const finalA = diff > Math.PI ? Math.max(a, b) : Math.min(a, b);
           const finalB = diff > Math.PI ? Math.min(a, b) : Math.max(a, b);
 
-          const group = drawnGroups[node.group];
-          const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
-          context.arc(groupPos.x, groupPos.y, skillTree.constants.orbitRadii[node.orbit] / scaling + 1, finalA, finalB);
+          if (node.group && node.orbit !== undefined) {
+            const group = drawnGroups[node.group as any];
+            const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
+            context.arc(groupPos.x, groupPos.y, skillTree.constants.orbitRadii[node.orbit] / scaling + 1, finalA, finalB);
+          }
         }
 
         context.lineWidth = 6 / scaling;
@@ -224,24 +222,27 @@
     }
 
     let hoveredNodeActive = false;
-    let newHoverNode: Node | undefined;
-    Object.keys(drawnNodes).forEach((nodeId: string) => {
-      const node = drawnNodes[nodeId];
+    let newHoverNode: Node | undefined;    Object.keys(drawnNodes).forEach((nodeId: string) => {
+      const node = drawnNodes[nodeId as any];
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
-      let touchDistance = 0;      let active = false;
+      let touchDistance = 0;
+
+      let active = false;
       if (circledNode && circledNodePos) {
         if (distance(rotatedPos, circledNodePos) < jewelRadius) {
           active = true;
         }
       }
 
-      if (disabled.indexOf(node.skill) >= 0) {
+      if (node.skill !== undefined && disabled.indexOf(node.skill) >= 0) {
         active = false;
       }
 
       if (node.isKeystone) {
         touchDistance = 110;
-        drawSprite(context, node.icon, rotatedPos, active);
+        if (node.icon) {
+          drawSprite(context, node.icon, rotatedPos, active);
+        }
         if (active) {
           drawSprite(context, 'KeystoneFrameAllocated', rotatedPos, false);
         } else {
@@ -249,7 +250,9 @@
         }
       } else if (node.isNotable) {
         touchDistance = 70;
-        drawSprite(context, node.icon, rotatedPos, active);
+        if (node.icon) {
+          drawSprite(context, node.icon, rotatedPos, active);
+        }
         if (active) {
           drawSprite(context, 'NotableFrameAllocated', rotatedPos, false);
         } else {
@@ -271,10 +274,14 @@
           }
         }
       } else if (node.isMastery) {
-        drawSprite(context, node.inactiveIcon, rotatedPos, active);
+        if (node.inactiveIcon) {
+          drawSprite(context, node.inactiveIcon, rotatedPos, active);
+        }
       } else {
         touchDistance = 50;
-        drawSprite(context, node.icon, rotatedPos, active);
+        if (node.icon) {
+          drawSprite(context, node.icon, rotatedPos, active);
+        }
         if (active) {
           drawSprite(context, 'PSSkillFrameActive', rotatedPos, false);
         } else {
@@ -282,7 +289,7 @@
         }
       }
 
-      if (highlighted.indexOf(node.skill) >= 0 || (highlightJewels && node.isJewelSocket)) {
+      if ((node.skill !== undefined && highlighted.indexOf(node.skill) >= 0) || (highlightJewels && node.isJewelSocket)) {
         if ((!highlighted || !highlighted.length) && !highlightJewels) {
           context.strokeStyle = '#ffffff';
         } else {
@@ -318,49 +325,52 @@
       let nodeStats: { text: string; special: boolean }[] = (hoveredNode.stats || []).map(s => ({
         text: s,
         special: false
-      }));
-
-      if (!hoveredNode.isJewelSocket && hoveredNodeActive) {
+      }));      if (!hoveredNode.isJewelSocket && hoveredNodeActive) {
         if (hoveredNode.skill && seed && selectedJewel && selectedConqueror && calculatorValue && dataValue) {
-          const result = calculatorValue.Calculate(dataValue.TreeToPassive[hoveredNode.skill].Index, seed, selectedJewel, selectedConqueror);
+          try {
+            const result = (calculatorValue as any).Calculate((dataValue as any).TreeToPassive[hoveredNode.skill].Index, seed, selectedJewel, selectedConqueror);
 
-          if (result) {
-            if ('AlternatePassiveSkill' in result && result.AlternatePassiveSkill) {
-              nodeStats = [];
-              nodeName = result.AlternatePassiveSkill.Name;
+            if (result) {
+              if ('AlternatePassiveSkill' in result && result.AlternatePassiveSkill) {
+                nodeStats = [];
+                nodeName = result.AlternatePassiveSkill.Name;
 
-              if ('StatsKeys' in result.AlternatePassiveSkill) {
-                result.AlternatePassiveSkill.StatsKeys.forEach((statId: any, i: number) => {
-                  const stat = dataValue.GetStatByIndex(statId);
-                  const translation = inverseTranslations[stat.ID] || '';
-                  if (translation) {
-                    nodeStats.push({
-                      text: formatStats(translation, result.StatRolls[i]) || stat.ID,
-                      special: true
-                    });
-                  }
-                });
-              }
-            }
-
-            if (result.AlternatePassiveAdditionInformations) {              result.AlternatePassiveAdditionInformations.forEach((info: any) => {
-                if ('StatsKeys' in info.AlternatePassiveAddition) {
-                  info.AlternatePassiveAddition.StatsKeys.forEach((statId: any, i: number) => {
-                    const stat = dataValue.GetStatByIndex(statId);
+                if ('StatsKeys' in result.AlternatePassiveSkill) {
+                  result.AlternatePassiveSkill.StatsKeys.forEach((statId: any, i: number) => {
+                    const stat = (dataValue as any).GetStatByIndex(statId);
                     const translation = inverseTranslations[stat.ID] || '';
                     if (translation) {
                       nodeStats.push({
-                        text: formatStats(translation, info.StatRolls[i]) || stat.ID,
+                        text: formatStats(translation, result.StatRolls[i]) || stat.ID,
                         special: true
                       });
                     }
                   });
                 }
-              });
+              }
+
+              if (result.AlternatePassiveAdditionInformations) {
+                result.AlternatePassiveAdditionInformations.forEach((info: any) => {
+                  if ('StatsKeys' in info.AlternatePassiveAddition) {
+                    info.AlternatePassiveAddition.StatsKeys.forEach((statId: any, i: number) => {
+                      const stat = (dataValue as any).GetStatByIndex(statId);
+                      const translation = inverseTranslations[stat.ID] || '';
+                      if (translation) {
+                        nodeStats.push({
+                          text: formatStats(translation, info.StatRolls[i]) || stat.ID,
+                          special: true
+                        });
+                      }
+                    });
+                  }
+                });
+              }
             }
+          } catch (error) {
+            console.warn('Error calculating node stats:', error);
           }
         }
-      }      context.font = titleFont;
+      }context.font = titleFont;
       const textMetrics = context.measureText(nodeName || '');
 
       const maxWidth = Math.max(textMetrics.width + 50, 600);
@@ -443,21 +453,17 @@
 
     context.fillStyle = '#ffffff';
     context.textAlign = 'right';
-    context.font = '12px Roboto Mono';
-
-    const end = window.performance.now();
+    context.font = '12px Roboto Mono';    const end = measurePerformance();
     context.fillText(`${(end - start).toFixed(1)}ms`, width - 5, 17);
-  }) as RenderFunc;
-
-  // Modern state management - ready for Svelte 5 conversion
-  let downX = 0;
-  let downY = 0;
-  let startX = 0;
-  let startY = 0;
-  let down = false;
-
-  const mouseDown = (event: CustomEvent<any>) => {
-    const mouseEvent = event.detail as MouseEvent;
+  }) as RenderFunc);
+  // Modern state management - Svelte 5 ready
+  let downX = $state(0);
+  let downY = $state(0);
+  let startX = $state(0);
+  let startY = $state(0);
+  let down = $state(false);
+  const mouseDown = (event: CustomEvent<MouseEvent>) => {
+    const mouseEvent = event.detail;
     down = true;
     downX = mouseEvent.offsetX;
     downY = mouseEvent.offsetY;
@@ -497,8 +503,8 @@
     };
   };
 
-  const onScroll = (event: CustomEvent<any>) => {
-    const wheelEvent = event.detail as WheelEvent;
+  const onScroll = (event: CustomEvent<WheelEvent>) => {
+    const wheelEvent = event.detail;
     if (wheelEvent.deltaY > 0) {
       if (scaling < 30) {
         offsetX += wheelEvent.offsetX;
@@ -517,37 +523,38 @@
     wheelEvent.stopPropagation();
     wheelEvent.stopImmediatePropagation();
   };
-
-  let width = 0;
-  let height = 0;
+  let width = $state(0);
+  let height = $state(0);
 
   const resize = () => {
     width = window.innerWidth;
     height = window.innerHeight;
   };
 
-  let initialized = false;
+  let initialized = $state(false);
 
-  // Reactive initialization - will be converted to $effect in full Svelte 5
-  $: {
+  // Initialize offset position and window size when skill tree is available
+  $effect(() => {
     if (!initialized && skillTree) {
       initialized = true;
       offsetX = skillTree.min_x + (window.innerWidth / 2) * scaling;
       offsetY = skillTree.min_y + (window.innerHeight / 2) * scaling;
     }
     resize();
-  }
+  });
 </script>
 
 <!-- Modern event handling - Svelte 5 ready -->
 <svelte:window on:pointerup={mouseUp} on:pointermove={mouseMove} on:resize={resize} />
 
 {#if width && height}
-  <div on:resize={resize} style="touch-action: none; cursor: {cursor}">
+  <div style="touch-action: none; cursor: {cursor}">
     <!-- Svelte 5 Ready Canvas -->
     <Canvas width={width} height={height} on:pointerdown={mouseDown} on:wheel={onScroll}>
       <Layer render={render} />
     </Canvas>
-    <slot />
+    {#if children}
+      {@render children()}
+    {/if}
   </div>
 {/if}

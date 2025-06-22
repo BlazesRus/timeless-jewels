@@ -12,26 +12,29 @@
   // We'll load the WASM module dynamically in an effect
 
   // State variables with Svelte 5 runes
-  let calculatorValue = $state<any>(calculator);
-  let dataValue = $state<any>(data);
   let wasmStatus = $state<string>('Initializing...');
   let lastError = $state<string>('');
   let isWasmLoading = $state(true);
-  
+
+  //Attempting to initialize state from ModernTypes in case wasm load takes too long
+  //Will attempt to load during wasm initialization in case initial value fails
+  let calculatorValue = $state<any>(calculator?);
+  let dataValue = $state<any>(data?);
+
   // Subscribe to store updates with more detailed logging
   calculator.subscribe(value => {
     console.log('Calculator store updated:', value ? 'Available' : 'Not available');
     if (value) {
       console.log('Calculator functions:', Object.keys(value));
     }
-  }
-
+  });
+  
   data.subscribe(value => {
     console.log('Data store updated:', value ? 'Available' : 'Not available');
     if (value) {
       console.log('Data properties:', Object.keys(value));
     }
-  }
+  });
 
   // Listen for WASM errors
   if (browser) {
@@ -48,210 +51,29 @@
     if (browser) {
       console.log('Starting dynamic WASM import...');
       wasmStatus = 'Loading WASM module...';
-        // Dynamic import of WASM loader
-      import('$lib/wasm/wasm-loader.js').then(async ({ loadWasm }) => {
+      // Dynamic import of WASM loader
+      import('$lib/wasm/wasm-loader.js').then(async ({ loadWasm }) => {        
         try {
           wasmStatus = 'Initializing WASM...';
           const exports = await loadWasm();
-          
-          calculatorValue = exports.calculator;
-          dataValue = exports.data;
-          wasmStatus = 'WASM loaded successfully!';
-          isWasmLoading = false;
-          
-          console.log('WASM loaded successfully via dynamic import');
-        } catch (error) {
-          console.error('WASM loading failed:', error);
-          lastError = error.message;
-          wasmStatus = 'WASM loading failed';
-          isWasmLoading = false;
-        }
-      }).catch(error => {
-        console.error('Failed to import WASM loader:', error);
-        lastError = error.message;
-        wasmStatus = 'Failed to load WASM module';
-        isWasmLoading = false;
-      });
-    }
-  });
-
-  console.log('Main page loading...');
-
-  // State variables with Svelte 5 runes
-  let jewels = $state<Array<{ value: number; label: string }>>([]);
-  let selectedJewel = $state<{ value: number; label: string } | undefined>(undefined);
-  let availableConquerors = $state<Array<{ value: string; label: string }>>([]);
-  let selectedConqueror = $state<{ value: string; label: string } | undefined>(undefined);
-  let passiveSkills = $state<Array<{ value: number; label: string }>>([]);
-  let selectedPassiveSkill = $state<{ value: number; label: string } | undefined>(undefined);
-  let seed = $state(0);
-  let result = $state<any>(undefined);
-
-  let JewelsAreNotInitialized = $state(true); // Start as true to trigger initial data load
-  const searchParams = $derived(browser ? (globalThis as any).$page?.url?.searchParams || new URLSearchParams() : new URLSearchParams());
-
-  // Initialize search params after component mounts
-  onMount(() => {
-    if (browser) {
-      // searchParams is now derived, so no need to assign it here
-      // Initialize from URL parameters using the derived searchParams
-      if (searchParams.has('jewel')) {
-        const jewelId = parseInt(searchParams.get('jewel') || '0');
-        selectedJewel = jewels.find(j => j.value === jewelId);
-      }
-      if (searchParams.has('conqueror')) {
-        const conquerorValue = searchParams.get('conqueror');
-        selectedConqueror = availableConquerors.find(c => c.value === conquerorValue);
-      }
-      if (searchParams.has('passive')) {
-        const passiveId = parseInt(searchParams.get('passive') || '0');
-        selectedPassiveSkill = passiveSkills.find(p => p.value === passiveId);
-      }
-      if (searchParams.has('seed')) {
-        seed = parseInt(searchParams.get('seed') || '0');
-      }
-    }
-  });
-
-  // Data initialization effect - reactively respond to WASM data loading
-  $effect(() => {
-    // Use store values directly with $ syntax (works in both Svelte 4 and 5)
-    if (calculatorValue && dataValue && browser) {
-      console.log('WASM data detected, calculator and data are available');
-      
-      // Make sure if jewel or passiveskill data breaks that we recreate new data
-      if (!JewelsAreNotInitialized && (jewels.length === 0 || passiveSkills.length === 0)) {
-        JewelsAreNotInitialized = true;
-      }
-
-      if (JewelsAreNotInitialized) {
-        console.log('WASM is ready, populating jewel and passive skill UI dataValue...');
-          // Initialize jewels
-        if (dataValue.TimelessJewels) {
-          jewels = Object.keys(dataValue.TimelessJewels).map(k => ({
-            value: parseInt(k),
-            label: (dataValue.TimelessJewels as any)[k]
-          }));
-          console.log('Jewels loaded:', jewels.length);
-        }
-        
-        // Initialize passive skills
-        if (dataValue.PassiveSkills && Array.isArray(dataValue.PassiveSkills)) {
-          passiveSkills = dataValue.PassiveSkills
-            .filter(skill => skill !== undefined)
-            .map(skill => ({
-              value: skill!.PassiveSkillGraphID,
-              label: skill!.Name
-            }));
-          console.log('Passive skills loaded:', passiveSkills.length);
-        }
-
-        JewelsAreNotInitialized = false;
-      }
-
-      // Restore selections from URL params after data is loaded
-      if (searchParams.has('jewel') && jewels.length > 0) {
-        const jewelValue = parseInt(searchParams.get('jewel') || '0');
-        const foundJewel = jewels.find(j => j.value === jewelValue);
-        if (foundJewel && selectedJewel !== foundJewel) {
-          selectedJewel = foundJewel;
-        }
-      }
-
-      if (searchParams.has('passive_skill') && passiveSkills.length > 0) {
-        const skillValue = parseInt(searchParams.get('passive_skill') || '0');
-        const foundSkill = passiveSkills.find(s => s.value === skillValue);
-        if (foundSkill && selectedPassiveSkill !== foundSkill) {
-          selectedPassiveSkill = foundSkill;
-        }
-      }
-
-      if (searchParams.has('seed')) {
-        seed = parseInt(searchParams.get('seed') || '0');
-      }
-    }
-  });
-  // Conqueror selection effect
-  $effect(() => {
-    if (selectedJewel && calculatorValue && dataValue?.TimelessJewelConquerors && browser) {
-      if (availableConquerors.length === 0) {
-        const conquerorData = dataValue.TimelessJewelConquerors[selectedJewel.value];
-        if (conquerorData) {
-          availableConquerors = Object.keys(conquerorData).map(k => ({
-            value: k,
-            label: k
-          }));
-        }
-      }
-
-      // Set initial conqueror from URL params
-      if (searchParams.has('conqueror')) {
-        const conquerorValue = searchParams.get('conqueror');
-        selectedConqueror = availableConquerors.find(c => c.value === conquerorValue);
-      }
-    } else {
-      availableConquerors = [];
-    }
-  });
-
-  // Calculation effect
-  $effect(() => {
-    if (selectedPassiveSkill && seed && selectedJewel && selectedConqueror && calculatorValue) {
-      try {
-        console.log('Performing calculation...');
-        result = calculatorValue.Calculate(selectedPassiveSkill.value, seed, selectedJewel.value, selectedConqueror.value);
-        console.log('Calculation result:', result);
-      } catch (error) {
-        console.error('Calculation error:', error);
-        result = undefined;
-      }
-    }
-  });
-
-  const updateUrl = () => {
-    if (!browser) return;
-
-    const url = new URL(window.location.href);
-    url.searchParams.delete('jewel');
-    url.searchParams.delete('conqueror');
-    url.searchParams.delete('passive');
-    url.searchParams.delete('seed');
-
-    if (selectedJewel) url.searchParams.set('jewel', selectedJewel.value.toString());
-    if (selectedConqueror) url.searchParams.set('conqueror', selectedConqueror.value);
-    if (selectedPassiveSkill) url.searchParams.set('passive', selectedPassiveSkill.value.toString());
-    if (seed) url.searchParams.set('seed', seed.toString());
-
-    goto(url.toString(), { replaceState: true });
-  };
-</script>
-
-<svelte:head>
-  <title>Timeless Jewel Calculator</title>
-</svelte:head>
-
-  
-  // Initialize WASM dynamically
-  $effect(() => {
-    if (browser) {
-      console.log('Starting dynamic WASM import...');
-      wasmStatus = 'Loading WASM module...';
-        // Dynamic import of WASM loader
-      import('$lib/wasm/wasm-loader.js').then(async ({ loadWasm }) => {
-        try {
-          wasmStatus = 'Initializing WASM...';
-          const exports = await loadWasm();
-          if(exports.calculator)
-            console.log('Failed to load calculator value on initialization');
-          else
+          //Debugging to make sure calculator value gets imported
+          if(!exports.calculator||exports.calculator==undefined){
+            console.log('Failed to load calculator value on wasm initialization');
+          } else if(calculatorValue==undefined){
             calculatorValue = exports.calculator;
-          if(exports.data)
-            console.log('Failed to load data value on initialization');
-          else
+          } else {
+            console.log('Already loaded calculator functions during initial load:', Object.keys(value));
+          }
+          //Debugging to make sure gets data value gets imported
+          if(!exports.data||exports.data==undefined){
+            console.log('Failed to load data value on wasm initialization');
+          } else if(dataValue==undefined){
             dataValue = exports.data;
-
+          } else {
+            console.log('Already loaded data properties during initial load:', Object.keys(value));
+          }
           wasmStatus = 'WASM loaded successfully!';
-          isWasmLoading = false;
+          isWasmLoading = false;  
           console.log('WASM loaded successfully via dynamic import');
         } catch (error) {
           console.error('WASM loading failed:', error);
@@ -364,6 +186,7 @@
       }
     }
   });
+
   // Conqueror selection effect
   $effect(() => {
     if (selectedJewel && calculatorValue && dataValue?.TimelessJewelConquerors && browser) {
@@ -466,8 +289,8 @@
       </div>
     {:else}
       <!-- Main interface centered like CorrectFrontPage.png -->
-      <div class="flex justify-center">
-        <div class="w-full max-w-md space-y-6">
+      <div class="py-10 flex flex-row justify-center w-screen h-screen">
+        <div class="flex flex-col justify-between w-1/3">
           
           <!-- Skill Tree View Link -->
           <div class="text-center">

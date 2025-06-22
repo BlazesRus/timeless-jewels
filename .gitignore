@@ -208,3 +208,9 @@ package.json.backup.*
 *.backup.json
 
 CorrectFrontPage.png
+
+frontend/src/lib/components/Svelte5/SkillTree - Copy.svelte
+
+frontend/src/routes/ModernHomePage - Copy.svelte
+
+frontend/src/routes/ModernLayout - Copy.svelte
