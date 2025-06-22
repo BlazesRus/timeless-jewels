@@ -18,13 +18,13 @@
 
   //Attempting to initialize state from ModernTypes in case wasm load takes too long
   //Will attempt to load during wasm initialization in case initial value fails
-  let calculatorValue = $state<any>(calculator??undefined);
-  let dataValue = $state<any>(data??undefined);
+  let calculatorValue = $state<any>(calculator ?? undefined);
+  let dataValue = $state<any>(data ?? undefined);
 
   // Listen for WASM errors
   if (browser) {
     window.addEventListener('error', (e) => {
-      if (e.message.includes('wasm') || e.message.includes('WASM') || e.message.includes('Go')) {
+      if (e.message?.includes('wasm') || e.message?.includes('WASM') || e.message?.includes('Go')) {
         lastError = e.message;
         wasmStatus = 'WASM Error: ' + e.message;
       }
@@ -42,18 +42,18 @@
           wasmStatus = 'Initializing WASM...';
           const exports = await loadWasm();
           //Debugging to make sure calculator value gets imported
-          if(!exports.calculator||exports.calculator==undefined){
+          if (!exports.calculator || exports.calculator == undefined) {
             console.log('Failed to load calculator value on wasm initialization');
-          } else if(calculatorValue==undefined){
+          } else if (calculatorValue == undefined) {
             calculatorValue = exports.calculator;
             console.log('Calculator functions:', Object.keys(calculatorValue));
           } else {
             console.log('Already loaded calculator functions during initial load:', Object.keys(calculatorValue));
           }
           //Debugging to make sure gets data value gets imported
-          if(!exports.data||exports.data==undefined){
+          if (!exports.data || exports.data == undefined) {
             console.log('Failed to load data value on wasm initialization');
-          } else if(dataValue==undefined){
+          } else if (dataValue == undefined) {
             dataValue = exports.data;
             console.log('Data properties:', Object.keys(dataValue));
           } else {
@@ -62,15 +62,15 @@
           wasmStatus = 'WASM loaded successfully!';
           isWasmLoading = false;  
           console.log('WASM loaded successfully via dynamic import');
-        } catch (error) {
+        } catch (error: any) {
           console.error('WASM loading failed:', error);
-          lastError = error.message;
+          lastError = error?.message || 'Unknown WASM error';
           wasmStatus = 'WASM loading failed';
           isWasmLoading = false;
         }
-      }).catch(error => {
+      }).catch((error: any) => {
         console.error('Failed to import WASM loader:', error);
-        lastError = error.message;
+        lastError = error?.message || 'Unknown import error';
         wasmStatus = 'Failed to load WASM module';
         isWasmLoading = false;
       });
@@ -90,7 +90,7 @@
   let result = $state<any>(undefined);
 
   let JewelsAreNotInitialized = $state(true); // Start as true to trigger initial data load
-  const searchParams = $derived(browser ? (globalThis as any).$page?.url?.searchParams || new URLSearchParams() : new URLSearchParams());
+  const searchParams = $derived(browser && $page?.url?.searchParams ? $page.url.searchParams : new URLSearchParams());
 
   // Initialize search params after component mounts
   onMount(() => {
@@ -204,7 +204,7 @@
         console.log('Performing calculation...');
         result = calculatorValue.Calculate(selectedPassiveSkill.value, seed, selectedJewel.value, selectedConqueror.value);
         console.log('Calculation result:', result);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Calculation error:', error);
         result = undefined;
       }
@@ -286,12 +286,13 @@
             </a>
           </div>
           
-          <!-- Debug Info (can be removed for production) -->
+          <!-- Debug Info (don't remove until functional production build that works at least as well as original) -->
           <div class="bg-gray-800 p-4 rounded-lg text-sm">
             <h3 class="mb-2 font-semibold">Debug Info:</h3>
             <div class="space-y-1 text-gray-300">
+              <p>Browser: {browser ? 'Available' : 'Not available'}</p>     
               <p>WASM Ready: {calculatorValue ? 'Yes' : 'No'}</p>
-              <p>Browser: {browser ? 'Available' : 'Not available'}</p>
+              <p>Data loaded: {dataValue ? 'Yes' : 'No'}</p>
               <p>Jewels loaded: {jewels.length}</p>
               <p>Passive skills loaded: {passiveSkills.length}</p>
               <p>Available conquerors: {availableConquerors.length}</p>
@@ -320,11 +321,7 @@
                 {#if selectedPassiveSkill}
                   <div>
                     <label for="seed" class="block mb-2 text-lg font-semibold">Seed</label>
-                    <input 
-                      type="number" 
-                      id="seed" 
-                      bind:value={seed} 
-                      oninput={updateUrl}
+                    <input type="number" id="seed" bind:value={seed} oninput={updateUrl}
                       class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white placeholder-gray-400 focus:border-orange-500 focus:outline-none"
                       placeholder="Enter seed value"
                     />
