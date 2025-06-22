@@ -93,9 +93,10 @@ export const initializeCrystalline = () => {
   data.set(dataValue);
   
   console.log('=== WASM calculator and data initialized and stores updated (Modern/Svelte 5) ===');
-};// Original generated code for reference:
+};
+
+// Original generated code for reference:
 /*
-/* eslint-disable */
 const wrap = (fn) => {
   return (...args) => {
     const result = fn.call(undefined, ...args);

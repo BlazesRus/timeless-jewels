@@ -46,8 +46,7 @@
     "dist/**/*",
     "static/**/*",
     "src/**/*Legacy*.svelte",
-    "src/**/*Modern*.svelte",
     "LegacyMode/**/*",
-    "ModernMode/**/*"
+    "LegacyPackage*.json"
   ]
 }
