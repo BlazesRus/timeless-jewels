@@ -269,5 +269,27 @@
     "**/*Legacy*.svelte"
   ],
   "typescript.preferences.project": "frontend/tsconfig.modern-mode.json",
-  "typescript.suggest.completeFunctionCalls": true
+  "typescript.suggest.completeFunctionCalls": true,
+  "go.buildTags": "tools",
+  "go.toolsManagement.checkForUpdates": "local",
+  "go.useLanguageServer": true,
+  "go.buildFlags": [
+    "-tags=tools"
+  ],
+  "go.testTags": "tools",
+  "go.lintTool": "golangci-lint",
+  "go.formatTool": "gofmt",
+  "go.languageServerExperimentalFeatures": {
+    "diagnosticsDelay": "250ms",
+    "documentLink": true
+  },
+  "go.editorContextMenuCommands": {
+    "toggleTestFile": true,
+    "addTags": true,
+    "removeTags": true,
+    "testAtCursor": true,
+    "testFile": true,
+    "testPackage": true,
+    "generateTestForFunction": true
+  }
 }

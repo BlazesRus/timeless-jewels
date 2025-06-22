@@ -42,7 +42,6 @@ export default [
   ...tsEslint.configs.recommended, // Changed from strict to recommended to match legacy config
   ...svelte.configs['flat/recommended'],
   eslintPluginPrettierRecommended, // must be last to override conflicting rules.
-
   // Global ignores
   {
     ignores: [
@@ -62,11 +61,20 @@ export default [
       'package.json',
       'Svelte5Package.json', 
       'LegacyPackage.json',
+      'Svelte5PackageBackup.json',
+      'LegacyPackageBackup.json',
+      'pnpm-lock.yaml',
+      'version.ini',
       '**/*.config.js',
       '**/*.config.cjs',
-      '**/*.config.ts'
+      '**/*.config.ts',
+      'svelte.config.js',
+      'tailwind.config.cjs',
+      'vite.config.js',
+      'tsconfig.json',
+      'eslint.config.js'
     ]
-  }, // General configuration for all files
+  },// General configuration for all files
   {
     languageOptions: {
       ecmaVersion: 2022,

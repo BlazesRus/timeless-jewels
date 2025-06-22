@@ -16,12 +16,21 @@ src/wasm_exec.js
 
 # Ignore files with syntax errors that prevent formatting
 src/routes/+page.svelte
-src/routes/tree/ModernPage.svelte
 
 # Ignore configuration files from formatting
 package.json
 Svelte5Package.json
 LegacyPackage.json
+Svelte5PackageBackup.json
+LegacyPackageBackup.json
+pnpm-lock.yaml
+version.ini
 *.config.js
 *.config.cjs
 *.config.ts
+svelte.config.js
+tailwind.config.cjs
+vite.config.js
+tsconfig.json
+eslint.config.js
+.prettierignore
