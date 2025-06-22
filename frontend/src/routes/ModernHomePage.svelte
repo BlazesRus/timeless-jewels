@@ -140,8 +140,8 @@
         // Initialize passive skills
         if (dataValue.PassiveSkills && Array.isArray(dataValue.PassiveSkills)) {
           passiveSkills = dataValue.PassiveSkills
-            .filter(skill => skill !== undefined)
-            .map(skill => ({
+            .filter((skill: any) => skill !== undefined)
+            .map((skill: any) => ({
               value: skill!.PassiveSkillGraphID,
               label: skill!.Name
             }));
