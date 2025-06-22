@@ -14,35 +14,29 @@
 
   import SearchResultsComponent from '$lib/components/SearchResults.svelte';
   import { statValues } from '$lib/values';
-  import { data, calculator } from '$lib/types/ModernTypes';
+  import { data, calculator } from '$lib/types/ModernTypes.js';
+  import type * as ModernTypes from '$lib/types/index.modern.d.ts';
   import { get } from 'svelte/store';
-  
-  // Reactive store values for use in the component with proper typing
-  const calculatorValue = $derived(get(calculator) as any);
-  const dataValue = $derived(get(data) as any);
 
   import TradeButton from '$lib/components/TradeButton.svelte';
   import TradeLinks from '$lib/components/TradeLinks.svelte';
-
   // Use ModernSelect for Svelte 5 compatibility instead of svelte-select
   import ModernSelect from '$lib/components/ModernSelect.svelte';
-  // Store search params as reactive variable
-  let searchParams: URLSearchParams;
 
-  interface JewelOption {
-    value: number;
-    label: string;
-  }
+  // Reactive store values and search params
+  let calculatorValue = $state<any>(calculator ?? undefined);
+  let dataValue = $state<any>(data ?? undefined);
 
-  interface ConquerorOption {
-    value: string;
-    label: string;
-  }
-  
-  const jewels = $derived(Object.keys((get(data) as any)?.TimelessJewels || {}).map(k => ({
-    value: parseInt(k),
-    label: ((get(data) as any)?.TimelessJewels as any)?.[k] || ''
-  })));
+  // Derived search params from page state (Svelte 5 modern approach)
+  const searchParams = $derived(page.url.searchParams);
+
+  // Derived jewel options
+  const jewels = $derived(
+    Object.keys((get(data) as any)?.TimelessJewels || {}).map(k => ({
+      value: parseInt(k),
+      label: ((get(data) as any)?.TimelessJewels as any)?.[k] || ''
+    }))
+  );
 
   // State variables with Svelte 5 runes
   let selectedJewel = $state<JewelOption | undefined>(undefined);
@@ -57,8 +51,6 @@
   onMount(() => {
     if (browser) {
       try {
-        searchParams = page.url.searchParams;
-
         // Initialize selections from URL params
         if (searchParams.has('jewel')) {
           selectedJewel = jewels.find(j => j.value === parseInt(searchParams.get('jewel') || '0'));
@@ -92,7 +84,6 @@
             }
           });
         }
-
         if (searchParams.has('mode')) {
           const modeParam = searchParams.get('mode') || '';
           if (modeParam === 'seed' || modeParam === 'stats') {

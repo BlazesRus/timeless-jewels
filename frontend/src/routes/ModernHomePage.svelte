@@ -5,9 +5,10 @@
   import { base, assets } from '$app/paths';
   //Modern version of page
   import { page } from '$app/state';
-
   import ModernSelect from '$lib/components/ModernSelect.svelte';
+  // Use modern TypeScript definitions for better type safety  
   import { data, calculator } from '$lib/types/ModernTypes.js';
+  import type * as ModernTypes from '$lib/types/index.modern.d.ts';
   // Dynamic WASM loading - only importing initial value from ModernTypes
   // We'll load the WASM module dynamically in an effect
 
