@@ -1,10 +1,9 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import { onMount } from 'svelte';
-  import type { Page } from '@sveltejs/kit';
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
   import { base, assets } from '$app/paths';
+  import { page } from '$app/state'; 
 
   import ModernSelect from '$lib/components/ModernSelect.svelte';
   import { data, calculator } from '$lib/types/ModernTypes.js';
@@ -90,7 +89,7 @@
   let result = $state<any>(undefined);
 
   let JewelsAreNotInitialized = $state(true); // Start as true to trigger initial data load
-  const searchParams = $derived(browser && $page?.url?.searchParams ? $page.url.searchParams : new URLSearchParams());
+  const searchParams = $derived(browser && page?.url?.searchParams ? page.url.searchParams : new URLSearchParams());
 
   // Initialize search params after component mounts
   onMount(() => {
@@ -259,7 +258,7 @@
           <p>Timeless Jewels: {typeof (globalThis as any)['go']?.['timeless-jewels'] !== 'undefined' ? 'Available' : 'Not found'}</p>
           <button 
             class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            onclick={() => {
+            onclick={(e) => {
               console.log('Manual debug check triggered');
               console.log('globalThis keys:', Object.keys(globalThis).filter(k => k.includes('go') || k.includes('Go')));
               console.log('globalThis.go:', (globalThis as any)['go']);
@@ -321,7 +320,7 @@
                 {#if selectedPassiveSkill}
                   <div>
                     <label for="seed" class="block mb-2 text-lg font-semibold">Seed</label>
-                    <input type="number" id="seed" bind:value={seed} oninput={updateUrl}
+                    <input type="number" id="seed" bind:value={seed} oninput={(e) => updateUrl()}
                       class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white placeholder-gray-400 focus:border-orange-500 focus:outline-none"
                       placeholder="Enter seed value"
                     />
