@@ -10,8 +10,10 @@
 
   import type { RenderFunc, Node } from '../../skill_tree_types';
   import { baseJewelRadius, calculateNodePos, distance, drawnGroups, drawnNodes, formatStats, inverseSprites, inverseSpritesActive, inverseTranslations, orbitAngleAt, skillTree, toCanvasCoords } from '../../skill_tree';
-  import type { Point } from '../../skill_tree';  import { calculator, data } from '../../types/ModernTypes';
-  import { get } from 'svelte/store';  // Modern state management using Svelte 5 runes
+  import type { Point } from '../../skill_tree';
+  import { calculator, data } from '../../types/ModernTypes';
+  // Modern state management using Svelte 5 runes
+  import { get } from 'svelte/store';
   let scaling = $state(10);
   let offsetX = $state(0);
   let offsetY = $state(0);
@@ -130,15 +132,19 @@
     highlightGradient.addColorStop(0, '#8cf34c'); // bright green
     highlightGradient.addColorStop(1, '#00ff00'); // neon green
     return highlightGradient;
-  };  let cursor = $state('unset');
-  let hoveredNode = $state<Node | undefined>(undefined);  // Derived render function (Svelte 5 style)
+  };
+  let cursor = $state('unset');
+  let hoveredNode = $state<Node | undefined>(undefined);
+  // Derived render function (Svelte 5 style)
   const render: RenderFunc = $derived((({ context, width, height }) => {
     const start = measurePerformance();
 
     context.clearRect(0, 0, width, height);
 
     context.fillStyle = '#080c11';
-    context.fillRect(0, 0, width, height);    const connected: Record<string, boolean> = {};    Object.keys(drawnGroups).forEach((groupId: string) => {
+    context.fillRect(0, 0, width, height);
+    const connected: Record<string, boolean> = {};
+    Object.keys(drawnGroups).forEach((groupId: string) => {
       const group = drawnGroups[groupId as any];
       const groupPos = toCanvasCoords(group.x, group.y, offsetX, offsetY, scaling);
 
@@ -153,7 +159,9 @@
         drawSprite(context, 'PSGroupBackground3', groupPos, false, true);
         // drawMirror(context, $PSGroupBackground3, groupPos);
       }
-    });    Object.keys(drawnNodes).forEach((nodeId: string) => {
+    });
+
+    Object.keys(drawnNodes).forEach((nodeId: string) => {
       const node = drawnNodes[nodeId as any];
       if (!node.orbit || node.orbitIndex === undefined) return;
       
@@ -187,7 +195,8 @@
         const targetAngle = orbitAngleAt(targetNode.orbit, targetNode.orbitIndex);
         const targetRotatedPos = calculateNodePos(targetNode, offsetX, offsetY, scaling);
 
-        context.beginPath();        if (node.group != targetNode.group || node.orbit != targetNode.orbit) {
+        context.beginPath();
+        if (node.group != targetNode.group || node.orbit != targetNode.orbit) {
           context.moveTo(rotatedPos.x, rotatedPos.y);
           context.lineTo(targetRotatedPos.x, targetRotatedPos.y);
         } else {
@@ -220,7 +229,8 @@
     }
 
     let hoveredNodeActive = false;
-    let newHoverNode: Node | undefined;    Object.keys(drawnNodes).forEach((nodeId: string) => {
+    let newHoverNode: Node | undefined;
+    Object.keys(drawnNodes).forEach((nodeId: string) => {
       const node = drawnNodes[nodeId as any];
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
       let touchDistance = 0;
@@ -323,7 +333,8 @@
       let nodeStats: { text: string; special: boolean }[] = (hoveredNode.stats || []).map(s => ({
         text: s,
         special: false
-      }));      if (!hoveredNode.isJewelSocket && hoveredNodeActive) {
+      }));
+      if (!hoveredNode.isJewelSocket && hoveredNodeActive) {
         if (hoveredNode.skill && seed && selectedJewel && selectedConqueror && calculatorValue && dataValue) {
           try {
             const result = (calculatorValue as any).Calculate((dataValue as any).TreeToPassive[hoveredNode.skill].Index, seed, selectedJewel, selectedConqueror);
@@ -451,9 +462,11 @@
 
     context.fillStyle = '#ffffff';
     context.textAlign = 'right';
-    context.font = '12px Roboto Mono';    const end = measurePerformance();
+    context.font = '12px Roboto Mono';
+    const end = measurePerformance();
     context.fillText(`${(end - start).toFixed(1)}ms`, width - 5, 17);
   }) as RenderFunc);
+  
   // Modern state management - Svelte 5 ready
   let downX = $state(0);
   let downY = $state(0);

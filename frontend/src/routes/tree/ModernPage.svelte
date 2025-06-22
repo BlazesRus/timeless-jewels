@@ -1,5 +1,6 @@
 <!-- Svelte 5 Compatible Tree Page -->
-<script lang="ts">  import { browser } from '$app/environment';
+<script lang="ts">
+  import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
 
@@ -11,7 +12,8 @@
   import type { Query, SearchConfig, StatConfig, SearchResults as SearchResultsType } from '$lib/modern-worker-types';
 
   import SearchResultsComponent from '$lib/components/SearchResults.svelte';
-  import { statValues } from '$lib/values';  import { data, calculator } from '$lib/types/ModernTypes';
+  import { statValues } from '$lib/values';
+  import { data, calculator } from '$lib/types/ModernTypes';
   import { get } from 'svelte/store';
   
   // Reactive store values for use in the component with proper typing
@@ -34,7 +36,9 @@
   interface ConquerorOption {
     value: string;
     label: string;
-  }  const jewels = $derived(Object.keys((get(data) as any)?.TimelessJewels || {}).map(k => ({
+  }
+  
+  const jewels = $derived(Object.keys((get(data) as any)?.TimelessJewels || {}).map(k => ({
     value: parseInt(k),
     label: ((get(data) as any)?.TimelessJewels as any)?.[k] || ''
   })));
