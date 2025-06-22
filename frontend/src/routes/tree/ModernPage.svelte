@@ -3,11 +3,10 @@
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
-  //Modern version of page
   import { page } from '$app/state';
 
   import SkillTree from '$lib/components/Svelte5/SkillTree.svelte';
-  import type { Node } from '$lib/skill_tree_types';
+  import type { Node, AlternatePassiveSkillInformation, JewelOption, ConquerorOption, SearchState } from '$lib/skill_tree_types_modern';
   import { getAffectedNodes, skillTree, translateStat, constructQueries } from '$lib/skill_tree';
 
   import { modernWorker } from '../../lib/modern-worker';
@@ -106,24 +105,23 @@
         console.warn('Could not access page store during SSR:', error);
       }
     }
-  });  // Derived statements
+  });
+
+  // Derived statements
   const conquerors = $derived(selectedJewel && (get(data) as any)?.TimelessJewelConquerors?.[selectedJewel.value] ? Object.keys((get(data) as any).TimelessJewelConquerors[selectedJewel.value] || {}).map((k): ConquerorOption => ({ value: k, label: k })) : []);
-
   const dropdownConqs = $derived(conquerors.concat([{ value: 'Any', label: 'Any' }]));
-
   const anyConqueror = $derived(dropdownConqueror?.value === 'Any');
-
   const selectedConqueror = $derived(dropdownConqueror?.value === 'Any' ? conquerors[0] : dropdownConqueror);
 
   const affectedNodes = $derived(circledNode ? getAffectedNodes(skillTree.nodes[circledNode]).filter(n => !n.isJewelSocket && !n.isMastery) : []);
-    const seedResults = $derived(
+  const seedResults = $derived(
     !seed || !selectedJewel || !selectedConqueror || !(get(data) as any)?.TimelessJewelConquerors?.[selectedJewel.value] || Object.keys((get(data) as any)?.TimelessJewelConquerors?.[selectedJewel.value] || {}).indexOf(selectedConqueror.value) < 0
       ? []
       : affectedNodes
           .filter(n => n.skill !== undefined && (get(data) as any)?.TreeToPassive?.[n.skill])
           .map(n => ({
             node: n.skill!,
-            result: get(calculator)?.Calculate((get(data) as any)?.TreeToPassive?.[n.skill!]?.Index || 0, seed, selectedJewel!.value, selectedConqueror!.value)
+            result: calculatorValue?.Calculate((get(data) as any)?.TreeToPassive?.[n.skill!]?.Index || 0, seed, selectedJewel!.value, selectedConqueror!.value)
           }))
   );
 
@@ -152,7 +150,7 @@
   let disabled = $state(new Set<number>());
   const handleNodeClick = (node: Node) => {
     if (node.skill === undefined) return;
-    
+
     if (node.isJewelSocket) {
       circledNode = node.skill;
       updateUrl();
@@ -235,12 +233,13 @@
     if (!selectedJewel || !selectedConqueror) {
       return;
     }
-
     searchJewel = selectedJewel.value;
     searchConqueror = anyConqueror ? null : selectedConqueror.value;
     isSearching = true;
     searchResults = undefined;
-    currentSeed = 0;    const searchConfig: SearchConfig = {
+    currentSeed = 0;
+
+    const searchConfig: SearchConfig = {
       jewel: selectedJewel.value,
       conqueror: selectedConqueror.value,
       nodes: affectedNodes
@@ -354,6 +353,7 @@
     unique: '#af6025',
     critical: '#b2a7d6'
   };
+
   const colorMessage = (message: string): string => {
     Object.keys(colorKeys).forEach(key => {
       const value = (colorKeys as any)[key];
@@ -362,8 +362,7 @@
 
     return message;
   };
-
-  const combineResults = (rawResults: { result: dataValue.AlternatePassiveSkillInformation; node: number }[], withColors: boolean, only: 'notables' | 'passives' | 'all'): CombinedResult[] => {
+  const combineResults = (rawResults: { result: AlternatePassiveSkillInformation; node: number }[], withColors: boolean, only: 'notables' | 'passives' | 'all'): CombinedResult[] => {
     const mappedStats: { [key: number]: number[] } = {};
     rawResults.forEach(r => {
       if (skillTree.nodes[r.node].isKeystone) {
@@ -380,20 +379,24 @@
         }
       }
 
-      if (r.result.AlternatePassiveSkill && r.result.AlternatePassiveSkill.StatsKeys) {
-        r.result.AlternatePassiveSkill.StatsKeys.forEach(key => {
+      if (r.result.AlternatePassiveSkill?.StatsKeys) {
+        r.result.AlternatePassiveSkill.StatsKeys.forEach((key: number) => {
           mappedStats[key] = [...(mappedStats[key] || []), r.node];
         });
-      }      if (r.result.AlternatePassiveAdditionInformations) {
-        r.result.AlternatePassiveAdditionInformations.forEach(info => {
+      }
+
+      if (r.result.AlternatePassiveAdditionInformations) {
+        r.result.AlternatePassiveAdditionInformations.forEach((info: any) => {
           if (info.AlternatePassiveAddition?.StatsKeys) {
-            info.AlternatePassiveAddition.StatsKeys.forEach(key => {
+            info.AlternatePassiveAddition.StatsKeys.forEach((key: number) => {
               mappedStats[key] = [...(mappedStats[key] || []), r.node];
             });
           }
         });
       }
-    });    return Object.keys(mappedStats).map(statID => {
+    });
+
+    return Object.keys(mappedStats).map(statID => {
       const translated = translateStat(parseInt(statID));
       return {
         stat: withColors ? colorMessage(translated) : translated,
@@ -403,13 +406,13 @@
       };
     });
   };
-
   const sortCombined = (combinedResults: CombinedResult[], order: 'count' | 'alphabet' | 'rarity' | 'value'): CombinedResult[] => {
     switch (order) {
       case 'alphabet':
         return combinedResults.sort((a, b) => a.rawStat.replace(/[#+%]/gi, '').trim().toLowerCase().localeCompare(b.rawStat.replace(/[#+%]/gi, '').trim().toLowerCase()));
       case 'count':
-        return combinedResults.sort((a, b) => b.passives.length - a.passives.length);      case 'rarity':
+        return combinedResults.sort((a, b) => b.passives.length - a.passives.length);
+      case 'rarity':
         return combinedResults.sort((a, b) => (selectedJewel ? (allPossibleStats[selectedJewel.value]?.[a.id] || 0) - (allPossibleStats[selectedJewel.value]?.[b.id] || 0) : 0));
       case 'value':
         return combinedResults.sort((a, b) => {
@@ -420,8 +423,9 @@
           }
           return selectedJewel ? (allPossibleStats[selectedJewel.value]?.[a.id] || 0) - (allPossibleStats[selectedJewel.value]?.[b.id] || 0) : 0;
         });
+      default:
+        return combinedResults;
     }
-    return combinedResults;
   };
 
   const onPaste = (event: ClipboardEvent) => {
@@ -435,11 +439,12 @@
     if (lines.length < 14) {
       return;
     }
-
     const jewel = jewels.find(j => j.label === lines[2]);
     if (!jewel) {
       return;
-    }    let newSeed: number | undefined;
+    }
+
+    let newSeed: number | undefined;
     let conqueror: string | undefined;
     for (let i = 10; i < lines.length; i++) {
       conqueror = Object.keys(dataValue.TimelessJewelConquerors?.[jewel.value] || {}).find(k => lines[i].indexOf(k) >= 0);
@@ -531,7 +536,8 @@
 
               {#if mode === 'seed'}
                 <div class="mt-4">
-                  <h3 class="mb-2">Seed</h3>                  <input type="number" bind:value={seed} placeholder="Seed" onblur={updateUrl} oninput={updateUrl} min={dataValue.TimelessJewelSeedRanges?.[selectedJewel.value]?.Min || 0} max={dataValue.TimelessJewelSeedRanges?.[selectedJewel.value]?.Max || 999999} />
+                  <h3 class="mb-2">Seed</h3>
+                  <input type="number" bind:value={seed} placeholder="Seed" onblur={updateUrl} oninput={updateUrl} min={dataValue.TimelessJewelSeedRanges?.[selectedJewel.value]?.Min || 0} max={dataValue.TimelessJewelSeedRanges?.[selectedJewel.value]?.Max || 999999} />
                   {#if seed < (dataValue.TimelessJewelSeedRanges?.[selectedJewel.value]?.Min || 0) || seed > (dataValue.TimelessJewelSeedRanges?.[selectedJewel.value]?.Max || 999999)}
                     <div class="mt-2">
                       Seed must be between {dataValue.TimelessJewelSeedRanges?.[selectedJewel.value]?.Min || 0}
@@ -555,19 +561,21 @@
                   </div>
 
                   {#if !split}
-                    <div class="mt-4 overflow-auto" class:rainbow={colored}>                        {#each sortCombined(combineResults(seedResults, colored, 'all'), (sortOrder?.value as 'count' | 'alphabet' | 'rarity' | 'value') || 'count') as r}
-                          <button class="cursor-pointer block w-full text-left hover:bg-gray-700/30 p-1 rounded" onclick={() => highlight(seed, r.passives)}>
-                            <span class="font-bold" class:text-white={((statValues as any)[r.id] || 0) < 3}>
-                              ({r.passives.length})
-                            </span>
-                            <span class="text-white">{@html r.stat}</span>
-                          </button>
-                        {/each}
+                    <div class="mt-4 overflow-auto" class:rainbow={colored}>
+                      {#each sortCombined(combineResults(seedResults, colored, 'all'), (sortOrder?.value as 'count' | 'alphabet' | 'rarity' | 'value') || 'count') as r}
+                        <button class="cursor-pointer block w-full text-left hover:bg-gray-700/30 p-1 rounded" onclick={() => highlight(seed, r.passives)}>
+                          <span class="font-bold" class:text-white={((statValues as any)[r.id] || 0) < 3}>
+                            ({r.passives.length})
+                          </span>
+                          <span class="text-white">{@html r.stat}</span>
+                        </button>
+                      {/each}
                     </div>
                   {:else}
                     <div class="overflow-auto mt-4">
                       <h3>Notables</h3>
-                      <div class="mt-1" class:rainbow={colored}>                        {#each sortCombined(combineResults(seedResults, colored, 'notables'), (sortOrder?.value as 'count' | 'alphabet' | 'rarity' | 'value') || 'count') as r}
+                      <div class="mt-1" class:rainbow={colored}>
+                        {#each sortCombined(combineResults(seedResults, colored, 'notables'), (sortOrder?.value as 'count' | 'alphabet' | 'rarity' | 'value') || 'count') as r}
                           <button class="cursor-pointer block w-full text-left hover:bg-gray-700/30 p-1 rounded" onclick={() => highlight(seed, r.passives)}>
                             <span class="font-bold" class:text-white={((statValues as any)[r.id] || 0) < 3}>
                               ({r.passives.length})
@@ -578,7 +586,8 @@
                       </div>
 
                       <h3 class="mt-2">Smalls</h3>
-                      <div class="mt-1" class:rainbow={colored}>                        {#each sortCombined(combineResults(seedResults, colored, 'passives'), (sortOrder?.value as 'count' | 'alphabet' | 'rarity' | 'value') || 'count') as r}
+                      <div class="mt-1" class:rainbow={colored}>
+                        {#each sortCombined(combineResults(seedResults, colored, 'passives'), (sortOrder?.value as 'count' | 'alphabet' | 'rarity' | 'value') || 'count') as r}
                           <button class="cursor-pointer block w-full text-left hover:bg-gray-700/30 p-1 rounded" onclick={() => highlight(seed, r.passives)}>
                             <span class="font-bold" class:text-white={((statValues as any)[r.id] || 0) < 3}>
                               ({r.passives.length})
@@ -596,7 +605,8 @@
                   <ModernSelect items={statItems} onchange={handleSelectStat} bind:this={statSelector} />
                 </div>
                 {#if Object.keys(selectedStats).length > 0}
-                  <div class="mt-4 flex flex-col overflow-auto min-h-[100px]">                    {#each Object.keys(selectedStats) as s}
+                  <div class="mt-4 flex flex-col overflow-auto min-h-[100px]">
+                    {#each Object.keys(selectedStats) as s}
                       <div class="mb-4 flex flex-row items-start flex-col border-neutral-100/40 border-b pb-4">
                         <div>
                           <button class="p-2 px-4 bg-red-500/40 rounded mr-2" onclick={() => removeStat(selectedStats[parseInt(s)].id)}>-</button>
@@ -637,7 +647,8 @@
                       <button class="p-2 px-2 bg-yellow-500/40 rounded disabled:bg-yellow-900/40 flex-grow" onclick={deselectAll} disabled={isSearching || disabled.size >= affectedNodes.length}>Deselect</button>
                     </div>
                     <div class="flex flex-row mt-2">
-                      <button class="p-2 px-3 bg-green-500/40 rounded disabled:bg-green-900/40 flex-grow" onclick={handleSearch} disabled={isSearching}>                        {#if isSearching}
+                      <button class="p-2 px-3 bg-green-500/40 rounded disabled:bg-green-900/40 flex-grow" onclick={handleSearch} disabled={isSearching}>
+                        {#if isSearching}
                           Searching... {currentSeed} / {dataValue.TimelessJewelSeedRanges?.[selectedJewel.value]?.Max || 'Unknown'}
                         {:else}
                           Search
