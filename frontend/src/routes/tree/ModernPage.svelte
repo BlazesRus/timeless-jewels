@@ -3,6 +3,8 @@
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
+  //Modern version of page
+  import { page } from '$app/state';
 
   import SkillTree from '$lib/components/Svelte5/SkillTree.svelte';
   import type { Node } from '$lib/skill_tree_types';
@@ -56,7 +58,7 @@
   onMount(() => {
     if (browser) {
       try {
-        searchParams = (globalThis as any).$page.url.searchParams;
+        searchParams = page.url.searchParams;
 
         // Initialize selections from URL params
         if (searchParams.has('jewel')) {

@@ -3,7 +3,8 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { base, assets } from '$app/paths';
-  import { page } from '$app/state'; 
+  //Modern version of page
+  import { page } from '$app/state';
 
   import ModernSelect from '$lib/components/ModernSelect.svelte';
   import { data, calculator } from '$lib/types/ModernTypes.js';
