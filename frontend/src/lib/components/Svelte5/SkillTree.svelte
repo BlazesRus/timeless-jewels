@@ -5,8 +5,6 @@
     return window.performance.now();
   };
 
-  import { onMount } from 'svelte';
-
   // Svelte 5 compatible canvas library (or fallback to current)
   import { Canvas, Layer } from 'svelte-canvas';
 
