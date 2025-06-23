@@ -138,7 +138,7 @@ func generateTypes() {
 		panic(err)
 	}
 
-	// Generate modern (Svelte 5) version of index.d.ts 
+	// Generate modern (Svelte 5) version of index.d.ts
 	modernTsFile := generateModernTypeDefinitions(tsFile)
 	if err := os.WriteFile("./frontend/src/lib/types/index.modern.d.ts", []byte(modernTsFile), 0777); err != nil {
 		panic(err)
@@ -189,7 +189,7 @@ export declare const initializeCrystalline: () => void;`
 
 func updateModernTypesJs(originalJs string) {
 	modernTypesPath := "./frontend/src/lib/types/ModernTypes.js"
-	
+
 	// Check if ModernTypes.js exists
 	if _, err := os.Stat(modernTypesPath); os.IsNotExist(err) {
 		// Create it if it doesn't exist
@@ -204,10 +204,10 @@ func updateModernTypesJs(originalJs string) {
 	}
 
 	existingStr := string(existingContent)
-	
+
 	// Update the comment section with new generated data
 	updatedContent := updateGeneratedSection(existingStr, originalJs)
-	
+
 	// Write back the updated content
 	if err := os.WriteFile(modernTypesPath, []byte(updatedContent), 0777); err != nil {
 		panic(err)
@@ -286,20 +286,20 @@ export const initializeCrystalline = () => {
 func updateGeneratedSection(existingContent, newOriginalJs string) string {
 	// Find and update the generated code section
 	startMarker := "// Original generated code for reference:"
-	
+
 	startIndex := len(existingContent)
 	if idx := strings.Index(existingContent, startMarker); idx != -1 {
 		startIndex = idx
 	}
-	
+
 	// Keep everything before the generated section
 	beforeSection := existingContent[:startIndex]
-	
+
 	// Add updated generated section
 	newSection := startMarker + `
 /*
 ` + newOriginalJs + `
 */`
-	
+
 	return beforeSection + newSection
 }
