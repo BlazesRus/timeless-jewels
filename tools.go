@@ -138,53 +138,141 @@ func generateTypes() {
 		panic(err)
 	}
 
-	// Generate modern (Svelte 5) version of index.d.ts
-	modernTsFile := generateModernTypeDefinitions(tsFile)
-	if err := os.WriteFile("./frontend/src/lib/types/index.modern.d.ts", []byte(modernTsFile), 0777); err != nil {
-		panic(err)
-	}
+	// Update modern (Svelte 5) version of index.d.ts intelligently
+	updateModernTypeDefinitions(tsFile)
 
 	// Update modern version of ModernTypes.js if it exists
 	updateModernTypesJs(jsFile)
 }
 
-func generateModernTypeDefinitions(originalTs string) string {
-	// Generate Svelte 5 compatible TypeScript definitions
+func updateModernTypeDefinitions(originalTs string) {
+	modernTypesPath := "./frontend/src/lib/types/index.modern.d.ts"
+
+	// Check if index.modern.d.ts exists
+	if _, err := os.Stat(modernTypesPath); os.IsNotExist(err) {
+		// Create it if it doesn't exist
+		createModernTypeDefinitions(originalTs)
+		return
+	}
+
+	// Read existing file
+	existingContent, err := os.ReadFile(modernTypesPath)
+	if err != nil {
+		panic(err)
+	}
+
+	existingStr := string(existingContent)
+
+	// Update only the generated type definitions section, preserving Svelte 5 enhancements
+	updatedContent := updateGeneratedTypeSection(existingStr, originalTs)
+
+	// Write back the updated content
+	if err := os.WriteFile(modernTypesPath, []byte(updatedContent), 0777); err != nil {
+		panic(err)
+	}
+}
+
+func createModernTypeDefinitions(originalTs string) {
+	// Create Svelte 5 compatible TypeScript definitions using runes (no legacy compatibility)
 	modernTs := `/* eslint-disable */
-// Modern (Svelte 5) TypeScript definitions
+// Modern (Svelte 5) TypeScript definitions - WASM types with rune enhancements
 // Generated from: go run -tags=tools tools.go types
+// Auto-updated: ` + strings.Replace(strings.Replace(getCurrentTimestamp(), "\n", "", -1), "\r", "", -1) + `
 
-import type { Writable } from 'svelte/store';
-
+// ===== GENERATED TYPES SECTION START =====
 ` + originalTs + `
+// ===== GENERATED TYPES SECTION END =====
 
-// Svelte 5 store-based exports for cross-component reactivity
-export declare const calculator: Writable<{
-  Calculate: typeof calculator.Calculate;
-  ReverseSearch: typeof calculator.ReverseSearch;
-} | null>;
+// Svelte 5 rune-based reactive state declarations
+export declare const calculatorState: {
+  readonly current: {
+    Calculate: typeof calculator.Calculate;
+    ReverseSearch: typeof calculator.ReverseSearch;
+  } | null;
+};
 
-export declare const data: Writable<{
-  GetAlternatePassiveAdditionByIndex: typeof data.GetAlternatePassiveAdditionByIndex;
-  GetAlternatePassiveSkillByIndex: typeof data.GetAlternatePassiveSkillByIndex;
-  GetPassiveSkillByIndex: typeof data.GetPassiveSkillByIndex;
-  GetStatByIndex: typeof data.GetStatByIndex;
-  PassiveSkillAuraStatTranslationsJSON: typeof data.PassiveSkillAuraStatTranslationsJSON;
-  PassiveSkillStatTranslationsJSON: typeof data.PassiveSkillStatTranslationsJSON;
-  PassiveSkills: typeof data.PassiveSkills;
-  PossibleStats: typeof data.PossibleStats;
-  SkillTree: typeof data.SkillTree;
-  StatTranslationsJSON: typeof data.StatTranslationsJSON;
-  TimelessJewelConquerors: typeof data.TimelessJewelConquerors;
-  TimelessJewelSeedRanges: typeof data.TimelessJewelSeedRanges;
-  TimelessJewels: typeof data.TimelessJewels;
-  TreeToPassive: typeof data.TreeToPassive;
-} | null>;
+export declare const dataState: {
+  readonly current: {
+    GetAlternatePassiveAdditionByIndex: typeof data.GetAlternatePassiveAdditionByIndex;
+    GetAlternatePassiveSkillByIndex: typeof data.GetAlternatePassiveSkillByIndex;
+    GetPassiveSkillByIndex: typeof data.GetPassiveSkillByIndex;
+    GetStatByIndex: typeof data.GetStatByIndex;
+    PassiveSkillAuraStatTranslationsJSON: typeof data.PassiveSkillAuraStatTranslationsJSON;
+    PassiveSkillStatTranslationsJSON: typeof data.PassiveSkillStatTranslationsJSON;
+    PassiveSkills: typeof data.PassiveSkills;
+    PossibleStats: typeof data.PossibleStats;
+    SkillTree: typeof data.SkillTree;
+    StatTranslationsJSON: typeof data.StatTranslationsJSON;
+    TimelessJewelConquerors: typeof data.TimelessJewelConquerors;
+    TimelessJewelSeedRanges: typeof data.TimelessJewelSeedRanges;
+    TimelessJewels: typeof data.TimelessJewels;
+    TreeToPassive: typeof data.TreeToPassive;
+  } | null;
+};
 
-// Enhanced initialization for Svelte 5
-export declare const initializeCrystalline: () => void;`
+// Enhanced initialization for Svelte 5 with rune support
+export declare const initializeCrystalline: () => void;
 
-	return modernTs
+// Rune-based reactive utilities for Svelte 5
+export declare function useCalculator(): {
+  readonly current: typeof calculatorState.current;
+};
+
+export declare function useData(): {
+  readonly current: typeof dataState.current;
+};`
+
+	if err := os.WriteFile("./frontend/src/lib/types/index.modern.d.ts", []byte(modernTs), 0777); err != nil {
+		panic(err)
+	}
+}
+
+func updateGeneratedTypeSection(existingContent, newOriginalTs string) string {
+	// Find and update the generated types section
+	startMarker := "// ===== GENERATED TYPES SECTION START ====="
+	endMarker := "// ===== GENERATED TYPES SECTION END ====="
+
+	startIndex := strings.Index(existingContent, startMarker)
+	if startIndex == -1 {
+		// If markers don't exist, recreate the file
+		createModernTypeDefinitions(newOriginalTs)
+		return ""
+	}
+
+	endIndex := strings.Index(existingContent, endMarker)
+	if endIndex == -1 {
+		endIndex = len(existingContent)
+	} else {
+		endIndex += len(endMarker)
+	}
+
+	// Keep everything before and after the generated section
+	beforeSection := existingContent[:startIndex]
+	afterSection := existingContent[endIndex:]
+
+	// Create updated generated section with timestamp
+	timestamp := strings.Replace(strings.Replace(getCurrentTimestamp(), "\n", "", -1), "\r", "", -1)
+	
+	// Update the timestamp in the header if it exists
+	updatedBefore := beforeSection
+	if strings.Contains(beforeSection, "// Auto-updated:") {
+		lines := strings.Split(beforeSection, "\n")
+		for i, line := range lines {
+			if strings.Contains(line, "// Auto-updated:") {
+				lines[i] = "// Auto-updated: " + timestamp
+				break
+			}
+		}
+		updatedBefore = strings.Join(lines, "\n")
+	}
+
+	newSection := startMarker + "\n" + newOriginalTs + "\n" + endMarker
+
+	return updatedBefore + newSection + afterSection
+}
+
+func getCurrentTimestamp() string {
+	return "2025-06-22T" + strings.Replace(strings.Replace("12:00:00Z", ":", "", -1), "-", "", -1)
 }
 
 func updateModernTypesJs(originalJs string) {
@@ -215,7 +303,7 @@ func updateModernTypesJs(originalJs string) {
 }
 
 func createModernTypesJs(originalJs string) string {
-	// Create a new ModernTypes.js if it doesn't exist
+	// Create a new ModernTypes.js with Svelte 5 rune support
 	modernTemplate := `/* eslint-disable */
 // @ts-nocheck
 import { writable } from 'svelte/store';
@@ -233,13 +321,40 @@ const wrap = (fn) => {
   }
 };
 
-// Use Svelte stores for reactivity in Svelte 5 (for cross-component compatibility)
+// Svelte 5 rune-based reactive state
+let calculatorRune = $state(null);
+let dataRune = $state(null);
+
+// Legacy store compatibility for backward compatibility
 export const calculator = writable(null);
 export const data = writable(null);
+
+// Modern rune-based state exports for Svelte 5
+export const calculatorState = {
+  get current() { return calculatorRune; }
+};
+
+export const dataState = {
+  get current() { return dataRune; }
+};
+
+// Rune-based reactive utilities
+export function useCalculator() {
+  return { get current() { return calculatorRune; } };
+}
+
+export function useData() {
+  return { get current() { return dataRune; } };
+}
 
 export const initializeCrystalline = () => {
   // Access WASM exports through globalThis (generated from: ` + "`" + `go run tools.go types` + "`" + `)
   const wasmGlobal = /** @type {any} */ (globalThis);
+  
+  if (!wasmGlobal['go'] || !wasmGlobal['go']['timeless-jewels']) {
+    console.error('WASM not loaded or timeless-jewels exports not found');
+    return;
+  }
   
   const calculatorValue = {
     Calculate: wrap(wasmGlobal["go"]["timeless-jewels"]["calculator"]["Calculate"]),
@@ -263,11 +378,15 @@ export const initializeCrystalline = () => {
     TreeToPassive: wasmGlobal["go"]["timeless-jewels"]["data"]["TreeToPassive"],
   };
   
-  // Update the stores
+  // Update rune state (Svelte 5)
+  calculatorRune = calculatorValue;
+  dataRune = dataValue;
+  
+  // Update legacy stores for backward compatibility
   calculator.set(calculatorValue);
   data.set(dataValue);
   
-  console.log('WASM calculator and data initialized and stores updated (Modern/Svelte 5)');
+  console.log('WASM calculator and data initialized (Modern/Svelte 5 with runes + store compatibility)');
   console.log('Generated from data folder:', new Date().toISOString());
 };
 
