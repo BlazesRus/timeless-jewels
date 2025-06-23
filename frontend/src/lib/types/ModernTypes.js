@@ -97,6 +97,7 @@ export const initializeCrystalline = () => {
 
 // Original generated code for reference:
 /*
+/* eslint-disable */
 const wrap = (fn) => {
   return (...args) => {
     const result = fn.call(undefined, ...args);
