@@ -14,27 +14,30 @@
 
   import SearchResultsComponent from '$lib/components/SearchResults.svelte';
   import { statValues } from '$lib/values';
-  import { data, calculator } from '$lib/types/ModernTypes.js';
+  import { calculatorState, dataState, useCalculator, useData, initializeCrystalline } from '$lib/types/ModernTypes.js';
   import type * as ModernTypes from '$lib/types/index.modern.d.ts';
-  import { get } from 'svelte/store';
 
   import TradeButton from '$lib/components/TradeButton.svelte';
   import TradeLinks from '$lib/components/TradeLinks.svelte';
   // Use ModernSelect for Svelte 5 compatibility instead of svelte-select
   import ModernSelect from '$lib/components/ModernSelect.svelte';
 
-  // Reactive store values and search params
-  let calculatorValue = $state<any>(calculator ?? undefined);
-  let dataValue = $state<any>(data ?? undefined);
+  // Use modern rune-based reactive utilities
+  const calculatorUtils = useCalculator();
+  const dataUtils = useData();
+  
+  // Reactive getters for current values using $derived with proper typing
+  const calculatorValue = $derived(calculatorUtils.current as any);
+  const dataValue = $derived(dataUtils.current as any);
 
   // Derived search params from page state (Svelte 5 modern approach)
   const searchParams = $derived(page.url.searchParams);
 
   // Derived jewel options
   const jewels = $derived(
-    Object.keys((get(data) as any)?.TimelessJewels || {}).map(k => ({
+    Object.keys(dataValue?.TimelessJewels || {}).map(k => ({
       value: parseInt(k),
-      label: ((get(data) as any)?.TimelessJewels as any)?.[k] || ''
+      label: (dataValue?.TimelessJewels as any)?.[k] || ''
     }))
   );
 
@@ -99,20 +102,20 @@
   });
 
   // Derived statements
-  const conquerors = $derived(selectedJewel && (get(data) as any)?.TimelessJewelConquerors?.[selectedJewel.value] ? Object.keys((get(data) as any).TimelessJewelConquerors[selectedJewel.value] || {}).map((k): ConquerorOption => ({ value: k, label: k })) : []);
+  const conquerors = $derived(selectedJewel && dataValue?.TimelessJewelConquerors?.[selectedJewel.value] ? Object.keys(dataValue.TimelessJewelConquerors[selectedJewel.value] || {}).map((k): ConquerorOption => ({ value: k, label: k })) : []);
   const dropdownConqs = $derived(conquerors.concat([{ value: 'Any', label: 'Any' }]));
   const anyConqueror = $derived(dropdownConqueror?.value === 'Any');
   const selectedConqueror = $derived(dropdownConqueror?.value === 'Any' ? conquerors[0] : dropdownConqueror);
 
   const affectedNodes = $derived(circledNode ? getAffectedNodes(skillTree.nodes[circledNode]).filter(n => !n.isJewelSocket && !n.isMastery) : []);
   const seedResults = $derived(
-    !seed || !selectedJewel || !selectedConqueror || !(get(data) as any)?.TimelessJewelConquerors?.[selectedJewel.value] || Object.keys((get(data) as any)?.TimelessJewelConquerors?.[selectedJewel.value] || {}).indexOf(selectedConqueror.value) < 0
+    !seed || !selectedJewel || !selectedConqueror || !dataValue?.TimelessJewelConquerors?.[selectedJewel.value] || Object.keys(dataValue?.TimelessJewelConquerors?.[selectedJewel.value] || {}).indexOf(selectedConqueror.value) < 0
       ? []
       : affectedNodes
-          .filter(n => n.skill !== undefined && (get(data) as any)?.TreeToPassive?.[n.skill])
+          .filter(n => n.skill !== undefined && dataValue?.TreeToPassive?.[n.skill])
           .map(n => ({
             node: n.skill!,
-            result: calculatorValue?.Calculate((get(data) as any)?.TreeToPassive?.[n.skill!]?.Index || 0, seed, selectedJewel!.value, selectedConqueror!.value)
+            result: calculatorValue?.Calculate(dataValue?.TreeToPassive?.[n.skill!]?.Index || 0, seed, selectedJewel!.value, selectedConqueror!.value)
           }))
   );
 
@@ -156,7 +159,7 @@
     console.log('Node click:', node);
   };
   // Stats functionality
-  const allPossibleStats = $derived(JSON.parse((get(data) as any)?.PossibleStats || '{}'));
+  const allPossibleStats = $derived(JSON.parse(dataValue?.PossibleStats || '{}'));
 
   const availableStats = $derived(!selectedJewel ? [] : Object.keys(allPossibleStats[selectedJewel.value] || {}));
   const statItems = $derived(

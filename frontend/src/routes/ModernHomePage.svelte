@@ -4,23 +4,22 @@
   import { goto } from '$app/navigation';
   import { base, assets } from '$app/paths';
   //Modern version of page
-  import { page } from '$app/state';
-  import ModernSelect from '$lib/components/ModernSelect.svelte';
-  // Use modern TypeScript definitions for better type safety  
-  import { data, calculator } from '$lib/types/ModernTypes.js';
+  import { page } from '$app/state';  import ModernSelect from '$lib/components/ModernSelect.svelte';
+  // Use modern TypeScript definitions for better type safety with Svelte 5 runes
+  import { calculatorState, dataState, useCalculator, useData, initializeCrystalline } from '$lib/types/ModernTypes.js';
   import type * as ModernTypes from '$lib/types/index.modern.d.ts';
-  // Dynamic WASM loading - only importing initial value from ModernTypes
-  // We'll load the WASM module dynamically in an effect
+  // Dynamic WASM loading using modern rune-based approach
 
   // State variables with Svelte 5 runes
   let wasmStatus = $state<string>('Initializing...');
   let lastError = $state<string>('');
-  let isWasmLoading = $state(true);
-
-  //Attempting to initialize state from ModernTypes in case wasm load takes too long
-  //Will attempt to load during wasm initialization in case initial value fails
-  let calculatorValue = $state<any>(calculator ?? undefined);
-  let dataValue = $state<any>(data ?? undefined);
+  let isWasmLoading = $state(true);  // Use modern rune-based reactive utilities
+  const calculatorUtils = useCalculator();
+  const dataUtils = useData();
+  
+  // Reactive getters for current values using $derived with proper typing
+  const calculatorValue = $derived(calculatorUtils.current as any);
+  const dataValue = $derived(dataUtils.current as any);
 
   // Listen for WASM errors
   if (browser) {
@@ -31,7 +30,6 @@
       }
     });
   }
-
   // Initialize WASM dynamically
   $effect(() => {
     if (browser) {
@@ -41,28 +39,23 @@
       import('$lib/wasm/wasm-loader.js').then(async ({ loadWasm }) => {        
         try {
           wasmStatus = 'Initializing WASM...';
-          const exports = await loadWasm();
-          //Debugging to make sure calculator value gets imported
-          if (!exports.calculator || exports.calculator == undefined) {
-            console.log('Failed to load calculator value on wasm initialization');
-          } else if (calculatorValue == undefined) {
-            calculatorValue = exports.calculator;
-            console.log('Calculator functions:', Object.keys(calculatorValue));
+          await loadWasm();
+          
+          // Initialize using the modern rune-based approach
+          initializeCrystalline();
+          
+          // Check if data was loaded successfully
+          if (calculatorUtils.current && dataUtils.current) {
+            console.log('Calculator functions:', Object.keys(calculatorUtils.current));
+            console.log('Data properties:', Object.keys(dataUtils.current));
+            wasmStatus = 'WASM loaded successfully!';
           } else {
-            console.log('Already loaded calculator functions during initial load:', Object.keys(calculatorValue));
+            console.warn('WASM loaded but data not available in rune state');
+            wasmStatus = 'WASM loaded but data not available';
           }
-          //Debugging to make sure gets data value gets imported
-          if (!exports.data || exports.data == undefined) {
-            console.log('Failed to load data value on wasm initialization');
-          } else if (dataValue == undefined) {
-            dataValue = exports.data;
-            console.log('Data properties:', Object.keys(dataValue));
-          } else {
-            console.log('Already loaded data properties during initial load:', Object.keys(dataValue));
-          }
-          wasmStatus = 'WASM loaded successfully!';
+          
           isWasmLoading = false;  
-          console.log('WASM loaded successfully via dynamic import');
+          console.log('WASM loaded successfully via dynamic import with runes');
         } catch (error: any) {
           console.error('WASM loading failed:', error);
           lastError = error?.message || 'Unknown WASM error';

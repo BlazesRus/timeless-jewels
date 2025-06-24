@@ -20,8 +20,8 @@ export const calculator = writable(null);
 export const data = writable(null);
 
 // Svelte 5 rune-based reactive state
-let calculatorRune = $state(null);
-let dataRune = $state(null);
+let calculatorRune = $state(/** @type {any} */ (null));
+let dataRune = $state(/** @type {any} */ (null));
 
 // Modern rune-based state exports for Svelte 5
 export const calculatorState = {
@@ -114,46 +114,5 @@ export const initializeCrystalline = () => {
   
   // Update the stores for backward compatibility
   calculator.set(calculatorValue);
-  data.set(dataValue);
-    console.log('=== WASM calculator and data initialized with runes and stores (Modern/Svelte 5) ===');
-};// Original generated code for reference:
-/*
-/* eslint-disable */
-const wrap = (fn) => {
-  return (...args) => {
-    const result = fn.call(undefined, ...args);
-    if (globalThis.goInternalError) {
-      const error = new Error(globalThis.goInternalError);
-      globalThis.goInternalError = undefined;
-      throw error;
-    }
-    return result;
-  }
+  data.set(dataValue);    console.log('=== WASM calculator and data initialized with runes and stores (Modern/Svelte 5) ===');
 };
-
-export let calculator;
-export let data;
-
-export const initializeCrystalline = () => {
-  calculator = {
-    Calculate: wrap(globalThis['go']['timeless-jewels']['calculator']['Calculate']),
-    ReverseSearch: wrap(globalThis['go']['timeless-jewels']['calculator']['ReverseSearch'])
-  };
-  data = {
-    GetAlternatePassiveAdditionByIndex: wrap(globalThis['go']['timeless-jewels']['data']['GetAlternatePassiveAdditionByIndex']),
-    GetAlternatePassiveSkillByIndex: wrap(globalThis['go']['timeless-jewels']['data']['GetAlternatePassiveSkillByIndex']),
-    GetPassiveSkillByIndex: wrap(globalThis['go']['timeless-jewels']['data']['GetPassiveSkillByIndex']),
-    GetStatByIndex: wrap(globalThis['go']['timeless-jewels']['data']['GetStatByIndex']),
-    PassiveSkillAuraStatTranslationsJSON: globalThis['go']['timeless-jewels']['data']['PassiveSkillAuraStatTranslationsJSON'],
-    PassiveSkillStatTranslationsJSON: globalThis['go']['timeless-jewels']['data']['PassiveSkillStatTranslationsJSON'],
-    PassiveSkills: globalThis['go']['timeless-jewels']['data']['PassiveSkills'],
-    PossibleStats: globalThis['go']['timeless-jewels']['data']['PossibleStats'],
-    SkillTree: globalThis['go']['timeless-jewels']['data']['SkillTree'],
-    StatTranslationsJSON: globalThis['go']['timeless-jewels']['data']['StatTranslationsJSON'],
-    TimelessJewelConquerors: globalThis['go']['timeless-jewels']['data']['TimelessJewelConquerors'],
-    TimelessJewelSeedRanges: globalThis['go']['timeless-jewels']['data']['TimelessJewelSeedRanges'],
-    TimelessJewels: globalThis['go']['timeless-jewels']['data']['TimelessJewels'],
-    TreeToPassive: globalThis['go']['timeless-jewels']['data']['TreeToPassive']
-  };
-};
-*/

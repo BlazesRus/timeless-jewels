@@ -129,9 +129,27 @@ export declare const initializeCrystalline: () => void;
 
 // Rune-based reactive utilities for Svelte 5
 export declare function useCalculator(): {
-  readonly current: typeof calculatorState.current;
+  readonly current: {
+    Calculate: typeof calculator.Calculate;
+    ReverseSearch: typeof calculator.ReverseSearch;
+  } | null;
 };
 
 export declare function useData(): {
-  readonly current: typeof dataState.current;
+  readonly current: {
+    GetAlternatePassiveAdditionByIndex: typeof data.GetAlternatePassiveAdditionByIndex;
+    GetAlternatePassiveSkillByIndex: typeof data.GetAlternatePassiveSkillByIndex;
+    GetPassiveSkillByIndex: typeof data.GetPassiveSkillByIndex;
+    GetStatByIndex: typeof data.GetStatByIndex;
+    PassiveSkillAuraStatTranslationsJSON: typeof data.PassiveSkillAuraStatTranslationsJSON;
+    PassiveSkillStatTranslationsJSON: typeof data.PassiveSkillStatTranslationsJSON;
+    PassiveSkills: typeof data.PassiveSkills;
+    PossibleStats: typeof data.PossibleStats;
+    SkillTree: typeof data.SkillTree;
+    StatTranslationsJSON: typeof data.StatTranslationsJSON;
+    TimelessJewelConquerors: typeof data.TimelessJewelConquerors;
+    TimelessJewelSeedRanges: typeof data.TimelessJewelSeedRanges;
+    TimelessJewels: typeof data.TimelessJewels;
+    TreeToPassive: typeof data.TreeToPassive;
+  } | null;
 };
