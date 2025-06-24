@@ -40,9 +40,11 @@ function readPackage(pkg) {
       // ESLint ecosystem for Modern
       if (pkg.devDependencies["@eslint/js"]) {
         pkg.devDependencies["@eslint/js"] = "^9.28.0";
-      }
-      if (pkg.devDependencies["@eslint/migrate-config"]) {
+      }      if (pkg.devDependencies["@eslint/migrate-config"]) {
         pkg.devDependencies["@eslint/migrate-config"] = "^1.5.0";
+      }
+      if (pkg.devDependencies["@eslint/css"]) {
+        pkg.devDependencies["@eslint/css"] = "^0.9.0";
       }
       if (pkg.devDependencies["@sveltejs/eslint-config"]) {
         pkg.devDependencies["@sveltejs/eslint-config"] = "^8.2.0";
@@ -119,8 +121,7 @@ function readPackage(pkg) {
       if (pkg.devDependencies["sass"]) {
         pkg.devDependencies["sass"] = "^1.77.4";
       }
-      
-      // Build tools and utilities for Modern
+        // Build tools and utilities for Modern
       if (pkg.devDependencies["vite"]) {
         pkg.devDependencies["vite"] = "^6.3.5";
       }
@@ -132,6 +133,14 @@ function readPackage(pkg) {
       }
       if (pkg.devDependencies["cross-env"]) {
         pkg.devDependencies["cross-env"] = "^7.0.3";
+      }
+      
+      // ESLint CSS support with Tailwind
+      if (pkg.devDependencies["@eslint/css"]) {
+        pkg.devDependencies["@eslint/css"] = "^0.9.0";
+      }
+      if (pkg.devDependencies["tailwind-csstree"]) {
+        pkg.devDependencies["tailwind-csstree"] = "^0.1.1";
       }
       
       // Keep svelte-preprocess for Modern mode (still useful for preprocessing)

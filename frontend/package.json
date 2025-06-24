@@ -10,7 +10,7 @@
     "build": "vite build",
     "build:legacy": "cross-env SVELTE_MODE=legacy pnpm install && vite build",
     "build:modern": "cross-env SVELTE_MODE=modern pnpm install && vite build",
-    "build:svelte4": "pnpm run build:legacy", 
+    "build:svelte4": "pnpm run build:legacy",
     "build:svelte5": "pnpm run build:modern",
     "install:legacy": "cross-env SVELTE_MODE=legacy pnpm install",
     "install:modern": "cross-env SVELTE_MODE=modern pnpm install",
@@ -33,6 +33,7 @@
     "version:help": "node scripts/version-manager.js help"
   },
   "devDependencies": {
+    "@eslint/css": "^0.9.0",
     "@eslint/js": "^9.28.0",
     "@eslint/migrate-config": "^1.5.0",
     "@sveltejs/adapter-static": "^3.0.8",
@@ -67,6 +68,7 @@
     "svelte-eslint-parser": "^1.2.0",
     "svelte-preprocess": "^6.0.3",
     "svelte-tiny-virtual-list": "^2.0.6",
+    "tailwind-csstree": "^0.1.1",
     "tailwindcss": "^4.1.8",
     "timeless-jewels-legacy-config": "file:.config-deps/timeless-jewels-legacy-config/timeless-jewels-legacy-config-1.0.0.tgz",
     "timeless-jewels-modern-config": "file:.config-deps/timeless-jewels-modern-config/timeless-jewels-modern-config-1.0.0.tgz",

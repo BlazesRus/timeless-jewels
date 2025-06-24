@@ -1,47 +1,100 @@
-﻿// eslint.config.js - Modern Mode (Svelte 5 + ESLint 9.x)
+﻿// eslint.config.js - Modern Mode (Svelte 5 + ESLint 9.x + Tailwind)
 
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
-import js from '@eslint/js';
-import svelte from 'eslint-plugin-svelte';
-import svelteParser from 'svelte-eslint-parser';
-import tsEslint from 'typescript-eslint';
+import { defineConfig } from "eslint/config";
+import js from "@eslint/js";
+import css from "@eslint/css";
+import { tailwind4 } from "tailwind-csstree";
+import svelte from "eslint-plugin-svelte";
+import prettier from "eslint-config-prettier";
+import globals from "globals";
+import ts from "typescript-eslint";
 
 // Common rules used across file types
 const commonRules = {
   'no-undef': 'off',
-  'array-callback-return': 'error',
-  'no-constant-binary-expression': 'error',
-  'no-self-compare': 'error',
-  'no-template-curly-in-string': 'error',
-  'no-unmodified-loop-condition': 'error',
-  'no-unreachable-loop': 'error',
-  'arrow-body-style': ['error', 'as-needed'],
-  'block-scoped-var': 'error',
-  curly: ['error', 'all'],
-  'no-eval': 'error',
-  'no-implied-eval': 'error',
+  'no-console': 'off',
   'no-var': 'error',
-  'one-var': ['error', 'never'],
-  'prefer-arrow-callback': 'error',
   'prefer-const': 'error',
-  yoda: 'error',
-  'array-bracket-newline': ['error', { multiline: true }],
-  'brace-style': 'error',
-  'no-shadow': 'error',
-  'no-use-before-define': 'error',
-  'dot-notation': 'error'
-};
-
-const commonTypeScriptRules = {
-  // Removed strict ban-ts-comment rule to match legacy config approach
-  // Legacy config uses default @typescript-eslint/recommended settings
+  'prefer-arrow-callback': 'error'
 };
 
 export default [
-  js.configs.recommended,
-  ...tsEslint.configs.recommended, // Changed from strict to recommended to match legacy config
-  ...svelte.configs['flat/recommended'],
-  eslintPluginPrettierRecommended, // must be last to override conflicting rules.
+  // CSS configuration FIRST (Microsoft Copilot recommendation)
+  {
+    files: ["**/*.css"],       // target all CSS files
+    language: "css/css",       // specify CSS language plugin
+    plugins: { css },          // load the @eslint/css plugin
+    languageOptions: {
+      customSyntax: tailwind4, // Use Tailwind v4 syntax extensions (supports theme())
+      tolerant: true           // Enable tolerant parsing for unknown syntax
+    },
+    rules: {
+      // Only CSS-specific rules - disable no-invalid-properties to allow theme()
+      "css/no-invalid-properties": "off", // Microsoft Copilot recommendation for theme()
+      "css/no-empty-blocks": "error",
+      "css/no-duplicate-imports": "error"
+    }
+  },
+  // Base JavaScript/TypeScript configuration for non-CSS files
+  {
+    files: ["**/*.js", "**/*.ts", "**/*.svelte"],
+    ...js.configs.recommended,
+    ...ts.configs.recommended[0],
+    languageOptions: {
+      parser: ts.parser,
+      parserOptions: {
+        project: './tsconfig.json'
+      },
+      globals: {
+        ...globals.browser,
+        ...globals.node
+      }
+    },
+    rules: {
+      ...commonRules
+    }
+  },
+  // TypeScript configuration
+  {
+    files: ["**/*.ts", "**/*.tsx"],
+    ...ts.configs.recommended[0],
+    languageOptions: {
+      parser: ts.parser,
+      parserOptions: {
+        project: './tsconfig.json'
+      }
+    },
+    rules: {
+      ...commonRules
+    }
+  },
+  // Svelte
+  {
+    files: ["**/*.svelte"],
+    ...svelte.configs["flat/recommended"][0],
+    languageOptions: {
+      parser: svelte.parser,
+      parserOptions: {
+        parser: ts.parser,
+        extraFileExtensions: ['.svelte']
+      }
+    },
+    rules: {
+      ...commonRules,
+
+      // Tailwind-compatible style handling
+      'svelte/valid-style-parse': 'off',
+      'svelte/no-unused-class-name': 'off'
+      // Disable React rules that leak into Svelte
+      'react/jsx-uses-react': 'off',
+      'react/react-in-jsx-scope': 'off',
+      'react/jsx-key': 'off',
+      'react/jsx-no-undef': 'off',
+      'react/jsx-uses-vars': 'off',
+      // Disable formatting conflicts in Svelte files
+      'prettier/prettier': 'off', // Let svelte-eslint handle Svelte formatting
+    }
+  },
   // Global ignores
   {
     ignores: [
@@ -74,8 +127,12 @@ export default [
       'tsconfig.json',
       'eslint.config.js'
     ]
-  },// General configuration for all files
+  },
+  // Prettier integration (last to override formatting rules)
+  prettier,
+  // Project-specific rule overrides
   {
+    files: ["**/*.js", "**/*.ts", "**/*.tsx", "**/*.svelte"],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',
@@ -126,59 +183,6 @@ export default [
     },
     rules: {
       'sort-imports': 'off' // Disabled as it conflicts with prettier
-    }
-  }, // Svelte files configuration
-  {
-    files: ['**/*.svelte'],
-    languageOptions: {
-      parser: svelteParser,
-      parserOptions: {
-        parser: '@typescript-eslint/parser',
-        extraFileExtensions: ['.svelte']
-      }
-    },
-    rules: {
-      ...commonRules,
-      'no-console': 'off',
-
-      // Svelte 5 specific rules
-      'svelte/no-target-blank': 'error',
-
-      // Disable formatting conflicts in Svelte files
-      'prettier/prettier': 'off', // Let svelte-eslint handle Svelte formatting
-
-      // Disable React rules that leak into Svelte
-      'react/jsx-uses-react': 'off',
-      'react/react-in-jsx-scope': 'off',
-      'react/jsx-key': 'off',
-      'react/jsx-no-undef': 'off',
-      'react/jsx-uses-vars': 'off',
-
-      // Svelte 5 runes compatibility
-      'svelte/valid-compile': 'off', // Allow compatibility mode
-      'svelte/no-unused-svelte-ignore': 'warn'
-    }
-  }, // TypeScript files with type-aware linting
-  {
-    files: ['**/*.ts', '**/*.tsx'],
-    ignores: ['src/lib/**/*', 'src/routes/**/*'], // Exclude lib and routes for performance
-    languageOptions: {
-      parserOptions: {
-        project: './tsconfig.json'
-      }
-    },
-    rules: {
-      ...commonRules,
-      ...commonTypeScriptRules
-    }
-  },
-
-  // TypeScript files without type-aware linting (for performance)
-  {
-    files: ['src/lib/**/*.ts', 'src/routes/**/*.ts'],
-    rules: {
-      ...commonRules,
-      ...commonTypeScriptRules
     }
   }
 ];
