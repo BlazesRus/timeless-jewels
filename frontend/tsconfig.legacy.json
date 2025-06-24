@@ -1,6 +1,9 @@
 {
   "extends": ["./tsconfig.base.json"],
   "compilerOptions": {
+    "verbatimModuleSyntax": true,
+    "preserveValueImports": false,
+    "ignoreDeprecations": "5.0",
     // Legacy (Svelte 4) specific overrides - more permissive
     "strict": false,
     "checkJs": false,
@@ -18,5 +21,7 @@
     "noImplicitOverride": false,
     "useDefineForClassFields": true,
     "verbatimModuleSyntax": false
-  }
+  },
+  "exclude": ["node_modules/**/*", ".svelte-kit/**/*", "build/**/*", "dist/**/*", "static/**/*", 
+	"src/**Modern*", "ModernMode/**"]
 }

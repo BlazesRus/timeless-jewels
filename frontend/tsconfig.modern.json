@@ -1,19 +1,75 @@
 {
-  "extends": ["./tsconfig.base.json"],
+  "extends": "./.svelte-kit/tsconfig.json",
   "compilerOptions": {
-    // Modern (Svelte 5) specific overrides - more strict
-    "strict": true,
+    // Modern (Svelte 5) TypeScript Configuration
+    "composite": true,
+    "verbatimModuleSyntax": true,
+    "preserveValueImports": false,
+    "ignoreDeprecations": "5.0",
+    
+    // Base settings
+    "allowJs": true,
     "checkJs": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "$lib": ["src/lib"],
+      "$lib/*": ["src/lib/*"],
+      "$app/*": [".svelte-kit/ambient.d.ts"]
+    },
+    "declaration": true,
+    "declarationMap": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "typeRoots": ["node_modules/@types", "src/types"],
+    
+    // Modern mode specific - strict settings for Svelte 5
+    "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "noImplicitReturns": true,
+    "noImplicitThis": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "useDefineForClassFields": true,
-    "verbatimModuleSyntax": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "exactOptionalPropertyTypes": true
-  }
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "exactOptionalPropertyTypes": false
+  },
+  "include": [
+    "src/**/*.d.ts",
+    "src/**/*.ts",
+    "src/**/*.js",
+    "src/**/*.svelte",
+    "src/app.html",
+    "vite.config.js",
+    "src/lib/**/*",
+    "src/routes/**/*",
+    "src/app.d.ts",
+    "src/wasm_exec.d.ts"
+  ],
+  "exclude": [
+    "node_modules/**/*",
+    ".svelte-kit/**/*",
+    "build/**/*",
+    "dist/**/*",
+    "static/**/*",
+    // Exclude Legacy mode files
+    "src/**/*Legacy*",
+    "src/**/*legacy*",
+    "LegacyMode/**/*",
+    "LegacyPackage*.json",
+    "svelte.config.js",
+    "src/wasm_exec.js"
+  ]
 }

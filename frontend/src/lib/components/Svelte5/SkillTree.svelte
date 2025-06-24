@@ -96,9 +96,8 @@
       context.restore();
     }
   };
-
   const wrapText = (text: string, context: CanvasRenderingContext2D, width: number): string[] => {
-    const result = [];
+    const result: string[] = [];
     let currentWord = '';
 
     text.split(' ').forEach((word: string) => {
@@ -466,7 +465,7 @@
     const end = measurePerformance();
     context.fillText(`${(end - start).toFixed(1)}ms`, width - 5, 17);
   }) as RenderFunc);
-  
+
   // Modern state management - Svelte 5 ready
   let downX = $state(0);
   let downY = $state(0);

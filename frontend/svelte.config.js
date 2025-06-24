@@ -48,16 +48,14 @@ const config = {
   preprocess: preprocess({
     postcss: {
       configFilePath: postcssConfigPath
-    },
-    typescript: {
+    },    typescript: {
       compilerOptions: {
         verbatimModuleSyntax: false,
         skipLibCheck: true
       },
-      tsconfigFile: false
+      tsconfigFile: './tsconfig.json'
     }
   }),
-
   kit: {
     adapter: adapter({
       pages: 'build',
@@ -75,6 +73,25 @@ const config = {
       '$app/*': '.svelte-kit/types/app/*',
       $routes: 'src/routes',
       '$routes/*': 'src/routes/*'
+    },
+    // Exclude legacy files from type checking in modern mode
+    typescript: {
+      config: (config) => {
+        // Add exclusions for legacy files
+        if (config.exclude) {
+          config.exclude.push(
+            '**/Legacy*.svelte',
+            '**/*Legacy*.svelte',
+            '**/Legacy*.ts',
+            '**/*Legacy*.ts',
+            '**/Legacy*.js',
+            '**/*Legacy*.js',
+            '**/legacy*',
+            '**/*legacy*'
+          );
+        }
+        return config;
+      }
     }
   },
   dynamicCompileOptions: ({ filename }) => {
