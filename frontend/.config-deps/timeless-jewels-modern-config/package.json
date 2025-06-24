@@ -1,0 +1,14 @@
+{
+  "name": "timeless-jewels-modern-config",
+  "version": "1.0.0",
+  "description": "Configuration package for Timeless Jewels Svelte 5 (Modern) mode",
+  "main": "index.js",
+  "files": [
+    "pnpmfile.cjs",
+    "index.js",
+    "tsconfig.json"
+  ],
+  "devDependencies": {
+    "cross-env": "^7.0.3"
+  }
+}
