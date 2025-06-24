@@ -711,20 +711,24 @@
   }
 
   @keyframes colorRotate {
-    from {
-      color: hsl(0, 100%, 50%);
+    0% {
+      color: hsl(0deg, 100%, 50%);
     }
+
     25% {
-      color: hsl(90, 100%, 50%);
+      color: hsl(90deg, 100%, 50%);
     }
+
     50% {
-      color: hsl(180, 100%, 50%);
+      color: hsl(180deg, 100%, 50%);
     }
+
     75% {
-      color: hsl(270, 100%, 50%);
+      color: hsl(270deg, 100%, 50%);
     }
+
     100% {
-      color: hsl(359, 100%, 50%);
+      color: hsl(359deg, 100%, 50%);
     }
   }
 </style>
