@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { SearchResults, SearchWithSeed } from '../skill_tree';
+  import type { SearchResults, SearchWithSeed } from '../skill_tree_modern';
   import SearchResult from './SearchResult.svelte';
   import VirtualList from 'svelte-tiny-virtual-list';
 

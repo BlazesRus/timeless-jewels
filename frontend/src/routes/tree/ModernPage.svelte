@@ -7,7 +7,7 @@
 
   import SkillTree from '$lib/components/Svelte5/SkillTree.svelte';
   import type { Node, AlternatePassiveSkillInformation, JewelOption, ConquerorOption, SearchState } from '$lib/skill_tree_types_modern';
-  import { getAffectedNodes, skillTree, translateStat, constructQueries } from '$lib/skill_tree';
+  import { getAffectedNodes, skillTree, translateStat, constructQueries } from '$lib/skill_tree_modern';
 
   import { modernWorker } from '../../lib/modern-worker';
   import type { Query, SearchConfig, StatConfig, SearchResults as SearchResultsType } from '$lib/modern-worker-types';

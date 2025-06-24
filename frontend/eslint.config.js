@@ -1,6 +1,5 @@
-﻿// eslint.config.js - Modern Mode (Svelte 5 + ESLint 9.x + Tailwind)
+// eslint.config.js - Modern Mode (Svelte 5 + ESLint 9.x + Tailwind)
 
-import { defineConfig } from "eslint/config";
 import js from "@eslint/js";
 import css from "@eslint/css";
 import { tailwind4 } from "tailwind-csstree";
@@ -21,12 +20,10 @@ const commonRules = {
 export default [
   // CSS configuration FIRST (Microsoft Copilot recommendation)
   {
-    files: ["**/*.css"],       // target all CSS files
-    language: "css/css",       // specify CSS language plugin
-    plugins: { css },          // load the @eslint/css plugin
-    languageOptions: {
-      customSyntax: tailwind4, // Use Tailwind v4 syntax extensions (supports theme())
-      tolerant: true           // Enable tolerant parsing for unknown syntax
+    files: ["**/*.css"],
+    language: "css/css",
+    plugins: { 
+      css
     },
     rules: {
       // Only CSS-specific rules - disable no-invalid-properties to allow theme()
@@ -78,13 +75,11 @@ export default [
         parser: ts.parser,
         extraFileExtensions: ['.svelte']
       }
-    },
-    rules: {
+    },    rules: {
       ...commonRules,
-
       // Tailwind-compatible style handling
       'svelte/valid-style-parse': 'off',
-      'svelte/no-unused-class-name': 'off'
+      'svelte/no-unused-class-name': 'off',
       // Disable React rules that leak into Svelte
       'react/jsx-uses-react': 'off',
       'react/react-in-jsx-scope': 'off',
@@ -92,7 +87,7 @@ export default [
       'react/jsx-no-undef': 'off',
       'react/jsx-uses-vars': 'off',
       // Disable formatting conflicts in Svelte files
-      'prettier/prettier': 'off', // Let svelte-eslint handle Svelte formatting
+      'prettier/prettier': 'off' // Let svelte-eslint handle Svelte formatting
     }
   },
   // Global ignores

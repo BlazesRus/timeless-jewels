@@ -1,0 +1,68 @@
+/* Test CSS file for Tailwind theme() directive support in ESLint */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.test-btn {
+  /* Standard CSS - should have no errors */
+  padding: 1rem;
+  margin: 0.5rem;
+  
+  /* Tailwind @apply directive - should be recognized */
+  @apply px-4 py-2 bg-blue-500 text-white rounded;
+  
+  /* Tailwind theme() function calls - should be valid with tailwind-csstree */
+  color: theme('colors.blue.800');
+  background-color: theme('colors.green.500');
+  border-color: theme('colors.gray.300');
+  
+  /* theme() with fallback - should also be valid */
+  box-shadow: 0 0 0 2px theme('colors.red.500', #ef4444);
+  
+  /* Using theme() for spacing */
+  margin-top: theme('spacing.4');
+  padding-bottom: theme('spacing.2');
+  
+  /* Using theme() for font sizes */
+  font-size: theme('fontSize.lg');
+  line-height: theme('lineHeight.relaxed');
+  
+  /* Nested property with theme() */
+  border: 1px solid theme('colors.slate.200');
+  
+  /* Custom CSS property with theme() */
+  --custom-color: theme('colors.purple.600');
+  background: var(--custom-color);
+}
+
+.test-responsive {
+  /* Responsive design with theme() values */
+  width: theme('screens.sm');
+  max-width: theme('screens.lg');
+}
+
+/* Media query with theme() values */
+@media (min-width: theme('screens.md')) {
+  .test-responsive {
+    padding: theme('spacing.8');
+  }
+}
+
+/* Component style with multiple theme() usages */
+.card {
+  background: theme('colors.white');
+  border: 1px solid theme('colors.gray.200');
+  border-radius: theme('borderRadius.lg');
+  box-shadow: 0 1px 3px theme('colors.gray.900/0.1');
+  padding: theme('spacing.6');
+}
+
+/* Dark mode variant */
+@media (prefers-color-scheme: dark) {
+  .card {
+    background: theme('colors.gray.800');
+    border-color: theme('colors.gray.700');
+    color: theme('colors.gray.100');
+  }
+}

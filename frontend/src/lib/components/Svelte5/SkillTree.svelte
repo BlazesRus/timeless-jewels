@@ -7,10 +7,9 @@
 
   // Svelte 5 compatible canvas library (or fallback to current)
   import { Canvas, Layer } from 'svelte-canvas';
-
-  import type { RenderFunc, Node } from '../../skill_tree_types';
-  import { baseJewelRadius, calculateNodePos, distance, drawnGroups, drawnNodes, formatStats, inverseSprites, inverseSpritesActive, inverseTranslations, orbitAngleAt, skillTree, toCanvasCoords } from '../../skill_tree';
-  import type { Point } from '../../skill_tree';
+  import type { RenderFunc, Node } from '../../skill_tree_types_modern';
+  import { baseJewelRadius, calculateNodePos, distance, drawnGroups, drawnNodes, formatStats, inverseSprites, inverseSpritesActive, inverseTranslations, orbitAngleAt, skillTree, toCanvasCoords } from '../../skill_tree_modern';
+  import type { Point } from '../../skill_tree_modern';
   import { calculator, data } from '../../types/ModernTypes';
   // Modern state management using Svelte 5 runes
   import { get } from 'svelte/store';

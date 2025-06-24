@@ -1,7 +1,7 @@
 import { expose } from 'comlink';
 import '../wasm_exec.js';
-import { loadSkillTree, passiveToTree } from './skill_tree';
-import type { SearchWithSeed, ReverseSearchConfig, SearchResults } from './skill_tree';
+import { loadSkillTree, passiveToTree } from './skill_tree_legacy';
+import type { SearchWithSeed, ReverseSearchConfig, SearchResults } from './skill_tree_legacy';
 import { calculator, initializeCrystalline } from './types/LegacyTypes';
 
 const obj = {
@@ -19,7 +19,14 @@ const obj = {
   },
   async search(args: ReverseSearchConfig, callback: (seed: number) => Promise<void>): Promise<SearchResults> {
     let calculatorValue: any;
-    calculator.subscribe(value => calculatorValue = value)();
+    
+    // Legacy Svelte 4 store subscription pattern
+    const unsubscribe = calculator.subscribe(value => {
+      calculatorValue = value;
+    });
+    
+    // Clean up subscription
+    unsubscribe();
     
     if (!calculatorValue) {
       throw new Error('Calculator not initialized');

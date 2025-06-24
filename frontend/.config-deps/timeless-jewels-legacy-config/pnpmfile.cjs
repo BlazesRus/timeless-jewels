@@ -38,9 +38,11 @@ function readPackage(pkg) {
       // ESLint ecosystem - Legacy compatible versions
       if (pkg.devDependencies["@eslint/js"]) {
         pkg.devDependencies["@eslint/js"] = "^8.56.0";
-      }
-      if (pkg.devDependencies["@eslint/migrate-config"]) {
+      }      if (pkg.devDependencies["@eslint/migrate-config"]) {
         pkg.devDependencies["@eslint/migrate-config"] = "^1.5.0";
+      }
+      if (pkg.devDependencies["@eslint/css"]) {
+        pkg.devDependencies["@eslint/css"] = "^0.9.0";
       }
       if (pkg.devDependencies["eslint"]) {
         pkg.devDependencies["eslint"] = "^8.57.0";
@@ -89,8 +91,7 @@ function readPackage(pkg) {
       if (pkg.devDependencies["prettier-plugin-svelte"]) {
         pkg.devDependencies["prettier-plugin-svelte"] = "^3.0.3";
       }
-      
-      // Build tools and utilities
+        // Build tools and utilities
       if (pkg.devDependencies["@types/node"]) {
         pkg.devDependencies["@types/node"] = "^22.0.0";
       }
@@ -108,6 +109,14 @@ function readPackage(pkg) {
       }
       if (pkg.devDependencies["vite"]) {
         pkg.devDependencies["vite"] = "^6.0.0";
+      }
+      
+      // ESLint CSS support with Tailwind (Legacy compatible versions)
+      if (pkg.devDependencies["@eslint/css"]) {
+        pkg.devDependencies["@eslint/css"] = "^0.8.0"; // Earlier version for Legacy
+      }
+      if (pkg.devDependencies["tailwind-csstree"]) {
+        pkg.devDependencies["tailwind-csstree"] = "^0.1.1";
       }
       
       // Svelte specific components - Legacy versions

@@ -1,12 +1,27 @@
 {
-  "extends": ["./tsconfig.base.json"],
+  "extends": "./.svelte-kit/tsconfig.json",
   "compilerOptions": {
-    "verbatimModuleSyntax": true,
-    "preserveValueImports": false,
-    "ignoreDeprecations": "5.0",
     // Legacy (Svelte 4) specific overrides - more permissive
-    "strict": false,
+    "composite": true,
+    "allowJs": true,
     "checkJs": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": false,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "verbatimModuleSyntax": false,
+    "declaration": true,
+    "declarationMap": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "typeRoots": ["node_modules/@types", "src/types"],
     "noImplicitAny": false,
     "strictNullChecks": false,
     "noImplicitReturns": false,
@@ -16,12 +31,35 @@
     "alwaysStrict": false,
     "allowUnreachableCode": true,
     "allowUnusedLabels": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "suppressExcessPropertyErrors": true,
     "noImplicitOverride": false,
     "useDefineForClassFields": true,
-    "verbatimModuleSyntax": false
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "exactOptionalPropertyTypes": false
   },
-  "exclude": ["node_modules/**/*", ".svelte-kit/**/*", "build/**/*", "dist/**/*", "static/**/*", 
-	"src/**Modern*", "ModernMode/**"]
+  "include": [
+    "src/**/*.d.ts",
+    "src/**/*.ts",
+    "src/**/*.js",
+    "src/**/*.svelte",
+    "src/app.html",
+    "vite.config.js",
+    "src/lib/**/*",
+    "src/routes/**/*",
+    "src/app.d.ts",
+    "src/wasm_exec.d.ts"
+  ],
+  "exclude": [
+    "node_modules/**/*",
+    ".svelte-kit/**/*",
+    "build/**/*",
+    "dist/**/*",
+    "static/**/*", 
+    "src/**/*_modern.ts",
+    "src/**/*Modern*.svelte",
+    "src/**/*Modern*.ts",
+    "ModernMode/**/*",
+    "src/lib/skill_tree_legacy.ts",
+    "src/lib/sync_worker_legacy.ts"
+  ]
 }
