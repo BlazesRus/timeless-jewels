@@ -34,7 +34,7 @@ function getCurrentSvelteVersion() {
  * Get PostCSS config path based on Svelte version
  */
 function getPostCSSConfigPath(svelteVersion) {
-  return svelteVersion === '5' ? join(__dirname, 'ModernMode', 'postcss.config.cjs') : join(__dirname, 'LegacyMode', 'postcss.config.cjs');
+  return svelteVersion === '5' ? join(__dirname, 'PostCSSSettings', 'postcss.modern.config.cjs') : join(__dirname, 'PostCSSSettings', 'postcss.legacy.config.cjs');
 }
 
 // Detect current Svelte version

@@ -51,7 +51,9 @@ Write-Host "🎨 Tailwind CSS Configuration" -ForegroundColor Cyan
 Write-Host "-----------------------------" -ForegroundColor DarkCyan
 Check-File "tailwind.config.js" "Tailwind config (ESM)"
 Check-File "tailwind.config.cjs" "Tailwind config (CJS)"
-Check-File "postcss.config.cjs" "PostCSS configuration"
+Check-File "postcss.config.cjs" "PostCSS configuration loader"
+Check-File "PostCSSSettings/postcss.modern.config.cjs" "PostCSS Modern (Svelte 5) configuration"
+Check-File "PostCSSSettings/postcss.legacy.config.cjs" "PostCSS Legacy (Svelte 4) configuration"
 
 # Config dependencies
 Write-Host ""

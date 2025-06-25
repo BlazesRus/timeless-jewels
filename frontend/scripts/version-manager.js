@@ -474,10 +474,10 @@ class VersionManager {
     const targetVersion = this.getTargetVersion();
 
     // Determine the correct PostCSS config path based on Svelte version
-    const configPath = currentVersion === '5' ? join(this.rootDir, 'ModernMode', 'postcss.config.cjs') : join(this.rootDir, 'LegacyMode', 'postcss.config.cjs');
+    const configPath = currentVersion === '5' ? join(this.rootDir, 'PostCSSSettings', 'postcss.modern.config.cjs') : join(this.rootDir, 'PostCSSSettings', 'postcss.legacy.config.cjs');
 
     const modeName = currentVersion === '5' ? 'Modern' : 'Legacy';
-    const expectedPath = currentVersion === '5' ? 'ModernMode/postcss.config.cjs' : 'LegacyMode/postcss.config.cjs';
+    const expectedPath = currentVersion === '5' ? 'PostCSSSettings/postcss.modern.config.cjs' : 'PostCSSSettings/postcss.legacy.config.cjs';
 
     if (!existsSync(configPath)) {
       return `${expectedPath} not found`;
