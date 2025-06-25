@@ -1,5 +1,6 @@
 <!-- Version-aware Tree Page - Dynamically loads appropriate implementation based on Svelte version -->
 <script lang="ts">
+  // Additional comment: This page automatically detects the Svelte version and loads the appropriate implementation
   import { onMount } from 'svelte';
   import { detectSvelteVersion, isSvelte5OrHigher } from '$lib/utils/version-detection';
 

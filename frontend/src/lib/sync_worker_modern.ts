@@ -36,30 +36,45 @@ const obj = {
     const searchGrouped: { [key: number]: SearchWithSeed[] } = {};
     Object.keys(searchResult).forEach(seedStr => {
       const seed = parseInt(seedStr);
+      const seedData = searchResult[seed];
+      if (!seedData) {
+        return;
+      }
 
       let weight = 0;
       let totalStats = 0;
 
       const statCounts: Record<number, number> = {};
       const statTotal: Record<number, number> = {};
-      const skills = Object.keys(searchResult?.[seed] ?? {}).map(skillIDStr => {
+      
+      const skills = Object.keys(seedData).map(skillIDStr => {
         const skillID = parseInt(skillIDStr);
-        Object.keys(searchResult[seed][skillID]).forEach(st => {
+        const skillData = seedData[skillID];
+        if (!skillData) {
+          return {
+            passive: passiveToTree[skillID] || skillID,
+            stats: {}
+          };
+        }
+        
+        Object.keys(skillData).forEach(st => {
           const n = parseInt(st);
           statCounts[n] = (statCounts[n] || 0) + 1;
           weight += args.stats.find(s => s.id == n)?.weight || 0;
-          const statValue = searchResult[seed][skillID][st];
-          statTotal[n] = (statTotal[n] ?? 0) + statValue;
-          totalStats += statValue;
+          const statValue = skillData[st];
+          if (statValue !== undefined) {
+            statTotal[n] = (statTotal[n] ?? 0) + statValue;
+            totalStats += statValue;
+          }
         });
 
         return {
-          passive: passiveToTree[skillID],
-          stats: searchResult[seed][skillID]
+          passive: passiveToTree[skillID] || skillID,
+          stats: skillData
         };
-      });
+      }).filter(skill => skill.passive !== undefined && typeof skill.passive === 'number');
 
-      const len = Object.keys(searchResult[seed]).length;
+      const len = Object.keys(seedData).length;
       searchGrouped[len] = [
         ...(searchGrouped[len] || []),
         {
@@ -75,17 +90,24 @@ const obj = {
 
     Object.keys(searchGrouped).forEach(len => {
       const nLen = parseInt(len);
-      searchGrouped[nLen] = searchGrouped[nLen].filter(g => {
+      const groupedArray = searchGrouped[nLen];
+      if (!groupedArray) {
+        return;
+      }
+      
+      searchGrouped[nLen] = groupedArray.filter(g => {
         if (g.weight < args.minTotalWeight) {
           return false;
         }
 
         for (const stat of args.stats) {
-          if ((g.statCounts[stat.id] === undefined && stat.min > 0) || g.statCounts[stat.id] < stat.min) {
+          const statCount = g.statCounts?.[stat.id];
+          if ((statCount === undefined && stat.min > 0) || (statCount !== undefined && statCount < stat.min)) {
             return false;
           }
           //Check if minimum stat total is reached
-          if (g.statTotal[stat.id] < stat.minStatTotal) {
+          const statTotalValue = g.statTotal?.[stat.id];
+          if (statTotalValue !== undefined && statTotalValue < stat.minStatTotal) {
             return false;
           }
         }
@@ -96,22 +118,22 @@ const obj = {
         return true;
       });
 
-      if (Object.keys(searchGrouped[nLen]).length == 0) {
+      if (searchGrouped[nLen]?.length === 0) {
         delete searchGrouped[nLen];
-      } else {
-        searchGrouped[nLen] = searchGrouped[nLen].sort((a, b) => b.weight - a.weight);
       }
     });
 
     return {
       grouped: searchGrouped,
       raw: Object.keys(searchGrouped)
-        .map(x => searchGrouped[parseInt(x)])
+        .map(len => searchGrouped[parseInt(len)])
         .flat()
-        .sort((a, b) => b.weight - a.weight)
+        .filter((item): item is SearchWithSeed => item !== undefined)
+        .sort((a, b) => (b?.weight || 0) - (a?.weight || 0))
+        .slice(0, 100)
     };
   }
-} as const;
+};
 
 expose(obj);
 

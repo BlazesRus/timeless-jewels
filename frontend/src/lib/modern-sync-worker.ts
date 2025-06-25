@@ -163,6 +163,10 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
     // Process each seed result
     Object.keys(searchResult).forEach(seedStr => {
       const seed = parseInt(seedStr, 10);
+      const seedData = searchResult[seed];
+      if (!seedData) {
+        return;
+      }
 
       let weight = 0;
       let totalStats = 0;
@@ -170,13 +174,23 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
       const statTotal: Record<number, number> = {};
 
       // Process skills for this seed
-      const skills = Object.keys(searchResult[seed] ?? {}).map(skillIDStr => {
+      const skills = Object.keys(seedData).map(skillIDStr => {
         const skillID = parseInt(skillIDStr, 10);
+        const skillData = seedData[skillID];
+        if (!skillData) {
+          return {
+            passive: passiveToTree[skillID] || skillID,
+            stats: {}
+          };
+        }
 
         // Process stats for this skill
-        Object.keys(searchResult[seed][skillID]).forEach(statIdStr => {
+        Object.keys(skillData).forEach(statIdStr => {
           const statId = parseInt(statIdStr, 10);
-          const statValue = searchResult[seed][skillID][statIdStr];
+          const statValue = skillData[statIdStr];
+          if (statValue === undefined) {
+            return;
+          }
 
           // Update counters
           statCounts[statId] = (statCounts[statId] || 0) + 1;
@@ -191,13 +205,13 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
         });
 
         return {
-          passive: passiveToTree[skillID],
-          stats: searchResult[seed][skillID]
+          passive: passiveToTree[skillID] || skillID,
+          stats: skillData
         };
-      });
+      }).filter(skill => skill.passive !== undefined);
 
       // Group by number of affected skills
-      const skillCount = Object.keys(searchResult[seed]).length;
+      const skillCount = Object.keys(seedData).length;
       if (!searchGrouped[skillCount]) {
         searchGrouped[skillCount] = [];
       }
@@ -215,14 +229,18 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
     // Filter and sort results
     Object.keys(searchGrouped).forEach(skillCountStr => {
       const skillCount = parseInt(skillCountStr, 10);
+      const group = searchGrouped[skillCount];
+      if (!group) {
+        return;
+      }
 
       // Filter based on criteria
-      searchGrouped[skillCount] = searchGrouped[skillCount].filter(result => {
+      searchGrouped[skillCount] = group.filter(result => {
         return this.matchesSearchCriteria(result, config);
       });
 
       // Remove empty groups
-      if (searchGrouped[skillCount].length === 0) {
+      if (searchGrouped[skillCount]?.length === 0) {
         delete searchGrouped[skillCount];
       } else {
         // Sort by weight (descending)

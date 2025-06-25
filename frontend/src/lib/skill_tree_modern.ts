@@ -31,8 +31,15 @@ export const loadSkillTree = () => {
 
   Object.keys(skillTree.groups).forEach(groupId => {
     const group = skillTree.groups[groupId];
+    if (!group) {
+      return;
+    }
+    
     group.nodes.forEach(nodeId => {
       const node = skillTree.nodes[nodeId];
+      if (!node) {
+        return;
+      }
 
       // Do not care about proxy passives
       if (node.isProxy) {
@@ -66,18 +73,70 @@ export const loadSkillTree = () => {
     });
   });
 
-  Object.keys(skillTree.sprites.keystoneInactive['0.3835'].coords).forEach(c => (inverseSprites[c] = skillTree.sprites.keystoneInactive['0.3835']));
-  Object.keys(skillTree.sprites.notableInactive['0.3835'].coords).forEach(c => (inverseSprites[c] = skillTree.sprites.notableInactive['0.3835']));
-  Object.keys(skillTree.sprites.normalInactive['0.3835'].coords).forEach(c => (inverseSprites[c] = skillTree.sprites.normalInactive['0.3835']));
-  Object.keys(skillTree.sprites.masteryInactive['0.3835'].coords).forEach(c => (inverseSprites[c] = skillTree.sprites.masteryInactive['0.3835']));
+  // Initialize sprites with null checks
+  const scale = '0.3835';
+  if (skillTree.sprites?.keystoneInactive?.[scale]?.coords) {
+    const sprite = skillTree.sprites.keystoneInactive[scale];
+    if (sprite) {
+      Object.keys(sprite.coords).forEach(c => (inverseSprites[c] = sprite));
+    }
+  }
+  if (skillTree.sprites?.notableInactive?.[scale]?.coords) {
+    const sprite = skillTree.sprites.notableInactive[scale];
+    if (sprite) {
+      Object.keys(sprite.coords).forEach(c => (inverseSprites[c] = sprite));
+    }
+  }
+  if (skillTree.sprites?.normalInactive?.[scale]?.coords) {
+    const sprite = skillTree.sprites.normalInactive[scale];
+    if (sprite) {
+      Object.keys(sprite.coords).forEach(c => (inverseSprites[c] = sprite));
+    }
+  }
+  if (skillTree.sprites?.masteryInactive?.[scale]?.coords) {
+    const sprite = skillTree.sprites.masteryInactive[scale];
+    if (sprite) {
+      Object.keys(sprite.coords).forEach(c => (inverseSprites[c] = sprite));
+    }
+  }
 
-  Object.keys(skillTree.sprites.keystoneActive['0.3835'].coords).forEach(c => (inverseSpritesActive[c] = skillTree.sprites.keystoneActive['0.3835']));
-  Object.keys(skillTree.sprites.notableActive['0.3835'].coords).forEach(c => (inverseSpritesActive[c] = skillTree.sprites.notableActive['0.3835']));
-  Object.keys(skillTree.sprites.normalActive['0.3835'].coords).forEach(c => (inverseSpritesActive[c] = skillTree.sprites.normalActive['0.3835']));
-  Object.keys(skillTree.sprites.masteryInactive['0.3835'].coords).forEach(c => (inverseSpritesActive[c] = skillTree.sprites.masteryInactive['0.3835']));
+  if (skillTree.sprites?.keystoneActive?.[scale]?.coords) {
+    const sprite = skillTree.sprites.keystoneActive[scale];
+    if (sprite) {
+      Object.keys(sprite.coords).forEach(c => (inverseSpritesActive[c] = sprite));
+    }
+  }
+  if (skillTree.sprites?.notableActive?.[scale]?.coords) {
+    const sprite = skillTree.sprites.notableActive[scale];
+    if (sprite) {
+      Object.keys(sprite.coords).forEach(c => (inverseSpritesActive[c] = sprite));
+    }
+  }
+  if (skillTree.sprites?.normalActive?.[scale]?.coords) {
+    const sprite = skillTree.sprites.normalActive[scale];
+    if (sprite) {
+      Object.keys(sprite.coords).forEach(c => (inverseSpritesActive[c] = sprite));
+    }
+  }
+  if (skillTree.sprites?.masteryInactive?.[scale]?.coords) {
+    const sprite = skillTree.sprites.masteryInactive[scale];
+    if (sprite) {
+      Object.keys(sprite.coords).forEach(c => (inverseSpritesActive[c] = sprite));
+    }
+  }
 
-  Object.keys(skillTree.sprites.groupBackground['0.3835'].coords).forEach(c => (inverseSprites[c] = skillTree.sprites.groupBackground['0.3835']));
-  Object.keys(skillTree.sprites.frame['0.3835'].coords).forEach(c => (inverseSprites[c] = skillTree.sprites.frame['0.3835']));
+  if (skillTree.sprites?.groupBackground?.[scale]?.coords) {
+    const sprite = skillTree.sprites.groupBackground[scale];
+    if (sprite) {
+      Object.keys(sprite.coords).forEach(c => (inverseSprites[c] = sprite));
+    }
+  }
+  if (skillTree.sprites?.frame?.[scale]?.coords) {
+    const sprite = skillTree.sprites.frame[scale];
+    if (sprite) {
+      Object.keys(sprite.coords).forEach(c => (inverseSprites[c] = sprite));
+    }
+  }
 
   const dataForTranslations = get(data) as any;
   const translationFiles = [dataForTranslations.StatTranslationsJSON, dataForTranslations.PassiveSkillStatTranslationsJSON, dataForTranslations.PassiveSkillAuraStatTranslationsJSON];
@@ -181,7 +240,11 @@ export const orbit16Angles = [0, 30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 2
 export const orbit40Angles = [0, 10, 20, 30, 40, 45, 50, 60, 70, 80, 90, 100, 110, 120, 130, 135, 140, 150, 160, 170, 180, 190, 200, 210, 220, 225, 230, 240, 250, 260, 270, 280, 290, 300, 310, 315, 320, 330, 340, 350];
 
 export const orbitAngleAt = (orbit: number, index: number): number => {
-  const nodesInOrbit = skillTree.constants.skillsPerOrbit[orbit];
+  const nodesInOrbit = skillTree.constants?.skillsPerOrbit?.[orbit];
+  if (!nodesInOrbit) {
+    return 0;
+  }
+  
   if (nodesInOrbit == 16) {
     return orbit16Angles[orbit16Angles.length - index] || 0;
   } else if (nodesInOrbit == 40) {
@@ -197,10 +260,15 @@ export const calculateNodePos = (node: Node, offsetX: number, offsetY: number, s
   }
 
   const targetGroup = skillTree.groups[node.group];
+  if (!targetGroup) {
+    return { x: 0, y: 0 };
+  }
+  
   const targetAngle = orbitAngleAt(node.orbit, node.orbitIndex);
 
   const targetGroupPos = toCanvasCoords(targetGroup.x, targetGroup.y, offsetX, offsetY, scaling);
-  const targetNodePos = toCanvasCoords(targetGroup.x, targetGroup.y - skillTree.constants.orbitRadii[node.orbit], offsetX, offsetY, scaling);
+  const orbitRadius = skillTree.constants?.orbitRadii?.[node.orbit] || 0;
+  const targetNodePos = toCanvasCoords(targetGroup.x, targetGroup.y - orbitRadius, offsetX, offsetY, scaling);
   return rotateAroundPoint(targetGroupPos, targetNodePos, targetAngle);
 };
 
@@ -211,10 +279,17 @@ export const formatStats = (translation: Translation, stat: number): string | un
 
   for (let i = 0; i < translation.list.length; i++) {
     const t = translation.list[i];
+    if (!t) {
+      continue;
+    }
 
     let matches = true;
     if (t.conditions?.length > 0) {
       const first = t.conditions[0];
+      if (!first) {
+        continue;
+      }
+      
       if (first.min !== undefined) {
         if (stat < first.min) {
           matches = false;
@@ -243,12 +318,15 @@ export const formatStats = (translation: Translation, stat: number): string | un
   }
 
   const datum = translation.list[selectedTranslation];
+  if (!datum) {
+    return undefined;
+  }
 
   let finalStat = stat;
 
   if (datum.index_handlers !== undefined) {
     if (Array.isArray(datum.index_handlers)) {
-      if (datum.index_handlers?.length > 0) {
+      if (datum.index_handlers?.length > 0 && datum.index_handlers[0]) {
         datum.index_handlers[0].forEach(handler => {
           finalStat = finalStat / (indexHandlers[handler] || 1);
         });
@@ -288,13 +366,20 @@ export const getStat = (id: number | string): Stat => {
   // Checks if stat is valid before running code
   if (!(nId in statCache)) {
     const dataForStat = get(data) as any;
+    if (!dataForStat || typeof dataForStat.GetStatByIndex !== 'function') {
+      throw new Error(`Data or GetStatByIndex method not available for stat id: ${nId}`);
+    }
     const stat = dataForStat.GetStatByIndex(nId);
     if (!stat) {
       throw new Error(`Stat not found for id: ${nId}`);
     }
     statCache[nId] = stat;
   }
-  return statCache[nId];
+  const result = statCache[nId];
+  if (!result) {
+    throw new Error(`Stat not found in cache for id: ${nId}`);
+  }
+  return result;
 };
 
 export interface StatConfig {
@@ -337,12 +422,12 @@ export interface SearchResults {
 export const translateStat = (id: number, roll?: number | undefined): string => {
   const stat = getStat(id);
   const translation = inverseTranslations[stat.ID];
-  if (roll) {
+  if (roll && translation) {
     return formatStats(translation, roll) || stat.ID;
   }
 
   let translationText = stat.Text || stat.ID;
-  if (translation && translation.list && translation.list.length) {
+  if (translation && translation.list && translation.list.length && translation.list[0]) {
     translationText = translation.list[0].string;
     translationText = translationText.replace(/\{\d(?::(.*?)d(.*?))\}/, '$1#$2').replace(/\{\d\}/, '#');
   }
@@ -352,12 +437,12 @@ export const translateStat = (id: number, roll?: number | undefined): string => 
 export const translateStatData = (id: string, roll?: number | undefined): string => {
   const stat = getStat(id);
   const translation = inverseTranslations[stat.ID];
-  if (roll) {
+  if (roll && translation) {
     return formatStats(translation, roll) || stat.ID;
   }
 
   let translationText = stat.Text || stat.ID;
-  if (translation && translation.list && translation.list.length) {
+  if (translation && translation.list && translation.list.length && translation.list[0]) {
     translationText = translation.list[0].string;
     translationText = translationText.replace(/\{\d(?::(.*?)d(.*?))\}/, '$1#$2').replace(/\{\d\}/, '#');
   }
@@ -399,15 +484,26 @@ const tradeStatNames: { [key: number]: { [key: string]: string } } = {
 
 export const constructSingleResultQuery = (jewel: number, conqueror: string | null, result: SearchWithSeed): Query => {
   const anyConqueror = conqueror === null;
+  const jewelStats = tradeStatNames[jewel];
+  
+  if (!jewelStats) {
+    throw new Error(`No trade stat names found for jewel: ${jewel}`);
+  }
 
-  const filters: Filter[] = Object.keys(tradeStatNames[jewel]).map(conq => ({
-    id: tradeStatNames[jewel][conq],
-    value: {
-      min: result.seed,
-      max: result.seed
-    },
-    disabled: anyConqueror ? false : conq != conqueror
-  }));
+  const filters: Filter[] = Object.keys(jewelStats).map(conq => {
+    const statId = jewelStats[conq];
+    if (!statId) {
+      throw new Error(`No stat ID found for conqueror: ${conq}`);
+    }
+    return {
+      id: statId,
+      value: {
+        min: result.seed,
+        max: result.seed
+      },
+      disabled: anyConqueror ? false : conq != conqueror
+    };
+  });
 
   const filterGroup = filtersToFilterGroup(filters, false);
   const query: Query = filterGroupsToQuery([filterGroup]);
@@ -417,15 +513,27 @@ export const constructSingleResultQuery = (jewel: number, conqueror: string | nu
 const constructSearchFilter = (jewel: number, conqueror: string | null, result: SearchWithSeed): Filter[] => {
   // null conqueror indicates to search for any conqueror
   const anyConqueror = conqueror === null;
-  const conquerors = anyConqueror ? Object.keys(tradeStatNames[jewel]) : [conqueror];
+  const jewelStats = tradeStatNames[jewel];
+  
+  if (!jewelStats) {
+    throw new Error(`No trade stat names found for jewel: ${jewel}`);
+  }
+  
+  const conquerors = anyConqueror ? Object.keys(jewelStats) : [conqueror].filter(c => c !== null);
 
-  return conquerors.map(conq => ({
-    id: tradeStatNames[jewel][conq],
-    value: {
-      min: result.seed,
-      max: result.seed
+  return conquerors.map(conq => {
+    const statId = jewelStats[conq];
+    if (!statId) {
+      throw new Error(`No stat ID found for conqueror: ${conq}`);
     }
-  }));
+    return {
+      id: statId,
+      value: {
+        min: result.seed,
+        max: result.seed
+      }
+    };
+  });
 };
 
 export const constructQueries = (jewel: number, conqueror: string | null, results: SearchWithSeed[]) => {

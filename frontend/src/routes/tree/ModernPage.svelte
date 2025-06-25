@@ -15,7 +15,6 @@
   import SearchResultsComponent from '$lib/components/SearchResults.svelte';
   import { statValues } from '$lib/values';
   import { calculatorState, dataState, useCalculator, useData, initializeCrystalline } from '$lib/types/ModernTypes.js';
-  import type * as ModernTypes from '$lib/types/index.modern.d.ts';
 
   import TradeButton from '$lib/components/TradeButton.svelte';
   import TradeLinks from '$lib/components/TradeLinks.svelte';

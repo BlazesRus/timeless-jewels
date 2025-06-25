@@ -6,7 +6,7 @@
   import '../wasm_exec.js';
 
   import { assets } from '$app/paths';
-  import { loadSkillTree } from '../lib/skill_tree';
+  import { loadSkillTree } from '../lib/skill_tree_legacy';
   import { initializeCrystalline } from '../lib/types/LegacyTypes';
   import { modernWorker } from '../lib/modern-worker';
 
