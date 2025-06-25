@@ -31,10 +31,9 @@ export default [
       "css/no-empty-blocks": "error",
       "css/no-duplicate-imports": "error"
     }
-  },
-  // Base JavaScript/TypeScript configuration for non-CSS files
+  },  // Base JavaScript/TypeScript configuration for non-CSS, non-Svelte files
   {
-    files: ["**/*.js", "**/*.ts", "**/*.svelte"],
+    files: ["**/*.js", "**/*.ts"],
     ...js.configs.recommended,
     ...ts.configs.recommended[0],
     languageOptions: {
@@ -64,18 +63,18 @@ export default [
     rules: {
       ...commonRules
     }
-  },
-  // Svelte
+  },  // Svelte configuration
+  ...svelte.configs['flat/recommended'],
+  // Svelte TypeScript configuration
   {
     files: ["**/*.svelte"],
-    ...svelte.configs["flat/recommended"][0],
     languageOptions: {
-      parser: svelte.parser,
       parserOptions: {
         parser: ts.parser,
         extraFileExtensions: ['.svelte']
       }
-    },    rules: {
+    },
+    rules: {
       ...commonRules,
       // Tailwind-compatible style handling
       'svelte/valid-style-parse': 'off',
