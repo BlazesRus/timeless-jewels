@@ -31,15 +31,15 @@ function getCurrentSvelteVersion() {
 }
 
 /**
- * Get PostCSS config path based on Svelte version
+ * Get PostCSS config path - now uses single optimized config file
  */
-function getPostCSSConfigPath(svelteVersion) {
-  return svelteVersion === '5' ? join(__dirname, 'PostCSSSettings', 'postcss.modern.config.cjs') : join(__dirname, 'PostCSSSettings', 'postcss.legacy.config.cjs');
+function getPostCSSConfigPath() {
+  return join(__dirname, 'postcss.config.cjs');
 }
 
 // Detect current Svelte version
 const currentSvelteVersion = getCurrentSvelteVersion();
-const postcssConfigPath = getPostCSSConfigPath(currentSvelteVersion);
+const postcssConfigPath = getPostCSSConfigPath();
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {

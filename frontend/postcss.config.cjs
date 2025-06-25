@@ -1,29 +1,32 @@
-// PostCSS configuration loader - dynamically loads version-specific config
-const { join } = require('path');
-const { existsSync, readFileSync } = require('fs');
+// PostCSS configuration - dynamically configures based on Svelte version (postcss.config.cjs)
+
+const { version: svelteVersion } = require('svelte/package.json');
+const major = parseInt(svelteVersion.split('.')[0], 10) || 0;
 
 function getCurrentSvelteVersion() {
-  const versionIniPath = join(__dirname, 'version.ini');
-  if (existsSync(versionIniPath)) {
-    try {
-      const content = readFileSync(versionIniPath, 'utf8');
-      const versionMatch = content.match(/version\s*=\s*(\d+)/);
-      return versionMatch ? versionMatch[1] : '5';
-    } catch (error) {
-      console.warn('Failed to read version.ini, defaulting to Svelte 5');
-      return '5';
-    }
-  }
-  
-  // Default to Svelte 5 (Modern mode)
-  return '5';
+  return major;
 }
 
-const svelteVersion = getCurrentSvelteVersion();
-const configFile = svelteVersion === '5' 
-  ? './PostCSSSettings/postcss.modern.config.cjs'
-  : './PostCSSSettings/postcss.legacy.config.cjs';
+const sVersion = getCurrentSvelteVersion();
 
-console.log(`Loading PostCSS config for Svelte ${svelteVersion}: ${configFile}`);
+// Modern configuration (Svelte 5) - uses Tailwind CSS v4
+const modernConfig = {
+  plugins: {
+    'postcss-import': {},
+    '@tailwindcss/postcss': {},
+    autoprefixer: {}
+  }
+};
 
-module.exports = require(configFile);
+// Legacy configuration (Svelte 4) - uses traditional Tailwind CSS
+const legacyConfig = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {}
+  }
+};
+
+const config = svelteVersion === '5' ? modernConfig : legacyConfig;
+console.log(`PostCSS config loaded for Svelte ${sVersion} (${sVersion === '5' ? 'Modern' : 'Legacy'} mode)`);
+
+module.exports = config;
