@@ -16,8 +16,6 @@ function getCurrentSvelteVersion() {
 const currentVersion = getCurrentSvelteVersion();
 console.log(`Building with Svelte ${currentVersion}`);
 
-// Since we're using a .js config file, we need to import the plugin differently
-// or convert this to a .ts file. For now, let's use a simpler approach
 /** @type {import('vite').UserConfig} */
 const config = {
   plugins: [sveltekit()],
@@ -38,23 +36,34 @@ const config = {
       ]
     }
   },
-  // Updated worker config for Vite 6
+  // Vite 7 worker configuration
   worker: {
     plugins: () => [
+      // Clean worker plugin configuration for Vite 7
       {
-        name: 'remove-manifest',
-        configResolved(c) {
-          if (c.worker && c.worker.plugins && Array.isArray(c.worker.plugins)) {
-            const manifestPlugin = c.worker.plugins.findIndex((p) => p && p.name === 'vite:manifest');
-            if (manifestPlugin >= 0) c.worker.plugins.splice(manifestPlugin, 1);
-          }
-          if (c.plugins && Array.isArray(c.plugins)) {
-            const ssrManifestPlugin = c.plugins.findIndex((p) => p && p.name === 'vite:ssr-manifest');
-            if (ssrManifestPlugin >= 0) c.plugins.splice(ssrManifestPlugin, 1);
+        name: 'worker-cleanup',
+        configResolved(config) {
+          // Remove problematic plugins from worker builds if they exist
+          if (config.worker?.plugins && Array.isArray(config.worker.plugins)) {
+            const manifestIndex = config.worker.plugins.findIndex(p => p?.name === 'vite:manifest');
+            if (manifestIndex >= 0) {
+              config.worker.plugins.splice(manifestIndex, 1);
+            }
           }
         }
       }
     ]
+  },
+  // Optimized dependency handling for Vite 7
+  optimizeDeps: {
+    include: ['comlink'],
+    exclude: ['@sveltejs/kit']
+  },
+  // Enhanced server configuration for development
+  server: {
+    fs: {
+      allow: ['..']
+    }
   }
 };
 

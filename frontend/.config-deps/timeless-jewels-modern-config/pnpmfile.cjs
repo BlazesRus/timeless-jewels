@@ -40,9 +40,7 @@ function readPackage(pkg) {
       // ESLint ecosystem for Modern
       if (pkg.devDependencies["@eslint/js"]) {
         pkg.devDependencies["@eslint/js"] = "^9.28.0";
-      }      if (pkg.devDependencies["@eslint/migrate-config"]) {
-        pkg.devDependencies["@eslint/migrate-config"] = "^1.5.0";
-      }
+      }      
       if (pkg.devDependencies["@eslint/css"]) {
         pkg.devDependencies["@eslint/css"] = "^0.9.0";
       }
@@ -79,7 +77,7 @@ function readPackage(pkg) {
         pkg.devDependencies["tslib"] = "^2.6.3";
       }
       if (pkg.devDependencies["@types/node"]) {
-        pkg.devDependencies["@types/node"] = "^22.0.0";
+        pkg.devDependencies["@types/node"] = "^24.0.4";
       }
       
       // Tailwind CSS v4+ ecosystem for Modern
@@ -123,7 +121,7 @@ function readPackage(pkg) {
       }
         // Build tools and utilities for Modern
       if (pkg.devDependencies["vite"]) {
-        pkg.devDependencies["vite"] = "^6.3.5";
+        pkg.devDependencies["vite"] = "^7.0.0";
       }
       if (pkg.devDependencies["comlink"]) {
         pkg.devDependencies["comlink"] = "^4.4.2";

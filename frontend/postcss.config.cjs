@@ -21,6 +21,7 @@ const modernConfig = {
 // Legacy configuration (Svelte 4) - uses traditional Tailwind CSS
 const legacyConfig = {
   plugins: {
+    'postcss-import': {},
     tailwindcss: {},
     autoprefixer: {}
   }

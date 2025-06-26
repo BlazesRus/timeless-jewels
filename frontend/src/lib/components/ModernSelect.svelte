@@ -103,7 +103,7 @@ Full-featured replacement for svelte-select using native Svelte 5 runes
     </span>
     <div class="select-actions">
       {#if value && !disabled}
-        <button class="clear-button" onclick={clear} type="button" tabindex="-1" aria-label="Clear selection">✕</button>
+        <span class="clear-button" onclick={clear} tabindex="-1" aria-label="Clear selection" role="button" onkeydown={(e) => e.key === 'Enter' && clear()}>✕</span>
       {/if}
       <svg class="chevron" class:open={isOpen} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
