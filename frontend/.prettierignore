@@ -19,12 +19,9 @@ src/routes/+page.svelte
 
 # Ignore configuration files from formatting
 package.json
-Svelte5Package.json
-LegacyPackage.json
-Svelte5PackageBackup.json
-LegacyPackageBackup.json
 pnpm-lock.yaml
-version.ini
+.config-deps/
+version-manager-old.js
 *.config.js
 *.config.cjs
 *.config.ts

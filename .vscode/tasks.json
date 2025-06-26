@@ -53,7 +53,7 @@
     {
       "label": "Check Version Configuration",
       "type": "shell",
-      "command": "Set-Location c:\\UserFiles\\Github\\TimelessJewelGenerator\\timeless-jewels_Partial\\frontend; Write-Host \"🎯 Current Version Status:\" -ForegroundColor Cyan; node scripts/version-manager.js status",
+      "command": "Set-Location c:\\UserFiles\\Github\\TimelessJewelGenerator\\timeless-jewels_Partial\\frontend; Write-Host \"🎯 Current Version Status:\" -ForegroundColor Cyan; pnpm run mode:status; Write-Host \"📋 Detailed Status:\" -ForegroundColor Yellow; pnpm run version:status",
       "group": "build",
       "presentation": {
         "echo": true,
@@ -66,7 +66,7 @@
     {
       "label": "Switch to Svelte 4",
       "type": "shell",
-      "command": "cd frontend; Write-Host '🔄 Switching to Svelte 4...' -ForegroundColor Yellow; node scripts/version-manager.js switchTo4; if ($LASTEXITCODE -eq 0) { Write-Host '✅ Switched to Svelte 4 successfully!' -ForegroundColor Green } else { Write-Host '❌ Switch failed!' -ForegroundColor Red }",
+      "command": "cd frontend; Write-Host '🔄 Switching to Svelte 4...' -ForegroundColor Yellow; pnpm run install:legacy; if ($LASTEXITCODE -eq 0) { Write-Host '✅ Switched to Svelte 4 successfully!' -ForegroundColor Green } else { Write-Host '❌ Switch failed!' -ForegroundColor Red }",
       "group": "build",
       "presentation": {
         "echo": true,
@@ -82,7 +82,7 @@
     {
       "label": "Switch to Svelte 5",
       "type": "shell",
-      "command": "cd frontend; Write-Host '🔄 Switching to Svelte 5...' -ForegroundColor Yellow; node scripts/version-manager.js switchTo5; if ($LASTEXITCODE -eq 0) { Write-Host '✅ Switched to Svelte 5 successfully!' -ForegroundColor Green } else { Write-Host '❌ Switch failed!' -ForegroundColor Red }",
+      "command": "cd frontend; Write-Host '🔄 Switching to Svelte 5...' -ForegroundColor Yellow; pnpm run install:modern; if ($LASTEXITCODE -eq 0) { Write-Host '✅ Switched to Svelte 5 successfully!' -ForegroundColor Green } else { Write-Host '❌ Switch failed!' -ForegroundColor Red }",
       "group": "build",
       "presentation": {
         "echo": true,
@@ -133,7 +133,7 @@
     {
       "label": "Build (Current Version)",
       "type": "shell",
-      "command": "cd frontend; Write-Host '🏗️ Building with current version...' -ForegroundColor Cyan; node scripts/version-manager.js status; Write-Host ''; pnpm run build",
+      "command": "cd frontend; Write-Host '🏗️ Building with current version...' -ForegroundColor Cyan; pnpm run mode:status; Write-Host ''; pnpm run build",
       "group": "build",
       "presentation": {
         "echo": true,

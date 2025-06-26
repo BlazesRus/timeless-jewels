@@ -1,31 +1,21 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import fs from 'fs';
-import path from 'path';
+import { VERSION as SVELTE_VER } from 'svelte/compiler';
 
-// Read version configuration
-function getCurrentSvelteVersion() {
-  try {
-    const versionConfig = fs.readFileSync(path.resolve('./version.ini'), 'utf8');
-    const versionMatch = versionConfig.match(/version\s*=\s*(\d+)/);
-    return versionMatch ? parseInt(versionMatch[1]) : 5;
-  } catch {
-    return 5; // Default to Svelte 5
-  }
-}
+const majorVer = +SVELTE_VER.split('.')[0];
+const isSvelte5 = majorVer >= 5;
 
-const currentVersion = getCurrentSvelteVersion();
-console.log(`Building with Svelte ${currentVersion}`);
+console.log(`Building with Svelte ${majorVer} (${isSvelte5 ? 'Modern' : 'Legacy'} mode)`);
 
 /** @type {import('vite').UserConfig} */
 const config = {
   plugins: [sveltekit()],
   define: {
     // Inject the build-time Svelte version into the client code
-    __SVELTE_BUILD_VERSION__: currentVersion
+    __SVELTE_BUILD_VERSION__: majorVer
   },
   build: {
     rollupOptions: {
-      external: currentVersion >= 5 ? [
+      external: isSvelte5 ? [
         // Exclude Legacy files when building in modern mode (Svelte 5)
         // These will be handled gracefully at runtime
         /.*Legacy.*\.svelte$/

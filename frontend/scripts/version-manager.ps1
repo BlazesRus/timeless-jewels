@@ -1,5 +1,7 @@
 # Timeless Jewel Generator - Version Manager PowerShell Wrapper
 # This script provides a convenient interface for managing Svelte versions on Windows
+# NOTE: The system now auto-detects Svelte versions at runtime, but this script
+# maintains backward compatibility for explicit version switching.
 
 param(
     [Parameter(Position=0)]
@@ -21,9 +23,9 @@ Set-Location $frontendDir
 Write-Host "🚀 Timeless Jewel Generator - Version Manager" -ForegroundColor Cyan
 Write-Host "============================================" -ForegroundColor Cyan
 
-# If version is specified, update the INI file first
+# If version is specified, update the INI file first (for backward compatibility)
 if ($Version) {
-    Write-Host "📝 Updating version.ini to use Svelte $Version..." -ForegroundColor Yellow
+    Write-Host "📝 Updating version.ini to use Svelte $Version (backward compatibility)..." -ForegroundColor Yellow
     
     $iniPath = "version.ini"
     if (Test-Path $iniPath) {
@@ -32,8 +34,7 @@ if ($Version) {
         $newContent | Set-Content $iniPath
         Write-Host "✅ Updated version.ini" -ForegroundColor Green
     } else {
-        Write-Host "❌ version.ini not found!" -ForegroundColor Red
-        exit 1
+        Write-Host "⚠️ version.ini not found, system will use runtime detection" -ForegroundColor Yellow
     }
 }
 
@@ -52,11 +53,15 @@ try {
             Write-Host @"
 PowerShell Version Manager for Timeless Jewel Generator
 
+MODERN BEHAVIOR:
+  The system now auto-detects Svelte versions at runtime using the compiler.
+  This script provides backward compatibility for explicit version switching.
+
 Usage:
   .\scripts\version-manager.ps1 [command] [-Version <4|5>] [-Force]
 
 Commands:
-  switch    Switch package.json based on version.ini configuration
+  switch    Switch package.json based on configuration (auto-detects if possible)
   status    Show current version configuration status
   help      Show this help message
 
@@ -69,8 +74,12 @@ Examples:
   .\scripts\version-manager.ps1 status
   .\scripts\version-manager.ps1 help
 
+Modern Usage:
+  Most operations now auto-detect the Svelte version from your installed packages.
+  You typically only need: pnpm run dev (auto-detects version)
+  
 Configuration:
-  Edit version.ini to change default settings and options
+  Edit version.ini for backward compatibility or explicit version control
 "@ -ForegroundColor White
         }
         default {
@@ -83,9 +92,9 @@ Configuration:
         
         # Show next steps
         Write-Host "`n💡 Next steps:" -ForegroundColor Cyan
-        Write-Host "  • Run 'pnpm run dev' to start development server" -ForegroundColor White
+        Write-Host "  • Run 'pnpm run dev' to start development server (auto-detects version)" -ForegroundColor White
         Write-Host "  • Run 'pnpm run version:status' to check current configuration" -ForegroundColor White
-        Write-Host "  • Edit version.ini to change default settings" -ForegroundColor White
+        Write-Host "  • System now uses runtime Svelte version detection" -ForegroundColor White
     }
     
 } catch {

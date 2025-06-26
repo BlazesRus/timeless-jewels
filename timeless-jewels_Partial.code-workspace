@@ -73,9 +73,9 @@
     "terminal.integrated.smoothScrolling": true,
     "files.associations": {
       "*.ini": "ini",
-      "version.ini": "ini",
       "*Package.json": "json",
-      "*PackageBackup.json": "jsonc"
+      "*PackageBackup.json": "jsonc",
+      "pnpmfile.cjs": "javascript"
     },
     "problems.decorations.enabled": true,
     "problems.showCurrentInStatus": true,
@@ -84,16 +84,16 @@
     "svelte.enable-ts-plugin": true,
     "github.copilot.chat.codeGeneration.instructions": [
       "Follow the AI_FORMATTING_GUIDELINES.md in the docs/ directory",
-      "Understand the version-aware architecture with dual Svelte 4/5 support",
-      "Use appropriate syntax for target Svelte version (check filename for Svelte4 vs Svelte5)",
+      "Understand the version-aware architecture with dual Svelte 4/5 support using pnpmfile.cjs",
+      "Use appropriate syntax for target Svelte version (check SVELTE_MODE environment variable)",
       "Never edit backup files (*Backup.json)",
       "Reference AI_ASSISTANT_CONTEXT_GUIDE.md for project understanding",
       "Use PowerShell command format by default for Windows commands",
       "Prefer Write-Host with color coding for output in PowerShell scripts",
       "Use proper PowerShell parameter syntax with hyphen prefixes",
       "Include error handling with try-catch blocks in PowerShell commands",
-      "RESPECT CURRENT MODE: When version.ini shows version=5, focus on Svelte 5 development and avoid suggesting switchTo4",
-      "When working in Modern (Svelte 5) mode, suggest testing and development using current version only",
+      "RESPECT CURRENT MODE: Use runtime version detection, focus on current Svelte version",
+      "Version switching uses SVELTE_MODE environment variable and pnpmfile.cjs system",
       "Only suggest version switching when explicitly requested by the user"
     ]
   }

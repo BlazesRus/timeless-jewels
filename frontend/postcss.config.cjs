@@ -1,13 +1,8 @@
 // PostCSS configuration - dynamically configures based on Svelte version (postcss.config.cjs)
 
-const { version: svelteVersion } = require('svelte/package.json');
-const major = parseInt(svelteVersion.split('.')[0], 10) || 0;
-
-function getCurrentSvelteVersion() {
-  return major;
-}
-
-const sVersion = getCurrentSvelteVersion();
+const { VERSION: SVELTE_VER } = require('svelte/compiler');
+const majorVer = +SVELTE_VER.split('.')[0];
+const isSvelte5 = majorVer >= 5;
 
 // Modern configuration (Svelte 5) - uses Tailwind CSS v4
 const modernConfig = {
@@ -27,7 +22,7 @@ const legacyConfig = {
   }
 };
 
-const config = sVersion >= 5 ? modernConfig : legacyConfig;
-console.log(`PostCSS config loaded for Svelte ${sVersion} (${sVersion >= 5 ? 'Modern' : 'Legacy'} mode)`);
+const config = isSvelte5 ? modernConfig : legacyConfig;
+console.log(`PostCSS config loaded for Svelte ${majorVer} (${isSvelte5 ? 'Modern' : 'Legacy'} mode)`);
 
 module.exports = config;
