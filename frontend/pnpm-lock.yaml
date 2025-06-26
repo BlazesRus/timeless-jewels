@@ -17,6 +17,9 @@ importers:
       '@eslint/migrate-config':
         specifier: ^1.5.0
         version: 1.5.1(eslint@9.29.0(jiti@2.4.2))
+      '@sveltejs/adapter-auto':
+        specifier: ^6.0.1
+        version: 6.0.1(@sveltejs/kit@2.22.0(@sveltejs/vite-plugin-svelte@5.1.0(svelte@5.34.7)(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(lightningcss@1.30.1)(sass@1.89.2)))(svelte@5.34.7)(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(lightningcss@1.30.1)(sass@1.89.2)))
       '@sveltejs/adapter-static':
         specifier: ^3.0.8
         version: 3.0.8(@sveltejs/kit@2.22.0(@sveltejs/vite-plugin-svelte@5.1.0(svelte@5.34.7)(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(lightningcss@1.30.1)(sass@1.89.2)))(svelte@5.34.7)(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(lightningcss@1.30.1)(sass@1.89.2)))
@@ -652,6 +655,11 @@ packages:
     resolution: {integrity: sha512-IwQk4yfwLdibDlrXVE04jTZYlLnwsTT2PIOQQGNLWfjavGifnk1JD1LcZjZaBTRcxZu2FfPfNLOE04DSu9lqtQ==}
     peerDependencies:
       acorn: ^8.9.0
+
+  '@sveltejs/adapter-auto@6.0.1':
+    resolution: {integrity: sha512-mcWud3pYGPWM2Pphdj8G9Qiq24nZ8L4LB7coCUckUEy5Y7wOWGJ/enaZ4AtJTcSm5dNK1rIkBRoqt+ae4zlxcQ==}
+    peerDependencies:
+      '@sveltejs/kit': ^2.0.0
 
   '@sveltejs/adapter-static@3.0.8':
     resolution: {integrity: sha512-YaDrquRpZwfcXbnlDsSrBQNCChVOT9MGuSg+dMAyfsAa1SmiAhrA5jUYUiIMC59G92kIbY/AaQOWcBdq+lh+zg==}
@@ -1961,11 +1969,11 @@ packages:
     engines: {node: '>=18'}
 
   timeless-jewels-legacy-config@file:.config-deps/timeless-jewels-legacy-config/timeless-jewels-legacy-config-1.0.0.tgz:
-    resolution: {integrity: sha512-e4RQ9WdLoHADjD9pQHSoh406GZS1rmJ5wxI2uzWjmt/+X4F3tPm14aMAs96DRIEefCBaMW2mctjExVDIeAqufw==, tarball: file:.config-deps/timeless-jewels-legacy-config/timeless-jewels-legacy-config-1.0.0.tgz}
+    resolution: {integrity: sha512-07pAJgrAVkf2U44+Dovz7rWT9lhjk+CcvHyOyAUikLjRkkX+45y7Og62lD+fv7LSRkSgHpPgxbAr4jQa5C7rXg==, tarball: file:.config-deps/timeless-jewels-legacy-config/timeless-jewels-legacy-config-1.0.0.tgz}
     version: 1.0.0
 
   timeless-jewels-modern-config@file:.config-deps/timeless-jewels-modern-config/timeless-jewels-modern-config-1.0.0.tgz:
-    resolution: {integrity: sha512-T1Gvyk0mc6zOQhlTyB8OkzR5/PzMfms8IXuji2CUkMNNLQmmIP3dZcWpU1kQYvdAPyyf8cSXS8ThnIVchPLn0Q==, tarball: file:.config-deps/timeless-jewels-modern-config/timeless-jewels-modern-config-1.0.0.tgz}
+    resolution: {integrity: sha512-pP3lr5Y6GsR+gTxhX+qU7z9CAMYwEaP29EQtgN/JMF/BofLfjjQ2INJiTGLSFEyfUYooA67xdSVSGaA8YNg+lw==, tarball: file:.config-deps/timeless-jewels-modern-config/timeless-jewels-modern-config-1.0.0.tgz}
     version: 1.0.0
 
   tiny-invariant@1.3.3:
@@ -2475,6 +2483,10 @@ snapshots:
   '@sveltejs/acorn-typescript@1.0.5(acorn@8.15.0)':
     dependencies:
       acorn: 8.15.0
+
+  '@sveltejs/adapter-auto@6.0.1(@sveltejs/kit@2.22.0(@sveltejs/vite-plugin-svelte@5.1.0(svelte@5.34.7)(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(lightningcss@1.30.1)(sass@1.89.2)))(svelte@5.34.7)(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(lightningcss@1.30.1)(sass@1.89.2)))':
+    dependencies:
+      '@sveltejs/kit': 2.22.0(@sveltejs/vite-plugin-svelte@5.1.0(svelte@5.34.7)(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(lightningcss@1.30.1)(sass@1.89.2)))(svelte@5.34.7)(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(lightningcss@1.30.1)(sass@1.89.2))
 
   '@sveltejs/adapter-static@3.0.8(@sveltejs/kit@2.22.0(@sveltejs/vite-plugin-svelte@5.1.0(svelte@5.34.7)(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(lightningcss@1.30.1)(sass@1.89.2)))(svelte@5.34.7)(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(lightningcss@1.30.1)(sass@1.89.2)))':
     dependencies:

@@ -26,7 +26,7 @@ const legacyConfig = {
   }
 };
 
-const config = svelteVersion === '5' ? modernConfig : legacyConfig;
-console.log(`PostCSS config loaded for Svelte ${sVersion} (${sVersion === '5' ? 'Modern' : 'Legacy'} mode)`);
+const config = sVersion >= 5 ? modernConfig : legacyConfig;
+console.log(`PostCSS config loaded for Svelte ${sVersion} (${sVersion >= 5 ? 'Modern' : 'Legacy'} mode)`);
 
 module.exports = config;
