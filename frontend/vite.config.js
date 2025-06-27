@@ -102,6 +102,5 @@ const config = {
     strictPort: true
   }
 };
-};
 
 export default config;
