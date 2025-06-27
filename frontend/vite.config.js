@@ -32,7 +32,8 @@ const config = {
   },
   // Vite 7 enhanced build configuration
   build: {
-    target: isSvelte5 ? 'es2022' : 'es2020',      rollupOptions: {
+    target: isSvelte5 ? 'es2022' : 'es2020',
+    rollupOptions: {
         // Externalize legacy files and their dependencies when building in Svelte 5 mode
         // This prevents them from being processed during build while still allowing dynamic imports
         external: isSvelte5 ? [

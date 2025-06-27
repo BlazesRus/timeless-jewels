@@ -1,7 +1,7 @@
 <!-- Svelte 5 Modern Layout - Uses children prop and advanced runes -->
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import '../app.scss';
+  import '../app.css';
   import { onMount } from 'svelte';
 
   // Svelte 5 children prop with proper typing

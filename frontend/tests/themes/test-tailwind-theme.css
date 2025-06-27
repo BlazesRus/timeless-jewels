@@ -1,6 +1,6 @@
 /* Test CSS file for Tailwind theme() directive support in ESLint */
 
-@reference "../../src/styles/tailwind.css";
+@reference "../../src/app.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
