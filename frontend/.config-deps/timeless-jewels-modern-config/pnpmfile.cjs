@@ -4,14 +4,14 @@ function readPackage(pkg) {
   if (pkg.name === "frontend") {
     console.log("🚀 Applying Modern (Svelte 5) dependency configuration...");
     
-    // Core Svelte 5 dependencies (current versions)
+    // Core Svelte 5 dependencies (latest versions)
     if (pkg.devDependencies) {
-      // Core Svelte 5 stack
+      // Core Svelte 5 stack - updated for latest
       if (pkg.devDependencies["svelte"]) {
-        pkg.devDependencies["svelte"] = "^5.33.18";
+        pkg.devDependencies["svelte"] = "^5.34.8";
       }
       if (pkg.devDependencies["@sveltejs/kit"]) {
-        pkg.devDependencies["@sveltejs/kit"] = "^2.21.3";
+        pkg.devDependencies["@sveltejs/kit"] = "^2.22.2";
       }
       if (pkg.devDependencies["@sveltejs/vite-plugin-svelte"]) {
         pkg.devDependencies["@sveltejs/vite-plugin-svelte"] = "^5.1.0";
@@ -29,13 +29,28 @@ function readPackage(pkg) {
         pkg.devDependencies["svelte-eslint-parser"] = "^1.2.0";
       }
       
-      // Svelte 5 specific components
+      // Vite 7 optimizations
+      if (pkg.devDependencies["vite"]) {
+        pkg.devDependencies["vite"] = "^7.0.0";
+      }
+      
+      // Add modern development packages for Svelte 5 + Vite 7
+      pkg.devDependencies["@vite/plugin-node-polyfills"] = "^0.24.0";
+      pkg.devDependencies["vite-plugin-svelte-console-remover"] = "^2.1.0";
+      pkg.devDependencies["vite-plugin-top-level-await"] = "^1.4.1";
+      pkg.devDependencies["@vitest/ui"] = "^2.1.8";
+      pkg.devDependencies["vitest"] = "^2.1.8";
+      
+      // Svelte 5 specific modern components
       if (pkg.devDependencies["svelte-canvas"]) {
         pkg.devDependencies["svelte-canvas"] = "^2.0.2";
       }
       if (pkg.devDependencies["svelte-tiny-virtual-list"]) {
         pkg.devDependencies["svelte-tiny-virtual-list"] = "^2.0.6";
       }
+      
+      // Remove packages that are no longer needed in modern mode
+      delete pkg.devDependencies["svelte-preprocess"]; // Not needed with SvelteKit 2.0+
       
       // ESLint ecosystem for Modern
       if (pkg.devDependencies["@eslint/js"]) {

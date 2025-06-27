@@ -1,6 +1,6 @@
 <!-- 
 Modern Select Component for Svelte 5
-Full-featured replacement for svelte-select using native Svelte 5 runes
+Full-featured replacement for svelte-select using native Svelte 5 runes and advanced patterns
 -->
 <script lang="ts">
   import { tick } from 'svelte';
@@ -17,26 +17,52 @@ Full-featured replacement for svelte-select using native Svelte 5 runes
     onchange?: (item: SelectItem | undefined) => void;
     onclear?: () => void;
     disabled?: boolean;
+    loading?: boolean;
+    maxHeight?: number;
   }
 
-  let { items, value = $bindable(), placeholder = 'Select...', onchange, onclear, disabled = false }: Props = $props();
+  let { 
+    items, 
+    value = $bindable(), 
+    placeholder = 'Select...', 
+    onchange, 
+    onclear, 
+    disabled = false,
+    loading = false,
+    maxHeight = 200
+  }: Props = $props();
+
+  // Modern state management with runes
   let isOpen = $state(false);
   let searchTerm = $state('');
   let highlightedIndex = $state(-1);
   let containerRef = $state<HTMLDivElement>();
   let searchInputRef = $state<HTMLInputElement>();
+  let dropdownRef = $state<HTMLDivElement>();
 
-  const filteredItems = $derived(items.filter(item => item.label.toLowerCase().includes(searchTerm.toLowerCase())));
+  // Advanced derived state with performance optimizations
+  const filteredItems = $derived.by(() => {
+    if (!searchTerm.trim()) return items;
+    const term = searchTerm.toLowerCase();
+    return items.filter(item => 
+      item.label.toLowerCase().includes(term) ||
+      String(item.value).toLowerCase().includes(term)
+    );
+  });
 
-  // Keyboard navigation
+  // Performance metrics for development
+  const selectMetrics = $state({
+    filterTime: 0,
+    renderTime: 0
+  });
+
+  // Advanced keyboard navigation with modern patterns
   const handleKeydown = async (e: KeyboardEvent) => {
     if (!isOpen) {
       if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
         e.preventDefault();
-        if (!disabled) {
-          isOpen = true;
-          await tick();
-          searchInputRef?.focus();
+        if (!disabled && !loading) {
+          open();
         }
       }
       return;
@@ -46,8 +72,13 @@ Full-featured replacement for svelte-select using native Svelte 5 runes
       case 'ArrowDown':
         e.preventDefault();
         highlightedIndex = Math.min(highlightedIndex + 1, filteredItems.length - 1);
+        scrollToHighlighted();
         break;
       case 'ArrowUp':
+        e.preventDefault();
+        highlightedIndex = Math.max(highlightedIndex - 1, -1);
+        scrollToHighlighted();
+        break;
         e.preventDefault();
         highlightedIndex = Math.max(highlightedIndex - 1, -1);
         break;
