@@ -1,23 +1,29 @@
 {
-  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  // ──────────────────────────────────────────────────────────────
+  // 1) Terminal profiles & default → PowerShell 7
+  // ──────────────────────────────────────────────────────────────
   "terminal.integrated.profiles.windows": {
     "PowerShell": {
       "source": "PowerShell",
       "icon": "terminal-powershell",
-      "args": [
-        "-NoLogo"
-      ],
+      "args": ["-NoLogo"],
       "overrideName": true
     },
     "PowerShell 7": {
-      "path": "pwsh.exe",
-      "icon": "terminal-powershell",
-      "args": [
-        "-NoLogo"
+      "path": [
+        "${env:ProgramFiles}\\PowerShell\\7\\pwsh.exe",
+        "${env:ProgramFiles(x86)}\\PowerShell\\7\\pwsh.exe"
       ],
+      "icon": "terminal-powershell",
+      "args": ["-NoLogo"],
       "overrideName": true
     }
   },
+  "terminal.integrated.defaultProfile.windows": "PowerShell 7",
+
+  // ──────────────────────────────────────────────────────────────
+  // 2) Shell integration & behavior
+  // ──────────────────────────────────────────────────────────────
   "terminal.integrated.shellIntegration.enabled": true,
   "terminal.integrated.shellIntegration.decorationsEnabled": "both",
   "terminal.integrated.shellIntegration.history": 100,
@@ -27,6 +33,26 @@
   "terminal.integrated.fastScrollSensitivity": 5,
   "terminal.integrated.focusAfterRun": "terminal",
   "workbench.action.terminal.focus": true,
+  "terminal.integrated.commandsToSkipShell": [
+    "language-julia.interrupt",
+    "workbench.action.terminal.clear"
+  ],
+  "terminal.integrated.environmentChangesIndicator": "on",
+  "terminal.integrated.environmentChangesRelaunch": false,
+  "terminal.integrated.enablePersistentSessions": true,
+  "terminal.integrated.persistentSessionReviveProcess": "onExit",
+  "terminal.integrated.detectLocale": "on",
+  "terminal.integrated.inheritEnv": true,
+  "terminal.integrated.allowChords": false,
+  "terminal.integrated.altClickMovesCursor": false,
+  "terminal.integrated.confirmOnExit": "never",
+  "terminal.integrated.confirmOnKill": "never",
+  "terminal.integrated.shellIntegration.showWelcome": false,
+  "terminal.integrated.smoothScrolling": true,
+
+  // ──────────────────────────────────────────────────────────────
+  // 3) GitHub Copilot & Chat
+  // ──────────────────────────────────────────────────────────────
   "github.copilot.enable": {
     "*": true,
     "yaml": true,
@@ -38,51 +64,71 @@
     "javascript": true,
     "go": true
   },
+  "github.copilot.terminal.shellIntegration": true,
   "github.copilot.chat.localeOverride": "en",
   "github.copilot.chat.welcomeMessage": "always",
   "github.copilot.chat.useProjectTemplates": true,
-  "github.copilot.terminal.shellIntegration": true,
-  "terminal.integrated.commandsToSkipShell": [
-    "language-julia.interrupt",
-    "workbench.action.terminal.clear"
-  ],
-  "terminal.integrated.environmentChangesIndicator": "on",
-  "terminal.integrated.environmentChangesRelaunch": false,
-  "terminal.integrated.enablePersistentSessions": true,
-  "terminal.integrated.persistentSessionReviveProcess": "onExit",
-  "terminal.integrated.automationProfile.windows": {
-    "path": "powershell.exe",
-    "args": [
-      "-NoLogo",
-      "-NoProfile",
-      "-Command"
-    ]
-  },
-  "terminal.integrated.detectLocale": "on",
-  "terminal.integrated.inheritEnv": true,
-  "security.workspace.trust.untrustedFiles": "open",
+  "github.copilot.chat.agent.thinkingTool": true,
+  "github.copilot.chat.automationTerminal.openInSharedTerminal": true,
+  "github.copilot.chat.automationTerminal.reuseSharedTerminal": true,
+  "github.copilot.chat.automationTerminal.clearSharedTerminalBeforeCommand": false,
   "github.copilot.advanced": {
     "debug.overrideEngine": "codex",
     "debug.testOverrideProxyUrl": "",
     "debug.overrideProxyUrl": ""
   },
-  "debug.terminal.clearBeforeReusing": true,
-  "debug.console.fontSize": 12,
-  "debug.console.wordWrap": false,
-  "debug.internalConsoleOptions": "neverOpen",
-  "debug.allowBreakpointsEverywhere": false,
-  "debug.showBreakpointsInOverviewRuler": true,
-  "terminal.integrated.allowChords": false,
-  "terminal.integrated.altClickMovesCursor": false,
-  "terminal.integrated.confirmOnExit": "never",
-  "terminal.integrated.confirmOnKill": "never",
-  "terminal.integrated.shellIntegration.showWelcome": false,
-  "terminal.integrated.smoothScrolling": true,
-  "workbench.action.focusActiveEditorGroup": true,
-  "editor.accessibilitySupport": "off",
+
+  // ──────────────────────────────────────────────────────────────
+  // 4) Experimental features
+  // ──────────────────────────────────────────────────────────────
   "github.copilot.chat.experimental.shellCommand.enabled": true,
   "github.copilot.chat.experimental.shellCommand.defaultShell": "powershell.exe",
   "github.copilot.chat.experimental.codeGeneration.shellPreference": "PowerShell",
+  "github.copilot.chat.experimental.contextSelection.enabled": true,
+  "github.copilot.chat.experimental.contextSelection.rules": [
+    {
+      "pattern": "***Modern*",
+      "context": "This file uses Svelte 5 syntax. Use modern runes ($state, $derived, $effect) instead of stores."
+    },
+    {
+      "pattern": "**/version.ini",
+      "context": "INI configuration file for version management. Changes affect entire build system."
+    },
+    {
+      "pattern": "**package.json",
+      "context": "Active package configuration. May be automatically managed by version-manager.js"
+    },
+    {
+      "pattern": "**/scripts/version-manager.*",
+      "context": "Version management system. Changes affect Svelte 4/5 switching functionality."
+    }
+  ],
+  "github.copilot.chat.experimental.codeGeneration.fileFiltering": {
+    "enabled": true,
+    "excludePatterns": [
+      "**/components/Legacy/**",
+      "**/*Legacy*",
+      "**/LegacyPackage*.json"
+    ]
+  },
+  "github.copilot.chat.codeGeneration.instructions": [
+    "Follow the AI_FORMATTING_GUIDELINES.md in the docs/ directory",
+    "Understand the version-aware architecture with dual Svelte 4/5 support",
+    "Use appropriate syntax for target Svelte version (check filename for Svelte4 vs Svelte5)",
+    "Never edit backup files (*Backup.json)",
+    "Reference AI_ASSISTANT_CONTEXT_GUIDE.md for project understanding",
+    "Use PowerShell command format by default for Windows commands",
+    "Prefer Write-Host with color coding for output in PowerShell scripts",
+    "Use proper PowerShell parameter syntax with hyphen prefixes",
+    "Include error handling with try-catch blocks in PowerShell commands",
+    "RESPECT CURRENT MODE: When version.ini shows version=5, focus on Svelte 5 development and avoid suggesting switchTo4",
+    "When working in Modern (Svelte 5) mode, suggest testing and development using current version only",
+    "Only suggest version switching when explicitly requested by the user"
+  ],
+
+  // ──────────────────────────────────────────────────────────────
+  // 5) Files & search
+  // ──────────────────────────────────────────────────────────────
   "files.exclude": {
     "**/node_modules": true,
     "**/.git": true,
@@ -114,6 +160,10 @@
     "**/pnpm-lock.yaml": true,
     "***.gz": true
   },
+
+  // ──────────────────────────────────────────────────────────────
+  // 6) Associations & editor settings
+  // ──────────────────────────────────────────────────────────────
   "files.associations": {
     "*.ini": "ini",
     "version.ini": "ini",
@@ -155,37 +205,52 @@
     "editor.tabSize": 2,
     "editor.insertSpaces": true
   },
-  "github.copilot.chat.experimental.contextSelection.enabled": true,
-  "github.copilot.chat.experimental.contextSelection.rules": [
-    {
-      "pattern": "***Modern*",
-      "context": "This file uses Svelte 5 syntax. Use modern runes ($state, $derived, $effect) instead of stores."
-    },
-    {
-      "pattern": "**/version.ini",
-      "context": "INI configuration file for version management. Changes affect entire build system."
-    },
-    {
-      "pattern": "**package.json",
-      "context": "Active package configuration. May be automatically managed by version-manager.js"
-    },
-    {
-      "pattern": "**/scripts/version-manager.*",
-      "context": "Version management system. Changes affect Svelte 4/5 switching functionality."
-    }
-  ],
+
+  // ──────────────────────────────────────────────────────────────
+  // 7) Diagnostics, problems & breadcrumbs
+  // ──────────────────────────────────────────────────────────────
   "problems.decorations.enabled": true,
   "problems.showCurrentInStatus": true,
+  "problems.suppressWhenNoErrors": false,
   "breadcrumbs.enabled": true,
   "breadcrumbs.showFiles": true,
   "breadcrumbs.showClasses": true,
   "breadcrumbs.showFunctions": true,
-  "editor.minimap.enabled": true,
-  "editor.minimap.showSlider": "always",
-  "editor.minimap.renderCharacters": false,
+
+  // ──────────────────────────────────────────────────────────────
+  // 8) Git & minimap
+  // ──────────────────────────────────────────────────────────────
   "git.enableSmartCommit": true,
   "git.confirmSync": false,
   "git.autofetch": true,
+  "editor.minimap.enabled": true,
+  "editor.minimap.showSlider": "always",
+  "editor.minimap.renderCharacters": false,
+
+  // ──────────────────────────────────────────────────────────────
+  // 9) ESLint
+  // ──────────────────────────────────────────────────────────────
+  "eslint.useFlatConfig": true,
+  "eslint.workingDirectories": ["frontend"],
+  "eslint.options": {
+    "overrideConfig": {
+      "overrides": [
+        {
+          "files": ["**/Legacy*"],
+          "rules": {
+            "@typescript-eslint/no-unused-vars": "off",
+            "svelte/valid-compile": "off",
+            "svelte/no-reactive-reassign": "off",
+            "no-undef": "off"
+          }
+        }
+      ]
+    }
+  },
+
+  // ──────────────────────────────────────────────────────────────
+  // 10) Svelte plugin settings
+  // ──────────────────────────────────────────────────────────────
   "svelte.enable-ts-plugin": true,
   "svelte.plugin.typescript.enable": true,
   "svelte.plugin.typescript.diagnostics.enable": true,
@@ -204,6 +269,18 @@
   },
   "svelte.plugin.svelte.format.enable": true,
   "svelte.plugin.svelte.completions.enable": true,
+  "svelte.plugin.svelte.diagnostics.fileOverrides": {
+    "**/Legacy*.svelte": { "enable": false }
+  },
+  "svelte.plugin.svelte.diagnostics.exclude": [
+    "**/LegacyHomePage.svelte",
+    "**/Legacy*.svelte",
+    "**/*Legacy*.svelte"
+  ],
+
+  // ──────────────────────────────────────────────────────────────
+  // 11) TypeScript & version-aware code gen
+  // ──────────────────────────────────────────────────────────────
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.suggest.autoImports": true,
   "typescript.preferences.includePackageJsonAutoImports": "auto",
@@ -211,71 +288,37 @@
   "typescript.validate.enable": true,
   "typescript.reportStyleChecksAsWarnings": true,
   "typescript.preferences.noSemantic": false,
-  "github.copilot.chat.experimental.codeGeneration.fileFiltering": {
-    "enabled": true,
-    "excludePatterns": [
-      "**/components/Legacy/**",
-      "**/*Legacy*",
-      "**/LegacyPackage*.json"
-    ]
-  },
+  "typescript.preferences.project": "frontend/tsconfig.modern-mode.json",
+  "typescript.suggest.completeFunctionCalls": true,
+
+  // ──────────────────────────────────────────────────────────────
+  // 12) Security & trust
+  // ──────────────────────────────────────────────────────────────
+  "security.workspace.trust.untrustedFiles": "open",
   "security.workspace.trust.banner": "never",
   "security.workspace.trust.startupPrompt": "never",
   "security.workspace.trust.emptyWindow": false,
-  "github.copilot.chat.codeGeneration.instructions": [
-    "Follow the AI_FORMATTING_GUIDELINES.md in the docs/ directory",
-    "Understand the version-aware architecture with dual Svelte 4/5 support",
-    "Use appropriate syntax for target Svelte version (check filename for Svelte4 vs Svelte5)",
-    "Never edit backup files (*Backup.json)",
-    "Reference AI_ASSISTANT_CONTEXT_GUIDE.md for project understanding",
-    "Use PowerShell command format by default for Windows commands",
-    "Prefer Write-Host with color coding for output in PowerShell scripts",
-    "Use proper PowerShell parameter syntax with hyphen prefixes",
-    "Include error handling with try-catch blocks in PowerShell commands",
-    "RESPECT CURRENT MODE: When version.ini shows version=5, focus on Svelte 5 development and avoid suggesting switchTo4",
-    "When working in Modern (Svelte 5) mode, suggest testing and development using current version only",
-    "Only suggest version switching when explicitly requested by the user"
-  ],
-  "eslint.useFlatConfig": true,
-  "eslint.workingDirectories": [
-    "frontend"
-  ],
-  "eslint.options": {
-    "overrideConfig": {
-      "overrides": [
-        {
-          "files": [
-            "**/Legacy*"
-          ],
-          "rules": {
-            "@typescript-eslint/no-unused-vars": "off",
-            "svelte/valid-compile": "off",
-            "svelte/no-reactive-reassign": "off",
-            "no-undef": "off"
-          }
-        }
-      ]
-    }
-  },
-  "svelte.plugin.svelte.diagnostics.fileOverrides": {
-    "**/Legacy*.svelte": {
-      "enable": false
-    },
-  },
-  "problems.suppressWhenNoErrors": false,
-  "svelte.plugin.svelte.diagnostics.exclude": [
-    "**/LegacyHomePage.svelte",
-    "**/Legacy*.svelte",
-    "**/*Legacy*.svelte"
-  ],
-  "typescript.preferences.project": "frontend/tsconfig.modern-mode.json",
-  "typescript.suggest.completeFunctionCalls": true,
+
+  // ──────────────────────────────────────────────────────────────
+  // 13) Debug & workbench
+  // ──────────────────────────────────────────────────────────────
+  "debug.terminal.clearBeforeReusing": true,
+  "debug.console.fontSize": 12,
+  "debug.console.wordWrap": false,
+  "debug.internalConsoleOptions": "neverOpen",
+  "debug.allowBreakpointsEverywhere": false,
+  "debug.showBreakpointsInOverviewRuler": true,
+  "workbench.action.focusActiveEditorGroup": true,
+  "editor.accessibilitySupport": "off",
+
+  // ──────────────────────────────────────────────────────────────
+  // 14) Go tooling
+  // ──────────────────────────────────────────────────────────────
   "go.buildTags": "tools",
   "go.toolsManagement.checkForUpdates": "local",
+  "go.toolsManagement.autoUpdate": true,
   "go.useLanguageServer": true,
-  "go.buildFlags": [
-    "-tags=tools"
-  ],
+  "go.buildFlags": ["-tags=tools"],
   "go.testTags": "tools",
   "go.lintTool": "golangci-lint",
   "go.formatTool": "gofmt",
@@ -291,5 +334,13 @@
     "testFile": true,
     "testPackage": true,
     "generateTestForFunction": true
-  }
+  },
+
+  // ──────────────────────────────────────────────────────────────
+  // 15) NPM/PNPM & CMake & Python
+  // ──────────────────────────────────────────────────────────────
+  "npm.packageManager": "pnpm",
+  "npm.scriptRunner": "pnpm",
+  "cmake.allowCommentsInPresetsFile": true,
+  "python.analysis.addHoverSummaries": true
 }
