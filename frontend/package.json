@@ -75,7 +75,6 @@
     "svelte-canvas": "^2.0.2",
     "svelte-check": "^4.2.1",
     "svelte-eslint-parser": "^1.2.0",
-    "svelte-preprocess": "^6.0.3",
     "svelte-tiny-virtual-list": "^2.0.6",
     "tailwind-csstree": "^0.1.1",
     "tailwindcss": "^4.1.8",

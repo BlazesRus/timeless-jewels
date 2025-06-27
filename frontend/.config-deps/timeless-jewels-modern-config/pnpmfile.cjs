@@ -49,8 +49,12 @@ function readPackage(pkg) {
         pkg.devDependencies["svelte-tiny-virtual-list"] = "^2.0.6";
       }
       
-      // Remove packages that are no longer needed in modern mode
+      // Remove packages that are no longer needed in modern mode or keep svelte-preprocess for Modern mode for preprocessing
       delete pkg.devDependencies["svelte-preprocess"]; // Not needed with SvelteKit 2.0+
+			
+      //if (pkg.devDependencies["svelte-preprocess"]) {
+      //  pkg.devDependencies["svelte-preprocess"] = "^6.0.3";
+      //}
       
       // ESLint ecosystem for Modern
       if (pkg.devDependencies["@eslint/js"]) {
@@ -156,10 +160,6 @@ function readPackage(pkg) {
         pkg.devDependencies["tailwind-csstree"] = "^0.1.1";
       }
       
-      // Keep svelte-preprocess for Modern mode (still useful for preprocessing)
-      if (pkg.devDependencies["svelte-preprocess"]) {
-        pkg.devDependencies["svelte-preprocess"] = "^6.0.3";
-      }
     }
     
     // Update scripts to use Modern configs
