@@ -4,7 +4,8 @@
   import { goto } from '$app/navigation';
   import { base, assets } from '$app/paths';
   //Modern version of page
-  import { page } from '$app/state';  import ModernSelect from '$lib/components/ModernSelect.svelte';
+  import { page } from '$app/state';
+  import ModernSelect from '$lib/components/ModernSelect.svelte';
   // Use modern TypeScript definitions for better type safety with Svelte 5 runes
   import { calculatorState, dataState, useCalculator, useData, initializeCrystalline } from '$lib/types/ModernTypes.js';
   import type * as ModernTypes from '$lib/types/index.modern.d.ts';

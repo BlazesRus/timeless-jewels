@@ -30,16 +30,19 @@ const config = {
   },
   // Vite 7 enhanced build configuration
   build: {
-    target: isSvelte5 ? 'es2022' : 'es2020',
-    rollupOptions: {
-      external: isSvelte5 ? [
-        // Exclude Legacy files when building in modern mode (Svelte 5)
-        /.*Legacy.*\.svelte$/
-      ] : [
-        // Exclude Modern files when building in legacy mode (Svelte 4)
-        /.*Modern.*\.svelte$/,
-        /.*Svelte5.*\.svelte$/
-      ],
+    target: isSvelte5 ? 'es2022' : 'es2020',      rollupOptions: {
+        // Externalize legacy files and their dependencies when building in Svelte 5 mode
+        // This prevents them from being processed during build while still allowing dynamic imports
+        external: isSvelte5 ? [
+          // Legacy component dependencies that shouldn't be bundled in Svelte 5 builds
+          'svelte-select',
+          // Legacy files (but allow dynamic imports to handle missing files gracefully)
+          /.*Legacy.*\.svelte$/
+        ] : [
+          // Modern files shouldn't be bundled in Svelte 4 builds  
+          /.*Modern.*\.svelte$/,
+          /.*Svelte5.*\.svelte$/
+        ],
       output: {
         // Vite 7 optimized chunk splitting (remove comlink to avoid external module error)
         manualChunks: isSvelte5 ? {
