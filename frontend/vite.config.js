@@ -1,5 +1,6 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { VERSION as SVELTE_VER } from 'svelte/compiler';
+import tailwindcss from '@tailwindcss/vite';
 
 const majorVer = +SVELTE_VER.split('.')[0];
 const isSvelte5 = majorVer >= 5;
@@ -10,6 +11,7 @@ console.log(`Building with Svelte ${majorVer} (${isSvelte5 ? 'Modern' : 'Legacy'
 const config = {
   plugins: [
     sveltekit(),
+    tailwindcss(), // Add Tailwind CSS Vite plugin for v4 support
     // Add Vite 7 optimizations for modern mode
     ...(isSvelte5 ? [
       // Top-level await support for modern development

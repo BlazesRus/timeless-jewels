@@ -681,7 +681,7 @@
 </SkillTree>
 
 <style lang="postcss">
-  @reference "../../styles/tailwind.css";
+  @reference "../../app.css";
   
   .selection-button {
     @apply opacity-50 p-2 px-4 flex-grow border border-gray-300;

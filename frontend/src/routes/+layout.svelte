@@ -1,6 +1,6 @@
 <!-- Version-aware Layout - Dynamically loads appropriate layout based on Svelte version -->
 <script lang="ts">
-  import '../styles/tailwind.css';
+  import '../app.css';
   import { onMount } from 'svelte';
   import { detectSvelteVersion, isSvelte5OrHigher } from '$lib/utils/version-detection';
 

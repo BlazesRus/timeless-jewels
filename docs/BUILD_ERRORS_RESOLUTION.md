@@ -1,11 +1,29 @@
 # Build Errors Resolution
 
 ## Summary
-Resolved some critical runtime errors that were preventing the Modern (Svelte 5) mode from loading properly.
+Resolved critical runtime errors and CSS warnings that were preventing the Modern (Svelte 5) mode from loading properly.
 
 ## Main Issues Fixed
 
-### 1. Component Import Syntax Error
+### 1. Tailwind CSS v4 Integration ✅ **NEW**
+**Error**: "Unknown at rule @theme", "Unknown at rule @apply", "Cannot apply unknown utility class 'p-2'"
+
+**Root Cause**: Tailwind CSS v4 was not properly integrated with the Vite build process, and CSS linting was flagging Tailwind's custom at-rules as unknown.
+
+**Solution**: 
+- **Added Tailwind Vite plugin**: Installed and configured `@tailwindcss/vite` for proper v4 support
+- **Updated CSS imports**: Replaced legacy `@reference "./styles/tailwind.css"` with `@import "tailwindcss"`
+- **Enhanced spacing scale**: Added complete spacing utilities to `@theme` configuration
+- **Configured VS Code**: Added settings to recognize Tailwind CSS syntax and suppress linting warnings
+
+**Files Changed**:
+- `frontend/vite.config.js` - Added Tailwind Vite plugin
+- `frontend/src/app.css` - Updated import and enhanced spacing scale  
+- `frontend/src/routes/+layout.svelte` - Updated CSS import path
+- `frontend/src/routes/tree/ModernPage.svelte` - Updated @reference path
+- `frontend/.vscode/settings.json` - Added CSS linting configuration
+
+### 2. Component Import Syntax Error
 **Error**: Malformed import statement in ModernHomePage.svelte causing runtime failure
 
 **Solution**: Fixed line 7 where two import statements were accidentally combined on a single line:
@@ -20,7 +38,7 @@ import { page } from '$app/state';
 import ModernSelect from '$lib/components/ModernSelect.svelte';
 ```
 
-### 2. Vite External Module Configuration Error
+### 3. Vite External Module Configuration Error
 **Error**: "Modern home page component not available in this build" - Components marked as external couldn't be dynamically imported
 
 **Root Cause**: The Vite configuration was marking Modern components as external when building in Svelte 5 mode, preventing them from being bundled and making them unavailable for dynamic imports.
@@ -53,12 +71,12 @@ rollupOptions: {
   // ],
 ```
 
-### 3. Previous Vite External Module Error (Already Fixed)
+### 4. Previous Vite External Module Error (Already Fixed)
 **Error**: `"comlink" cannot be included in manualChunks because it is resolved as an external module`
 
 **Solution**: Removed `comlink` from `optimizeDeps.include` in `vite.config.js`.
 
-### 4. Previous Tailwind v4 Utility Class Error (Already Fixed)  
+### 5. Previous Tailwind v4 Utility Class Error (Already Fixed)  
 **Error**: `Cannot apply unknown utility class 'p-2'`
 
 **Solution**: Enhanced Tailwind configuration for Tailwind v4 compatibility.
@@ -71,18 +89,6 @@ rollupOptions: {
   },
   // ...
 };
-```
-
-### 3. CSS Import Path Fix
-**Issue**: `@reference "styles/tailwind.css"` was using a module path instead of relative path
-
-**Solution**: Changed to relative path import in `frontend/src/app.css`:
-```css
-// Before
-@reference "styles/tailwind.css";
-
-// After
-@reference "./styles/tailwind.css";
 ```
 
 ## Build Results
