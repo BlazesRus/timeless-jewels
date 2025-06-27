@@ -52,6 +52,8 @@
       
       return () => window.removeEventListener('resize', updateViewport);
     }
+    // Return a no-op cleanup function for server-side rendering
+    return () => {};
   });
 
   // Derived responsive classes using $derived

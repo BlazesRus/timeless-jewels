@@ -24,9 +24,9 @@ const config = {
   ],
   define: {
     // Inject the build-time Svelte version into the client code
-    __SVELTE_BUILD_VERSION__: majorVer,
-    // Node.js 22 feature detection
-    __NODE_VERSION__: process.versions.node
+    __SVELTE_BUILD_VERSION__: JSON.stringify(majorVer),
+    // Node.js version feature detection (properly quoted as string literal)
+    __NODE_VERSION__: JSON.stringify(process.versions.node || '22.0.0')
   },
   // Vite 7 enhanced build configuration
   build: {
@@ -41,11 +41,10 @@ const config = {
         /.*Svelte5.*\.svelte$/
       ],
       output: {
-        // Vite 7 optimized chunk splitting
+        // Vite 7 optimized chunk splitting (remove comlink to avoid external module error)
         manualChunks: isSvelte5 ? {
           svelte: ['svelte'],
-          'svelte-kit': ['@sveltejs/kit'],
-          wasm: ['comlink']
+          'svelte-kit': ['@sveltejs/kit']
         } : undefined
       }
     },
@@ -74,7 +73,6 @@ const config = {
   },
   // Enhanced dependency optimization for Vite 7
   optimizeDeps: {
-    include: ['comlink'],
     exclude: ['@sveltejs/kit'],
     // Vite 7 dependency pre-bundling optimizations
     ...(isSvelte5 && {

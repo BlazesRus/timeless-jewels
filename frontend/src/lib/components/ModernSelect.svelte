@@ -79,9 +79,6 @@ Full-featured replacement for svelte-select using native Svelte 5 runes and adva
         highlightedIndex = Math.max(highlightedIndex - 1, -1);
         scrollToHighlighted();
         break;
-        e.preventDefault();
-        highlightedIndex = Math.max(highlightedIndex - 1, -1);
-        break;
       case 'Enter':
         e.preventDefault();
         if (highlightedIndex >= 0 && filteredItems[highlightedIndex]) {
@@ -92,6 +89,23 @@ Full-featured replacement for svelte-select using native Svelte 5 runes and adva
         e.preventDefault();
         close();
         break;
+    }
+  };
+
+  // Open the dropdown
+  const open = async () => {
+    if (disabled || loading) return;
+    isOpen = true;
+    await tick();
+    searchInputRef?.focus();
+  };
+
+  // Scroll highlighted item into view
+  const scrollToHighlighted = () => {
+    if (!dropdownRef || highlightedIndex < 0) return;
+    const highlighted = dropdownRef.querySelector(`[data-index="${highlightedIndex}"]`);
+    if (highlighted) {
+      highlighted.scrollIntoView({ block: 'nearest' });
     }
   };
   const handleSelect = (item: SelectItem) => {

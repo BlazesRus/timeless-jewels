@@ -38,7 +38,7 @@ Demonstrates Svelte 5 runes, Vite 7 features, and Node.js 22 patterns
   const performance = createPerformanceObserver();
   const theme = createThemeManager();
   const storage = createReactiveStorage('component-preferences', {
-    selectedItems: [],
+    selectedItems: [] as string[],
     theme: 'auto' as 'light' | 'dark' | 'auto'
   });
 

@@ -1,4 +1,4 @@
-@reference "styles/tailwind.css";
+@reference "./styles/tailwind.css";
 
 /* Tailwind CSS v4 CSS-based configuration */
 @theme {
@@ -22,6 +22,30 @@
   --color-app-light: #ffffff;
   --color-app-muted: #cccccc;
   --color-app-subtle: #999999;
+
+  /* Spacing scale for Tailwind v4 */
+  --spacing-0: 0px;
+  --spacing-0_5: 0.125rem;
+  --spacing-1: 0.25rem;
+  --spacing-1_5: 0.375rem;
+  --spacing-2: 0.5rem;
+  --spacing-2_5: 0.625rem;
+  --spacing-3: 0.75rem;
+  --spacing-3_5: 0.875rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-8: 2rem;
+  --spacing-10: 2.5rem;
+  --spacing-12: 3rem;
+  --spacing-16: 4rem;
+  --spacing-20: 5rem;
+  --spacing-24: 6rem;
+  --spacing-32: 8rem;
+  --spacing-40: 10rem;
+  --spacing-48: 12rem;
+  --spacing-56: 14rem;
+  --spacing-64: 16rem;
 }
 
 html,

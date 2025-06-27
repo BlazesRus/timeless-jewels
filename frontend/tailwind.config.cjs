@@ -20,7 +20,21 @@ module.exports = {
         // re-introduce the full neutral palette (v3+v4)
         neutral: colors.neutral,
       },
+      // Ensure spacing values are properly extended
+      spacing: {
+        '0.5': '0.125rem',
+        '1.5': '0.375rem',
+        '2.5': '0.625rem',
+        '3.5': '0.875rem',
+      }
     },
+  },
+  // Ensure core utilities are always available
+  corePlugins: {
+    // Enable all core utilities including padding
+    padding: true,
+    margin: true,
+    spacing: true,
   },
   plugins: [],
 };

@@ -224,3 +224,5 @@ frontend/src/lib/types/index.modern.d.ts.old
 frontend/test-tailwind.html
 
 frontend/.config-deps/timeless-jewels-modern-config/pnpmfile - Copy.cjs
+
+docs/BUILD_ERRORS_FIXED_FINAL.md
