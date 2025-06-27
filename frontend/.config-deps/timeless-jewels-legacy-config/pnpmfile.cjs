@@ -1,4 +1,5 @@
 // Legacy (Svelte 4) configuration hooks for Timeless Jewels Generator
+// Uses Tailwind CSS v4 (same as modern mode) for consistency
 function readPackage(pkg) {
   // Apply Legacy (Svelte 4) dependency versions
   if (pkg.name === "frontend") {
@@ -68,15 +69,23 @@ function readPackage(pkg) {
         pkg.devDependencies["typescript"] = "^5.8.3";
       }
       
-      // Tailwind ecosystem - Legacy versions
+      // Tailwind ecosystem - Updated to v4 for consistency with modern mode
       if (pkg.devDependencies["@tailwindcss/postcss"]) {
         pkg.devDependencies["@tailwindcss/postcss"] = "^4.1.8";
       }
+      if (pkg.devDependencies["@tailwindcss/vite"]) {
+        pkg.devDependencies["@tailwindcss/vite"] = "^4.1.11";
+      }
       if (pkg.devDependencies["tailwindcss"]) {
-        pkg.devDependencies["tailwindcss"] = "^3.3.3";
+        pkg.devDependencies["tailwindcss"] = "^4.1.8";
       }
       if (pkg.devDependencies["autoprefixer"]) {
         pkg.devDependencies["autoprefixer"] = "^10.4.16";
+      }
+      
+      // Stylelint with Tailwind support
+      if (pkg.devDependencies["stylelint-config-tailwindcss"]) {
+        pkg.devDependencies["stylelint-config-tailwindcss"] = "^1.0.0";
       }
       
       // PostCSS ecosystem
