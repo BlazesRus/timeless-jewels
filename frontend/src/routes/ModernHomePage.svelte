@@ -3,18 +3,17 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { base, assets } from '$app/paths';
-  //Modern version of page
   import { page } from '$app/state';
-  import ModernSelect from '$lib/components/ModernSelect.svelte';
-  // Use modern TypeScript definitions for better type safety with Svelte 5 runes
-  import { calculatorState, dataState, useCalculator, useData, initializeCrystalline } from '$lib/types/ModernTypes.js';
-  import type * as ModernTypes from '$lib/types/index.modern.d.ts';
-  // Dynamic WASM loading using modern rune-based approach
+  // Temporarily comment out potentially problematic imports
+  // import ModernSelect from '$lib/components/ModernSelect.svelte';
+  import { calculatorState, dataState, useCalculator, useData, initializeCrystalline } from '$lib/types/ModernTypes.svelte';
 
   // State variables with Svelte 5 runes
   let wasmStatus = $state<string>('Initializing...');
   let lastError = $state<string>('');
-  let isWasmLoading = $state(true);  // Use modern rune-based reactive utilities
+  let isWasmLoading = $state(true);
+  
+  // Use modern rune-based reactive utilities
   const calculatorUtils = useCalculator();
   const dataUtils = useData();
   
@@ -298,19 +297,34 @@
           <div class="bg-gray-800 p-6 rounded-lg space-y-4">
             <div>
               <h3 class="mb-2 text-lg font-semibold">Timeless Jewel</h3>
-              <ModernSelect items={jewels} bind:value={selectedJewel} onchange={updateUrl} />
+              <!-- <ModernSelect items={jewels} bind:value={selectedJewel} onchange={updateUrl} /> -->
+              <select bind:value={selectedJewel}>
+                {#each jewels as jewel}
+                  <option value={jewel.value}>{jewel.label}</option>
+                {/each}
+              </select>
             </div>
 
             {#if selectedJewel && availableConquerors.length > 0}
               <div>
                 <h3 class="mb-2 text-lg font-semibold">Conqueror</h3>
-                <ModernSelect items={availableConquerors} bind:value={selectedConqueror} onchange={updateUrl} />
+                <!-- <ModernSelect items={availableConquerors} bind:value={selectedConqueror} onchange={updateUrl} /> -->
+                <select bind:value={selectedConqueror}>
+                  {#each availableConquerors as conqueror}
+                    <option value={conqueror.value}>{conqueror.label}</option>
+                  {/each}
+                </select>
               </div>
 
               {#if selectedConqueror}
                 <div>
                   <h3 class="mb-2 text-lg font-semibold">Passive Skill</h3>
-                  <ModernSelect items={passiveSkills} bind:value={selectedPassiveSkill} onchange={updateUrl} />
+                  <!-- <ModernSelect items={passiveSkills} bind:value={selectedPassiveSkill} onchange={updateUrl} /> -->
+                  <select bind:value={selectedPassiveSkill}>
+                    {#each passiveSkills as skill}
+                      <option value={skill.value}>{skill.label}</option>
+                    {/each}
+                  </select>
                 </div>
 
                 {#if selectedPassiveSkill}

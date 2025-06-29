@@ -11,15 +11,24 @@
     try {
       const svelteVersion = detectSvelteVersion();
       console.log(`Detected Svelte version: ${svelteVersion.full}`);
+      console.log(`__SVELTE_BUILD_VERSION__ constant:`, (globalThis as any).__SVELTE_BUILD_VERSION__);
+      console.log(`isSvelte5OrHigher():`, isSvelte5OrHigher());
+      
       if (isSvelte5OrHigher()) {
         console.log('Loading Modern (Svelte 5) home page implementation...');
         try {
+          console.log('🔄 Attempting to import ./ModernHomePage.svelte...');
           const module = await import('./ModernHomePage.svelte');
+          console.log('📦 Module loaded:', module);
           HomePageComponent = module.default;
+          console.log('✅ Modern component loaded successfully:', HomePageComponent);
         } catch (modernErr) {
+          console.error('❌ Failed to load modern component - Full error details:', modernErr);
+          console.error('❌ Error message:', modernErr.message);
+          console.error('❌ Error stack:', modernErr.stack);
           console.warn('Modern component not available, using fallback');
           // Fallback to a basic component or error page
-          error = 'Modern home page component not available in this build';
+          error = `Modern home page component failed to load: ${modernErr.message}`;
         }
       } else {
         console.log('Loading Legacy (Svelte 4) home page implementation...');

@@ -19,17 +19,25 @@ const wrap = (fn) => {
 export const calculator = writable(null);
 export const data = writable(null);
 
-// Svelte 5 rune-based reactive state
-let calculatorRune = $state(/** @type {any} */ (null));
-let dataRune = $state(/** @type {any} */ (null));
+// Modern Svelte 5 runes for reactive state
+let calculatorRune = $state(null);
+let dataRune = $state(null);
 
-// Modern rune-based state exports for Svelte 5
+// Store-based state exports for cross-component compatibility
 export const calculatorState = {
-  get current() { return calculatorRune; }
+  get current() { return calculatorRune; },
+  set current(value) { 
+    calculatorRune = value;
+    calculator.set(value);
+  }
 };
 
 export const dataState = {
-  get current() { return dataRune; }
+  get current() { return dataRune; },
+  set current(value) { 
+    dataRune = value; 
+    data.set(value);
+  }
 };
 
 // Rune-based reactive utilities
@@ -84,12 +92,12 @@ export const initializeCrystalline = () => {
   }
   
   console.log('Creating wrapped functions...');
-  const calculatorValue = {
+  const calculatorFunctions = {
     Calculate: wrap(timelessExports.Calculate),
     ReverseSearch: wrap(timelessExports.ReverseSearch),
   };
   
-  const dataValue = {
+  const dataFunctions = {
     GetAlternatePassiveAdditionByIndex: wrap(timelessExports.GetAlternatePassiveAdditionByIndex),
     GetAlternatePassiveSkillByIndex: wrap(timelessExports.GetAlternatePassiveSkillByIndex),
     GetPassiveSkillByIndex: wrap(timelessExports.GetPassiveSkillByIndex),
@@ -106,13 +114,16 @@ export const initializeCrystalline = () => {
     TreeToPassive: dataExports.TreeToPassive,
   };
   
-  console.log('Calculator functions available:', Object.keys(calculatorValue).filter(k => typeof calculatorValue[k] === 'function'));
-  console.log('Data properties available:', Object.keys(dataValue).filter(k => dataValue[k] !== undefined));
-    // Update rune state (Svelte 5)
-  calculatorRune = calculatorValue;
-  dataRune = dataValue;
+  console.log('Calculator functions available:', Object.keys(calculatorFunctions).filter(k => typeof calculatorFunctions[k] === 'function'));
+  console.log('Data properties available:', Object.keys(dataFunctions).filter(k => dataFunctions[k] !== undefined));
+  
+  // Update rune state (Svelte 5)
+  calculatorRune = calculatorFunctions;
+  dataRune = dataFunctions;
   
   // Update the stores for backward compatibility
-  calculator.set(calculatorValue);
-  data.set(dataValue);    console.log('=== WASM calculator and data initialized with runes and stores (Modern/Svelte 5) ===');
+  calculator.set(calculatorFunctions);
+  data.set(dataFunctions);
+  
+  console.log('=== WASM calculator and data initialized with runes and stores (Modern/Svelte 5) ===');
 };
