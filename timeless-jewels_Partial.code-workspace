@@ -1,8 +1,11 @@
 {
 	"folders": [
-		{
-			"path": "."
-		}
+    {
+      "path": "."
+    },
+    {
+      "path": "../../../../Users/Blaze/Documents/My Games/Path of Exile"
+    }
   ],
   "settings": {
     "terminal.integrated.defaultProfile.windows": "PowerShell",

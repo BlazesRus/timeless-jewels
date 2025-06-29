@@ -30,9 +30,9 @@ const config = {
     // Node.js version feature detection (properly quoted as string literal)
     __NODE_VERSION__: JSON.stringify(process.versions.node || '22.0.0')
   },
-  // Vite 7 enhanced build configuration
+  // Vite 7 enhanced build configuration with ES2023 support
   build: {
-    target: isSvelte5 ? 'es2022' : 'es2020',
+    target: isSvelte5 ? 'es2023' : 'es2020',
     rollupOptions: {
         // Externalize legacy files and their dependencies when building in Svelte 5 mode
         // This prevents them from being processed during build while still allowing dynamic imports
@@ -47,7 +47,7 @@ const config = {
           /.*Svelte5.*\.svelte$/
         ],
       output: {
-        // Vite 7 optimized chunk splitting (remove comlink to avoid external module error)
+        // Vite 7 optimized chunk splitting (removed comlink to avoid external module conflict)
         manualChunks: isSvelte5 ? {
           svelte: ['svelte'],
           'svelte-kit': ['@sveltejs/kit']
@@ -80,10 +80,10 @@ const config = {
   // Enhanced dependency optimization for Vite 7
   optimizeDeps: {
     exclude: ['@sveltejs/kit'],
-    // Vite 7 dependency pre-bundling optimizations
+    // Vite 7 dependency pre-bundling optimizations with ES2023
     ...(isSvelte5 && {
       esbuildOptions: {
-        target: 'es2022',
+        target: 'es2023',
         supported: {
           'top-level-await': true
         }

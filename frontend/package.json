@@ -32,6 +32,7 @@
     "test:modern:ui": "vitest --ui",
     "test:node22": "node --test src/**/*.test.js",
     "test:coverage": "vitest run --coverage",
+    "test:modern:coverage": "vitest run --coverage --config vitest.config.modern.ts",
     "mode:status": "node -e \"console.log('Current mode:', process.env.SVELTE_MODE || 'modern (default)')\"",
     "mode:legacy": "cross-env SVELTE_MODE=legacy pnpm install",
     "mode:modern": "cross-env SVELTE_MODE=modern pnpm install",
@@ -55,6 +56,8 @@
     "@types/node": "^24.0.4",
     "@typescript-eslint/eslint-plugin": "^8.33.1",
     "@typescript-eslint/parser": "^8.33.1",
+    "@vitest/coverage-v8": "^2.1.8",
+    "@vitest/ui": "^2.1.8",
     "autoprefixer": "^10.4.16",
     "comlink": "^4.4.2",
     "cross-env": "^7.0.3",
@@ -84,7 +87,9 @@
     "tslib": "^2.6.3",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.33.1",
-    "vite": "^7.0.0"
+    "vite": "^7.0.0",
+    "vite-plugin-top-level-await": "^1.5.0",
+    "vitest": "^2.1.8"
   },
   "engines": {
     "node": ">=22.0.0",

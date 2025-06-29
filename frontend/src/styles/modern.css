@@ -1,0 +1,82 @@
+/* Modern CSS features for Svelte 5 + Tailwind CSS v4 */
+/* Note: @tailwind directives should be added by build tools, not in source files */
+
+/* Modern CSS Custom Properties with light-dark() support */
+:root {
+  /* Modern adaptive colors using light-dark() */
+  --color-primary: light-dark(#1e40af, #3b82f6);
+  --color-secondary: light-dark(#64748b, #94a3b8);
+  --color-background: light-dark(#ffffff, #0f172a);
+  --color-surface: light-dark(#f8fafc, #1e293b);
+  --color-border: light-dark(#e2e8f0, #334155);
+  
+  /* Modern color mixing for gradients and states */
+  --color-accent: color-mix(in srgb, var(--color-primary) 80%, var(--color-secondary) 20%);
+  --color-hover: color-mix(in srgb, var(--color-primary) 90%, transparent 10%);
+  --color-focus: color-mix(in srgb, var(--color-primary) 95%, white 5%);
+}
+
+/* Modern container queries for responsive components */
+@container (min-width: 768px) {
+  .container-responsive {
+    --columns: 2;
+  }
+}
+
+@container (min-width: 1024px) {
+  .container-responsive {
+    --columns: 3;
+  }
+}
+
+/* Enhanced focus and interaction states using modern CSS */
+.modern-button {
+  background: var(--color-primary);
+  border: 1px solid var(--color-border);
+  color: var(--color-background);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover {
+    background: var(--color-hover);
+    transform: translateY(-1px);
+  }
+  
+  &:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/* Modern grid layouts with container queries */
+.skill-tree-grid {
+  container-type: inline-size;
+  display: grid;
+  grid-template-columns: repeat(var(--columns, 1), 1fr);
+  gap: 1rem;
+}
+
+/* Modern performance optimizations */
+.gpu-accelerated {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Modern accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Enhanced high contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --color-border: color-mix(in srgb, currentColor 50%, transparent 50%);
+  }
+}
