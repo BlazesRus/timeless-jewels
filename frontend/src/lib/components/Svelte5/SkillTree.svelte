@@ -10,7 +10,7 @@
   import type { RenderFunc, Node } from '../../skill_tree_types_modern';
   import { baseJewelRadius, calculateNodePos, distance, drawnGroups, drawnNodes, formatStats, inverseSprites, inverseSpritesActive, inverseTranslations, orbitAngleAt, skillTree, toCanvasCoords } from '../../skill_tree_modern';
   import type { Point } from '../../skill_tree_modern';
-  import { calculator, data } from '../../types/ModernTypes';
+  import { calculator, data } from '../../types/ModernTypes.svelte';
   // Modern state management using Svelte 5 runes
   import { get } from 'svelte/store';
   let scaling = $state(10);

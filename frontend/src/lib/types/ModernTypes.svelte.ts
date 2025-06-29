@@ -1,6 +1,7 @@
 /* eslint-disable */
 // @ts-nocheck
 import { writable } from 'svelte/store';
+import { getWasmState, getCalculator, getWasmData } from '$lib/wasm/modern-wasm-loader.svelte';
 
 // Wrapper function to handle Go WASM errors
 const wrap = (fn) => {
@@ -19,38 +20,56 @@ const wrap = (fn) => {
 export const calculator = writable(null);
 export const data = writable(null);
 
-// Modern Svelte 5 runes for reactive state
+// Get the reactive WASM state from the modern loader
+const wasmState = getWasmState();
+
+// Reactive state using runes for Svelte 5
 let calculatorRune = $state(null);
 let dataRune = $state(null);
 
-// Store-based state exports for cross-component compatibility
+// Modern rune-based state exports for Svelte 5
 export const calculatorState = {
-  get current() { return calculatorRune; },
-  set current(value) { 
+  get current() {
+    return wasmState.calculator;
+  },
+  set current(value) {
+    wasmState.calculator = value;
     calculatorRune = value;
     calculator.set(value);
   }
 };
 
 export const dataState = {
-  get current() { return dataRune; },
-  set current(value) { 
-    dataRune = value; 
+  get current() {
+    return wasmState.data;
+  },
+  set current(value) {
+    wasmState.data = value;
+    dataRune = value;
     data.set(value);
   }
 };
 
-// Rune-based reactive utilities
+// Rune-based reactive utilities that use the modern WASM loader
 export function useCalculator() {
-  return { get current() { return calculatorRune; } };
+  return {
+    get current() {
+      return calculatorRune;
+    }
+  };
 }
 
 export function useData() {
-  return { get current() { return dataRune; } };
+  return {
+    get current() {
+      return dataRune;
+    }
+  };
 }
 
+// Modern initialization function with improved logging and error checking
 export const initializeCrystalline = () => {
-  console.log('=== Starting initializeCrystalline ===');
+  console.log('=== Starting Modern initializeCrystalline (Svelte 5) ===');
   
   // Access WASM exports through globalThis
   const wasmGlobal = /** @type {any} */ (globalThis);
@@ -60,27 +79,36 @@ export const initializeCrystalline = () => {
   console.log('globalThis.go:', typeof wasmGlobal['go']);
   console.log('globalThis.go["timeless-jewels"]:', typeof wasmGlobal['go']?.['timeless-jewels']);
   
-  if(!wasmGlobal['go']['timeless-jewels'])
-    console.error('timeless-jewels data not found');
+  if (!wasmGlobal['go'] || !wasmGlobal['go']['timeless-jewels']) {
+    console.error('Go exports not found in globalThis');
+    console.log('Available globalThis keys:', Object.keys(wasmGlobal).slice(0, 20));
+    
+    // Check if WASM loader has the data ready
+    if (wasmState.isReady && wasmState.calculator && wasmState.data) {
+      console.log('✅ WASM already loaded via modern loader, syncing state...');
+      calculatorRune = wasmState.calculator;
+      dataRune = wasmState.data;
+      calculator.set(wasmState.calculator);
+      data.set(wasmState.data);
+      return;
+    }
+    
+    console.log('⏳ WASM not ready yet, state will sync automatically when loaded');
+    return;
+  }
+  
   const timelessExports = wasmGlobal['go']['timeless-jewels'];
   const dataExports = timelessExports.data;
 
   if (wasmGlobal['go']) {
     console.log('Go object keys:', Object.keys(wasmGlobal['go']));
-      const timelessExports = wasmGlobal['go']['timeless-jewels'];
-      console.log('Timeless jewels keys:', Object.keys(timelessExports));
-      console.log('Calculate function type:', typeof timelessExports.Calculate);
-      console.log('ReverseSearch function type:', typeof timelessExports.ReverseSearch);
-      console.log('data object type:', typeof timelessExports.data);
-      if (timelessExports.data) {
-        console.log('data keys:', Object.keys(timelessExports.data));
-      }
-  }
-  
-  if (!wasmGlobal['go'] || !wasmGlobal['go']['timeless-jewels']) {
-    console.error('Go exports not found in globalThis');
-    console.log('Available globalThis keys:', Object.keys(wasmGlobal).slice(0, 20));
-    return;
+    console.log('Timeless jewels keys:', Object.keys(timelessExports));
+    console.log('Calculate function type:', typeof timelessExports.Calculate);
+    console.log('ReverseSearch function type:', typeof timelessExports.ReverseSearch);
+    console.log('data object type:', typeof timelessExports.data);
+    if (timelessExports.data) {
+      console.log('data keys:', Object.keys(timelessExports.data));
+    }
   }
   
   if (!timelessExports.Calculate || !timelessExports.ReverseSearch || !dataExports) {
@@ -120,6 +148,10 @@ export const initializeCrystalline = () => {
   // Update rune state (Svelte 5)
   calculatorRune = calculatorFunctions;
   dataRune = dataFunctions;
+  
+  // Update the WASM state for consistency
+  wasmState.calculator = calculatorFunctions;
+  wasmState.data = dataFunctions;
   
   // Update the stores for backward compatibility
   calculator.set(calculatorFunctions);
