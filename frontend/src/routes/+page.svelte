@@ -22,13 +22,13 @@
           console.log('📦 Module loaded:', module);
           HomePageComponent = module.default;
           console.log('✅ Modern component loaded successfully:', HomePageComponent);
-        } catch (modernErr) {
+        } catch (modernErr: any) {
           console.error('❌ Failed to load modern component - Full error details:', modernErr);
-          console.error('❌ Error message:', modernErr.message);
-          console.error('❌ Error stack:', modernErr.stack);
+          console.error('❌ Error message:', modernErr?.message);
+          console.error('❌ Error stack:', modernErr?.stack);
           console.warn('Modern component not available, using fallback');
           // Fallback to a basic component or error page
-          error = `Modern home page component failed to load: ${modernErr.message}`;
+          error = `Modern home page component failed to load: ${modernErr?.message || 'Unknown modern page error'}`;
         }
       } else {
         console.log('Loading Legacy (Svelte 4) home page implementation...');
