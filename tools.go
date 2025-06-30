@@ -141,8 +141,8 @@ func generateTypes() {
 	// Update modern (Svelte 5) version of index.d.ts intelligently
 	updateModernTypeDefinitions(tsFile)
 
-	// Update modern version of ModernTypes.js if it exists
-	updateModernTypesJs(jsFile)
+	// Note: ModernTypes.js has been removed - we now use ModernTypes.svelte.ts with runes
+}
 }
 
 func updateModernTypeDefinitions(originalTs string) {
@@ -275,132 +275,8 @@ func getCurrentTimestamp() string {
 	return "2025-06-22T" + strings.Replace(strings.Replace("12:00:00Z", ":", "", -1), "-", "", -1)
 }
 
-func updateModernTypesJs(originalJs string) {
-	modernTypesPath := "./frontend/src/lib/types/ModernTypes.js"
-
-	// Check if ModernTypes.js exists
-	if _, err := os.Stat(modernTypesPath); os.IsNotExist(err) {
-		// Create it if it doesn't exist
-		createModernTypesJs(originalJs)
-		return
-	}
-
-	// Read existing file
-	existingContent, err := os.ReadFile(modernTypesPath)
-	if err != nil {
-		panic(err)
-	}
-
-	existingStr := string(existingContent)
-
-	// Update the comment section with new generated data
-	updatedContent := updateGeneratedSection(existingStr, originalJs)
-
-	// Write back the updated content
-	if err := os.WriteFile(modernTypesPath, []byte(updatedContent), 0777); err != nil {
-		panic(err)
-	}
-}
-
-func createModernTypesJs(originalJs string) string {
-	// Create a new ModernTypes.js with Svelte 5 rune support
-	modernTemplate := `/* eslint-disable */
-// @ts-nocheck
-import { writable } from 'svelte/store';
-
-// Wrapper function to handle Go WASM errors
-const wrap = (fn) => {
-  return (...args) => {
-    const result = fn.call(undefined, ...args);
-    if (globalThis.goInternalError) {
-      const error = new Error(globalThis.goInternalError);
-      globalThis.goInternalError = undefined;
-      throw error;
-    }
-    return result;
-  }
-};
-
-// Svelte 5 rune-based reactive state
-let calculatorRune = $state(null);
-let dataRune = $state(null);
-
-// Legacy store compatibility for backward compatibility
-export const calculator = writable(null);
-export const data = writable(null);
-
-// Modern rune-based state exports for Svelte 5
-export const calculatorState = {
-  get current() { return calculatorRune; }
-};
-
-export const dataState = {
-  get current() { return dataRune; }
-};
-
-// Rune-based reactive utilities
-export function useCalculator() {
-  return { get current() { return calculatorRune; } };
-}
-
-export function useData() {
-  return { get current() { return dataRune; } };
-}
-
-export const initializeCrystalline = () => {
-  // Access WASM exports through globalThis (generated from: ` + "`" + `go run tools.go types` + "`" + `)
-  const wasmGlobal = /** @type {any} */ (globalThis);
-  
-  if (!wasmGlobal['go'] || !wasmGlobal['go']['timeless-jewels']) {
-    console.error('WASM not loaded or timeless-jewels exports not found');
-    return;
-  }
-  
-  const calculatorValue = {
-    Calculate: wrap(wasmGlobal["go"]["timeless-jewels"]["calculator"]["Calculate"]),
-    ReverseSearch: wrap(wasmGlobal["go"]["timeless-jewels"]["calculator"]["ReverseSearch"]),
-  };
-  
-  const dataValue = {
-    GetAlternatePassiveAdditionByIndex: wrap(wasmGlobal["go"]["timeless-jewels"]["data"]["GetAlternatePassiveAdditionByIndex"]),
-    GetAlternatePassiveSkillByIndex: wrap(wasmGlobal["go"]["timeless-jewels"]["data"]["GetAlternatePassiveSkillByIndex"]),
-    GetPassiveSkillByIndex: wrap(wasmGlobal["go"]["timeless-jewels"]["data"]["GetPassiveSkillByIndex"]),
-    GetStatByIndex: wrap(wasmGlobal["go"]["timeless-jewels"]["data"]["GetStatByIndex"]),
-    PassiveSkillAuraStatTranslationsJSON: wasmGlobal["go"]["timeless-jewels"]["data"]["PassiveSkillAuraStatTranslationsJSON"],
-    PassiveSkillStatTranslationsJSON: wasmGlobal["go"]["timeless-jewels"]["data"]["PassiveSkillStatTranslationsJSON"],
-    PassiveSkills: wasmGlobal["go"]["timeless-jewels"]["data"]["PassiveSkills"],
-    PossibleStats: wasmGlobal["go"]["timeless-jewels"]["data"]["PossibleStats"],
-    SkillTree: wasmGlobal["go"]["timeless-jewels"]["data"]["SkillTree"],
-    StatTranslationsJSON: wasmGlobal["go"]["timeless-jewels"]["data"]["StatTranslationsJSON"],
-    TimelessJewelConquerors: wasmGlobal["go"]["timeless-jewels"]["data"]["TimelessJewelConquerors"],
-    TimelessJewelSeedRanges: wasmGlobal["go"]["timeless-jewels"]["data"]["TimelessJewelSeedRanges"],
-    TimelessJewels: wasmGlobal["go"]["timeless-jewels"]["data"]["TimelessJewels"],
-    TreeToPassive: wasmGlobal["go"]["timeless-jewels"]["data"]["TreeToPassive"],
-  };
-  
-  // Update rune state (Svelte 5)
-  calculatorRune = calculatorValue;
-  dataRune = dataValue;
-  
-  // Update legacy stores for backward compatibility
-  calculator.set(calculatorValue);
-  data.set(dataValue);
-  
-  console.log('WASM calculator and data initialized (Modern/Svelte 5 with runes + store compatibility)');
-  console.log('Generated from data folder:', new Date().toISOString());
-};
-
-// Original generated code for reference:
-/*
-` + originalJs + `
-*/`
-
-	if err := os.WriteFile("./frontend/src/lib/types/ModernTypes.js", []byte(modernTemplate), 0777); err != nil {
-		panic(err)
-	}
-
-	return modernTemplate
-}
+// Note: updateModernTypesJs() and createModernTypesJs() functions removed
+// We now use ModernTypes.svelte.ts with Svelte 5 runes instead of ModernTypes.js
 
 func updateGeneratedSection(existingContent, newOriginalJs string) string {
 	// Find and update the generated code section

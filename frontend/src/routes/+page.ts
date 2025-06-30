@@ -1,2 +1,2 @@
-export const prerender = false;
-export const ssr = false;
+export const prerender = true;  // Generate index.html for the root route
+export const ssr = true;        // Enable SSR for static generation
