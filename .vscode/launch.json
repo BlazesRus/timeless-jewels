@@ -10,6 +10,38 @@
             "request": "launch",
             "mode": "auto",
             "program": "${fileDirname}"
+        },
+        {
+            "name": "Debug Frontend in Edge",
+            "type": "vscode-edge-devtools.debug",
+            "request": "launch",
+            "url": "http://localhost:5173/timeless-jewels",
+            "webRoot": "${workspaceFolder}/frontend/src",
+            "sourceMaps": true
+        },
+        {
+            "name": "Debug Frontend in Firefox",
+            "type": "firefox",
+            "request": "launch",
+            "url": "http://localhost:5173/timeless-jewels",
+            "webRoot": "${workspaceFolder}/frontend/src",
+            "enableCRAWorkaround": false,
+            "pathMappings": [
+                {
+                    "url": "http://localhost:5173/timeless-jewels",
+                    "path": "${workspaceFolder}/frontend/src"
+                }
+            ]
+        },
+        {
+            "name": "Attach to Chrome/Edge",
+            "type": "node",
+            "request": "attach",
+            "port": 9229,
+            "restart": true,
+            "sourceMaps": true,
+            "localRoot": "${workspaceFolder}/frontend/src",
+            "remoteRoot": "/"
         }
     ]
 }

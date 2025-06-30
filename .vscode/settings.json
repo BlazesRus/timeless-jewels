@@ -40,15 +40,21 @@
   "terminal.integrated.environmentChangesIndicator": "on",
   "terminal.integrated.environmentChangesRelaunch": false,
   "terminal.integrated.enablePersistentSessions": true,
-  "terminal.integrated.persistentSessionReviveProcess": "onExit",
+  "terminal.integrated.persistentSessionReviveProcess": "onExitAndWindowClose",
   "terminal.integrated.detectLocale": "on",
   "terminal.integrated.inheritEnv": true,
   "terminal.integrated.allowChords": false,
   "terminal.integrated.altClickMovesCursor": false,
-  "terminal.integrated.confirmOnExit": "never",
-  "terminal.integrated.confirmOnKill": "never",
+  "terminal.integrated.confirmOnExit": "hasChildProcesses",
+  "terminal.integrated.confirmOnKill": "hasChildProcesses", 
+  "terminal.integrated.showExitAlert": true,
+  "terminal.integrated.tabs.showActions": "never",
+  "terminal.integrated.tabs.hideCondition": "never",
   "terminal.integrated.shellIntegration.showWelcome": false,
   "terminal.integrated.smoothScrolling": true,
+  "terminal.integrated.tabs.focusMode": "singleClick",
+  "terminal.integrated.tabs.location": "right",
+  "terminal.integrated.tabs.enabled": true,
 
   // ──────────────────────────────────────────────────────────────
   // 3) GitHub Copilot & Chat
@@ -79,7 +85,34 @@
   },
 
   // ──────────────────────────────────────────────────────────────
-  // 4) Experimental features
+  // 4) Browser & Debugging Configuration
+  // ──────────────────────────────────────────────────────────────
+  "livePreview.defaultPreviewPath": "/timeless-jewels",
+  "livePreview.portNumber": 3000,
+  "livePreview.showStatusBarItem": true,
+  "livePreview.autoRefreshPreview": "On Changes to Saved Files",
+  "livePreview.notifyOnOpenLooseFile": false,
+  "liveServer.settings.donotVerifyTags": true,
+  "liveServer.settings.donotShowInfoMsg": true,
+  "liveServer.settings.root": "/frontend",
+  "liveServer.settings.CustomBrowser": "firefox",
+  "liveServer.settings.host": "localhost",
+  "liveServer.settings.port": 5174,
+  "liveServer.settings.wait": 500,
+  "simpleBrowser.focusLockIndicator.enabled": true,
+  "vscode-edge-devtools.mirrorEdits": true,
+  "vscode-edge-devtools.headless": false,
+  "vscode-edge-devtools.defaultUrl": "http://localhost:5173/timeless-jewels",
+  "debug.console.acceptSuggestionOnEnter": "on",
+  "debug.console.closeOnEnd": false,
+  "debug.openDebug": "openOnDebugBreak",
+  "debug.showBreakpointsInOverviewRuler": true,
+  "debug.terminal.clearBeforeReusing": false,
+  "browser-preview.startUrl": "http://localhost:5173/timeless-jewels",
+  "browser-preview.chromeExecutable": "",
+
+  // ──────────────────────────────────────────────────────────────
+  // 5) Experimental features
   // ──────────────────────────────────────────────────────────────
   "github.copilot.chat.experimental.shellCommand.enabled": true,
   "github.copilot.chat.experimental.shellCommand.defaultShell": "powershell.exe",
@@ -169,7 +202,8 @@
     "version.ini": "ini",
     "*Package.json": "json",
     "*PackageBackup.json": "jsonc",
-    "*.svelte": "svelte"
+    "*.svelte": "svelte",
+    "*.css": "tailwindcss"
   },
   "editor.insertSpaces": true,
   "editor.tabSize": 2,
@@ -302,12 +336,10 @@
   // ──────────────────────────────────────────────────────────────
   // 13) Debug & workbench
   // ──────────────────────────────────────────────────────────────
-  "debug.terminal.clearBeforeReusing": true,
   "debug.console.fontSize": 12,
   "debug.console.wordWrap": false,
   "debug.internalConsoleOptions": "neverOpen",
   "debug.allowBreakpointsEverywhere": false,
-  "debug.showBreakpointsInOverviewRuler": true,
   "workbench.action.focusActiveEditorGroup": true,
   "editor.accessibilitySupport": "off",
 
@@ -342,5 +374,21 @@
   "npm.packageManager": "pnpm",
   "npm.scriptRunner": "pnpm",
   "cmake.allowCommentsInPresetsFile": true,
-  "python.analysis.addHoverSummaries": true
+  "python.analysis.addHoverSummaries": true,
+
+  // ______________________________________________________________
+  // 16) Tailwindcss specific settings
+  // ______________________________________________________________
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+
+  "tailwindCSS.includeLanguages": {
+    "css": "css",
+    "scss": "scss"
+  },
+
+  "tailwindCSS.experimental.classRegex": [
+    ["class:([^=]+)=", "\"([^\"]*)\""],
+    ["@apply\\s+([^;]*);", "([^\\s]+)"]
+  ]
 }

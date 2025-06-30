@@ -113,7 +113,10 @@
         "echo": true,
         "reveal": "always",
         "focus": false,
-        "panel": "dedicated"
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": false,
+        "close": false
       },
       "options": {
         "cwd": "${workspaceFolder}"
@@ -189,6 +192,44 @@
         "focus": false,
         "panel": "shared"
       },
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Live Preview (VS Code)",
+      "type": "shell",
+      "command": "Write-Host '🌐 Starting Live Preview in VS Code...' -ForegroundColor Cyan; Write-Host ''; Write-Host '📋 Instructions:' -ForegroundColor Yellow; Write-Host '  1. The dev server should already be running on port 5173' -ForegroundColor White; Write-Host '  2. Use Ctrl+Shift+P → \"Live Preview: Show Preview\"' -ForegroundColor White; Write-Host '  3. Or click the preview icon in the status bar' -ForegroundColor White; Write-Host '  4. URL will be: http://localhost:5173/timeless-jewels' -ForegroundColor Green; Write-Host ''; Write-Host '🔧 Dev Tools Access:' -ForegroundColor Yellow; Write-Host '  • F12 for built-in dev tools' -ForegroundColor White; Write-Host '  • F5 → \"Debug Frontend in Edge\" for full DevTools' -ForegroundColor White; Write-Host '  • Right-click → \"Inspect Element\" for quick inspection' -ForegroundColor White",
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Preview Production Build",
+      "type": "shell",
+      "command": "if ((Get-Location).Path -notlike '*frontend') { if (Test-Path 'frontend') { Set-Location frontend; Write-Host 'Navigated to frontend directory' -ForegroundColor Yellow } else { Write-Host 'Frontend directory not found in current location' -ForegroundColor Red; exit 1 } } else { Write-Host 'Already in frontend directory' -ForegroundColor Green }; Write-Host '🏗️ Starting production build preview...' -ForegroundColor Cyan; Write-Host '📂 Serving from: build/ (unified SPA structure)' -ForegroundColor Yellow; npx serve build -l 3001 -s",
+      "group": "test",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Open Production Preview",
+      "type": "shell",
+      "command": "Write-Host '🌐 Opening production build preview...' -ForegroundColor Cyan; Start-Process 'http://localhost:3001/timeless-jewels'",
+      "group": "test",
+      "dependsOn": "Preview Production Build",
       "options": {
         "cwd": "${workspaceFolder}"
       },

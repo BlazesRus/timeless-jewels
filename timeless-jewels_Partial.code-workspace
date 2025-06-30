@@ -4,7 +4,14 @@
       "path": "."
     },
     {
+      "path": "frontend/build",
+      "name": "Build Output (Unified)"
+    },
+    {
       "path": "../../../../Users/Blaze/Documents/My Games/Path of Exile"
+    },
+    {
+      "path": "../timeless-jewels-gh-pages"
     }
   ],
   "settings": {

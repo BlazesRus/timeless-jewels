@@ -226,3 +226,7 @@ frontend/test-tailwind.html
 frontend/.config-deps/timeless-jewels-modern-config/pnpmfile - Copy.cjs
 
 docs/BUILD_ERRORS_FIXED_FINAL.md
+
+frontend/src/lib/wasm/modern-wasm-loader.svelte.ts.backup
+
+frontend/src/lib/types/ModernTypes.svelte.ts.backup
