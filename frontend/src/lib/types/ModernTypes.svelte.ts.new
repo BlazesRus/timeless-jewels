@@ -1,0 +1,55 @@
+/**
+ * Modern Types - Svelte 5 Reactive State Management
+ * Provides reactive access to WASM calculator and data using Svelte 5 runes
+ */
+
+import { 
+  wasmLoadingState, 
+  loadModernWasm, 
+  getWasmState, 
+  getCalculator, 
+  getWasmData, 
+  isWasmReady 
+} from '$lib/wasm/modern-wasm-loader.svelte';
+
+// Re-export the WASM state for components to use
+export { wasmLoadingState, loadModernWasm, getWasmState, isWasmReady };
+
+// Export reactive getters that automatically update when WASM state changes
+export function useCalculator() {
+  return getCalculator();
+}
+
+export function useData() {
+  return getWasmData();
+}
+
+// Export individual reactive properties for convenience using $derived
+export const calculator = $derived(wasmLoadingState.calculator);
+export const data = $derived(wasmLoadingState.data);
+export const isLoading = $derived(wasmLoadingState.isLoading);
+export const isReady = $derived(wasmLoadingState.isReady);
+export const error = $derived(wasmLoadingState.error);
+export const status = $derived(wasmLoadingState.status);
+export const progress = $derived(wasmLoadingState.progress);
+
+// Auto-initialize WASM when this module is imported
+loadModernWasm().catch(error => {
+  console.error('Failed to initialize WASM in ModernTypes:', error);
+});
+
+// Export types for TypeScript
+export interface ModernCalculator {
+  Calculate: Function;
+  ReverseSearch: Function | null;
+}
+
+export interface ModernData {
+  [key: string]: any;
+}
+
+// Legacy compatibility functions (for components that haven't been updated yet)
+export function initializeCrystalline() {
+  // This is now handled automatically by the modern WASM loader
+  console.log('initializeCrystalline called - modern WASM loader handles initialization automatically');
+}
