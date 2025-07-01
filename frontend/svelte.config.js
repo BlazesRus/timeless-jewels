@@ -13,13 +13,20 @@ const postcssConfigPath = join(__dirname, 'postcss.config.cjs');
 const majorVer = +SVELTE_VER.split('.')[0];
 const isSvelte5 = majorVer >= 5;
 
-// Choose adapter per mode - auto adapter for Svelte 5, static for Svelte 4
+// Choose adapter - use static adapter for both modes to match gh-pages structure
+// Svelte 5: SPA mode with client-side routing, Svelte 4: traditional static
 const adapter = isSvelte5 
-  ? adapterAuto()
+  ? adapterStatic({ 
+      pages: 'build', 
+      assets: 'build', 
+      fallback: '404.html',         // Critical for SPA mode on GitHub Pages
+      precompress: false,           // Skip compression for simplicity
+      strict: false                 // Allow dynamic imports and flexible routes
+    })
   : adapterStatic({ 
       pages: 'build', 
       assets: 'build', 
-      fallback: 'index.html' 
+      fallback: '404.html'          // Use same fallback for consistency
     });
 
 // unify preprocess with a legacy flag
@@ -38,7 +45,27 @@ export default {
   preprocess,
   kit: {
     adapter,
-    paths: { base: '/timeless-jewels' },
+    paths: { 
+      base: process.env.NODE_ENV === 'production' ? '/timeless-jewels' : '',
+      relative: false  // Force absolute paths for GitHub Pages compatibility
+    },
+    // SPA configuration for client-side routing
+    ...(isSvelte5 && {
+      prerender: {
+        handleHttpError: 'warn',
+        handleMissingId: 'warn',
+        entries: ['/'],             // Explicitly prerender the root page to generate index.html
+        crawl: true                 // Enable automatic page discovery for linked pages
+      },
+      csp: {
+        mode: 'auto',
+        directives: {
+          'script-src': ['self', 'unsafe-inline', 'unsafe-eval'], // Allow WASM
+          'worker-src': ['self', 'blob:'],
+          'object-src': ['none']
+        }
+      }
+    }),
     alias: {
       $lib:   'src/lib',
       '$lib/*': 'src/lib/*',

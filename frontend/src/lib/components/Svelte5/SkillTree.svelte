@@ -10,16 +10,18 @@
   import type { RenderFunc, Node } from '../../skill_tree_types_modern';
   import { baseJewelRadius, calculateNodePos, distance, drawnGroups, drawnNodes, formatStats, inverseSprites, inverseSpritesActive, inverseTranslations, orbitAngleAt, skillTree, toCanvasCoords } from '../../skill_tree_modern';
   import type { Point } from '../../skill_tree_modern';
-  import { calculator, data } from '../../types/ModernTypes.svelte';
+  import { useCalculator, useData } from '../../types/ModernTypes.svelte';
+  
   // Modern state management using Svelte 5 runes
-  import { get } from 'svelte/store';
   let scaling = $state(10);
   let offsetX = $state(0);
   let offsetY = $state(0);
 
-  // Reactive store values for use in the component with proper typing
-  const calculatorValue = $derived(get(calculator));
-  const dataValue = $derived(get(data));
+  // Get reactive calculator and data using modern hooks
+  const calculator = useCalculator();
+  const data = useData();
+  const calculatorValue = $derived(calculator);
+  const dataValue = $derived(data);
   
   // Derived values (Svelte 5 style)
   const jewelRadius = $derived(baseJewelRadius / scaling);

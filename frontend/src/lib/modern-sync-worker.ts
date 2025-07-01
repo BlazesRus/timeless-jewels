@@ -1,7 +1,7 @@
 import { expose } from 'comlink';
 import '../wasm_exec.js';
-import { loadSkillTree, passiveToTree } from './skill_tree_modern';
-import { calculator, initializeCrystalline } from './types/ModernTypes';
+import { loadSkillTree, passiveToTree } from './skill_tree_modern.worker';
+import { calculator, initializeCrystalline } from './types/ModernTypes.worker';
 import type { ModernTimelessWorker, SearchConfig, SearchResults, SearchWithSeed, SearchProgressCallback, WorkerInitConfig } from './modern-worker-types';
 
 /**
@@ -25,6 +25,44 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
 
       // Run the Go program
       go.run(result.instance);
+
+      // Wait for Go exports to be available
+      const exportedObjects = await new Promise<any>((resolve, reject) => {
+        let attempts = 0;
+        const maxAttempts = 50;
+        
+        const checkExports = () => {
+          attempts++;
+          
+          const goGlobal = (globalThis as any)['go'];
+          if (goGlobal && goGlobal['timeless-jewels']) {
+            const timelessExports = goGlobal['timeless-jewels'];
+            
+            if (timelessExports.Calculate && timelessExports.data) {
+              resolve({
+                calculator: {
+                  Calculate: timelessExports.Calculate,
+                  ReverseSearch: timelessExports.ReverseSearch || null
+                },
+                data: timelessExports.data
+              });
+              return;
+            }
+          }
+          
+          if (attempts >= maxAttempts) {
+            reject(new Error(`Timeout waiting for Go exports after ${maxAttempts} attempts`));
+            return;
+          }
+          
+          setTimeout(checkExports, 200);
+        };
+        
+        checkExports();
+      });
+
+      // Set the calculator instance in worker context
+      calculator.set(exportedObjects.calculator);
 
       // Initialize crystalline data structures
       initializeCrystalline();
@@ -90,8 +128,7 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
           };
 
       // Perform the search using the calculator
-      let calculatorValue: any;
-      calculator.subscribe(value => calculatorValue = value)();
+      const calculatorValue = calculator.get();
       
       if (!calculatorValue) {
         throw new Error('Calculator not initialized');

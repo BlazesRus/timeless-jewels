@@ -1,28 +1,210 @@
 /**
- * Modern WASM Loader with Svelte 5 Runes
- * Uses rune-based reactive state management for WASM loading and data
+ * Modern WASM Loader with Svelte 5 Runes - Consolidated Version
+ * 
+ * Copyright (C) 2025 James Armstrong (github.com/BlazesRus)
+ * Generated with GitHub Copilot assistance
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * Combines the best features from both versions:
+ * - Uses the new modern-wasm-exec.svelte.ts executor with TypeScript/Svelte 5 Go runtime
+ * - Comprehensive path resolution with fallbacks
+ * - Detailed progress tracking and debugging
+ * - Legacy compatibility API
+ * Updated: 2025-01-18T16:00:00Z - Consolidated from v1 and v2 loaders
  */
 
-// Import Go WASM runtime
-import '../../wasm_exec.js';
+import { browser } from '$app/environment';
+import { base } from '$app/paths';
+import { getModernWasmExecutor, wasmState } from './modern-wasm-exec.svelte';
 
-// Reactive WASM loading state using Svelte 5 runes
-export const wasmLoadingState = $state({
-  isLoading: true,
-  isReady: false,
-  error: null as string | null,
-  status: 'Initializing...' as string,
-  progress: 0,
-  data: null as any,
-  calculator: null as any
-});
-
-// Global WASM promise to prevent duplicate loading
-let wasmPromise: Promise<void> | null = null;
+// Re-export the reactive state for components
+export { wasmState as wasmStatus };
 
 /**
- * Wrapper function to handle Go WASM errors with better error reporting
+ * Get the correct base path for static files with comprehensive fallback paths
  */
+function getStaticPath(filename: string): string {
+  return `${base}/${filename}`;
+}
+
+/**
+ * Get all possible WASM file paths in order of preference
+ */
+function getPossibleWasmPaths(): string[] {
+  return [
+    '/timeless-jewels/calculator.wasm',          // HARDCODED: Known working path first
+    getStaticPath('calculator.wasm'),            // Primary path using SvelteKit base
+    '/timeless-jewels/tools.wasm',               // Alternative name explicit base
+    '/calculator.wasm',                          // Fallback without base
+    getStaticPath('tools.wasm'),                 // Alternative name with base
+    '/tools.wasm',                               // Alternative name without base
+    '/timeless-jewels/static/calculator.wasm',   // Production build path with base
+    '/static/calculator.wasm',                   // Production build path without base
+    '/timeless-jewels/wasm/calculator.wasm',     // Wasm subdirectory with base
+    '/wasm/calculator.wasm'                      // Wasm subdirectory without base
+  ];
+}
+
+/**
+ * Modern WASM Loader with Svelte 5 runes and comprehensive error handling
+ * Provides reactive state and improved debugging with fallback path support
+ */
+export async function loadModernWasm(): Promise<boolean> {
+	if (!browser) {
+		console.warn('WASM loading skipped - not in browser environment');
+		return false;
+	}
+
+	console.log('🔥 CONSOLIDATED MODERN WASM LOADER - ENHANCED VERSION WITH FALLBACK PATHS');
+	console.log('🚀 Starting modern WASM loading with enhanced runes...');
+	
+	try {
+		// Get the modern WASM executor
+		const executor = getModernWasmExecutor();
+		
+		// Try loading from multiple possible paths
+		const possiblePaths = getPossibleWasmPaths();
+		console.log(`🌐 Current location: ${globalThis.location?.href}`);
+		console.log(`🗂️ Base path: ${base}`);
+		console.log('🔍 Debug: All possible paths:', possiblePaths);
+		
+		let success = false;
+		let lastError: any = null;
+		
+		// Try each path until one works
+		for (const path of possiblePaths) {
+			console.log(`📡 Attempting to load WASM from: ${path}`);
+			
+			try {
+				success = await executor.loadWasm(path);
+				if (success) {
+					console.log(`✅ Successfully loaded WASM from: ${path}`);
+					break;
+				} else {
+					console.log(`❌ Loading failed for path: ${path}`);
+				}
+			} catch (error) {
+				console.log(`❌ Error loading from ${path}:`, error);
+				lastError = error;
+			}
+		}
+		
+		if (success) {
+			console.log('✅ Modern WASM loaded successfully with consolidated loader!');
+			
+			// Log available exports
+			const exports = executor.getExports();
+			console.log('📦 Available exports:', Object.keys(exports));
+			
+			// Additional debugging info
+			console.log('📊 Final state:', {
+				isInitialized: wasmState.isInitialized,
+				isRunning: wasmState.isRunning,
+				hasExited: wasmState.hasExited,
+				error: wasmState.error,
+				exportCount: Object.keys(exports).length
+			});
+			
+			return true;
+		} else {
+			console.error('❌ Modern WASM loading failed from all attempted paths');
+			if (lastError) {
+				console.error('❌ Last error:', lastError);
+			}
+			return false;
+		}
+		
+	} catch (error) {
+		console.error('💥 Modern WASM loading error:', error);
+		return false;
+	}
+}
+
+/**
+ * Get the current WASM runtime instance
+ */
+export function getWasmRuntime() {
+	return getModernWasmExecutor();
+}
+
+/**
+ * Check if a specific WASM function is available
+ */
+export function hasWasmFunction(name: string): boolean {
+	const executor = getModernWasmExecutor();
+	const exports = executor.getExports();
+	return typeof exports[name] === 'function';
+}
+
+/**
+ * Call a WASM function with error handling
+ */
+export function callWasmFunction(name: string, ...args: any[]): any {
+	const executor = getModernWasmExecutor();
+	return executor.callFunction(name, ...args);
+}
+
+/**
+ * Get reactive loading progress (0-100)
+ */
+export function getLoadingProgress(): number {
+	const isReady = wasmState.isInitialized && !wasmState.hasExited && !wasmState.error;
+	return isReady ? 100 : wasmState.error ? 0 : 50;
+}
+
+/**
+ * Check if WASM is ready for use
+ */
+export function isWasmReady(): boolean {
+	return wasmState.isInitialized && !wasmState.hasExited && !wasmState.error;
+}
+
+/**
+ * Get any WASM loading errors
+ */
+export function getWasmError(): string | null {
+	return wasmState.error;
+}
+
+/**
+ * Get debug logs for troubleshooting
+ */
+export function getWasmDebugLogs(): string[] {
+	return wasmState.logs;
+}
+
+// Legacy API compatibility - enhanced reactive state
+export const wasmLoadingState = $derived({
+	isLoading: wasmState.isRunning && !wasmState.isInitialized,
+	isReady: wasmState.isInitialized && !wasmState.hasExited && !wasmState.error,
+	error: wasmState.error,
+	status: (() => {
+		if (wasmState.error) return `Error: ${wasmState.error}`;
+		if (wasmState.hasExited) return 'Exited';
+		if (wasmState.isInitialized) return 'Ready';
+		if (wasmState.isRunning) return 'Loading...';
+		return 'Initializing...';
+	})(),
+	progress: (() => {
+		if (wasmState.error) return 0;
+		if (wasmState.isInitialized && !wasmState.hasExited) return 100;
+		if (wasmState.isRunning) return 50;
+		return 10;
+	})(),
+	data: wasmState.exports,
+	calculator: wasmState.exports
+});
+
+// Enhanced wrapper function for Go WASM function calls with better error reporting
 const wrap = (fn: Function) => {
   return (...args: any[]) => {
     try {
@@ -40,239 +222,32 @@ const wrap = (fn: Function) => {
   };
 };
 
-/**
- * Modern WASM loader with reactive state management
- */
-export async function loadModernWasm(): Promise<void> {
-  // Return existing promise if already loading
-  if (wasmPromise) {
-    return wasmPromise;
-  }
-
-  // Return immediately if already loaded
-  if (wasmLoadingState.isReady && wasmLoadingState.data && wasmLoadingState.calculator) {
-    return;
-  }
-
-  wasmPromise = (async () => {
-    try {
-      wasmLoadingState.isLoading = true;
-      wasmLoadingState.error = null;
-      wasmLoadingState.status = 'Starting WASM loading...';
-      wasmLoadingState.progress = 10;
-
-      console.log('🚀 Starting modern WASM loading with runes...');
-      
-      // Check if Go is available
-      if (typeof (globalThis as any).Go === 'undefined') {
-        const errorMsg = 'Go object not found. wasm_exec.js may not have loaded properly.';
-        console.error('❌', errorMsg);
-        console.log('🔍 Available global objects:', Object.keys(globalThis).filter(k => k.includes('go') || k.includes('Go') || k.includes('wasm')));
-        throw new Error(errorMsg);
-      }
-      
-      wasmLoadingState.status = 'Creating Go instance...';
-      wasmLoadingState.progress = 20;
-      
-      console.log('🔧 Creating Go instance...');
-      const go = new (globalThis as any).Go();
-      
-      // Fetch WASM data
-      wasmLoadingState.status = 'Fetching WASM module...';
-      wasmLoadingState.progress = 30;
-      
-      // Use relative path from static directory (works in both dev and production)
-      // Get the base path from current location
-      const basePath = window.location.pathname.includes('/timeless-jewels') 
-        ? '/timeless-jewels/calculator.wasm' 
-        : '/calculator.wasm';
-
-      let wasmUrl = new URL(basePath, window.location.origin).href;
-      console.log('📡 Fetching WASM from:', wasmUrl);
-      console.log('🌐 Current location:', window.location.href);
-      console.log('🗂️ Base path detected:', basePath);
-      
-      let wasmResponse: Response | null = await fetch(wasmUrl)
-      console.log('📡 WASM fetch response:', wasmResponse.status, wasmResponse.statusText);
-
-      if (!wasmResponse.ok) {
-        const errorMsg = `Failed to fetch WASM: ${wasmResponse.status} ${wasmResponse.statusText} from ${wasmUrl}`;
-        console.error('❌', errorMsg);
-        throw new Error(errorMsg);
-      }
-      
-      wasmLoadingState.status = 'Loading WASM data...';
-      wasmLoadingState.progress = 50;
-      
-      const wasmArrayBuffer = await wasmResponse.arrayBuffer();
-      console.log('📦 WASM data loaded, size:', wasmArrayBuffer.byteLength);
-      
-      // Instantiate and run WASM
-      wasmLoadingState.status = 'Instantiating WASM...';
-      wasmLoadingState.progress = 70;
-      
-      console.log('⚙️ Instantiating WASM...');
-      const result = await WebAssembly.instantiate(wasmArrayBuffer, go.importObject);
-      
-      wasmLoadingState.status = 'Starting Go program...';
-      wasmLoadingState.progress = 80;
-      
-      console.log('🏃 Starting Go program...');
-      
-      // Wait for the Go program to complete
-      console.log('🏃 Waiting for Go program to complete...');
-      wasmLoadingState.status = 'Running Go program...';
-      wasmLoadingState.progress = 85;
-      
-      await go.run(result.instance);
-      console.log('✅ Go program completed, checking for exports...');
-      
-      wasmLoadingState.status = 'Checking for Go exports...';
-      wasmLoadingState.progress = 90;
-      
-      // Helper function to find exports in possible locations
-      const findExports = () => {
-        console.log('🔍 Scanning for Go exports...');
-        
-        // Debug: Log what's available in globalThis
-        const allKeys = Object.keys(globalThis);
-        const goRelated = allKeys.filter(k => 
-          k.toLowerCase().includes('go') || 
-          k.toLowerCase().includes('timeless') || 
-          k.toLowerCase().includes('calculate') ||
-          k.toLowerCase().includes('wasm')
-        );
-        console.log('🔍 Go-related keys:', goRelated);
-        
-        // Check specific locations
-        if ((globalThis as any).go) {
-          console.log('🔍 globalThis.go keys:', Object.keys((globalThis as any).go));
-        }
-        
-        // Check multiple possible export locations
-        const possibleLocations = [
-          (globalThis as any)['go'],
-          (globalThis as any)['Go'], 
-          (window as any)['go'],
-          (window as any)['Go'],
-          globalThis
-        ];
-        
-        for (const location of possibleLocations) {
-          if (location && location['timeless-jewels']) {
-            const timelessExports = location['timeless-jewels'];
-            console.log('✅ Found timeless-jewels exports:', Object.keys(timelessExports));
-            
-            if (timelessExports.Calculate && timelessExports.data) {
-              console.log('🎯 All required exports found!');
-              return {
-                calculator: {
-                  Calculate: wrap(timelessExports.Calculate),
-                  ReverseSearch: timelessExports.ReverseSearch ? wrap(timelessExports.ReverseSearch) : null
-                },
-                data: timelessExports.data
-              };
-            }
-          }
-        }
-        
-        return null;
-      };
-      
-      // First attempt: Check immediately after Go program completes
-      let exportedObjects = findExports();
-      
-      // If not found immediately, wait a bit and try again (Go might need a moment to set up exports)
-      if (!exportedObjects) {
-        console.log('⏳ Exports not ready immediately, waiting briefly...');
-        wasmLoadingState.status = 'Waiting for exports to initialize...';
-        
-        // Wait a short time for Go to set up exports
-        await new Promise(resolve => setTimeout(resolve, 500));
-        exportedObjects = findExports();
-        
-        // Final fallback: One more brief wait
-        if (!exportedObjects) {
-          console.log('⏳ Still not ready, final attempt...');
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          exportedObjects = findExports();
-        }
-      }
-      
-      if (!exportedObjects) {
-        const error = new Error('Go exports not found after program completion. The Go program may not have exported the required functions.');
-        console.error('❌', error.message);
-        throw error;
-      }
-      
-      wasmLoadingState.status = 'Initializing data structures...';
-      wasmLoadingState.progress = 95;
-      
-      console.log('📋 Initializing data structures...');
-      
-      // Update reactive state with loaded data
-      wasmLoadingState.calculator = exportedObjects.calculator;
-      wasmLoadingState.data = exportedObjects.data;
-      wasmLoadingState.isReady = true;
-      wasmLoadingState.isLoading = false;
-      wasmLoadingState.status = 'WASM loaded successfully!';
-      wasmLoadingState.progress = 100;
-      
-      console.log('🎉 Modern WASM loading completed successfully!');
-      console.log('📊 Calculator functions:', Object.keys(exportedObjects.calculator));
-      console.log('💾 Data properties:', Object.keys(exportedObjects.data));
-      
-    } catch (error: any) {
-      console.error('❌ Modern WASM loading failed:', error);
-      wasmLoadingState.error = error?.message || 'Unknown WASM error';
-      wasmLoadingState.status = 'WASM loading failed';
-      wasmLoadingState.isLoading = false;
-      wasmLoadingState.isReady = false;
-      throw error;
-    }
-  })();
-
-  return wasmPromise;
+// Legacy compatibility functions that map to the new API
+export function getGoExports(): Record<string, any> {
+	return wasmState.exports;
 }
 
-/**
- * Get current WASM loading state (reactive)
- */
+export function hasGoFunction(name: string): boolean {
+	return hasWasmFunction(name);
+}
+
+export function callGoFunction(name: string, ...args: any[]): any {
+	return callWasmFunction(name, ...args);
+}
+
 export function getWasmState() {
-  return wasmLoadingState;
+	return wasmLoadingState;
 }
 
-/**
- * Check if WASM is ready
- */
-export function isWasmReady(): boolean {
-  return wasmLoadingState.isReady && !wasmLoadingState.isLoading;
-}
-
-/**
- * Get calculator functions (reactive)
- */
 export function getCalculator() {
-  return wasmLoadingState.calculator;
+	return wasmState.exports;
 }
 
-/**
- * Get WASM data (reactive)
- */
 export function getWasmData() {
-  return wasmLoadingState.data;
+	return wasmState.exports;
 }
 
-/**
- * Reset WASM state (for debugging/testing)
- */
 export function resetWasmState() {
-  wasmLoadingState.isLoading = true;
-  wasmLoadingState.isReady = false;
-  wasmLoadingState.error = null;
-  wasmLoadingState.status = 'Initializing...';
-  wasmLoadingState.progress = 0;
-  wasmLoadingState.data = null;
-  wasmLoadingState.calculator = null;
-  wasmPromise = null;
+	// Note: Reset functionality would need to be implemented in the executor
+	console.warn('resetWasmState not implemented in consolidated loader');
 }

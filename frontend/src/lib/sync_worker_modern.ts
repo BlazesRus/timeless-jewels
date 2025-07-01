@@ -1,8 +1,8 @@
 import { expose, transfer } from 'comlink';
 import '../wasm_exec.js';
-import { loadSkillTree, passiveToTree } from './skill_tree_modern';
+import { loadSkillTree, passiveToTree } from './skill_tree_modern.worker';
 import type { SearchWithSeed, ReverseSearchConfig, SearchResults } from './skill_tree_modern';
-import { calculator, initializeCrystalline } from './types/ModernTypes';
+import { calculator, initializeCrystalline } from './types/ModernTypes.worker';
 
 // Modern worker implementation with enhanced error handling and performance
 const obj = {
@@ -16,6 +16,44 @@ const obj = {
       
       // Use transfer for ArrayBuffer performance
       await go.run(result.instance);
+
+      // Wait for Go exports to be available
+      const exportedObjects = await new Promise<any>((resolve, reject) => {
+        let attempts = 0;
+        const maxAttempts = 50;
+        
+        const checkExports = () => {
+          attempts++;
+          
+          const goGlobal = (globalThis as any)['go'];
+          if (goGlobal && goGlobal['timeless-jewels']) {
+            const timelessExports = goGlobal['timeless-jewels'];
+            
+            if (timelessExports.Calculate && timelessExports.data) {
+              resolve({
+                calculator: {
+                  Calculate: timelessExports.Calculate,
+                  ReverseSearch: timelessExports.ReverseSearch || null
+                },
+                data: timelessExports.data
+              });
+              return;
+            }
+          }
+          
+          if (attempts >= maxAttempts) {
+            reject(new Error(`Timeout waiting for Go exports after ${maxAttempts} attempts`));
+            return;
+          }
+          
+          setTimeout(checkExports, 200);
+        };
+        
+        checkExports();
+      });
+
+      // Set the calculator and data instances in worker context
+      calculator.set(exportedObjects.calculator);
 
       await initializeCrystalline();
       await loadSkillTree();
@@ -39,8 +77,7 @@ const obj = {
         throw new Error('Search operation was aborted');
       }
 
-      let calculatorValue: any;
-      calculator.subscribe(value => calculatorValue = value)();
+      const calculatorValue = calculator.get();
       
       if (!calculatorValue) {
         throw new Error('Calculator not initialized - call boot() first');

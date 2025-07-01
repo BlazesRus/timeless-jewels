@@ -1,6 +1,5 @@
 import type { Translation, Node, SkillTreeData, Group, Sprite, TranslationFile } from './skill_tree_types';
 import { data } from './types/ModernTypes.svelte';
-import { get } from 'svelte/store';
 import { type Filter, type Query, filterGroupsToQuery, filtersToFilterGroup } from './utils/trade_utils';
 import { chunkArray } from './utils/utils';
 
@@ -20,7 +19,7 @@ export const inverseTranslations: Record<string, Translation> = {};
 export const passiveToTree: Record<number, number> = {};
 
 export const loadSkillTree = () => {
-  const dataValue = get(data) as any;
+  const dataValue = data() as any;
   if (!dataValue) {
     console.error('Data not available for skill tree loading');
     return;
@@ -138,7 +137,7 @@ export const loadSkillTree = () => {
     }
   }
 
-  const dataForTranslations = get(data) as any;
+  const dataForTranslations = data() as any;
   const translationFiles = [dataForTranslations.StatTranslationsJSON, dataForTranslations.PassiveSkillStatTranslationsJSON, dataForTranslations.PassiveSkillAuraStatTranslationsJSON];
 
   translationFiles.forEach(f => {
@@ -154,7 +153,7 @@ export const loadSkillTree = () => {
   });
 
   // Checks if TreeToPassive is available before running code
-  const dataForPassive = get(data) as any;
+  const dataForPassive = data() as any;
   if (dataForPassive && dataForPassive.TreeToPassive) {
     Object.keys(dataForPassive.TreeToPassive ?? {}).forEach(k => {
       const treeToPassiveEntry = dataForPassive.TreeToPassive?.[parseInt(k)];
@@ -365,7 +364,7 @@ export const getStat = (id: number | string): Stat => {
   const nId = typeof id === 'string' ? parseInt(id) : id;
   // Checks if stat is valid before running code
   if (!(nId in statCache)) {
-    const dataForStat = get(data) as any;
+    const dataForStat = data() as any;
     if (!dataForStat || typeof dataForStat.GetStatByIndex !== 'function') {
       throw new Error(`Data or GetStatByIndex method not available for stat id: ${nId}`);
     }
