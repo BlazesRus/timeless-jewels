@@ -143,7 +143,6 @@ func generateTypes() {
 
 	// Note: ModernTypes.js has been removed - we now use ModernTypes.svelte.ts with runes
 }
-}
 
 func updateModernTypeDefinitions(originalTs string) {
 	modernTypesPath := "./frontend/src/lib/types/index.modern.d.ts"
@@ -252,7 +251,7 @@ func updateGeneratedTypeSection(existingContent, newOriginalTs string) string {
 
 	// Create updated generated section with timestamp
 	timestamp := strings.Replace(strings.Replace(getCurrentTimestamp(), "\n", "", -1), "\r", "", -1)
-	
+
 	// Update the timestamp in the header if it exists
 	updatedBefore := beforeSection
 	if strings.Contains(beforeSection, "// Auto-updated:") {
