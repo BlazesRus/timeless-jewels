@@ -1,72 +1,90 @@
+<!--
+  Modern Home Page - Svelte 5 Component
+  Based on original +page.svelte, modernized for Svelte 5 with enhanced debug features
+  
+  Copyright (C) 2025 James Armstrong (github.com/BlazesRus)
+  Based on original work by the Timeless Jewel Calculator authors
+  Generated with GitHub Copilot assistance
+  
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+-->
+
+<!-- CACHE BUST 2025-06-30T03:46:00Z - Force reload for WASM loader updates -->
 <script lang="ts">
   import { browser } from '$app/environment';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { base, assets } from '$app/paths';
   import { page } from '$app/state';
-  // Temporarily comment out potentially problematic imports
-  // import ModernSelect from '$lib/components/ModernSelect.svelte';
-  import { calculatorState, dataState, useCalculator, useData, initializeCrystalline } from '$lib/types/ModernTypes.svelte';
+  // Modern WASM loader with enhanced runes
+  import { loadModernWasm, wasmLoadingState, getWasmDebugLogs } from '$lib/wasm/modern-wasm-loader.svelte';
+  // Modern Select component
+  import ModernSelect from '$lib/components/ModernSelect.svelte';
+  import { useCalculator, useData, initializeCrystalline } from '$lib/types/ModernTypes.svelte';
 
+  // Get reactive WASM state from enhanced modern loader
+  const wasmState = wasmLoadingState;
+  
   // State variables with Svelte 5 runes
-  let wasmStatus = $state<string>('Initializing...');
   let lastError = $state<string>('');
-  let isWasmLoading = $state(true);
+  let consoleErrors = $state<string[]>([]);
   
-  // Use modern rune-based reactive utilities
-  const calculatorUtils = useCalculator();
-  const dataUtils = useData();
-  
-  // Reactive getters for current values using $derived with proper typing
-  const calculatorValue = $derived(calculatorUtils.current as any);
-  const dataValue = $derived(dataUtils.current as any);
-
-  // Listen for WASM errors
-  if (browser) {
-    window.addEventListener('error', (e) => {
-      if (e.message?.includes('wasm') || e.message?.includes('WASM') || e.message?.includes('Go')) {
-        lastError = e.message;
-        wasmStatus = 'WASM Error: ' + e.message;
-      }
-    });
-  }
-  // Initialize WASM dynamically
+  // Capture console errors for debugging
   $effect(() => {
     if (browser) {
-      console.log('Starting dynamic WASM import...');
-      wasmStatus = 'Loading WASM module...';
-      // Dynamic import of WASM loader
-      import('$lib/wasm/wasm-loader.js').then(async ({ loadWasm }) => {        
-        try {
-          wasmStatus = 'Initializing WASM...';
-          await loadWasm();
-          
-          // Initialize using the modern rune-based approach
-          initializeCrystalline();
-          
-          // Check if data was loaded successfully
-          if (calculatorUtils.current && dataUtils.current) {
-            console.log('Calculator functions:', Object.keys(calculatorUtils.current));
-            console.log('Data properties:', Object.keys(dataUtils.current));
-            wasmStatus = 'WASM loaded successfully!';
-          } else {
-            console.warn('WASM loaded but data not available in rune state');
-            wasmStatus = 'WASM loaded but data not available';
-          }
-          
-          isWasmLoading = false;  
-          console.log('WASM loaded successfully via dynamic import with runes');
-        } catch (error: any) {
-          console.error('WASM loading failed:', error);
-          lastError = error?.message || 'Unknown WASM error';
-          wasmStatus = 'WASM loading failed';
-          isWasmLoading = false;
+      const originalError = console.error;
+      console.error = (...args: any[]) => {
+        originalError(...args);
+        const errorMsg = args.map(arg => 
+          typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
+        ).join(' ');
+        consoleErrors = [...consoleErrors.slice(-9), errorMsg]; // Keep last 10 errors
+      };
+      
+      // Restore original console.error on cleanup
+      return () => {
+        console.error = originalError;
+      };
+    }
+    // Return cleanup function even if not in browser
+    return () => {};
+  });
+  
+  // Use derived state from modern WASM loader
+  const wasmStatus = $derived(wasmState.status);
+  const isWasmLoading = $derived(wasmState.isLoading);
+  const wasmProgress = $derived(wasmState.progress);
+  
+  // Reactive getters for current values using $derived with proper typing
+  const calculatorValue = $derived(useCalculator());
+  const dataValue = $derived(useData());
+
+  // Initialize WASM using modern loader with runes
+  $effect(() => {
+    if (browser) {
+      console.log('🚀 Starting modern WASM loading with runes...');
+      
+      loadModernWasm().then(() => {
+        console.log('✅ Modern WASM loading completed!');
+        // Initialize data structures
+        initializeCrystalline();
+        
+        // Check if data was loaded successfully
+        if (calculatorValue && dataValue) {
+          console.log('📊 Calculator functions:', Object.keys(calculatorValue));
+          console.log('💾 Data properties:', Object.keys(dataValue));
         }
       }).catch((error: any) => {
-        console.error('Failed to import WASM loader:', error);
-        lastError = error?.message || 'Unknown import error';
-        wasmStatus = 'Failed to load WASM module';
-        isWasmLoading = false;
+        console.error('❌ Modern WASM loading failed:', error);
+        lastError = error?.message || 'Unknown WASM error';
       });
     }
   });
@@ -242,29 +260,23 @@
         </div>
         <div class="text-sm text-gray-300 space-y-2 text-center">
           <p>Status: {wasmStatus}</p>
+          <p>Progress: {wasmProgress}%</p>
+          {#if wasmState.error}
+            <p class="text-red-400">Error: {wasmState.error}</p>
+          {/if}
           {#if lastError}
-            <p class="text-red-400">Error: {lastError}</p>
+            <p class="text-red-400">Additional Error: {lastError}</p>
           {/if}
           <p>Calculator available: {calculatorValue ? 'Yes' : 'No'}</p>
           <p>Data available: {dataValue ? 'Yes' : 'No'}</p>
           <p>Browser ready: {browser ? 'Yes' : 'No'}</p>
-          <p>Go object: {typeof (globalThis as any).Go !== 'undefined' ? 'Available' : 'Not found'}</p>
-          <p>Go exports: {typeof (globalThis as any)['go'] !== 'undefined' ? 'Available' : 'Not found'}</p>
-          <p>Timeless Jewels: {typeof (globalThis as any)['go']?.['timeless-jewels'] !== 'undefined' ? 'Available' : 'Not found'}</p>
-          <button 
-            class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            onclick={(e) => {
-              console.log('Manual debug check triggered');
-              console.log('globalThis keys:', Object.keys(globalThis).filter(k => k.includes('go') || k.includes('Go')));
-              console.log('globalThis.go:', (globalThis as any)['go']);
-              console.log('globalThis.Go:', (globalThis as any).Go);
-              if ((globalThis as any)['go']) {
-                console.log('go keys:', Object.keys((globalThis as any)['go']));
-              }
-            }}
-          >
-            Debug GlobalThis
-          </button>
+          <p>WASM Ready: {wasmState.isReady ? 'Yes' : 'No'}</p>
+          <p>WASM Loading: {wasmState.isLoading ? 'Yes' : 'No'}</p>
+          <div class="mt-2">
+            <div class="w-full bg-gray-700 rounded-full h-2">
+              <div class="bg-orange-500 h-2 rounded-full transition-all duration-300" style="width: {wasmProgress}%"></div>
+            </div>
+          </div>
           <p class="text-xs mt-2">Check browser console for detailed loading progress...</p>
         </div>
       </div>
@@ -275,7 +287,7 @@
           
           <!-- Skill Tree View Link -->
           <div class="text-center">
-            <a href="{base}/tree" class="inline-block">
+            <a href="{base}/tree/ModernPage" class="inline-block">
               <h2 class="text-orange-500 text-xl underline hover:text-orange-400 transition-colors">Skill Tree View</h2>
             </a>
           </div>
@@ -290,6 +302,55 @@
               <p>Jewels loaded: {jewels.length}</p>
               <p>Passive skills loaded: {passiveSkills.length}</p>
               <p>Available conquerors: {availableConquerors.length}</p>
+              
+              <!-- Enhanced WASM Debug Info -->
+              <div class="mt-3 pt-2 border-t border-gray-600">
+                <p class="font-semibold text-yellow-400">WASM State:</p>
+                <p>Status: {wasmStatus}</p>
+                <p>Progress: {wasmProgress}%</p>
+                <p>Is Loading: {wasmState.isLoading ? 'Yes' : 'No'}</p>
+                <p>Is Ready: {wasmState.isReady ? 'Yes' : 'No'}</p>
+                {#if wasmState.error}
+                  <p class="text-red-400">WASM Error: {wasmState.error}</p>
+                {/if}
+                {#if lastError}
+                  <p class="text-red-400">Last Error: {lastError}</p>
+                {/if}
+                
+                {#if consoleErrors.length > 0}
+                  <div class="mt-2 pt-1 border-t border-gray-700">
+                    <p class="font-semibold text-red-400 text-xs">Console Errors:</p>
+                    {#each consoleErrors as error}
+                      <p class="text-red-300 text-xs break-words">{error}</p>
+                    {/each}
+                    <button 
+                      class="mt-1 px-2 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded"
+                      onclick={() => consoleErrors = []}
+                    >
+                      Clear Errors
+                    </button>
+                  </div>
+                {/if}
+                
+                <div class="mt-2 space-x-2">
+                  <button 
+                    class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded"
+                    onclick={() => {
+                      console.log('🔄 Manual WASM reload triggered...');
+                      lastError = '';
+                      consoleErrors = [];
+                      loadModernWasm().catch(err => {
+                        console.error('Manual WASM reload failed:', err);
+                        lastError = err?.message || 'Manual reload failed';
+                      });
+                    }}
+                  >
+                    Retry WASM Load
+                  </button>
+                </div>
+                
+                <p class="text-xs text-gray-400 mt-2">Check browser console (F12) for detailed logs</p>
+              </div>
             </div>
           </div>
 
@@ -297,34 +358,19 @@
           <div class="bg-gray-800 p-6 rounded-lg space-y-4">
             <div>
               <h3 class="mb-2 text-lg font-semibold">Timeless Jewel</h3>
-              <!-- <ModernSelect items={jewels} bind:value={selectedJewel} onchange={updateUrl} /> -->
-              <select bind:value={selectedJewel}>
-                {#each jewels as jewel}
-                  <option value={jewel.value}>{jewel.label}</option>
-                {/each}
-              </select>
+              <ModernSelect items={jewels} bind:value={selectedJewel} onchange={updateUrl} />
             </div>
 
             {#if selectedJewel && availableConquerors.length > 0}
               <div>
                 <h3 class="mb-2 text-lg font-semibold">Conqueror</h3>
-                <!-- <ModernSelect items={availableConquerors} bind:value={selectedConqueror} onchange={updateUrl} /> -->
-                <select bind:value={selectedConqueror}>
-                  {#each availableConquerors as conqueror}
-                    <option value={conqueror.value}>{conqueror.label}</option>
-                  {/each}
-                </select>
+                <ModernSelect items={availableConquerors} bind:value={selectedConqueror} onchange={updateUrl} />
               </div>
 
               {#if selectedConqueror}
                 <div>
                   <h3 class="mb-2 text-lg font-semibold">Passive Skill</h3>
-                  <!-- <ModernSelect items={passiveSkills} bind:value={selectedPassiveSkill} onchange={updateUrl} /> -->
-                  <select bind:value={selectedPassiveSkill}>
-                    {#each passiveSkills as skill}
-                      <option value={skill.value}>{skill.label}</option>
-                    {/each}
-                  </select>
+                  <ModernSelect items={passiveSkills} bind:value={selectedPassiveSkill} onchange={updateUrl} />
                 </div>
 
                 {#if selectedPassiveSkill}

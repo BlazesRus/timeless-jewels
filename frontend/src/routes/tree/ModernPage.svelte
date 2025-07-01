@@ -1,3 +1,21 @@
+<!--
+  Modern Tree Page - Svelte 5 Component
+
+  Based on original tree page implementation(routes/tree/+page.svelte)
+  Modernized for Svelte 5 by James Armstrong (github.com/BlazesRus)
+  with GitHub Copilot assistance
+  
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+-->
+
 <!-- Svelte 5 Compatible Tree Page -->
 <script lang="ts">
   import { browser } from '$app/environment';
@@ -14,7 +32,7 @@
 
   import SearchResultsComponent from '$lib/components/SearchResults.svelte';
   import { statValues } from '$lib/values';
-  import { calculatorState, dataState, useCalculator, useData, initializeCrystalline } from '$lib/types/ModernTypes.svelte';
+  import { useCalculator, useData } from '$lib/types/ModernTypes.svelte';
 
   import TradeButton from '$lib/components/TradeButton.svelte';
   import TradeLinks from '$lib/components/TradeLinks.svelte';

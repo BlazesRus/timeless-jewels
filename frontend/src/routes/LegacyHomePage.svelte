@@ -181,7 +181,7 @@
       <div></div>
       <div class="flex flex-col">
         <div class="py-10 flex flex-col justify-between">
-          <a href="{base}/tree">
+          <a href="{base}/tree/LegacyPage">
             <h2 class="text-white mb-10 text-center underline text-orange-500">Skill Tree View</h2>
           </a>
           <div class="themed">
