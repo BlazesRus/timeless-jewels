@@ -1,0 +1,3 @@
+[submodule "frontend/src/lib/ModernWasm"]
+	path = frontend/src/lib/ModernWasm
+	url = https://github.com/BlazesRus/ModernWasm.git
