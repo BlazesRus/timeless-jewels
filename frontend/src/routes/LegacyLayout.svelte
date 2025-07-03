@@ -2,7 +2,7 @@
 <script lang="ts">
   import { browser } from '$app/environment';
 
-  import '../app.scss';
+  import '../app.css';
   import '../wasm_exec.js';
 
   import { assets } from '$app/paths';

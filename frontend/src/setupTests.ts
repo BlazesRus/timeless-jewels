@@ -11,22 +11,22 @@ const mockPerformance = {
 };
 
 // Mock IntersectionObserver for modern lazy loading tests
-const mockIntersectionObserver = function(this: any, callback: any) {
+const mockIntersectionObserver = function (this: any, callback: any) {
   this.observe = () => {};
   this.unobserve = () => {};
   this.disconnect = () => {};
   this.takeRecords = () => [];
 };
 
-// Mock ResizeObserver for container queries  
-const mockResizeObserver = function(this: any, callback: any) {
+// Mock ResizeObserver for container queries
+const mockResizeObserver = function (this: any, callback: any) {
   this.observe = () => {};
   this.unobserve = () => {};
   this.disconnect = () => {};
 };
 
 // Mock modern Web Workers
-const mockWorker = function(this: any, url: string) {
+const mockWorker = function (this: any, url: string) {
   this.postMessage = () => {};
   this.terminate = () => {};
   this.addEventListener = () => {};
@@ -47,13 +47,13 @@ const mockWebAssembly = {
     module: {}
   }),
   CompileError: Error,
-  Global: function() {},
-  Instance: function() {},
+  Global: function () {},
+  Instance: function () {},
   LinkError: Error,
-  Memory: function() {},
-  Module: function() {},
+  Memory: function () {},
+  Module: function () {},
   RuntimeError: Error,
-  Table: function() {}
+  Table: function () {}
 };
 
 // Apply mocks if in browser environment

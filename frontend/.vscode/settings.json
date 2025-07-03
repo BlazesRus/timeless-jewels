@@ -1,0 +1,74 @@
+{
+  "typescript.preferences.includePackageJsonAutoImports": "off",
+  "typescript.validate.enable": true,
+  "typescript.format.enable": true,
+  "typescript.suggest.autoImports": true,
+  "svelte.enable-ts-plugin": true,
+
+  // Use the modern TypeScript configuration
+  "typescript.preferences.tsserver.projectLoadingStrategy": "useTsServer",
+  "typescript.preferences.projectConfiguration": "./tsconfig.Modern.json",
+
+  // Exclude legacy files from TypeScript checking in modern mode
+  "typescript.exclude": ["**/src/routes/LegacyHomePage.svelte", "**/src/lib/components/Legacy/**/*", "**/src/routes/LegacyTree/**/*", "**/src/routes/LegacyLayout.svelte", "**/src/lib/wasm_exec.ts", "**/src/wasm_exec.ts", "**/src/lib/types/LegacyTypes.js", "**/src/lib/skill_tree_legacy.ts", "**/src/lib/skill_tree_types_legacy.ts", "**/src/lib/worker_legacy.ts", "**/src/lib/sync_worker_legacy.ts"],
+
+  // More aggressive exclusions for VS Code problems panel
+  "typescript.validate.exclude": ["**/src/routes/LegacyHomePage.svelte", "**/src/lib/components/Legacy/**/*", "**/src/routes/LegacyTree/**/*", "**/src/routes/LegacyLayout.svelte", "**/src/lib/wasm_exec.ts", "**/src/wasm_exec.ts", "**/src/lib/types/LegacyTypes.js", "**/src/lib/skill_tree_legacy.ts", "**/src/lib/skill_tree_types_legacy.ts", "**/src/lib/worker_legacy.ts", "**/src/lib/sync_worker_legacy.ts"],
+
+  // Hide legacy files from explorer and search
+  "files.exclude": {
+    "**/src/routes/LegacyHomePage.svelte": true,
+    "**/src/lib/components/Legacy": true,
+    "**/src/routes/LegacyTree": true,
+    "**/src/routes/LegacyLayout.svelte": true,
+    "**/src/lib/wasm_exec.ts": true,
+    "**/src/wasm_exec.ts": true,
+    "**/src/lib/types/LegacyTypes.js": true,
+    "**/src/lib/skill_tree_legacy.ts": true,
+    "**/src/lib/skill_tree_types_legacy.ts": true,
+    "**/src/lib/worker_legacy.ts": true,
+    "**/src/lib/sync_worker_legacy.ts": true
+  },
+
+  // Configure file associations
+  "files.associations": {
+    "*.svelte": "svelte"
+  },
+
+  // Configure problem matchers to ignore legacy files
+  "problems.decorations.enabled": true,
+  "typescript.preferences.useLabelDetailsInCompletionEntries": true,
+
+  // Svelte specific settings for modern mode
+  "svelte.plugin.svelte.compilerWarnings": {
+    "css-unused-selector": "ignore",
+    "unused-export-let": "ignore"
+  },
+
+  // Hide legacy files from explorer in modern mode (optional)
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.svelte-kit": true,
+    "**/build": true,
+    "**/dist": true,
+    // Hide legacy files from explorer
+    "**/src/routes/LegacyHomePage.svelte": true,
+    "**/src/lib/components/Legacy/**": true,
+    "**/src/routes/LegacyTree/**": true,
+    "**/src/lib/wasm_exec.ts": true,
+    "**/src/lib/*legacy*": true
+  },
+
+  // Configure search to exclude legacy files by default
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.svelte-kit": true,
+    "**/build": true,
+    "**/dist": true,
+    "**/src/routes/LegacyHomePage.svelte": true,
+    "**/src/lib/components/Legacy/**": true,
+    "**/src/routes/LegacyTree/**": true,
+    "**/src/lib/wasm_exec.ts": true,
+    "**/src/lib/*legacy*": true
+  }
+}

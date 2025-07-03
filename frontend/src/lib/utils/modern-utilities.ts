@@ -25,7 +25,7 @@ export function createPerformanceObserver() {
 
   if (typeof window !== 'undefined' && 'PerformanceObserver' in window) {
     // Observe Core Web Vitals
-    const observer = new PerformanceObserver((list) => {
+    const observer = new PerformanceObserver(list => {
       for (const entry of list.getEntries()) {
         if (entry.entryType === 'measure') {
           metrics.renderTime = entry.duration;
@@ -70,7 +70,7 @@ export function createViewportTracker() {
 
   const updateViewport = () => {
     if (typeof window === 'undefined') return;
-    
+
     viewport.width = window.innerWidth;
     viewport.height = window.innerHeight;
     viewport.isMobile = window.innerWidth < 768;
@@ -82,7 +82,7 @@ export function createViewportTracker() {
 
   // Modern ResizeObserver for better performance
   let resizeObserver: ResizeObserver | null = null;
-  
+
   if (typeof window !== 'undefined' && 'ResizeObserver' in window) {
     resizeObserver = new ResizeObserver(updateViewport);
     resizeObserver.observe(document.documentElement);
@@ -99,7 +99,7 @@ export function createViewportTracker() {
 export function createIntersectionObserver(threshold = 0.1) {
   let isVisible = $state(false);
   let intersectionRatio = $state(0);
-  
+
   const observe = (element: Element) => {
     if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
       isVisible = true;
@@ -107,7 +107,7 @@ export function createIntersectionObserver(threshold = 0.1) {
     }
 
     const observer = new IntersectionObserver(
-      (entries) => {
+      entries => {
         const entry = entries[0];
         isVisible = entry.isIntersecting;
         intersectionRatio = entry.intersectionRatio;
@@ -127,11 +127,7 @@ export function createIntersectionObserver(threshold = 0.1) {
 }
 
 // Modern async utilities with Node.js 22 improvements
-export async function withTimeout<T>(
-  promise: Promise<T>, 
-  timeoutMs: number, 
-  signal?: AbortSignal
-): Promise<T> {
+export async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, signal?: AbortSignal): Promise<T> {
   return Promise.race([
     promise,
     new Promise<never>((_, reject) => {
@@ -202,7 +198,7 @@ export function createReactiveStorage<T>(key: string, defaultValue: T) {
   const setValue = (value: T | ((prev: T) => T)) => {
     const newValue = typeof value === 'function' ? (value as (prev: T) => T)(storedValue) : value;
     storedValue = newValue;
-    
+
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem(key, JSON.stringify(newValue));
@@ -231,7 +227,7 @@ export function createThemeManager() {
 
   const applyTheme = (theme: 'light' | 'dark') => {
     if (typeof document === 'undefined') return;
-    
+
     document.documentElement.setAttribute('data-theme', theme);
     document.documentElement.style.colorScheme = theme;
     resolvedTheme = theme;
@@ -239,15 +235,15 @@ export function createThemeManager() {
 
   const setTheme = (theme: 'light' | 'dark' | 'auto') => {
     currentTheme = theme;
-    
+
     if (theme === 'auto') {
       // Use system preference
       if (typeof window !== 'undefined' && window.matchMedia) {
         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
         applyTheme(mediaQuery.matches ? 'dark' : 'light');
-        
+
         // Listen for changes
-        mediaQuery.addEventListener('change', (e) => {
+        mediaQuery.addEventListener('change', e => {
           if (currentTheme === 'auto') {
             applyTheme(e.matches ? 'dark' : 'light');
           }

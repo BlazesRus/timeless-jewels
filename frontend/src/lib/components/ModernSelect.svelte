@@ -21,16 +21,7 @@ Full-featured replacement for svelte-select using native Svelte 5 runes and adva
     maxHeight?: number;
   }
 
-  let { 
-    items, 
-    value = $bindable(), 
-    placeholder = 'Select...', 
-    onchange, 
-    onclear, 
-    disabled = false,
-    loading = false,
-    maxHeight = 200
-  }: Props = $props();
+  let { items, value = $bindable(), placeholder = 'Select...', onchange, onclear, disabled = false, loading = false, maxHeight = 200 }: Props = $props();
 
   // Modern state management with runes
   let isOpen = $state(false);
@@ -44,10 +35,7 @@ Full-featured replacement for svelte-select using native Svelte 5 runes and adva
   const filteredItems = $derived.by(() => {
     if (!searchTerm.trim()) return items;
     const term = searchTerm.toLowerCase();
-    return items.filter(item => 
-      item.label.toLowerCase().includes(term) ||
-      String(item.value).toLowerCase().includes(term)
-    );
+    return items.filter(item => item.label.toLowerCase().includes(term) || String(item.value).toLowerCase().includes(term));
   });
 
   // Performance metrics for development
@@ -148,7 +136,7 @@ Full-featured replacement for svelte-select using native Svelte 5 runes and adva
     </span>
     <div class="select-actions">
       {#if value && !disabled}
-        <span class="clear-button" onclick={clear} tabindex="-1" aria-label="Clear selection" role="button" onkeydown={(e) => e.key === 'Enter' && clear()}>✕</span>
+        <span class="clear-button" onclick={clear} tabindex="-1" aria-label="Clear selection" role="button" onkeydown={e => e.key === 'Enter' && clear()}>✕</span>
       {/if}
       <svg class="chevron" class:open={isOpen} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />

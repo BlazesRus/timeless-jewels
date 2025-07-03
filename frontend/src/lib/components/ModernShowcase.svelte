@@ -4,14 +4,7 @@ Demonstrates Svelte 5 runes, Vite 7 features, and Node.js 22 patterns
 -->
 <script lang="ts">
   import { tick } from 'svelte';
-  import { 
-    createViewportTracker, 
-    createPerformanceObserver, 
-    createIntersectionObserver,
-    createReactiveStorage,
-    createThemeManager,
-    createDebouncer
-  } from '$lib/utils/modern-utilities.js';
+  import { createViewportTracker, createPerformanceObserver, createIntersectionObserver, createReactiveStorage, createThemeManager, createDebouncer } from '$lib/utils/modern-utilities.js';
 
   interface Props {
     title?: string;
@@ -19,11 +12,7 @@ Demonstrates Svelte 5 runes, Vite 7 features, and Node.js 22 patterns
     autoOptimize?: boolean;
   }
 
-  let { 
-    title = 'Modern Component', 
-    items = [],
-    autoOptimize = true
-  }: Props = $props();
+  let { title = 'Modern Component', items = [], autoOptimize = true }: Props = $props();
 
   // Advanced state management with Svelte 5 runes
   let componentState = $state({
@@ -45,25 +34,24 @@ Demonstrates Svelte 5 runes, Vite 7 features, and Node.js 22 patterns
   // Advanced derived state with performance optimization
   const filteredItems = $derived.by(() => {
     if (!componentState.searchQuery.trim()) return items;
-    
+
     performance.startMeasure('filter-items');
     const query = componentState.searchQuery.toLowerCase();
-    const result = items.filter(item => 
-      item.label.toLowerCase().includes(query) ||
-      item.id.toLowerCase().includes(query)
-    );
+    const result = items.filter(item => item.label.toLowerCase().includes(query) || item.id.toLowerCase().includes(query));
     performance.endMeasure('filter-items');
-    
+
     return result;
   });
 
-  const responsiveClass = $derived(`
+  const responsiveClass = $derived(
+    `
     modern-component
     ${viewport.viewport().isMobile ? 'mobile' : ''}
     ${viewport.viewport().isTablet ? 'tablet' : ''}
     ${viewport.viewport().isDesktop ? 'desktop' : ''}
     ${theme.resolvedTheme()}
-  `.trim());
+  `.trim()
+  );
 
   // Modern debounced search
   const debouncedSearch = createDebouncer(300);
@@ -88,23 +76,22 @@ Demonstrates Svelte 5 runes, Vite 7 features, and Node.js 22 patterns
     if (autoOptimize && intersection.isVisible()) {
       // Perform optimizations when component is visible
       performance.startMeasure('optimization');
-      
+
       // Example: Pre-load next page data, optimize rendering, etc.
-      const optimizationTasks = [
-        () => console.log('Optimizing rendering...'),
-        () => console.log('Pre-loading resources...'),
-        () => console.log('Cleaning up unused data...')
-      ];
+      const optimizationTasks = [() => console.log('Optimizing rendering...'), () => console.log('Pre-loading resources...'), () => console.log('Cleaning up unused data...')];
 
       // Use modern Promise patterns
-      Promise.allSettled(optimizationTasks.map(task => 
-        new Promise(resolve => {
-          setTimeout(() => {
-            task();
-            resolve(null);
-          }, 16); // One frame
-        })
-      )).then(() => {
+      Promise.allSettled(
+        optimizationTasks.map(
+          task =>
+            new Promise(resolve => {
+              setTimeout(() => {
+                task();
+                resolve(null);
+              }, 16); // One frame
+            })
+        )
+      ).then(() => {
         performance.endMeasure('optimization');
       });
     }
@@ -112,10 +99,8 @@ Demonstrates Svelte 5 runes, Vite 7 features, and Node.js 22 patterns
 
   // Modern event handlers with advanced patterns
   const handleItemToggle = (itemId: string) => {
-    componentState.selectedItems = componentState.selectedItems.includes(itemId)
-      ? componentState.selectedItems.filter(id => id !== itemId)
-      : [...componentState.selectedItems, itemId];
-    
+    componentState.selectedItems = componentState.selectedItems.includes(itemId) ? componentState.selectedItems.filter(id => id !== itemId) : [...componentState.selectedItems, itemId];
+
     // Sync with storage
     storage.setValue(prev => ({
       ...prev,
@@ -155,22 +140,12 @@ Demonstrates Svelte 5 runes, Vite 7 features, and Node.js 22 patterns
 </script>
 
 <!-- Modern template with advanced patterns -->
-<div 
-  bind:this={containerRef}
-  class={responsiveClass}
-  data-visible={intersection.isVisible()}
-  role="region"
-  aria-label={title}
->
+<div bind:this={containerRef} class={responsiveClass} data-visible={intersection.isVisible()} role="region" aria-label={title}>
   <!-- Header with theme controls -->
   <header class="component-header">
     <h2>{title}</h2>
     <div class="controls">
-      <button 
-        class="theme-toggle"
-        onclick={handleThemeToggle}
-        aria-label="Toggle theme"
-      >
+      <button class="theme-toggle" onclick={handleThemeToggle} aria-label="Toggle theme">
         {theme.resolvedTheme() === 'dark' ? '☀️' : '🌙'}
       </button>
     </div>
@@ -178,13 +153,7 @@ Demonstrates Svelte 5 runes, Vite 7 features, and Node.js 22 patterns
 
   <!-- Advanced search with modern patterns -->
   <div class="search-section">
-    <input
-      type="text"
-      placeholder="Search items..."
-      oninput={(e) => handleSearch(e.currentTarget.value)}
-      class="search-input"
-      aria-label="Search items"
-    />
+    <input type="text" placeholder="Search items..." oninput={e => handleSearch(e.currentTarget.value)} class="search-input" aria-label="Search items" />
     {#if componentState.searchQuery}
       <span class="search-results">
         {filteredItems.length} of {items.length} items
@@ -196,24 +165,15 @@ Demonstrates Svelte 5 runes, Vite 7 features, and Node.js 22 patterns
   <main class="component-content">
     {#if intersection.isVisible()}
       {#each filteredItems as item (item.id)}
-        <article 
-          class="item"
-          class:selected={componentState.selectedItems.includes(item.id)}
-        >
-          <button
-            class="item-button"
-            onclick={() => handleItemToggle(item.id)}
-            aria-pressed={componentState.selectedItems.includes(item.id)}
-          >
+        <article class="item" class:selected={componentState.selectedItems.includes(item.id)}>
+          <button class="item-button" onclick={() => handleItemToggle(item.id)} aria-pressed={componentState.selectedItems.includes(item.id)}>
             <span class="item-label">{item.label}</span>
             <span class="item-value">{item.value}</span>
           </button>
         </article>
       {/each}
     {:else}
-      <div class="placeholder">
-        Component not visible - optimized rendering
-      </div>
+      <div class="placeholder">Component not visible - optimized rendering</div>
     {/if}
   </main>
 
@@ -225,13 +185,13 @@ Demonstrates Svelte 5 runes, Vite 7 features, and Node.js 22 patterns
         <dl>
           <dt>Render Time:</dt>
           <dd>{stats.renderTime.toFixed(2)}ms</dd>
-          
+
           <dt>Items:</dt>
           <dd>{stats.totalItems} total, {stats.filteredCount} filtered, {stats.selectedCount} selected</dd>
-          
+
           <dt>Viewport:</dt>
           <dd>{stats.viewport.width} × {stats.viewport.height} ({stats.viewport.orientation})</dd>
-          
+
           <dt>Visibility:</dt>
           <dd>{(stats.visibilityRatio * 100).toFixed(1)}%</dd>
         </dl>
@@ -248,7 +208,7 @@ Demonstrates Svelte 5 runes, Vite 7 features, and Node.js 22 patterns
     --background: light-dark(#ffffff, #1a1a1a);
     --text: light-dark(#1a1a1a, #ffffff);
     --border: light-dark(#e5e7eb, #374151);
-    
+
     /* Modern layout */
     container-type: inline-size;
     display: grid;
@@ -259,9 +219,9 @@ Demonstrates Svelte 5 runes, Vite 7 features, and Node.js 22 patterns
     border: 1px solid var(--border);
     background: var(--background);
     color: var(--text);
-    
+
     /* Modern transitions */
-    transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   /* Responsive design with container queries */

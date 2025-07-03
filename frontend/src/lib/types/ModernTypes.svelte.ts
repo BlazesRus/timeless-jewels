@@ -19,53 +19,56 @@
  */
 
 import { 
-  wasmLoadingState, 
+  enhancedWasmState,
   loadModernWasm, 
   getWasmState, 
-  getCalculator, 
-  getWasmData, 
+  getWasmExecutor,
   isWasmReady 
-} from '$lib/wasm/modern-wasm-loader.svelte';
+} from '$lib/ModernWasm/wasm-loader.svelte';
 
 // Re-export the WASM state for components to use
-export { wasmLoadingState, loadModernWasm, getWasmState, isWasmReady };
+export { getWasmState as wasmLoadingState, loadModernWasm, getWasmState, isWasmReady };
 
 // Export reactive getters that automatically update when WASM state changes
 export function useCalculator() {
-  return getCalculator();
+  const executor = getWasmExecutor();
+  return executor?.getExports() || {};
 }
 
 export function useData() {
-  return getWasmData();
+  const executor = getWasmExecutor();
+  return executor?.getExports() || {};
 }
 
 // Export individual reactive properties as functions (Svelte 5 requirement)
 export function calculator() {
-  return wasmLoadingState.calculator;
+  const executor = getWasmExecutor();
+  return executor?.getExports() || {};
 }
 
 export function data() {
-  return wasmLoadingState.data;
+  const executor = getWasmExecutor();
+  return executor?.getExports() || {};
 }
 
 export function isLoading() {
-  return wasmLoadingState.isLoading;
+  return enhancedWasmState.isLoading;
 }
 
 export function isReady() {
-  return wasmLoadingState.isReady;
+  return enhancedWasmState.isReady;
 }
 
 export function error() {
-  return wasmLoadingState.error;
+  return enhancedWasmState.error;
 }
 
 export function status() {
-  return wasmLoadingState.status;
+  return enhancedWasmState.isReady ? 'ready' : enhancedWasmState.isLoading ? 'loading' : 'idle';
 }
 
 export function progress() {
-  return wasmLoadingState.progress;
+  return enhancedWasmState.progress;
 }
 
 // Auto-initialize WASM when this module is imported
@@ -87,4 +90,5 @@ export interface ModernData {
 export function initializeCrystalline() {
   // This is now handled automatically by the modern WASM loader
   console.log('initializeCrystalline called - modern WASM loader handles initialization automatically');
+  return true; // Return true to indicate completion
 }

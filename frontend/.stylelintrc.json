@@ -1,22 +1,11 @@
 {
-  "extends": [
-    "stylelint-config-standard",
-    "stylelint-config-tailwindcss"
-  ],
+  "extends": ["stylelint-config-standard", "stylelint-config-tailwindcss"],
   "customSyntax": "postcss-html",
   "rules": {
     "at-rule-no-unknown": [
       true,
       {
-        "ignoreAtRules": [
-          "tailwind",
-          "apply",
-          "variants",
-          "responsive",
-          "screen",
-          "theme",
-          "import"
-        ]
+        "ignoreAtRules": ["tailwind", "apply", "variants", "responsive", "screen", "theme", "import"]
       }
     ],
     "at-rule-no-deprecated": [
@@ -28,26 +17,19 @@
     "function-no-unknown": [
       true,
       {
-        "ignoreFunctions": [
-          "theme",
-          "screen"
-        ]
+        "ignoreFunctions": ["theme", "screen"]
       }
     ],
     "property-no-unknown": [
       true,
       {
-        "ignoreProperties": [
-          "/^--tw-/"
-        ]
+        "ignoreProperties": ["/^--tw-/"]
       }
     ],
     "selector-pseudo-class-no-unknown": [
       true,
       {
-        "ignorePseudoClasses": [
-          "global"
-        ]
+        "ignorePseudoClasses": ["global"]
       }
     ],
     "color-hex-length": "long",
@@ -64,11 +46,5 @@
       "customSyntax": "postcss-html"
     }
   ],
-  "ignoreFiles": [
-    "node_modules/**/*",
-    ".svelte-kit/**/*",
-    "build/**/*",
-    "dist/**/*",
-    "static/**/*"
-  ]
+  "ignoreFiles": ["node_modules/**/*", ".svelte-kit/**/*", "build/**/*", "dist/**/*", "static/**/*"]
 }

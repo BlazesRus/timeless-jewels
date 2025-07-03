@@ -9,29 +9,29 @@
   /* Standard CSS - should have no errors */
   padding: 1rem;
   margin: 0.5rem;
-  
+
   /* Tailwind @apply directive - should be recognized */
   @apply px-4 py-2 bg-blue-500 text-white rounded;
-  
+
   /* Tailwind theme() function calls - should be valid with tailwind-csstree */
   color: theme('colors.blue.800');
   background-color: theme('colors.green.500');
   border-color: theme('colors.gray.300');
-  
+
   /* theme() with fallback - should also be valid */
   box-shadow: 0 0 0 2px theme('colors.red.500', #ef4444);
-  
+
   /* Using theme() for spacing */
   margin-top: theme('spacing.4');
   padding-bottom: theme('spacing.2');
-  
+
   /* Using theme() for font sizes */
   font-size: theme('fontSize.lg');
   line-height: theme('lineHeight.relaxed');
-  
+
   /* Nested property with theme() */
   border: 1px solid theme('colors.slate.200');
-  
+
   /* Custom CSS property with theme() */
   --custom-color: theme('colors.purple.600');
   background: var(--custom-color);

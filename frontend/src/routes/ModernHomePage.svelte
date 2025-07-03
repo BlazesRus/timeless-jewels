@@ -17,77 +17,43 @@
   GNU General Public License for more details.
 -->
 
-<!-- CACHE BUST 2025-06-30T03:46:00Z - Force reload for WASM loader updates -->
+<!-- CACHE BUST 2025-07-01T06:20:00Z - Reverted to SvelteKit routing -->
 <script lang="ts">
   import { browser } from '$app/environment';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { base, assets } from '$app/paths';
   import { page } from '$app/state';
-  // Modern WASM loader with enhanced runes
-  import { loadModernWasm, wasmLoadingState, getWasmDebugLogs } from '$lib/wasm/modern-wasm-loader.svelte';
+  // Modern WASM loader from ModernWasm folder (Microsoft Copilot's streamlined approach)
+  import { loadModernWasm, enhancedWasmState, getWasmExecutor } from '$lib/ModernWasm/wasm-loader.svelte';
+  // Modern types and functions
+  import { useCalculator, useData, initializeCrystalline } from '$lib/types/ModernTypes.svelte';
   // Modern Select component
   import ModernSelect from '$lib/components/ModernSelect.svelte';
-  import { useCalculator, useData, initializeCrystalline } from '$lib/types/ModernTypes.svelte';
 
-  // Get reactive WASM state from enhanced modern loader
-  const wasmState = wasmLoadingState;
-  
-  // State variables with Svelte 5 runes
-  let lastError = $state<string>('');
-  let consoleErrors = $state<string[]>([]);
-  
-  // Capture console errors for debugging
-  $effect(() => {
-    if (browser) {
-      const originalError = console.error;
-      console.error = (...args: any[]) => {
-        originalError(...args);
-        const errorMsg = args.map(arg => 
-          typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
-        ).join(' ');
-        consoleErrors = [...consoleErrors.slice(-9), errorMsg]; // Keep last 10 errors
-      };
-      
-      // Restore original console.error on cleanup
-      return () => {
-        console.error = originalError;
-      };
-    }
-    // Return cleanup function even if not in browser
-    return () => {};
-  });
-  
-  // Use derived state from modern WASM loader
-  const wasmStatus = $derived(wasmState.status);
-  const isWasmLoading = $derived(wasmState.isLoading);
-  const wasmProgress = $derived(wasmState.progress);
-  
-  // Reactive getters for current values using $derived with proper typing
-  const calculatorValue = $derived(useCalculator());
-  const dataValue = $derived(useData());
+  // Using enhancedWasmState from the new loader instead of local state
 
-  // Initialize WASM using modern loader with runes
-  $effect(() => {
-    if (browser) {
-      console.log('🚀 Starting modern WASM loading with runes...');
-      
-      loadModernWasm().then(() => {
-        console.log('✅ Modern WASM loading completed!');
-        // Initialize data structures
-        initializeCrystalline();
-        
-        // Check if data was loaded successfully
-        if (calculatorValue && dataValue) {
-          console.log('📊 Calculator functions:', Object.keys(calculatorValue));
-          console.log('💾 Data properties:', Object.keys(dataValue));
-        }
-      }).catch((error: any) => {
-        console.error('❌ Modern WASM loading failed:', error);
-        lastError = error?.message || 'Unknown WASM error';
-      });
+  async function startWasm() {
+    if (enhancedWasmState.isLoading || enhancedWasmState.isReady) return; // Prevent multiple loads
+
+    try {
+      console.log("🚀 Starting modern WASM loader with Copilot's fixes...");
+
+      // Use the modern loader with Copilot's ?url approach
+      const success = await loadModernWasm();
+
+      if (success) {
+        console.log("✅ Modern WASM loader is ready with Copilot's approach!");
+
+        // Initialize the app now that WASM is ready
+        await initializeCrystalline();
+      } else {
+        throw new Error("Failed to load WASM using Copilot's enhanced loader");
+      }
+    } catch (e) {
+      console.error('❌ WASM loading failed:', e);
     }
-  });
+  }
 
   console.log('Main page loading...');
 
@@ -107,7 +73,9 @@
   // Initialize search params after component mounts
   onMount(() => {
     if (browser) {
-      // searchParams is now derived, so no need to assign it here
+      // Auto-start WASM loading
+      startWasm();
+
       // Initialize from URL parameters using the derived searchParams
       if (searchParams.has('jewel')) {
         const jewelId = parseInt(searchParams.get('jewel') || '0');
@@ -128,31 +96,29 @@
   });
 
   // Data initialization effect - reactively respond to WASM data loading
-  $effect(() => {
-    // Use store values directly with $ syntax (works in both Svelte 4 and 5)
-    if (calculatorValue && dataValue && browser) {
-      console.log('WASM data detected, calculator and data are available');
-      
-      // Make sure if jewel or passiveskill data breaks that we recreate new data
-      if (!JewelsAreNotInitialized && (jewels.length === 0 || passiveSkills.length === 0)) {
-        JewelsAreNotInitialized = true;
-      }
+  let hasInitializedData = $state(false);
 
-      if (JewelsAreNotInitialized) {
-        console.log('WASM is ready, populating jewel and passive skill UI dataValue...');
-          // Initialize jewels
-        if (dataValue.TimelessJewels) {
-          jewels = Object.keys(dataValue.TimelessJewels).map(k => ({
+  $effect(() => {
+    // Only initialize if WASM is ready and we haven't initialized yet
+    if (enhancedWasmState.isReady && go && browser && !hasInitializedData) {
+      console.log('WASM ready, checking for data availability...');
+
+      try {
+        // Initialize jewels from globalThis where Go exports them
+        const timelessJewelsData = (globalThis as any).TimelessJewels;
+        if (timelessJewelsData && typeof timelessJewelsData === 'object') {
+          jewels = Object.keys(timelessJewelsData).map(k => ({
             value: parseInt(k),
-            label: (dataValue.TimelessJewels as any)[k]
+            label: timelessJewelsData[k]
           }));
           console.log('Jewels loaded:', jewels.length);
         }
-        
-        // Initialize passive skills
-        if (dataValue.PassiveSkills && Array.isArray(dataValue.PassiveSkills)) {
-          passiveSkills = dataValue.PassiveSkills
-            .filter((skill: any) => skill !== undefined)
+
+        // Initialize passive skills from globalThis where Go exports them
+        const passiveSkillsData = (globalThis as any).PassiveSkills;
+        if (passiveSkillsData && Array.isArray(passiveSkillsData)) {
+          passiveSkills = passiveSkillsData
+            .filter((skill: any) => skill !== undefined && skill !== null)
             .map((skill: any) => ({
               value: skill!.PassiveSkillGraphID,
               label: skill!.Name
@@ -161,36 +127,37 @@
         }
 
         JewelsAreNotInitialized = false;
-      }
+        hasInitializedData = true;
+        console.log('Data initialization completed successfully');
 
-      // Restore selections from URL params after data is loaded
-      if (searchParams.has('jewel') && jewels.length > 0) {
-        const jewelValue = parseInt(searchParams.get('jewel') || '0');
-        const foundJewel = jewels.find(j => j.value === jewelValue);
-        if (foundJewel && selectedJewel !== foundJewel) {
-          selectedJewel = foundJewel;
+        // Restore selections from URL params after data is loaded
+        if (searchParams.has('jewel') && jewels.length > 0) {
+          const jewelValue = parseInt(searchParams.get('jewel') || '0');
+          const foundJewel = jewels.find(j => j.value === jewelValue);
+          if (foundJewel) selectedJewel = foundJewel;
         }
-      }
 
-      if (searchParams.has('passive_skill') && passiveSkills.length > 0) {
-        const skillValue = parseInt(searchParams.get('passive_skill') || '0');
-        const foundSkill = passiveSkills.find(s => s.value === skillValue);
-        if (foundSkill && selectedPassiveSkill !== foundSkill) {
-          selectedPassiveSkill = foundSkill;
+        if (searchParams.has('passive') && passiveSkills.length > 0) {
+          const skillValue = parseInt(searchParams.get('passive') || '0');
+          const foundSkill = passiveSkills.find(s => s.value === skillValue);
+          if (foundSkill) selectedPassiveSkill = foundSkill;
         }
-      }
 
-      if (searchParams.has('seed')) {
-        seed = parseInt(searchParams.get('seed') || '0');
+        if (searchParams.has('seed')) {
+          seed = parseInt(searchParams.get('seed') || '0');
+        }
+      } catch (error) {
+        console.error('Error during data initialization:', error);
+        hasInitializedData = true; // Still mark as attempted to prevent infinite retries
       }
     }
   });
 
   // Conqueror selection effect
   $effect(() => {
-    if (selectedJewel && calculatorValue && dataValue?.TimelessJewelConquerors && browser) {
+    if (selectedJewel && enhancedWasmState.isReady && (globalThis as any).TimelessJewelConquerors && browser) {
       if (availableConquerors.length === 0) {
-        const conquerorData = dataValue.TimelessJewelConquerors[selectedJewel.value];
+        const conquerorData = (globalThis as any).TimelessJewelConquerors[selectedJewel.value];
         if (conquerorData) {
           availableConquerors = Object.keys(conquerorData).map(k => ({
             value: k,
@@ -211,10 +178,10 @@
 
   // Calculation effect
   $effect(() => {
-    if (selectedPassiveSkill && seed && selectedJewel && selectedConqueror && calculatorValue) {
+    if (selectedPassiveSkill && seed && selectedJewel && selectedConqueror && (globalThis as any).Calculate) {
       try {
         console.log('Performing calculation...');
-        result = calculatorValue.Calculate(selectedPassiveSkill.value, seed, selectedJewel.value, selectedConqueror.value);
+        result = (globalThis as any).Calculate(selectedPassiveSkill.value, seed, selectedJewel.value, selectedConqueror.value);
         console.log('Calculation result:', result);
       } catch (error: any) {
         console.error('Calculation error:', error);
@@ -237,6 +204,7 @@
     if (selectedPassiveSkill) url.searchParams.set('passive', selectedPassiveSkill.value.toString());
     if (seed) url.searchParams.set('seed', seed.toString());
 
+    // Update URL without page reload (SvelteKit style)
     goto(url.toString(), { replaceState: true });
   };
 </script>
@@ -251,30 +219,26 @@
     <div class="flex flex-row justify-center mb-8">
       <h1 class="text-3xl font-bold text-center">Timeless Jewel Calculator</h1>
     </div>
-    
-    {#if isWasmLoading}
+
+    {#if enhancedWasmState.isLoading}
       <div class="flex flex-col items-center justify-center min-h-96">
         <p class="text-white text-lg mb-4">Loading WASM data in modern mode, please wait...</p>
         <div class="mb-6">
           <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
         </div>
         <div class="text-sm text-gray-300 space-y-2 text-center">
-          <p>Status: {wasmStatus}</p>
-          <p>Progress: {wasmProgress}%</p>
-          {#if wasmState.error}
-            <p class="text-red-400">Error: {wasmState.error}</p>
+          <p>Status: {enhancedWasmState.isLoading ? 'Loading...' : enhancedWasmState.isReady ? 'Ready' : 'Initializing...'}</p>
+          <p>Progress: {enhancedWasmState.isLoading ? 50 : enhancedWasmState.isReady ? 100 : 0}%</p>
+          {#if enhancedWasmState.error}
+            <p class="text-red-400">Error: {enhancedWasmState.error}</p>
           {/if}
-          {#if lastError}
-            <p class="text-red-400">Additional Error: {lastError}</p>
-          {/if}
-          <p>Calculator available: {calculatorValue ? 'Yes' : 'No'}</p>
-          <p>Data available: {dataValue ? 'Yes' : 'No'}</p>
+          <p>Data Ready: {enhancedWasmState.isReady ? 'Yes' : 'No'}</p>
           <p>Browser ready: {browser ? 'Yes' : 'No'}</p>
-          <p>WASM Ready: {wasmState.isReady ? 'Yes' : 'No'}</p>
-          <p>WASM Loading: {wasmState.isLoading ? 'Yes' : 'No'}</p>
+          <p>WASM Ready: {enhancedWasmState.isReady ? 'Yes' : 'No'}</p>
+          <p>WASM Loading: {enhancedWasmState.isLoading ? 'Yes' : 'No'}</p>
           <div class="mt-2">
             <div class="w-full bg-gray-700 rounded-full h-2">
-              <div class="bg-orange-500 h-2 rounded-full transition-all duration-300" style="width: {wasmProgress}%"></div>
+              <div class="bg-orange-500 h-2 rounded-full transition-all duration-300" style="width: {enhancedWasmState.isLoading ? 50 : enhancedWasmState.isReady ? 100 : 0}%"></div>
             </div>
           </div>
           <p class="text-xs mt-2">Check browser console for detailed loading progress...</p>
@@ -284,72 +248,48 @@
       <!-- Main interface centered like CorrectFrontPage.png -->
       <div class="py-10 flex flex-row justify-center w-screen h-screen">
         <div class="flex flex-col justify-between w-1/3">
-          
           <!-- Skill Tree View Link -->
           <div class="text-center">
-            <a href="{base}/tree/ModernPage" class="inline-block">
+            <a href="{base}/ModernTree" class="inline-block">
               <h2 class="text-orange-500 text-xl underline hover:text-orange-400 transition-colors">Skill Tree View</h2>
             </a>
           </div>
-          
+
           <!-- Debug Info (don't remove until functional production build that works at least as well as original) -->
           <div class="bg-gray-800 p-4 rounded-lg text-sm">
             <h3 class="mb-2 font-semibold">Debug Info:</h3>
             <div class="space-y-1 text-gray-300">
-              <p>Browser: {browser ? 'Available' : 'Not available'}</p>     
-              <p>WASM Ready: {calculatorValue ? 'Yes' : 'No'}</p>
-              <p>Data loaded: {dataValue ? 'Yes' : 'No'}</p>
+              <p>Browser: {browser ? 'Available' : 'Not available'}</p>
+              <p>WASM Ready: {enhancedWasmState.isReady ? 'Yes' : 'No'}</p>
+              <p>Data Ready: {enhancedWasmState.isReady ? 'Yes' : 'No'}</p>
               <p>Jewels loaded: {jewels.length}</p>
               <p>Passive skills loaded: {passiveSkills.length}</p>
               <p>Available conquerors: {availableConquerors.length}</p>
-              
-              <!-- Enhanced WASM Debug Info -->
+
+              <!-- Enhanced WASM Debug Info with Copilot's state -->
               <div class="mt-3 pt-2 border-t border-gray-600">
-                <p class="font-semibold text-yellow-400">WASM State:</p>
-                <p>Status: {wasmStatus}</p>
-                <p>Progress: {wasmProgress}%</p>
-                <p>Is Loading: {wasmState.isLoading ? 'Yes' : 'No'}</p>
-                <p>Is Ready: {wasmState.isReady ? 'Yes' : 'No'}</p>
-                {#if wasmState.error}
-                  <p class="text-red-400">WASM Error: {wasmState.error}</p>
+                <p class="font-semibold text-yellow-400">WASM State (Copilot's Enhanced):</p>
+                <p>Status: {enhancedWasmState.isLoading ? 'Loading...' : enhancedWasmState.isReady ? 'Ready' : 'Initializing...'}</p>
+                <p>Progress: {enhancedWasmState.progress}%</p>
+                <p>Is Loading: {enhancedWasmState.isLoading ? 'Yes' : 'No'}</p>
+                <p>Is Ready: {enhancedWasmState.isReady ? 'Yes' : 'No'}</p>
+                <p>Has Executor: {enhancedWasmState.executor ? 'Yes' : 'No'}</p>
+                {#if enhancedWasmState.error}
+                  <p class="text-red-400">WASM Error: {enhancedWasmState.error}</p>
                 {/if}
-                {#if lastError}
-                  <p class="text-red-400">Last Error: {lastError}</p>
-                {/if}
-                
-                {#if consoleErrors.length > 0}
-                  <div class="mt-2 pt-1 border-t border-gray-700">
-                    <p class="font-semibold text-red-400 text-xs">Console Errors:</p>
-                    {#each consoleErrors as error}
-                      <p class="text-red-300 text-xs break-words">{error}</p>
-                    {/each}
-                    <button 
-                      class="mt-1 px-2 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded"
-                      onclick={() => consoleErrors = []}
-                    >
-                      Clear Errors
-                    </button>
-                  </div>
-                {/if}
-                
+
                 <div class="mt-2 space-x-2">
-                  <button 
+                  <button
                     class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded"
                     onclick={() => {
-                      console.log('🔄 Manual WASM reload triggered...');
-                      lastError = '';
-                      consoleErrors = [];
-                      loadModernWasm().catch(err => {
-                        console.error('Manual WASM reload failed:', err);
-                        lastError = err?.message || 'Manual reload failed';
-                      });
-                    }}
-                  >
+                      console.log("🔄 Manual WASM reload triggered with Copilot's approach...");
+                      startWasm();
+                    }}>
                     Retry WASM Load
                   </button>
                 </div>
-                
-                <p class="text-xs text-gray-400 mt-2">Check browser console (F12) for detailed logs</p>
+
+                <p class="text-xs text-gray-400 mt-2">Using Copilot's ?url approach - check browser console (F12) for detailed logs</p>
               </div>
             </div>
           </div>
@@ -376,10 +316,7 @@
                 {#if selectedPassiveSkill}
                   <div>
                     <label for="seed" class="block mb-2 text-lg font-semibold">Seed</label>
-                    <input type="number" id="seed" bind:value={seed} oninput={(e) => updateUrl()}
-                      class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white placeholder-gray-400 focus:border-orange-500 focus:outline-none"
-                      placeholder="Enter seed value"
-                    />
+                    <input type="number" id="seed" bind:value={seed} oninput={e => updateUrl()} class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white placeholder-gray-400 focus:border-orange-500 focus:outline-none" placeholder="Enter seed value" />
                   </div>
 
                   {#if result}

@@ -186,12 +186,40 @@
     "**/*Svelte4*": true,
     "**/LegacyPackage*.json": true,
     "frontend/.eslintrc.cjs": true,
-    "frontend/.eslintignore": true
+    "frontend/.eslintignore": true,
+    
+    // Hide specific problematic legacy files in modern mode
+    "frontend/src/routes/LegacyHomePage.svelte": true,
+    "frontend/src/lib/components/Legacy/**": true,
+    "frontend/src/routes/LegacyTree/**": true,
+    "frontend/src/routes/LegacyLayout.svelte": true,
+    "frontend/src/lib/wasm/wasm_exec.ts": true,
+    "frontend/src/wasm_exec.ts": true,
+    "frontend/src/lib/types/LegacyTypes.js": true,
+    "frontend/src/lib/skill_tree_legacy.ts": true,
+    "frontend/src/lib/skill_tree_types_legacy.ts": true,
+    "frontend/src/lib/worker_legacy.ts": true,
+    "frontend/src/lib/sync_worker_legacy.ts": true,
+    "frontend/src/lib/*legacy*": true,
+    
+    // Hide LegacyWasm folder in modern mode
+    "frontend/src/lib/LegacyWasm/**": true,
+    "frontend/src/lib/LegacyWasm": true
   },
   "search.exclude": {
     "**/node_modules": true,
     "**/pnpm-lock.yaml": true,
-    "***.gz": true
+    "***.gz": true,
+    
+    // Hide legacy files from search in modern mode
+    "frontend/src/routes/LegacyHomePage.svelte": true,
+    "frontend/src/lib/components/Legacy/**": true,
+    "frontend/src/routes/LegacyTree/**": true,
+    "frontend/src/lib/wasm/wasm_exec.ts": true,
+    "frontend/src/lib/*legacy*": true,
+    
+    // Hide LegacyWasm folder from search in modern mode
+    "frontend/src/lib/LegacyWasm/**": true
   },
 
   // ──────────────────────────────────────────────────────────────
@@ -322,8 +350,40 @@
   "typescript.validate.enable": true,
   "typescript.reportStyleChecksAsWarnings": true,
   "typescript.preferences.noSemantic": false,
-  "typescript.preferences.project": "frontend/tsconfig.modern-mode.json",
+  "typescript.preferences.project": "frontend/tsconfig.Modern.json",
   "typescript.suggest.completeFunctionCalls": true,
+
+  // Exclude legacy frontend files from TypeScript checking in modern mode
+  "typescript.exclude": [
+    "**/frontend/src/routes/LegacyHomePage.svelte",
+    "**/frontend/src/lib/components/Legacy/**/*",
+    "**/frontend/src/routes/LegacyTree/**/*", 
+    "**/frontend/src/routes/LegacyLayout.svelte",
+    "**/frontend/src/lib/wasm/wasm_exec.ts",
+    "**/frontend/src/wasm_exec.ts",
+    "**/frontend/src/lib/types/LegacyTypes.js",
+    "**/frontend/src/lib/skill_tree_legacy.ts",
+    "**/frontend/src/lib/skill_tree_types_legacy.ts",
+    "**/frontend/src/lib/worker_legacy.ts",
+    "**/frontend/src/lib/sync_worker_legacy.ts",
+    "**/frontend/src/lib/LegacyWasm/**/*"
+  ],
+
+  // More aggressive exclusions for VS Code problems panel
+  "typescript.validate.exclude": [
+    "**/frontend/src/routes/LegacyHomePage.svelte",
+    "**/frontend/src/lib/components/Legacy/**/*",
+    "**/frontend/src/routes/LegacyTree/**/*",
+    "**/frontend/src/routes/LegacyLayout.svelte", 
+    "**/frontend/src/lib/wasm/wasm_exec.ts",
+    "**/frontend/src/wasm_exec.ts",
+    "**/frontend/src/lib/types/LegacyTypes.js",
+    "**/frontend/src/lib/skill_tree_legacy.ts",
+    "**/frontend/src/lib/skill_tree_types_legacy.ts",
+    "**/frontend/src/lib/worker_legacy.ts",
+    "**/frontend/src/lib/sync_worker_legacy.ts",
+    "**/frontend/src/lib/LegacyWasm/**/*"
+  ],
 
   // ──────────────────────────────────────────────────────────────
   // 12) Security & trust

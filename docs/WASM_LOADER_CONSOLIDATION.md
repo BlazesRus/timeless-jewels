@@ -24,7 +24,7 @@
 ### Consolidated Features
 
 #### Modern Architecture:
-- Uses `modern-wasm-exec.svelte.ts` and `modern-go-runtime.svelte.ts`
+- Uses `modern-wasm-exec.svelte.ts` and `go-runtime.svelte.ts`
 - No dependency on legacy `wasm_exec.js`
 - Full TypeScript type safety
 - Svelte 5 runes-based reactive state

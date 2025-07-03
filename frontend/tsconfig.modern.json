@@ -6,7 +6,7 @@
     "verbatimModuleSyntax": true,
     "preserveValueImports": false,
     "ignoreDeprecations": "5.0",
-    
+
     // Base settings optimized for Node.js 22
     "allowJs": true,
     "checkJs": false,
@@ -15,7 +15,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true,
-    "target": "ES2023", // Updated for Node.js 22
+    "target": "ES2022", // Fixed: ES2023 not supported, using ES2022
     "module": "ESNext",
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
@@ -29,9 +29,9 @@
     "declarationMap": true,
     "isolatedModules": true,
     "noEmit": true,
-    "lib": ["ES2023", "DOM", "DOM.Iterable", "WebWorker"], // Updated libraries
+    "lib": ["ES2022", "DOM", "DOM.Iterable", "WebWorker"], // Fixed: ES2023 not supported
     "typeRoots": ["node_modules/@types", "src/types"],
-    
+
     // Modern mode specific - strict settings for Svelte 5 + Node.js 22
     "strict": true,
     "noImplicitAny": true,
@@ -45,7 +45,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "exactOptionalPropertyTypes": false,
-    
+
     // Node.js 22 specific optimizations
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
@@ -53,30 +53,37 @@
     "preserveConstEnums": false,
     "removeComments": false
   },
-  "include": [
-    "src/**/*.d.ts",
-    "src/**/*.ts",
-    "src/**/*.js",
-    "src/**/*.svelte",
-    "src/app.html",
-    "vite.config.js",
-    "src/lib/**/*",
-    "src/routes/**/*",
-    "src/app.d.ts",
-    "src/wasm_exec.d.ts"
-  ],
+  "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.js", "src/**/*.svelte", "src/app.html", "vite.config.js", "src/lib/**/*", "src/routes/**/*", "src/app.d.ts", "src/wasm_exec.d.ts"],
   "exclude": [
     "node_modules/**/*",
     ".svelte-kit/**/*",
     "build/**/*",
     "dist/**/*",
     "static/**/*",
-    // Exclude Legacy mode files
+
+    // Exclude Legacy mode files explicitly
     "src/**/*Legacy*",
     "src/**/*legacy*",
     "LegacyMode/**/*",
     "LegacyPackage*.json",
     "svelte.config.js",
-    "src/wasm_exec.js"
+
+    // Exclude specific legacy files that VS Code is complaining about
+    "src/routes/LegacyHomePage.svelte",
+    "src/lib/components/Legacy/LegacyTreePage.svelte",
+    "src/routes/LegacyTree/+page.svelte",
+    "src/lib/types/LegacyTypes.js",
+    "src/lib/skill_tree_legacy.ts",
+    "src/lib/skill_tree_types_legacy.ts",
+    "src/lib/worker_legacy.ts",
+    "src/lib/sync_worker_legacy.ts",
+
+    // Exclude wasm_exec files (only used in legacy mode)
+    "src/lib/wasm_exec.ts",
+    "src/wasm_exec.ts",
+    "src/wasm_exec.js",
+
+    // Exclude LegacyWasm folder (only used in legacy mode)
+    "src/lib/LegacyWasm/**/*"
   ]
 }

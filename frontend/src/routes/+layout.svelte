@@ -14,7 +14,7 @@
       const svelteVersion = detectSvelteVersion();
       console.log(`Detected Svelte version: ${svelteVersion.full}`);
       console.log(`Build version constant: ${(globalThis as any).__SVELTE_BUILD_VERSION__}`);
-      
+
       // Load the appropriate layout based on build configuration
       // The build system excludes incompatible components, so we only try to load what should be available
       if (isSvelte5OrHigher()) {
@@ -26,7 +26,7 @@
         const module = await import('./LegacyLayout.svelte');
         LayoutComponent = module.default;
       }
-      
+
       isLoading = false;
     } catch (err) {
       console.error('Failed to load layout component:', err);
@@ -55,7 +55,8 @@
 {/if}
 
 <style>
-  .loading-container, .error-container {
+  .loading-container,
+  .error-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -76,8 +77,12 @@
   }
 
   @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 
   .error-container {

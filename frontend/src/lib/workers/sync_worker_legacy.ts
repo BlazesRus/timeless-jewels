@@ -19,19 +19,19 @@ const obj = {
   },
   async search(args: ReverseSearchConfig, callback: (seed: number) => Promise<void>): Promise<SearchResults> {
     let calculatorValue: any;
-    
+
     // Legacy Svelte 4 store subscription pattern
     const unsubscribe = calculator.subscribe(value => {
       calculatorValue = value;
     });
-    
+
     // Clean up subscription
     unsubscribe();
-    
+
     if (!calculatorValue) {
       throw new Error('Calculator not initialized');
     }
-    
+
     const searchResult = await calculatorValue.ReverseSearch(
       args.nodes,
       args.stats.map(s => s.id),

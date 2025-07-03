@@ -303,10 +303,4 @@ export type NodeFilter = (node: Node) => boolean;
 export type NodeMapper<T> = (node: Node) => T;
 
 // Export all types for modern usage
-export type {
-  Node as ModernNode,
-  SkillTreeData as ModernSkillTreeData,
-  Group as ModernGroup,
-  Constants as ModernConstants,
-  Sprites as ModernSprites
-};
+export type { Node as ModernNode, SkillTreeData as ModernSkillTreeData, Group as ModernGroup, Constants as ModernConstants, Sprites as ModernSprites };

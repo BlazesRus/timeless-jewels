@@ -1,0 +1,42 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "typescript.preferences.includePackageJsonAutoImports": "off",
+    "typescript.validate.enable": true,
+    "typescript.tsc.autoDetect": "off",
+    "typescript.preferences.projectConfiguration": "./tsconfig.Modern.json",
+
+    // Force VS Code to use the Modern TypeScript config
+    "typescript.tsdk": "./node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+
+    // Hide legacy files completely
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/.svelte-kit": true,
+      "**/build": true,
+      "**/dist": true,
+      "**/src/routes/LegacyHomePage.svelte": true,
+      "**/src/lib/components/Legacy/**": true,
+      "**/src/routes/LegacyTree/**": true,
+      "**/src/lib/wasm_exec.ts": true,
+      "**/src/lib/*legacy*": true
+    },
+
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/.svelte-kit": true,
+      "**/build": true,
+      "**/dist": true,
+      "**/src/routes/LegacyHomePage.svelte": true,
+      "**/src/lib/components/Legacy/**": true,
+      "**/src/routes/LegacyTree/**": true,
+      "**/src/lib/wasm_exec.ts": true,
+      "**/src/lib/*legacy*": true
+    }
+  }
+}

@@ -68,7 +68,7 @@ class VSCodeSettingsManager {
     // Ensure .vscode directory exists
     if (!existsSync(this.vscodeDir)) {
       mkdirSync(this.vscodeDir, { recursive: true });
-    }    // Configure file exclusions based on version
+    } // Configure file exclusions based on version
     if (version === 5) {
       // Modern Mode (Svelte 5) - Hide legacy ESLint config
       settings['files.exclude'] = {

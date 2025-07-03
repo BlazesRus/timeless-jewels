@@ -1,4 +1,4 @@
-import type { Translation, Node, SkillTreeData, Group, Sprite, TranslationFile } from './skill_tree_types';
+import type { Translation, Node, SkillTreeData, Group, Sprite, TranslationFile } from './skill_tree_types_modern';
 import { data } from './types/ModernTypes.svelte';
 import { type Filter, type Query, filterGroupsToQuery, filtersToFilterGroup } from './utils/trade_utils';
 import { chunkArray } from './utils/utils';
@@ -24,7 +24,7 @@ export const loadSkillTree = () => {
     console.error('Data not available for skill tree loading');
     return;
   }
-  
+
   skillTree = JSON.parse(dataValue.SkillTree);
   console.log('Loaded skill tree', skillTree);
 
@@ -33,7 +33,7 @@ export const loadSkillTree = () => {
     if (!group) {
       return;
     }
-    
+
     group.nodes.forEach(nodeId => {
       const node = skillTree.nodes[nodeId];
       if (!node) {
@@ -243,7 +243,7 @@ export const orbitAngleAt = (orbit: number, index: number): number => {
   if (!nodesInOrbit) {
     return 0;
   }
-  
+
   if (nodesInOrbit == 16) {
     return orbit16Angles[orbit16Angles.length - index] || 0;
   } else if (nodesInOrbit == 40) {
@@ -262,7 +262,7 @@ export const calculateNodePos = (node: Node, offsetX: number, offsetY: number, s
   if (!targetGroup) {
     return { x: 0, y: 0 };
   }
-  
+
   const targetAngle = orbitAngleAt(node.orbit, node.orbitIndex);
 
   const targetGroupPos = toCanvasCoords(targetGroup.x, targetGroup.y, offsetX, offsetY, scaling);
@@ -288,7 +288,7 @@ export const formatStats = (translation: Translation, stat: number): string | un
       if (!first) {
         continue;
       }
-      
+
       if (first.min !== undefined) {
         if (stat < first.min) {
           matches = false;
@@ -484,7 +484,7 @@ const tradeStatNames: { [key: number]: { [key: string]: string } } = {
 export const constructSingleResultQuery = (jewel: number, conqueror: string | null, result: SearchWithSeed): Query => {
   const anyConqueror = conqueror === null;
   const jewelStats = tradeStatNames[jewel];
-  
+
   if (!jewelStats) {
     throw new Error(`No trade stat names found for jewel: ${jewel}`);
   }
@@ -513,11 +513,11 @@ const constructSearchFilter = (jewel: number, conqueror: string | null, result: 
   // null conqueror indicates to search for any conqueror
   const anyConqueror = conqueror === null;
   const jewelStats = tradeStatNames[jewel];
-  
+
   if (!jewelStats) {
     throw new Error(`No trade stat names found for jewel: ${jewel}`);
   }
-  
+
   const conquerors = anyConqueror ? Object.keys(jewelStats) : [conqueror].filter(c => c !== null);
 
   return conquerors.map(conq => {

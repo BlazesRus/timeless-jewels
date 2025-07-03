@@ -14,15 +14,10 @@
     <p class="text-gray-300 mb-8">
       The page "{$page.url.pathname}" could not be found.
     </p>
-    
+
     <div class="space-y-4">
-      <a 
-        href="{base}/" 
-        class="inline-block px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-semibold transition-colors"
-      >
-        Go to Home
-      </a>
-      
+      <a href="{base}/" class="inline-block px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-semibold transition-colors">Go to Home</a>
+
       <div class="text-sm text-gray-400">
         <p>Available pages:</p>
         <ul class="mt-2 space-y-1">

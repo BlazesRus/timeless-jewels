@@ -56,12 +56,12 @@ class VersionManager {
     try {
       const packageJson = JSON.parse(readFileSync(this.packageJsonPath, 'utf8'));
       const svelteVersion = packageJson.dependencies?.svelte || packageJson.devDependencies?.svelte;
-      
+
       if (svelteVersion) {
         const majorVersion = svelteVersion.match(/^[~^]?(\d+)/);
         return majorVersion ? +majorVersion[1] : null;
       }
-      
+
       return null;
     } catch (error) {
       console.warn('Could not read package.json:', error.message);
@@ -74,16 +74,16 @@ class VersionManager {
    */
   switchTo4() {
     console.log('🔄 Switching to Svelte 4 (Legacy mode)...');
-    
+
     try {
       // Run pnpm install with legacy mode
       console.log('📦 Installing Svelte 4 dependencies...');
-      execSync('pnpm install', { 
-        stdio: 'inherit', 
+      execSync('pnpm install', {
+        stdio: 'inherit',
         cwd: this.rootDir,
         env: { ...process.env, SVELTE_MODE: 'legacy' }
       });
-      
+
       console.log('✅ Successfully switched to Svelte 4!');
       this.status();
       return true;
@@ -94,20 +94,20 @@ class VersionManager {
   }
 
   /**
-   * Switch to Svelte 5 (Modern mode) 
+   * Switch to Svelte 5 (Modern mode)
    */
   switchTo5() {
     console.log('🔄 Switching to Svelte 5 (Modern mode)...');
-    
+
     try {
       // Run pnpm install with modern mode
       console.log('📦 Installing Svelte 5 dependencies...');
-      execSync('pnpm install', { 
-        stdio: 'inherit', 
+      execSync('pnpm install', {
+        stdio: 'inherit',
         cwd: this.rootDir,
         env: { ...process.env, SVELTE_MODE: 'modern' }
       });
-      
+
       console.log('✅ Successfully switched to Svelte 5!');
       this.status();
       return true;
@@ -124,13 +124,13 @@ class VersionManager {
     try {
       console.log('\n🎯 Current Version Status:');
       console.log('=' + '='.repeat(50));
-      
+
       const installedVersion = this.getInstalledSvelteVersion();
       const currentMode = this.getCurrentMode();
-      
+
       console.log(`📋 Installed Svelte version: ${installedVersion || 'unknown'}`);
       console.log(`🔧 Current SVELTE_MODE: ${currentMode}`);
-      
+
       // Check if mode matches installed version
       const expectedMode = installedVersion === 4 ? 'legacy' : 'modern';
       if (currentMode !== expectedMode) {
@@ -139,10 +139,9 @@ class VersionManager {
       } else {
         console.log(`✅ Mode and version are synchronized`);
       }
-      
+
       // Check pnpmfile.cjs status
       this.checkPnpmfileStatus();
-      
     } catch (error) {
       console.error('❌ Error checking status:', error.message);
     }
@@ -153,20 +152,20 @@ class VersionManager {
    */
   checkPnpmfileStatus() {
     const pnpmfilePath = join(this.rootDir, 'pnpmfile.cjs');
-    
+
     if (existsSync(pnpmfilePath)) {
       console.log('✅ pnpmfile.cjs found - dynamic configuration enabled');
-      
+
       // Check config dependencies
       const legacyConfigPath = join(this.rootDir, '.config-deps', 'timeless-jewels-legacy-config');
       const modernConfigPath = join(this.rootDir, '.config-deps', 'timeless-jewels-modern-config');
-      
+
       if (existsSync(legacyConfigPath)) {
         console.log('✅ Legacy config found');
       } else {
         console.log('⚠️  Legacy config missing');
       }
-      
+
       if (existsSync(modernConfigPath)) {
         console.log('✅ Modern config found');
       } else {
@@ -184,23 +183,22 @@ class VersionManager {
     try {
       const packageJson = JSON.parse(readFileSync(this.packageJsonPath, 'utf8'));
       const currentMode = this.getCurrentMode();
-      
+
       console.log(`\n📦 Package Configuration (${currentMode} mode):`);
       console.log('=' + '='.repeat(50));
-      
+
       // Show key dependencies
       const dependencies = packageJson.dependencies || {};
       const devDependencies = packageJson.devDependencies || {};
-      
+
       const keyPackages = ['svelte', '@sveltejs/kit', 'vite', 'tailwindcss'];
-      
+
       keyPackages.forEach(pkg => {
         const version = dependencies[pkg] || devDependencies[pkg];
         if (version) {
           console.log(`  ${pkg}: ${version}`);
         }
       });
-      
     } catch (error) {
       console.error('❌ Error reading package info:', error.message);
     }
@@ -240,20 +238,20 @@ Examples:
       case 'status':
         manager.status();
         break;
-      
+
       case 'switchTo4':
         manager.switchTo4();
         break;
-      
+
       case 'switchTo5':
         manager.switchTo5();
         break;
-      
+
       case 'info':
         manager.status();
         manager.getPackageInfo();
         break;
-      
+
       default:
         console.error(`❌ Unknown command: ${command}`);
         console.log('💡 Run without arguments to see usage information');

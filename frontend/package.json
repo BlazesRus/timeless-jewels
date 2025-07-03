@@ -40,7 +40,10 @@
     "version:status": "node scripts/version-manager.js status",
     "version:help": "node scripts/version-manager.js help",
     "perf:analyze": "vite-bundle-analyzer dist",
-    "dev:debug": "cross-env DEBUG=vite:* pnpm run dev:modern"
+    "dev:debug": "cross-env DEBUG=vite:* pnpm run dev:modern",
+    "build:wasm": "powershell -ExecutionPolicy Bypass -File scripts/build-wasm.ps1",
+    "build:wasm:unix": "bash scripts/build-wasm.sh",
+    "wasm:optimize": "pnpm run build:wasm"
   },
   "devDependencies": {
     "@eslint/css": "^0.9.0",
@@ -96,7 +99,7 @@
     "pnpm": ">=10.0.0"
   },
   "type": "module",
-  "packageManager": "pnpm@10.12.0",
+  "packageManager": "pnpm@10.12.4",
   "pnpm": {
     "onlyBuiltDependencies": [],
     "peerDependencyRules": {

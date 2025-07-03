@@ -51,6 +51,16 @@
     "**_legacy.ts",
     "LegacyPackage*.json",
     "svelte.config.js",
-    "src/wasm_exec.js"
+    "src/wasm_exec.js",
+    "src/lib/wasm_exec.ts",
+    "src/wasm_exec.ts",
+    "src/routes/LegacyHomePage.svelte",
+    "src/lib/components/Legacy/LegacyTreePage.svelte",
+    "src/routes/LegacyTree/+page.svelte",
+    "src/lib/types/LegacyTypes.js",
+    "src/lib/skill_tree_legacy.ts",
+    "src/lib/skill_tree_types_legacy.ts",
+    "src/lib/worker_legacy.ts",
+    "src/lib/sync_worker_legacy.ts"
   ]
 }

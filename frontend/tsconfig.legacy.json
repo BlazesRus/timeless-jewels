@@ -37,29 +37,6 @@
     "noUnusedParameters": false,
     "exactOptionalPropertyTypes": false
   },
-  "include": [
-    "src/**/*.d.ts",
-    "src/**/*.ts",
-    "src/**/*.js",
-    "src/**/*.svelte",
-    "src/app.html",
-    "vite.config.js",
-    "src/lib/**/*",
-    "src/routes/**/*",
-    "src/app.d.ts",
-    "src/wasm_exec.d.ts"
-  ],
-  "exclude": [
-    "node_modules/**/*",
-    ".svelte-kit/**/*",
-    "build/**/*",
-    "dist/**/*",
-    "static/**/*", 
-    "src/**/*_modern.ts",
-    "src/**/*Modern*.svelte",
-    "src/**/*Modern*.ts",
-    "ModernMode/**/*",
-    "src/lib/skill_tree_legacy.ts",
-    "src/lib/sync_worker_legacy.ts"
-  ]
+  "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.js", "src/**/*.svelte", "src/app.html", "vite.config.js", "src/lib/**/*", "src/routes/**/*", "src/app.d.ts", "src/wasm_exec.d.ts"],
+  "exclude": ["node_modules/**/*", ".svelte-kit/**/*", "build/**/*", "dist/**/*", "static/**/*", "src/**/*_modern.ts", "src/**/*Modern*.svelte", "src/**/*Modern*.ts", "ModernMode/**/*", "src/lib/skill_tree_legacy.ts", "src/lib/sync_worker_legacy.ts"]
 }

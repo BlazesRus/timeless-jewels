@@ -52,8 +52,14 @@
       } else {
         console.log('Loading Legacy (Svelte 4) home page implementation...');
         try {
-          const module = await import('./LegacyHomePage.svelte');
-          HomePageComponent = module.default;
+          // Only attempt to load legacy component if it exists (development mode)
+          if (typeof import.meta.env !== 'undefined' && import.meta.env.DEV) {
+            const module = await import('./LegacyHomePage.svelte');
+            HomePageComponent = module.default;
+          } else {
+            // In production modern mode, skip legacy component
+            throw new Error('Legacy component not available in production modern mode');
+          }
         } catch (legacyErr) {
           console.warn('Legacy component not available, trying modern fallback');
           try {
@@ -75,26 +81,26 @@
 </script>
 
 {#if isLoading}
-  <div class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center">
-    <div class="bg-white/10 rounded-lg p-8 text-center">
+  <div class="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm flex items-center justify-center">
+    <div class="bg-white bg-opacity-10 rounded-lg p-8 text-center">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
       <h2 class="text-xl text-white mb-2">Loading Timeless Jewel Calculator</h2>
-      <p class="text-white/70">Detecting Svelte version and loading appropriate implementation...</p>
+      <p class="text-white text-opacity-70">Detecting Svelte version and loading appropriate implementation...</p>
     </div>
   </div>
 {:else if error}
-  <div class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center">
-    <div class="bg-red-500/20 border border-red-500 rounded-lg p-8 text-center max-w-md">
+  <div class="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm flex items-center justify-center">
+    <div class="bg-red-500 bg-opacity-20 border border-red-500 rounded-lg p-8 text-center max-w-md">
       <h2 class="text-xl text-red-400 mb-4">Error Loading Application</h2>
       <p class="text-white mb-4">{error}</p>
-      <button class="bg-red-500/40 hover:bg-red-500/60 px-4 py-2 rounded text-white" on:click={() => window.location.reload()}>Reload Page</button>
+      <button class="bg-red-500 bg-opacity-40 hover:bg-red-500 hover:bg-opacity-60 px-4 py-2 rounded text-white" on:click={() => window.location.reload()}>Reload Page</button>
     </div>
   </div>
 {:else if HomePageComponent}
   <svelte:component this={HomePageComponent} />
 {:else}
-  <div class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center">
-    <div class="bg-yellow-500/20 border border-yellow-500 rounded-lg p-8 text-center">
+  <div class="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm flex items-center justify-center">
+    <div class="bg-yellow-500 bg-opacity-20 border border-yellow-500 rounded-lg p-8 text-center">
       <h2 class="text-xl text-yellow-400 mb-4">No Component Loaded</h2>
       <p class="text-white">The home page component could not be determined.</p>
     </div>

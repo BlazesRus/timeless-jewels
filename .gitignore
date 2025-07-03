@@ -230,3 +230,5 @@ docs/BUILD_ERRORS_FIXED_FINAL.md
 frontend/src/lib/wasm/modern-wasm-loader.svelte.ts.backup
 
 frontend/src/lib/types/ModernTypes.svelte.ts.backup
+
+frontend/src/routes/LegacyTree/\+page.svelte.backup

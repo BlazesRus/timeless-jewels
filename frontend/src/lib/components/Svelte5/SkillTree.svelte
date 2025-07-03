@@ -11,7 +11,7 @@
   import { baseJewelRadius, calculateNodePos, distance, drawnGroups, drawnNodes, formatStats, inverseSprites, inverseSpritesActive, inverseTranslations, orbitAngleAt, skillTree, toCanvasCoords } from '../../skill_tree_modern';
   import type { Point } from '../../skill_tree_modern';
   import { useCalculator, useData } from '../../types/ModernTypes.svelte';
-  
+
   // Modern state management using Svelte 5 runes
   let scaling = $state(10);
   let offsetX = $state(0);
@@ -22,7 +22,7 @@
   const data = useData();
   const calculatorValue = $derived(calculator);
   const dataValue = $derived(data);
-  
+
   // Derived values (Svelte 5 style)
   const jewelRadius = $derived(baseJewelRadius / scaling);
 
@@ -39,17 +39,7 @@
     children?: import('svelte').Snippet;
   }
 
-  let {
-    clickNode,
-    circledNode = $bindable(undefined),
-    selectedJewel,
-    selectedConqueror,
-    seed,
-    highlighted = [],
-    disabled = [],
-    highlightJewels = false,
-    children
-  }: Props = $props();
+  let { clickNode, circledNode = $bindable(undefined), selectedJewel, selectedConqueror, seed, highlighted = [], disabled = [], highlightJewels = false, children }: Props = $props();
 
   const startGroups = [427, 320, 226, 227, 323, 422, 329];
   const titleFont = '25px Roboto Mono';
@@ -164,7 +154,7 @@
     Object.keys(drawnNodes).forEach((nodeId: string) => {
       const node = drawnNodes[nodeId as any];
       if (!node.orbit || node.orbitIndex === undefined) return;
-      
+
       const angle = orbitAngleAt(node.orbit, node.orbitIndex);
       const rotatedPos = calculateNodePos(node, offsetX, offsetY, scaling);
 
@@ -222,7 +212,8 @@
         context.strokeStyle = `#524518`;
         context.stroke();
       });
-    });    let circledNodePos: Point | undefined;
+    });
+    let circledNodePos: Point | undefined;
     if (circledNode && drawnNodes[circledNode]) {
       circledNodePos = calculateNodePos(drawnNodes[circledNode], offsetX, offsetY, scaling);
       context.strokeStyle = '#ad2b2b';
@@ -322,10 +313,11 @@
     if (circledNode) {
       context.strokeStyle = '#ad2b2b';
       context.lineWidth = 1;
-      context.beginPath();    if (circledNodePos) {
-      context.arc(circledNodePos.x, circledNodePos.y, jewelRadius, 0, Math.PI * 2);
-      context.stroke();
-    }
+      context.beginPath();
+      if (circledNodePos) {
+        context.arc(circledNodePos.x, circledNodePos.y, jewelRadius, 0, Math.PI * 2);
+        context.stroke();
+      }
     }
 
     if (hoveredNode) {
@@ -379,7 +371,8 @@
             console.warn('Error calculating node stats:', error);
           }
         }
-      }context.font = titleFont;
+      }
+      context.font = titleFont;
       const textMetrics = context.measureText(nodeName || '');
 
       const maxWidth = Math.max(textMetrics.width + 50, 600);

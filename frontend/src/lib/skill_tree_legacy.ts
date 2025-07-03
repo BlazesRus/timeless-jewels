@@ -13,7 +13,7 @@ export let passiveToTree: Record<number, number> = {};
 export let translations: Record<string, Translation> = {};
 export let statTranslations: Record<string, Translation> = {};
 
-type Conqueror = "VAAL" | "KARUI" | "ETERNAL" | "MARAKETH" | "TEMPLAR";
+type Conqueror = 'VAAL' | 'KARUI' | 'ETERNAL' | 'MARAKETH' | 'TEMPLAR';
 
 interface ReverseSearchConfig {
   nodes: number[];
@@ -82,19 +82,24 @@ export async function loadSkillTree() {
 
     // Load translations
     const translationsData = JSON.parse(dataValue.StatTranslationsJSON()) as TranslationFile;
-    translations = translationsData.reduce((acc, item) => {
-      acc[item.ids.join(',')] = item;
-      return acc;
-    }, {} as Record<string, Translation>);
+    translations = translationsData.reduce(
+      (acc, item) => {
+        acc[item.ids.join(',')] = item;
+        return acc;
+      },
+      {} as Record<string, Translation>
+    );
 
     const statTranslationsData = JSON.parse(dataValue.PassiveSkillStatTranslationsJSON()) as TranslationFile;
-    statTranslations = statTranslationsData.reduce((acc, item) => {
-      acc[item.ids.join(',')] = item;
-      return acc;
-    }, {} as Record<string, Translation>);
+    statTranslations = statTranslationsData.reduce(
+      (acc, item) => {
+        acc[item.ids.join(',')] = item;
+        return acc;
+      },
+      {} as Record<string, Translation>
+    );
 
     console.log('Translations loaded:', Object.keys(translations).length, 'stat translations:', Object.keys(statTranslations).length);
-
   } catch (error) {
     console.error('Error loading skill tree:', error);
   }
@@ -130,7 +135,7 @@ export function translateStat(statIds: number[], values: number[]): string {
 
   // Use the first format string for now
   let format = translation.english[0].format[0] || '';
-  
+
   // Simple placeholder replacement
   values.forEach((value, index) => {
     format = format.replace(`{${index}}`, value.toString());
@@ -151,7 +156,7 @@ export function formatStatValue(value: number, statId: number): string {
 // Enhanced search functionality
 export function searchNodesByName(query: string): Node[] {
   if (!skillTree || !query.trim()) return [];
-  
+
   const searchTerm = query.toLowerCase().trim();
   const results: Node[] = [];
 
@@ -166,26 +171,26 @@ export function searchNodesByName(query: string): Node[] {
 
 export function getNodesInRadius(centerNodeId: number, radius: number): Node[] {
   if (!skillTree) return [];
-  
+
   const visited = new Set<number>();
-  const queue: Array<{nodeId: number, distance: number}> = [{nodeId: centerNodeId, distance: 0}];
+  const queue: Array<{ nodeId: number; distance: number }> = [{ nodeId: centerNodeId, distance: 0 }];
   const results: Node[] = [];
 
   while (queue.length > 0) {
-    const {nodeId, distance} = queue.shift()!;
-    
+    const { nodeId, distance } = queue.shift()!;
+
     if (visited.has(nodeId) || distance > radius) continue;
     visited.add(nodeId);
 
     const node = skillTree.nodes[nodeId];
     if (node) {
       results.push(node);
-      
+
       // Add connected nodes
       if (distance < radius && node.out) {
         node.out.forEach(connectedId => {
           if (!visited.has(connectedId)) {
-            queue.push({nodeId: connectedId, distance: distance + 1});
+            queue.push({ nodeId: connectedId, distance: distance + 1 });
           }
         });
       }
@@ -199,11 +204,11 @@ export function getPathBetweenNodes(fromId: number, toId: number): number[] {
   if (!skillTree || fromId === toId) return [];
 
   const visited = new Set<number>();
-  const queue: Array<{nodeId: number, path: number[]}> = [{nodeId: fromId, path: [fromId]}];
+  const queue: Array<{ nodeId: number; path: number[] }> = [{ nodeId: fromId, path: [fromId] }];
 
   while (queue.length > 0) {
-    const {nodeId, path} = queue.shift()!;
-    
+    const { nodeId, path } = queue.shift()!;
+
     if (visited.has(nodeId)) continue;
     visited.add(nodeId);
 
@@ -215,7 +220,7 @@ export function getPathBetweenNodes(fromId: number, toId: number): number[] {
     if (node && node.out) {
       node.out.forEach(connectedId => {
         if (!visited.has(connectedId)) {
-          queue.push({nodeId: connectedId, path: [...path, connectedId]});
+          queue.push({ nodeId: connectedId, path: [...path, connectedId] });
         }
       });
     }
@@ -227,50 +232,48 @@ export function getPathBetweenNodes(fromId: number, toId: number): number[] {
 // Group and class utilities
 export function getNodesByGroup(groupId: number): Node[] {
   if (!skillTree) return [];
-  
+
   return Object.values(skillTree.nodes).filter(node => node.g === groupId);
 }
 
 export function getNodesByClass(className: string): Node[] {
   if (!skillTree) return [];
-  
+
   const classId = getClassIdByName(className);
   if (classId === -1) return [];
-  
-  return Object.values(skillTree.nodes).filter(node => 
-    node.spc && node.spc.includes(classId)
-  );
+
+  return Object.values(skillTree.nodes).filter(node => node.spc && node.spc.includes(classId));
 }
 
 export function getClassIdByName(className: string): number {
   if (!skillTree) return -1;
-  
+
   const classMap: Record<string, number> = {
-    'Scion': 0,
-    'Marauder': 1,
-    'Ranger': 2,
-    'Witch': 3,
-    'Duelist': 4,
-    'Templar': 5,
-    'Shadow': 6
+    Scion: 0,
+    Marauder: 1,
+    Ranger: 2,
+    Witch: 3,
+    Duelist: 4,
+    Templar: 5,
+    Shadow: 6
   };
-  
+
   return classMap[className] ?? -1;
 }
 
 // Jewel socket utilities
 export function getJewelSockets(): Node[] {
   if (!skillTree) return [];
-  
+
   return Object.values(skillTree.nodes).filter(node => node.isJewelSocket);
 }
 
 export function getNodesInJewelRadius(jewelSocketId: number): Node[] {
   if (!skillTree) return [];
-  
+
   const jewelSocket = skillTree.nodes[jewelSocketId];
   if (!jewelSocket || !jewelSocket.isJewelSocket) return [];
-  
+
   // Standard jewel radius is typically 2-3 nodes
   return getNodesInRadius(jewelSocketId, 3);
 }
@@ -279,7 +282,7 @@ export function getNodesInJewelRadius(jewelSocketId: number): Node[] {
 export function getStatById(statId: number): any {
   const dataValue = get(data);
   if (!dataValue) return null;
-  
+
   try {
     return dataValue.GetStatByIndex(statId);
   } catch (error) {
@@ -291,7 +294,7 @@ export function getStatById(statId: number): any {
 export function getPassiveSkillById(skillId: number): any {
   const dataValue = get(data);
   if (!dataValue) return null;
-  
+
   try {
     return dataValue.GetPassiveSkillByIndex(skillId);
   } catch (error) {
@@ -319,7 +322,7 @@ export function validateNodeId(nodeId: number): boolean {
 export function validateStatId(statId: number): boolean {
   const dataValue = get(data);
   if (!dataValue) return false;
-  
+
   try {
     const stat = dataValue.GetStatByIndex(statId);
     return stat != null;
@@ -352,23 +355,23 @@ export function isSkillTreeLoaded(): boolean {
 // Conqueror utilities for legacy compatibility
 export function getConquerorName(conquerorId: number): string {
   const conquerorNames: Record<number, string> = {
-    1: "Vaal",
-    2: "Karui", 
-    3: "Eternal",
-    4: "Maraketh",
-    5: "Templar"
+    1: 'Vaal',
+    2: 'Karui',
+    3: 'Eternal',
+    4: 'Maraketh',
+    5: 'Templar'
   };
-  return conquerorNames[conquerorId] || "Unknown";
+  return conquerorNames[conquerorId] || 'Unknown';
 }
 
 export function getTimelessJewelName(jewelId: number): string {
   const dataValue = get(data);
-  if (!dataValue) return "Unknown";
-  
+  if (!dataValue) return 'Unknown';
+
   try {
     const jewels = JSON.parse(dataValue.TimelessJewels());
-    return jewels[jewelId]?.name || "Unknown";
+    return jewels[jewelId]?.name || 'Unknown';
   } catch {
-    return "Unknown";
+    return 'Unknown';
   }
 }

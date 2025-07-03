@@ -9,7 +9,7 @@
   --color-background: light-dark(#ffffff, #0f172a);
   --color-surface: light-dark(#f8fafc, #1e293b);
   --color-border: light-dark(#e2e8f0, #334155);
-  
+
   /* Modern color mixing for gradients and states */
   --color-accent: color-mix(in srgb, var(--color-primary) 80%, var(--color-secondary) 20%);
   --color-hover: color-mix(in srgb, var(--color-primary) 90%, transparent 10%);
@@ -35,17 +35,17 @@
   border: 1px solid var(--color-border);
   color: var(--color-background);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  
+
   &:hover {
     background: var(--color-hover);
     transform: translateY(-1px);
   }
-  
+
   &:focus-visible {
     outline: 2px solid var(--color-focus);
     outline-offset: 2px;
   }
-  
+
   &:active {
     transform: translateY(0);
   }

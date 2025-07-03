@@ -16,7 +16,7 @@ interface SvelteVersion {
 export function detectSvelteVersion(): SvelteVersion {
   // Use build-time constant injected by Vite
   const buildVersion = (globalThis as any).__SVELTE_BUILD_VERSION__ || 5;
-  
+
   // Return version information based on build configuration
   if (buildVersion >= 5) {
     return { major: 5, minor: 33, patch: 18, full: '5.33.18' };

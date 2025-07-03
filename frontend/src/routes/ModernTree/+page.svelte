@@ -42,7 +42,7 @@
   // Use modern rune-based reactive utilities
   const calculatorUtils = useCalculator();
   const dataUtils = useData();
-  
+
   // Reactive getters for current values using $derived with proper typing
   const calculatorValue = $derived(calculatorUtils.current as any);
   const dataValue = $derived(dataUtils.current as any);
@@ -700,7 +700,7 @@
 
 <style lang="postcss">
   @reference "../../app.css";
-  
+
   .selection-button {
     @apply opacity-50 p-2 px-4 flex-grow border border-gray-300;
   }

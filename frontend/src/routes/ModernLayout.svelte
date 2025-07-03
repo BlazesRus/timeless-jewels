@@ -18,12 +18,12 @@
   $effect(() => {
     const startTime = performance.now();
     layoutMetrics.mountTime = startTime;
-    
+
     // Modern hydration detection
     if (typeof window !== 'undefined') {
       layoutMetrics.isHydrated = true;
       layoutMetrics.renderTime = performance.now() - startTime;
-      
+
       // Log performance in development
       if (import.meta.env.DEV) {
         console.log(`🚀 Modern Layout rendered in ${layoutMetrics.renderTime.toFixed(2)}ms`);
@@ -49,7 +49,7 @@
 
       updateViewport();
       window.addEventListener('resize', updateViewport);
-      
+
       return () => window.removeEventListener('resize', updateViewport);
     }
     // Return a no-op cleanup function for server-side rendering
@@ -72,14 +72,14 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    
+
     /* CSS custom properties for dynamic theming */
     --layout-padding: 1rem;
     --layout-gap: 1.5rem;
-    
+
     /* Modern CSS features */
     container-type: inline-size;
-    
+
     /* Smooth transitions */
     transition: all 0.2s ease-in-out;
   }
@@ -102,11 +102,11 @@
   }
 
   /* Performance optimization: reduce layout shift */
-  .layout-wrapper[data-hydrated="false"] {
+  .layout-wrapper[data-hydrated='false'] {
     opacity: 0.95;
   }
 
-  .layout-wrapper[data-hydrated="true"] {
+  .layout-wrapper[data-hydrated='true'] {
     opacity: 1;
   }
 </style>

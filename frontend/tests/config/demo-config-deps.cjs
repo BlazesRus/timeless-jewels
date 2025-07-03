@@ -9,38 +9,38 @@ console.log('🎯 Timeless Jewels Generator - pnpm configDependencies Demo\n');
 // Function to demonstrate dependency switching
 function showDependencyConfig(mode) {
   console.log(`📋 ${mode.toUpperCase()} Mode Configuration:`);
-  
+
   // Set environment and load config
   process.env.SVELTE_MODE = mode;
   delete require.cache[require.resolve('./pnpmfile.cjs')];
   const config = require('./pnpmfile.cjs');
-  
+
   // Simulate package.json processing
   const mockPackage = {
-    name: "frontend",
+    name: 'frontend',
     devDependencies: {
-      "svelte": "^5.33.18",
-      "@sveltejs/kit": "^2.21.3",
-      "vite": "^6.3.5"
+      svelte: '^5.33.18',
+      '@sveltejs/kit': '^2.21.3',
+      vite: '^6.3.5'
     }
   };
-  
+
   console.log('  📦 Before hooks:');
   console.log(`    svelte: ${mockPackage.devDependencies.svelte}`);
-  console.log(`    @sveltejs/kit: ${mockPackage.devDependencies["@sveltejs/kit"]}`);
+  console.log(`    @sveltejs/kit: ${mockPackage.devDependencies['@sveltejs/kit']}`);
   console.log(`    vite: ${mockPackage.devDependencies.vite}`);
-  
+
   // Apply hooks if available
   if (config.hooks && config.hooks.readPackage) {
     const processedPackage = config.hooks.readPackage(mockPackage);
     console.log('  📦 After hooks:');
     console.log(`    svelte: ${processedPackage.devDependencies.svelte}`);
-    console.log(`    @sveltejs/kit: ${processedPackage.devDependencies["@sveltejs/kit"]}`);
+    console.log(`    @sveltejs/kit: ${processedPackage.devDependencies['@sveltejs/kit']}`);
     console.log(`    vite: ${processedPackage.devDependencies.vite}`);
   } else {
     console.log('  ⚠️  No hooks applied');
   }
-  
+
   console.log('');
 }
 

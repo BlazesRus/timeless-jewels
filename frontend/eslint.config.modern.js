@@ -40,10 +40,13 @@ export default [
     },
     rules: {
       // Modern TypeScript and Svelte 5 rules
-      '@typescript-eslint/no-unused-vars': ['error', { 
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^\\$\\$(Props|Events|Slots|Generic)$'
-      }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^\\$\\$(Props|Events|Slots|Generic)$'
+        }
+      ],
       '@typescript-eslint/no-explicit-any': 'warn',
       'svelte/no-at-html-tags': 'warn',
       'svelte/valid-compile': 'error'
@@ -51,14 +54,6 @@ export default [
   },
   {
     // Modern mode specific - exclude legacy files
-    ignores: [
-      'build/',
-      '.svelte-kit/',
-      'dist/',
-      '**/*Legacy*',
-      '**/*legacy*',
-      '**/legacy/**',
-      '**/Legacy/**'
-    ]
+    ignores: ['build/', '.svelte-kit/', 'dist/', '**/*Legacy*', '**/*legacy*', '**/legacy/**', '**/Legacy/**']
   }
 ];

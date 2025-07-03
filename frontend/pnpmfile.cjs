@@ -16,12 +16,8 @@ let hooks = {};
 try {
   if (mode === 'legacy') {
     // Load legacy config hooks - try multiple possible paths
-    const possiblePaths = [
-      path.join(__dirname, '.config-deps', 'timeless-jewels-legacy-config', 'pnpmfile.cjs'),
-      path.join(__dirname, 'node_modules', 'timeless-jewels-legacy-config', 'pnpmfile.cjs'),
-      path.join(__dirname, '.pnpm-config', 'timeless-jewels-legacy-config', 'pnpmfile.cjs')
-    ];
-    
+    const possiblePaths = [path.join(__dirname, '.config-deps', 'timeless-jewels-legacy-config', 'pnpmfile.cjs'), path.join(__dirname, 'node_modules', 'timeless-jewels-legacy-config', 'pnpmfile.cjs'), path.join(__dirname, '.pnpm-config', 'timeless-jewels-legacy-config', 'pnpmfile.cjs')];
+
     for (const configPath of possiblePaths) {
       if (fs.existsSync(configPath)) {
         const legacyConfig = require(configPath);
@@ -30,16 +26,16 @@ try {
         break;
       }
     }
-    
+
     if (!hooks.readPackage) {
       console.warn('⚠️  Legacy config hooks not found, using fallback configuration');
       // Fallback legacy hooks
       hooks = {
         readPackage(pkg) {
-          if (pkg.name === "frontend") {
-            console.log("🔧 Applying fallback Legacy (Svelte 4) configuration...");
-            if (pkg.devDependencies && pkg.devDependencies["svelte"]) {
-              pkg.devDependencies["svelte"] = "^4.2.19";
+          if (pkg.name === 'frontend') {
+            console.log('🔧 Applying fallback Legacy (Svelte 4) configuration...');
+            if (pkg.devDependencies && pkg.devDependencies['svelte']) {
+              pkg.devDependencies['svelte'] = '^4.2.19';
             }
           }
           return pkg;
@@ -48,12 +44,8 @@ try {
     }
   } else {
     // Load modern config hooks - try multiple possible paths
-    const possiblePaths = [
-      path.join(__dirname, '.config-deps', 'timeless-jewels-modern-config', 'pnpmfile.cjs'),
-      path.join(__dirname, 'node_modules', 'timeless-jewels-modern-config', 'pnpmfile.cjs'),
-      path.join(__dirname, '.pnpm-config', 'timeless-jewels-modern-config', 'pnpmfile.cjs')
-    ];
-    
+    const possiblePaths = [path.join(__dirname, '.config-deps', 'timeless-jewels-modern-config', 'pnpmfile.cjs'), path.join(__dirname, 'node_modules', 'timeless-jewels-modern-config', 'pnpmfile.cjs'), path.join(__dirname, '.pnpm-config', 'timeless-jewels-modern-config', 'pnpmfile.cjs')];
+
     for (const configPath of possiblePaths) {
       if (fs.existsSync(configPath)) {
         const modernConfig = require(configPath);
@@ -62,16 +54,16 @@ try {
         break;
       }
     }
-    
+
     if (!hooks.readPackage) {
       console.warn('⚠️  Modern config hooks not found, using fallback configuration');
       // Fallback modern hooks
       hooks = {
         readPackage(pkg) {
-          if (pkg.name === "frontend") {
-            console.log("🚀 Applying fallback Modern (Svelte 5) configuration...");
-            if (pkg.devDependencies && pkg.devDependencies["svelte"]) {
-              pkg.devDependencies["svelte"] = "^5.33.18";
+          if (pkg.name === 'frontend') {
+            console.log('🚀 Applying fallback Modern (Svelte 5) configuration...');
+            if (pkg.devDependencies && pkg.devDependencies['svelte']) {
+              pkg.devDependencies['svelte'] = '^5.33.18';
             }
           }
           return pkg;
@@ -92,4 +84,4 @@ module.exports = {
 
 // Also export some utility info
 module.exports.getCurrentMode = () => mode;
-module.exports.getSvelteVersion = () => mode === 'legacy' ? '4' : '5';
+module.exports.getSvelteVersion = () => (mode === 'legacy' ? '4' : '5');
