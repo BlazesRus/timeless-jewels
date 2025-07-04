@@ -693,8 +693,10 @@
     </button>
   {/if}
 
-  <div class="text-orange-500 absolute bottom-0 right-0 m-2">
+  <div class="text-orange-500 absolute bottom-0 right-0 m-2 space-x-2">
     <a href="https://github.com/BlazesRus/timeless-jewels" target="_blank" rel="noopener">Source (Github)</a>
+    <span class="text-gray-400">|</span>
+    <a href="/timeless-jewels/licenses.html" target="_blank" rel="noopener">Licenses</a>
   </div>
 </SkillTree>
 

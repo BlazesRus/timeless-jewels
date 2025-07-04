@@ -225,6 +225,8 @@
               <span class="ml-2">MF Academy</span>
             </a>
             <a href="https://github.com/BlazesRus/timeless-jewels" target="_blank" rel="noopener noreferrer">Source (Github)</a>
+            <span class="text-gray-400">|</span>
+            <a href="{base}/licenses.html" target="_blank" rel="noopener noreferrer">Licenses</a>
           </div>
         </div>
       </div>

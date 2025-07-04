@@ -337,7 +337,10 @@
                 <img src="{assets}/mf-academy-logo.png" width="24" alt="MF Academy" class="rounded" />
                 <span>MF Academy</span>
               </a>
-              <a href="https://github.com/BlazesRus/timeless-jewels" target="_blank" rel="noopener noreferrer" class="block hover:text-orange-400 transition-colors">Source (Github)</a>
+              <div class="flex justify-center space-x-4">
+                <a href="https://github.com/BlazesRus/timeless-jewels" target="_blank" rel="noopener noreferrer" class="hover:text-orange-400 transition-colors">Source (Github)</a>
+                <a href="{base}/licenses.html" target="_blank" class="hover:text-orange-400 transition-colors">📄 Licenses</a>
+              </div>
             </div>
           </div>
         </div>
