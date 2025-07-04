@@ -342,7 +342,31 @@ const config = {
     // Vite 7 enhanced HMR
     hmr: {
       overlay: true
-    }
+    },
+    // Add WASM MIME type support for proper WASM loading
+    headers: {
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Resource-Policy': 'cross-origin'
+    },
+    // Custom middleware for WASM MIME type and import handling
+    middlewares: [
+      (req, res, next) => {
+        if (req.url) {
+          // Handle .wasm files with proper MIME type
+          if (req.url.endsWith('.wasm')) {
+            res.setHeader('Content-Type', 'application/wasm');
+            res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+          }
+          // Handle WASM imports with ?import&url query
+          else if (req.url.includes('.wasm?import&url')) {
+            res.setHeader('Content-Type', 'text/javascript');
+            res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+          }
+        }
+        next();
+      }
+    ]
   },
   // Base path configuration for GitHub Pages
   base: process.env.NODE_ENV === 'production' ? '/timeless-jewels/' : '',
