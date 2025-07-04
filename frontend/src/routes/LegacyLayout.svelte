@@ -8,7 +8,6 @@
   import { assets } from '$app/paths';
   import { loadSkillTree } from '../lib/skill_tree_legacy';
   import { initializeCrystalline } from '../lib/types/LegacyTypes';
-  import { modernWorker } from '../lib/modern-worker';
 
   // eslint-disable-next-line no-undef
   const go = new (globalThis as any).Go();
@@ -34,11 +33,6 @@
         // Initialize main thread data structures
         initializeCrystalline();
         loadSkillTree();
-
-        // Initialize modern worker with WASM data
-        if (modernWorker) {
-          await modernWorker.boot(wasmData.slice(0));
-        }
 
         console.log('WASM initialization complete');
       } catch (error) {

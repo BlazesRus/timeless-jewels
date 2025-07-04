@@ -1,7 +1,7 @@
 import { expose } from 'comlink';
-import { ModernGo } from './ModernWasm/go-runtime.worker';
-import { loadSkillTree, passiveToTree } from './skill_tree_modern.worker';
-import { calculator, initializeCrystalline } from './types/ModernTypes.worker';
+import { ModernGo } from '../ModernWasm/go-runtime.worker';
+import { loadSkillTree, passiveToTree } from '../skill_tree_modern.worker';
+import { calculator, initializeCrystalline } from '../types/ModernTypes.worker';
 import type { ModernTimelessWorker, SearchConfig, SearchResults, SearchWithSeed, SearchProgressCallback, WorkerInitConfig } from './modern-worker-types';
 
 /**

@@ -56,7 +56,12 @@
     {
       "label": "Check Version Configuration",
       "type": "shell",
-      "command": "if ((Get-Location).Path -notlike '*frontend') { if (Test-Path 'frontend') { Set-Location frontend; Write-Host 'Navigated to frontend directory' -ForegroundColor Yellow } else { Write-Host 'Frontend directory not found in current location' -ForegroundColor Red; exit 1 } } else { Write-Host 'Already in frontend directory' -ForegroundColor Green }; Write-Host \"🎯 Current Version Status:\" -ForegroundColor Cyan; pnpm run mode:status; Write-Host \"📋 Detailed Status:\" -ForegroundColor Yellow; pnpm run version:status",
+      "command": "pwsh.exe",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "& { if ((Get-Location).Path -notlike '*frontend') { if (Test-Path 'frontend') { Set-Location frontend; Write-Host 'Navigated to frontend directory' -ForegroundColor Yellow } else { Write-Host 'Frontend directory not found in current location' -ForegroundColor Red; exit 1 } } else { Write-Host 'Already in frontend directory' -ForegroundColor Green }; Write-Host '🎯 Current Version Status:' -ForegroundColor Cyan; pnpm run mode:status; Write-Host '📋 Detailed Status:' -ForegroundColor Yellow; pnpm run version:status }"
+      ],
       "group": "build",
       "presentation": {
         "echo": true,
@@ -72,7 +77,12 @@
     {
       "label": "Switch to Svelte 4",
       "type": "shell",
-      "command": "if ((Get-Location).Path -notlike '*frontend') { if (Test-Path 'frontend') { Set-Location frontend; Write-Host 'Navigated to frontend directory' -ForegroundColor Yellow } else { Write-Host 'Frontend directory not found in current location' -ForegroundColor Red; exit 1 } } else { Write-Host 'Already in frontend directory' -ForegroundColor Green }; Write-Host '🔄 Switching to Svelte 4...' -ForegroundColor Yellow; pnpm run install:legacy; if ($LASTEXITCODE -eq 0) { Write-Host '✅ Switched to Svelte 4 successfully!' -ForegroundColor Green } else { Write-Host '❌ Switch failed!' -ForegroundColor Red }",
+      "command": "pwsh.exe",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "& { if ((Get-Location).Path -notlike '*frontend') { if (Test-Path 'frontend') { Set-Location frontend; Write-Host 'Navigated to frontend directory' -ForegroundColor Yellow } else { Write-Host 'Frontend directory not found in current location' -ForegroundColor Red; exit 1 } } else { Write-Host 'Already in frontend directory' -ForegroundColor Green }; Write-Host '🔄 Switching to Svelte 4...' -ForegroundColor Yellow; pnpm run install:legacy; if ($LASTEXITCODE -eq 0) { Write-Host '✅ Switched to Svelte 4 successfully!' -ForegroundColor Green } else { Write-Host '❌ Switch failed!' -ForegroundColor Red } }"
+      ],
       "group": "build",
       "presentation": {
         "echo": true,
@@ -88,7 +98,12 @@
     {
       "label": "Switch to Svelte 5",
       "type": "shell",
-      "command": "if ((Get-Location).Path -notlike '*frontend') { if (Test-Path 'frontend') { Set-Location frontend; Write-Host 'Navigated to frontend directory' -ForegroundColor Yellow } else { Write-Host 'Frontend directory not found in current location' -ForegroundColor Red; exit 1 } } else { Write-Host 'Already in frontend directory' -ForegroundColor Green }; Write-Host '🔄 Switching to Svelte 5...' -ForegroundColor Yellow; pnpm run install:modern; if ($LASTEXITCODE -eq 0) { Write-Host '✅ Switched to Svelte 5 successfully!' -ForegroundColor Green } else { Write-Host '❌ Switch failed!' -ForegroundColor Red }",
+      "command": "pwsh.exe",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "& { if ((Get-Location).Path -notlike '*frontend') { if (Test-Path 'frontend') { Set-Location frontend; Write-Host 'Navigated to frontend directory' -ForegroundColor Yellow } else { Write-Host 'Frontend directory not found in current location' -ForegroundColor Red; exit 1 } } else { Write-Host 'Already in frontend directory' -ForegroundColor Green }; Write-Host '🔄 Switching to Svelte 5...' -ForegroundColor Yellow; pnpm run install:modern; if ($LASTEXITCODE -eq 0) { Write-Host '✅ Switched to Svelte 5 successfully!' -ForegroundColor Green } else { Write-Host '❌ Switch failed!' -ForegroundColor Red } }"
+      ],
       "group": "build",
       "presentation": {
         "echo": true,
@@ -104,7 +119,12 @@
     {
       "label": "Dev Server (Auto-detect Version)",
       "type": "shell",
-      "command": "if ((Get-Location).Path -notlike '*frontend') { if (Test-Path 'frontend') { Set-Location frontend; Write-Host 'Navigated to frontend directory' -ForegroundColor Yellow } else { Write-Host 'Frontend directory not found in current location' -ForegroundColor Red; exit 1 } } else { Write-Host 'Already in frontend directory' -ForegroundColor Green }; Write-Host '🚀 Starting development server with auto-detected version...' -ForegroundColor Green; pnpm run dev",
+      "command": "pwsh.exe",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "& { if ((Get-Location).Path -notlike '*frontend') { if (Test-Path 'frontend') { Set-Location frontend; Write-Host 'Navigated to frontend directory' -ForegroundColor Yellow } else { Write-Host 'Frontend directory not found in current location' -ForegroundColor Red; exit 1 } } else { Write-Host 'Already in frontend directory' -ForegroundColor Green }; Write-Host '🚀 Starting development server with auto-detected version...' -ForegroundColor Green; pnpm run dev }"
+      ],
       "group": {
         "kind": "build",
         "isDefault": true
@@ -142,7 +162,12 @@
     {
       "label": "Build (Current Version)",
       "type": "shell",
-      "command": "if ((Get-Location).Path -notlike '*frontend') { if (Test-Path 'frontend') { Set-Location frontend; Write-Host 'Navigated to frontend directory' -ForegroundColor Yellow } else { Write-Host 'Frontend directory not found in current location' -ForegroundColor Red; exit 1 } } else { Write-Host 'Already in frontend directory' -ForegroundColor Green }; Write-Host '🏗️ Building with current version...' -ForegroundColor Cyan; pnpm run mode:status; Write-Host ''; pnpm run build",
+      "command": "pwsh.exe",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "& { if ((Get-Location).Path -notlike '*frontend') { if (Test-Path 'frontend') { Set-Location frontend; Write-Host 'Navigated to frontend directory' -ForegroundColor Yellow } else { Write-Host 'Frontend directory not found in current location' -ForegroundColor Red; exit 1 } } else { Write-Host 'Already in frontend directory' -ForegroundColor Green }; Write-Host '🏗️ Building with current version...' -ForegroundColor Cyan; pnpm run mode:status; Write-Host ''; pnpm run build }"
+      ],
       "group": "build",
       "presentation": {
         "echo": true,
@@ -168,7 +193,12 @@
     {
       "label": "Install Dependencies",
       "type": "shell",
-      "command": "if ((Get-Location).Path -notlike '*frontend') { if (Test-Path 'frontend') { Set-Location frontend; Write-Host 'Navigated to frontend directory' -ForegroundColor Yellow } else { Write-Host 'Frontend directory not found in current location' -ForegroundColor Red; exit 1 } } else { Write-Host 'Already in frontend directory' -ForegroundColor Green }; Write-Host '📦 Installing dependencies for current version...' -ForegroundColor Blue; pnpm install",
+      "command": "pwsh.exe",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "& { if ((Get-Location).Path -notlike '*frontend') { if (Test-Path 'frontend') { Set-Location frontend; Write-Host 'Navigated to frontend directory' -ForegroundColor Yellow } else { Write-Host 'Frontend directory not found in current location' -ForegroundColor Red; exit 1 } } else { Write-Host 'Already in frontend directory' -ForegroundColor Green }; Write-Host '📦 Installing dependencies for current version...' -ForegroundColor Blue; pnpm install }"
+      ],
       "group": "build",
       "presentation": {
         "echo": true,
@@ -216,7 +246,12 @@
     {
       "label": "Preview Production Build",
       "type": "shell",
-      "command": "if ((Get-Location).Path -notlike '*frontend') { if (Test-Path 'frontend') { Set-Location frontend; Write-Host 'Navigated to frontend directory' -ForegroundColor Yellow } else { Write-Host 'Frontend directory not found in current location' -ForegroundColor Red; exit 1 } } else { Write-Host 'Already in frontend directory' -ForegroundColor Green }; Write-Host '🏗️ Starting production build preview...' -ForegroundColor Cyan; Write-Host '📂 Serving from: build/ (unified SPA structure)' -ForegroundColor Yellow; npx serve build -l 3001 -s",
+      "command": "pwsh.exe",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "& { if ((Get-Location).Path -notlike '*frontend') { if (Test-Path 'frontend') { Set-Location frontend; Write-Host 'Navigated to frontend directory' -ForegroundColor Yellow } else { Write-Host 'Frontend directory not found in current location' -ForegroundColor Red; exit 1 } } else { Write-Host 'Already in frontend directory' -ForegroundColor Green }; Write-Host '🏗️ Starting production build preview...' -ForegroundColor Cyan; Write-Host '📂 Serving from: build/ (unified SPA structure)' -ForegroundColor Yellow; npx serve build -l 3001 -s }"
+      ],
       "group": "test",
       "options": {
         "cwd": "${workspaceFolder}"
