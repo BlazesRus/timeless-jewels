@@ -45,6 +45,12 @@ export default {
   preprocess,
   kit: {
     adapter,
+    // Use different app.html files for modern vs legacy mode
+    files: {
+      appTemplate: isSvelte5
+        ? 'src/app-modern.html'
+        : 'src/app-legacy.html'
+    },
     paths: { 
       base: process.env.NODE_ENV === 'production' ? '/timeless-jewels' : '',
       relative: false  // Force absolute paths for GitHub Pages compatibility

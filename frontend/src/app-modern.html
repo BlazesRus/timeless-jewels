@@ -16,12 +16,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
 
-    <!-- Load WASM Go support script -->
-    <script src="%sveltekit.assets%/wasm_exec.js"></script>
-
     %sveltekit.head%
   </head>
   <body class="dark bg-app-dark text-app-light min-h-screen">
+    <!-- Modern mode: Uses TypeScript/Svelte WASM runtime, no wasm_exec.js needed -->
     <div class="min-h-screen bg-app-dark">%sveltekit.body%</div>
   </body>
 </html>
