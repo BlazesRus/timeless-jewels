@@ -66,6 +66,7 @@ export default {
         }
       }
     }),
+    // Vite plugins no longer supported by SvelteKit v2+
     alias: {
       $lib:   'src/lib',
       '$lib/*': 'src/lib/*',

@@ -23,21 +23,6 @@ Set-Location $frontendDir
 Write-Host "🚀 Timeless Jewel Generator - Version Manager" -ForegroundColor Cyan
 Write-Host "============================================" -ForegroundColor Cyan
 
-# If version is specified, update the INI file first (for backward compatibility)
-if ($Version) {
-    Write-Host "📝 Updating version.ini to use Svelte $Version (backward compatibility)..." -ForegroundColor Yellow
-    
-    $iniPath = "version.ini"
-    if (Test-Path $iniPath) {
-        $content = Get-Content $iniPath
-        $newContent = $content -replace "version = [45]", "version = $Version"
-        $newContent | Set-Content $iniPath
-        Write-Host "✅ Updated version.ini" -ForegroundColor Green
-    } else {
-        Write-Host "⚠️ version.ini not found, system will use runtime detection" -ForegroundColor Yellow
-    }
-}
-
 # Run the Node.js version manager
 try {
     switch ($Command) {
