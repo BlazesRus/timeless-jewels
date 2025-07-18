@@ -234,3 +234,5 @@ frontend/src/lib/types/ModernTypes.svelte.ts.backup
 frontend/src/routes/LegacyTree/\+page.svelte.backup
 
 frontend/build-error.log
+
+setup-utf8.ps1
