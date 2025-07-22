@@ -8,16 +8,16 @@
  * MIT License
  */
 
-import { loadWasm, wasmLoaderState } from '$lib/ModernWasm/wasm-loader.svelte';
+import { loadWasm, enhancedWasmState } from '$lib/ModernWasm/wasm-loader.svelte';
 import { getEnvironmentWasmUrl } from '$lib/utils/wasm-urls';
 import { captureError } from '$lib/ModernWasm/debugLogger.svelte';
 
 // Central reactive store for all of your "Modern Types" surface:
 export const modernTypes = $state({
   // Mirror loader state
-  get isLoading() { return wasmLoaderState.isLoading },
-  get isReady()   { return wasmLoaderState.isReady   },
-  get error()     { return wasmLoaderState.error     },
+  get isLoading() { return enhancedWasmState.isLoading },
+  get isReady()   { return enhancedWasmState.isReady   },
+  get error()     { return enhancedWasmState.error     },
 
   // Human-friendly status
   get status() {
@@ -29,7 +29,7 @@ export const modernTypes = $state({
 
   // Raw exports object from the executor
   get exports() {
-    return wasmLoaderState.executor?.getExports() ?? {};
+    return enhancedWasmState.executor?.getExports() ?? {};
   },
 
   // Alias for calculator exports
@@ -53,11 +53,11 @@ export const modernTypes = $state({
 
   // Progress information
   get progress() {
-    return wasmLoaderState.progress;
+    return enhancedWasmState.progress;
   },
 
   get progressHistory() {
-    return wasmLoaderState.progressHistory;
+    return enhancedWasmState.progressHistory;
   }
 });
 
@@ -67,7 +67,7 @@ export async function initializeWasm() {
   if (!modernTypes.isLoading && !modernTypes.isReady && modernTypes.error === null) {
     try {
       await loadWasm(getEnvironmentWasmUrl());
-    } catch (err: any) {
+    } catch (err) {
       captureError(
         err instanceof Error ? err : new Error(String(err)), 
         'ModernTypesWasmInit'
@@ -76,15 +76,10 @@ export async function initializeWasm() {
   }
 }
 
-// Export types for TypeScript
-export interface ModernCalculator {
-  Calculate: Function;
-  ReverseSearch: Function | null;
-}
-
-export interface ModernData {
-  [key: string]: any;
-}
+// Legacy function aliases for compatibility with existing components
+export const useCalculator = () => modernTypes.calculator;
+export const useData = () => modernTypes.data;
+export const initializeCrystalline = initializeWasm;
 
 // Export only the reactive modernTypes store - pure Svelte 5 runes approach
 // Components should use: modernTypes.isLoading, modernTypes.calculator, etc.
