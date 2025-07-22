@@ -1,9 +1,8 @@
 /*
   SvelteKit Tree Route Configuration
   
-  Copyright (C) 2025 James Armstrong (github.com/BlazesRus)
-  Based on original work by the Timeless Jewel Calculator authors
-  Generated with GitHub Copilot assistance
+  Copyright (C) Original Timeless Jewel Calculator authors
+  Modernized by James Armstrong (github.com/BlazesRus) with GitHub Copilot assistance
   
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by

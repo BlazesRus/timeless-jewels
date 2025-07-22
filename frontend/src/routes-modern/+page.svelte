@@ -2,29 +2,10 @@
   Modern Home Page - Svelte 5 Component
   Based on original +page.svelte, modernized for Svelte 5 with enhanced debug features
 
-  Copyright (C) 2025 James Armstrong (github.com/BlazesRus)
-  Based on original work by the Timeless Jewel Calculator authors
-  Code adjusted with GitHub Copilot assistance
+  Copyright (C) Original Timeless Jewel Calculator authors
+  Modernized by James Armstrong (github.com/BlazesRus) with GitHub Copilot assistance
 
-  This                   <button
-                    class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded"
-                    onclick={() => {
-                      debugLog.info("Manual error test triggered", 'MainPage-ErrorTest');
-                      captureError(new Error("This is a test error to demonstrate the error page"), 'MainPage-ErrorTest');
-                      throw new Error("Test error - check the error page!");
-                    }}>
-                    Test Error Page
-                  </button>
-
-                  <button
-                    class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded"
-                    onclick={() => {
-                      const memInfo = wasmDebug.logWasmState('Manual-Debug');
-                      addDebugMessage('WASM Memory Inspection: ' + JSON.stringify(memInfo), 'debug', 'MainPage-MemInspect');
-                      debugLog.info("WASM memory inspection completed - check console", 'MainPage-WasmDebug');
-                    }}>
-                    Debug WASM Memory
-                  </button>s free software: you can redistribute it and/or modify
+  This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
@@ -47,7 +28,7 @@
   // Modern types and functions
   import { useCalculator, useData, initializeCrystalline } from '$lib/types/ModernTypes.svelte';
   // Modern Select component
-  import ModernSelect from '$lib/components/Modern/ModernSelect.svelte';
+  import ModernSelect from '$lib/components/ModernSelect.svelte';
   // WASM URL configuration
   import { getCalculatorWasmUrl, getEnvironmentWasmUrl } from '$lib/utils/wasm-urls';
   // Debug logging and error handling
