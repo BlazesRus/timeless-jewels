@@ -1,10 +1,10 @@
-import type { Translation, Node, SkillTreeData, Group, Sprite, TranslationFile } from './skill_tree_types_modern';
-import { getData } from './types/ModernTypes.worker';
-import { type Filter, type Query, filterGroupsToQuery, filtersToFilterGroup } from './utils/trade_utils';
-import { chunkArray } from './utils/utils';
+import type { Translation, Node, SkillTreeData, Group, Sprite, TranslationFile } from '../skill_tree_types_modern';
+import { getData } from '../types/ModernTypes.worker';
+import { type Filter, type Query, filterGroupsToQuery, filtersToFilterGroup } from '../utils/trade_utils';
+import { chunkArray } from '../utils/utils';
 
-// Re-export types for convenience
-export type { Query, Filter } from './utils/trade_utils';
+// Re-export types for worker use
+export type { Query, Filter } from '../utils/trade_utils';
 
 export let skillTree: SkillTreeData;
 export let alternateTreeVersions: any;
@@ -58,26 +58,39 @@ export function passiveToTree(passiveSkillId: number): any {
 }
 
 // Additional worker-specific search types and interfaces
+export interface StatConfig {
+  //Minimum number of node with related stat to include in search
+  min: number;
+  id: number;
+  weight: number;
+  //Minimum number of stat total in jewel in order to allow in search results
+  minStatTotal: number;
+}
+
 export interface SearchWithSeed {
   seed: number;
-  nodes: number[];
-  stats: Array<{ id: string; text: string }>;
-  jewel: number;
-  conqueror: string;
+  weight: number;
+  statCounts: Record<number, number>;
+  skills: {
+    passive: number;
+    stats: { [key: string]: number };
+  }[];
+  statTotal: Record<number, number>;
+  //Total value of targeted stats in search area
+  totalStats: number;
 }
 
 export interface ReverseSearchConfig {
-  nodes: number[];
-  stats: Array<{ id: string; text: string }>;
   jewel: number;
   conqueror: string;
-  seedRange?: { min: number; max: number };
-  maxResults?: number;
+  nodes: number[];
+  stats: StatConfig[];
+  minTotalWeight: number;
+  //Minimum number of total targeted stats in search area
+  minTotalStats: number;
 }
 
 export interface SearchResults {
-  results: SearchWithSeed[];
-  totalSearched: number;
-  completed: boolean;
-  error?: string;
+  grouped: { [key: number]: SearchWithSeed[] };
+  raw: SearchWithSeed[];
 }

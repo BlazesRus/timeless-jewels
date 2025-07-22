@@ -1,5 +1,5 @@
 import type { Translation, Node, SkillTreeData, Group, Sprite, TranslationFile } from './skill_tree_types_modern';
-import { data } from './types/ModernTypes.svelte';
+import { modernTypes } from './types/ModernTypes.svelte';
 import { type Filter, type Query, filterGroupsToQuery, filtersToFilterGroup } from './utils/trade_utils';
 import { chunkArray } from './utils/utils';
 
@@ -19,14 +19,20 @@ export const inverseTranslations: Record<string, Translation> = {};
 export const passiveToTree: Record<number, number> = {};
 
 export const loadSkillTree = () => {
-  const dataValue = data() as any;
+  const dataValue = modernTypes.data as any;
   if (!dataValue) {
     console.error('Data not available for skill tree loading');
     return;
   }
 
-  skillTree = JSON.parse(dataValue.SkillTree);
-  console.log('Loaded skill tree', skillTree);
+  try {
+    skillTree = JSON.parse(dataValue.SkillTree);
+    console.log('✅ Loaded skill tree', skillTree);
+  } catch (error) {
+    console.error('❌ Failed to parse skill tree:', error);
+    console.error('Raw skill tree data (first 200 chars):', dataValue.SkillTree?.substring(0, 200));
+    return;
+  }
 
   Object.keys(skillTree.groups).forEach(groupId => {
     const group = skillTree.groups[groupId];
@@ -137,23 +143,29 @@ export const loadSkillTree = () => {
     }
   }
 
-  const dataForTranslations = data() as any;
+  const dataForTranslations = modernTypes.data as any;
   const translationFiles = [dataForTranslations.StatTranslationsJSON, dataForTranslations.PassiveSkillStatTranslationsJSON, dataForTranslations.PassiveSkillAuraStatTranslationsJSON];
 
-  translationFiles.forEach(f => {
-    const translations: TranslationFile = JSON.parse(f);
+  translationFiles.forEach((f, index) => {
+    try {
+      const translations: TranslationFile = JSON.parse(f);
+      console.log(`✅ Parsed translation file ${index + 1}`);
 
-    translations.descriptors.forEach(t => {
-      t.ids.forEach(id => {
-        if (!(id in inverseTranslations)) {
-          inverseTranslations[id] = t;
-        }
+      translations.descriptors.forEach(t => {
+        t.ids.forEach(id => {
+          if (!(id in inverseTranslations)) {
+            inverseTranslations[id] = t;
+          }
+        });
       });
-    });
+    } catch (error) {
+      console.error(`❌ Failed to parse translation file ${index + 1}:`, error);
+      console.error(`Raw translation data (first 200 chars):`, f?.substring(0, 200));
+    }
   });
 
   // Checks if TreeToPassive is available before running code
-  const dataForPassive = data() as any;
+  const dataForPassive = modernTypes.data as any;
   if (dataForPassive && dataForPassive.TreeToPassive) {
     Object.keys(dataForPassive.TreeToPassive ?? {}).forEach(k => {
       const treeToPassiveEntry = dataForPassive.TreeToPassive?.[parseInt(k)];
@@ -364,7 +376,7 @@ export const getStat = (id: number | string): Stat => {
   const nId = typeof id === 'string' ? parseInt(id) : id;
   // Checks if stat is valid before running code
   if (!(nId in statCache)) {
-    const dataForStat = data() as any;
+    const dataForStat = modernTypes.data as any;
     if (!dataForStat || typeof dataForStat.GetStatByIndex !== 'function') {
       throw new Error(`Data or GetStatByIndex method not available for stat id: ${nId}`);
     }

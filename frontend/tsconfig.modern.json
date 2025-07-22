@@ -45,6 +45,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "exactOptionalPropertyTypes": false,
+    "allowImportingTsExtensions": true,
 
     // Node.js 22 specific optimizations
     "allowUnreachableCode": false,

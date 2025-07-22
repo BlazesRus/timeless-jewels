@@ -1,11 +1,12 @@
+// @ts-nocheck
 // Copyright 2018 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
 'use strict';
 
-// @ts-nocheck
-// TypeScript version of Go's wasm_exec.js
+// TypeScript version of Go's wasm_exec.js with type suppression
+// Disable strict type checking for this legacy WASM interface file
 
 // TypeScript definitions for Go WASM runtime
 interface GoClass {
@@ -13,13 +14,28 @@ interface GoClass {
   env: Record<string, string>;
   exit: (code: number) => void;
   importObject: WebAssembly.Imports;
+  mem: DataView;
+  exited: boolean;
+  _inst: WebAssembly.Instance;
+  _values: any[];
+  _goRefCounts: number[];
+  _ids: Map<any, number>;
+  _idPool: number[];
+  _exitPromise: Promise<void>;
+  _resolveExitPromise: () => void;
+  _pendingEvent: any;
+  _scheduledTimeouts: Map<number, any>;
+  _nextCallbackTimeoutID: number;
+
   run(instance: WebAssembly.Instance): Promise<void>;
+  _resume(): void;
+  _makeFuncWrapper(id: any): (...args: any[]) => any;
 }
 
 // @ts-ignore - Suppress TypeScript errors for the original JavaScript code
 (() => {
   const enosys = () => {
-    const err = new Error('not implemented');
+    const err = new Error('not implemented') as any;
     err.code = 'ENOSYS';
     return err;
   };
@@ -145,7 +161,7 @@ interface GoClass {
       chdir() {
         throw enosys();
       }
-    };
+    } as any;
   }
 
   if (!globalThis.crypto) {
@@ -164,10 +180,27 @@ interface GoClass {
     throw new Error('globalThis.TextDecoder is not available, polyfill required');
   }
 
-  const encoder = new TextEncoder('utf-8');
+  const encoder = new TextEncoder();
   const decoder = new TextDecoder('utf-8');
 
-  globalThis.Go = class {
+  globalThis.Go = class Go implements GoClass {
+    argv: string[];
+    env: Record<string, string>;
+    exit: (code: number) => void;
+    _exitPromise: Promise<void>;
+    _resolveExitPromise!: () => void;
+    _pendingEvent: any;
+    _scheduledTimeouts!: Map<number, any>;
+    _nextCallbackTimeoutID!: number;
+    mem!: DataView;
+    _inst!: WebAssembly.Instance;
+    _values!: any[];
+    _goRefCounts!: number[];
+    _ids!: Map<any, number>;
+    _idPool!: number[];
+    exited!: boolean;
+    importObject!: WebAssembly.Imports;
+
     constructor() {
       this.argv = ['js'];
       this.env = {};
@@ -264,7 +297,7 @@ interface GoClass {
       const loadSlice = addr => {
         const array = getInt64(addr + 0);
         const len = getInt64(addr + 8);
-        return new Uint8Array(this._inst.exports.mem.buffer, array, len);
+        return new Uint8Array((this._inst.exports.mem as any).buffer, array, len);
       };
 
       const loadSliceOfValues = addr => {
@@ -280,7 +313,7 @@ interface GoClass {
       const loadString = addr => {
         const saddr = getInt64(addr + 0);
         const len = getInt64(addr + 8);
-        return decoder.decode(new DataView(this._inst.exports.mem.buffer, saddr, len));
+        return decoder.decode(new DataView((this._inst.exports.mem as any).buffer, saddr, len));
       };
 
       const timeOrigin = Date.now() - performance.now();
@@ -313,13 +346,13 @@ interface GoClass {
             const fd = getInt64(sp + 8);
             const p = getInt64(sp + 16);
             const n = this.mem.getInt32(sp + 24, true);
-            fs.writeSync(fd, new Uint8Array(this._inst.exports.mem.buffer, p, n));
+            (globalThis as any).fs.writeSync(fd, new Uint8Array((this._inst.exports.mem as any).buffer, p, n));
           },
 
           // func resetMemoryDataView()
           'runtime.resetMemoryDataView': sp => {
             sp >>>= 0;
-            this.mem = new DataView(this._inst.exports.mem.buffer);
+            this.mem = new DataView((this._inst.exports.mem as any).buffer);
           },
 
           // func nanotime1() int64
@@ -396,7 +429,7 @@ interface GoClass {
           'syscall/js.valueGet': sp => {
             sp >>>= 0;
             const result = Reflect.get(loadValue(sp + 8), loadString(sp + 16));
-            sp = this._inst.exports.getsp() >>> 0; // see comment above
+            sp = (this._inst.exports.getsp as any)() >>> 0; // see comment above
             storeValue(sp + 32, result);
           },
 

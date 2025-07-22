@@ -1,4 +1,5 @@
 <!-- Legacy SkillTree Component - Svelte 4 Compatible -->
+<!-- @ts-nocheck -->
 <script lang="ts">
   const measurePerformance = (): number => {
     return window.performance.now();
@@ -17,10 +18,10 @@
   // Svelte 4 canvas library
   import { Canvas, Layer } from 'svelte-canvas';
 
-  import type { RenderFunc, Node } from '../../skill_tree_types';
-  import { baseJewelRadius, calculateNodePos, distance, drawnGroups, drawnNodes, formatStats, inverseSprites, inverseSpritesActive, inverseTranslations, orbitAngleAt, skillTree, toCanvasCoords } from '../../skill_tree';
-  import type { Point } from '../../skill_tree';
-  import { calculator, data } from '../../types';
+  import type { RenderFunc, Node } from '../../skill_tree_types_legacy';
+  import { baseJewelRadius, calculateNodePos, distance, drawnGroups, drawnNodes, formatStats, inverseSprites, inverseSpritesActive, inverseTranslations, orbitAngleAt, skillTree, toCanvasCoords } from '../../skill_tree_legacy';
+  import type { Point } from '../../skill_tree_legacy';
+  import { calculator, data } from '../../types/LegacyTypes';
 
   export let clickNode: (node: Node) => void;
   export let circledNode: number | undefined;

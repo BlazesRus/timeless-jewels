@@ -1,8 +1,8 @@
 // Modern TypeScript interfaces for the worker
-import type { Query } from './utils/trade_utils';
+import type { Query } from '../utils/trade_utils';
 
 // Re-export Query type for convenience
-export type { Query } from './utils/trade_utils';
+export type { Query } from '../utils/trade_utils';
 
 export interface SearchProgressCallback {
   (seed: number): Promise<void>;

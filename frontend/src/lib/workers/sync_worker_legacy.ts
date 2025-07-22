@@ -1,8 +1,10 @@
+// @ts-nocheck
+// Legacy sync worker with type suppression
 import { expose } from 'comlink';
 import '../wasm_exec.js';
-import { loadSkillTree, passiveToTree } from './skill_tree_legacy';
-import type { SearchWithSeed, ReverseSearchConfig, SearchResults } from './skill_tree_legacy';
-import { calculator, initializeCrystalline } from './types/LegacyTypes';
+import { loadSkillTree, passiveToTree } from '../skill_tree_legacy';
+import type { SearchWithSeed, ReverseSearchConfig, SearchResults } from '../skill_tree_legacy';
+import { calculator, initializeCrystalline } from '../types/LegacyTypes';
 
 const obj = {
   boot(wasm: ArrayBuffer) {

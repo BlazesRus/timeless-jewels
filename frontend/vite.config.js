@@ -50,7 +50,7 @@ const config = {
             )) {
               return; // Suppress legacy file warnings
             }
-            
+
             // Also suppress warnings by message content for legacy-related issues
             if (warning.message && (
               warning.message.includes('Legacy') ||
@@ -59,7 +59,7 @@ const config = {
             )) {
               return; // Suppress legacy-related warnings
             }
-            
+
             // Handle other warnings normally
             if (originalOnWarn) {
               originalOnWarn(warning, warn);
@@ -76,13 +76,18 @@ const config = {
           // Add middleware to ignore legacy and wasm_exec files during development
           server.middlewares.use((req, res, next) => {
             if (req.url && (
-              req.url.includes('wasm_exec.ts') || 
+              req.url.includes('wasm_exec.ts') ||
               req.url.includes('wasm_exec.js') ||
               req.url.includes('LegacyTreePage.svelte') ||
               req.url.includes('LegacyHomePage.svelte') ||
               req.url.includes('LegacyTypes.js') ||
               req.url.includes('LegacyWasm/') ||
-              req.url.includes('/LegacyWasm')
+              req.url.includes('/LegacyWasm') ||
+              req.url.includes('sync_worker_legacy') ||
+              req.url.includes('worker_legacy') ||
+              req.url.includes('skill_tree_legacy') ||
+              req.url.includes('routes-legacy/') ||
+              req.url.includes('/routes-legacy')
             )) {
               res.statusCode = 404;
               res.end('File excluded in modern mode');
@@ -93,13 +98,18 @@ const config = {
         },
         load(id) {
           // Return empty module for excluded files in modern mode
-          if (id.includes('wasm_exec.ts') || 
+          if (id.includes('wasm_exec.ts') ||
               id.includes('wasm_exec.js') ||
               id.includes('LegacyTreePage.svelte') ||
               id.includes('LegacyHomePage.svelte') ||
               id.includes('LegacyTypes.js') ||
               id.includes('LegacyWasm/') ||
-              id.includes('/LegacyWasm')) {
+              id.includes('/LegacyWasm') ||
+              id.includes('sync_worker_legacy') ||
+              id.includes('worker_legacy') ||
+              id.includes('skill_tree_legacy') ||
+              id.includes('routes-legacy/') ||
+              id.includes('/routes-legacy')) {
             return 'export {}; // File excluded in modern mode';
           }
         }
@@ -112,7 +122,7 @@ const config = {
           const originalLoad = server.ssrLoadModule;
           server.ssrLoadModule = async function(url, opts) {
             // Skip type checking for legacy files
-            if (url.includes('LegacyTreePage.svelte') || 
+            if (url.includes('LegacyTreePage.svelte') ||
                 url.includes('LegacyHomePage.svelte') ||
                 url.includes('wasm_exec.js') ||
                 url.includes('wasm_exec.ts') ||
@@ -127,7 +137,7 @@ const config = {
         },
         transform(code, id) {
           // Skip transformation of legacy files in modern mode
-          if (id.includes('LegacyTreePage.svelte') || 
+          if (id.includes('LegacyTreePage.svelte') ||
               id.includes('LegacyHomePage.svelte') ||
               id.includes('wasm_exec.js') ||
               id.includes('wasm_exec.ts') ||
@@ -163,8 +173,12 @@ const config = {
         resolveId(id, importer) {
           // Prevent resolution of wasm_exec.js in modern mode
           if (id.includes('wasm_exec.js')) {
-            console.log('🚫 Blocked wasm_exec.js resolution in modern mode');
-            return null; // Don't resolve, effectively excluding it
+            // Only log if it's from an actual import and not a dev server check
+            if (importer && !importer.includes('/@vite') && !importer.includes('vite:')) {
+              console.log('🚫 Blocked wasm_exec.js resolution in modern mode (from:', importer, ')');
+            }
+            // Return a dummy module instead of null to see what's trying to import it
+            return this.resolve('data:text/javascript,export {};', importer, { skipSelf: true });
           }
         },
         generateBundle(options, bundle) {
@@ -175,7 +189,7 @@ const config = {
           }
         }
       }
-    ] : 
+    ] :
     [
       // copies wasm_exec.js into the root of `build/`
       {
@@ -249,8 +263,9 @@ const config = {
     cssCodeSplit: true,
     // Enable source maps for debugging
     sourcemap: true,
-    // Ignore legacy files during TypeScript checking in modern mode
+    // Enhanced source map configuration for WASM debugging
     ...(isSvelte5 && {
+      sourcemap: 'inline', // Inline source maps for better debugging support
       emptyOutDir: false // Don't clear build dir when switching modes
     }),
     // Enhanced worker configuration for optimal WASM and modern/legacy separation
@@ -264,7 +279,7 @@ const config = {
             name: 'worker-exclude-legacy-modern',
             load(id) {
               // Block legacy files from being imported in workers during modern builds
-              if (id.includes('wasm_exec.ts') || 
+              if (id.includes('wasm_exec.ts') ||
                   id.includes('wasm_exec.js') ||
                   id.includes('Legacy') ||
                   id.includes('legacy') ||
@@ -275,7 +290,7 @@ const config = {
             },
             transform(code, id) {
               // Skip transformation of legacy files in workers
-              if (id.includes('Legacy') || 
+              if (id.includes('Legacy') ||
                   id.includes('legacy') ||
                   id.includes('wasm_exec')) {
                 return null;
@@ -329,7 +344,7 @@ const config = {
   },
   // Static file configuration - exclude wasm_exec.js in modern mode
   publicDir: 'static',
-  assetsInclude: isSvelte5 ? 
+  assetsInclude: isSvelte5 ?
     // Modern mode: exclude wasm_exec.js but include WASM files
     ['**/*.wasm', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.svg', '**/*.ico', '**/*.pdf', '**/*.html', '.nojekyll'] :
     // Legacy mode: include all assets including wasm_exec.js

@@ -1,0 +1,161 @@
+# Timeless Jewels Generator - Build Distribution License
+
+This build distribution contains code under multiple licenses. Please see below for specific license information and attribution requirements.
+
+---
+
+## Project Overview
+
+**Timeless Jewels Generator**
+Copyright (C) 2025 James Armstrong (github.com/BlazesRus)
+Based on the original timeless-jewels project by Vilsol
+
+This project is a modernized fork with Svelte 5 support and TypeScript improvements.
+
+---
+
+## Original Authors and Contributors
+
+- **Vilsol** - Original timeless-jewels project (https://github.com/Vilsol/timeless-jewels)
+- **James Armstrong (github.com/BlazesRus)** - Svelte 5 modernization and TypeScript improvements
+- **The Go Authors** - Go WASM runtime (wasm_exec.js)
+- **GitHub Copilot** - Code generation assistance
+
+---
+
+## License Information
+
+This distribution contains code under three different licenses:
+
+### 1. GNU General Public License v3.0 (GPLv3)
+**Applies to:** Main project code, original timeless-jewels functionality
+**Copyright:** Vilsol and contributors, James Armstrong (modifications)
+
+### 2. BSD 3-Clause License
+**Applies to:** Code derived from Go's wasm_exec.js
+**Copyright:** 2018 The Go Authors
+
+### 3. MIT License
+**Applies to:** Certain files
+**Copyright:** 2025 James Armstrong (github.com/BlazesRus)
+
+### 4. MIT-0 License
+**Applies to:** Certain files (Mostly settings and version detection)
+**Copyright:** 2025 James Armstrong (github.com/BlazesRus)
+
+
+---
+
+## Detailed License Texts
+
+### BSD 3-Clause License (for Go-derived code)
+
+```
+Copyright (c) 2018 The Go Authors. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+   * Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+   * Redistributions in binary form must reproduce the above
+copyright notice, this list of conditions and the following disclaimer
+in the documentation and/or other materials provided with the
+distribution.
+   * Neither the name of Google Inc. nor the names of its
+contributors may be used to endorse or promote products derived from
+this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```
+
+### MIT License (for original TypeScript/JavaScript utilities)
+
+```
+Copyright (c) 2025 James Armstrong (github.com/BlazesRus)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+### GNU General Public License v3.0 (for main project)
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For the complete GPLv3 license text, visit: https://www.gnu.org/licenses/gpl-3.0.html
+
+---
+
+## Additional Attributions
+
+- **Data Sources:** Uses Path of Exile passive skill tree data extracted with https://github.com/Vilsol/go-pob-data
+- **Crystalline Library:** Uses github.com/Vilsol/crystalline for WASM calculations
+- **Original Hosted Version:** https://vilsol.github.io/timeless-jewels
+- **Source Code:** https://github.com/BlazesRus/timeless-jewels (modernized fork)
+- **Original Source:** https://github.com/Vilsol/timeless-jewels
+
+---
+
+## Component-Specific License Information
+
+| Component | License | Copyright |
+|-----------|---------|-----------|
+| Main application code | GPLv3 | Vilsol, James Armstrong |
+| Go WASM runtime (TypeScript) | BSD 3-Clause | 2018 The Go Authors, 2025 James Armstrong |
+| Modern WASM utilities | MIT | 2025 James Armstrong |
+| Svelte 5 components | GPLv3 | 2025 James Armstrong |
+| Legacy Svelte 4 components | GPLv3 | 2025 James Armstrong |
+
+---
+
+## Usage and Distribution
+
+- **Source code:** Available under the respective licenses as noted above
+- **Binary distribution:** Must include this license file and respect all license requirements
+- **Commercial use:** Permitted under GPLv3 terms (main project), BSD terms (Go code), and MIT terms (utilities)
+- **Modification:** Permitted under all licenses with appropriate attribution
+
+For questions about licensing, please contact the respective copyright holders.
+
+---
+
+**Generated:** July 3, 2025
+**Project:** Timeless Jewels Generator
+**Version:** Svelte 5 Modernized Fork

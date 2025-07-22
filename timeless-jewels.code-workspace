@@ -32,7 +32,7 @@
           "-NoExit",
           "-ExecutionPolicy", "Bypass",
           "-Command",
-          "& \"${workspaceFolder:projectroot}/PowershellSettings/Microsoft.PowerShell_profile.ps1\""
+          "& \"${workspaceFolder:projectroot}/PowershellSettings/PowerShellTerminal.ps1\""
         ],
         "overrideName": true
       },
@@ -44,7 +44,7 @@
           "-NoExit",
           "-ExecutionPolicy", "Bypass",
           "-Command",
-          "& \"${workspaceFolder:projectroot}/PowershellSettings/Microsoft.PowerShell_profile.ps1\""
+          "& \"${workspaceFolder:projectroot}/PowershellSettings/PowerShellTerminal.ps1\""
         ],
         "overrideName": true
       }

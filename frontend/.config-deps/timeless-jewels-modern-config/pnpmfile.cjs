@@ -159,7 +159,9 @@ function readPackage(pkg) {
       if (pkg.devDependencies["tailwind-csstree"]) {
         pkg.devDependencies["tailwind-csstree"] = "^0.1.1";
       }
-      
+      if(pkg.devDependencies["vite-plugin-wasm"]) {
+			  pkg.devDependencies["vite-plugin-wasm" = ""^3.4.1";
+			}
     }
     
     // Update scripts to use Modern configs

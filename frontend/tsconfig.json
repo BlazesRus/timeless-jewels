@@ -27,7 +27,8 @@
     "noImplicitThis": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "exactOptionalPropertyTypes": false
+    "exactOptionalPropertyTypes": false,
+    "allowImportingTsExtensions": true
   },
   "include": [
     "src/**/*.d.ts",
@@ -48,19 +49,21 @@
     "dist/**/*",
     "static/**/*",
     "LegacyMode/**/*",
-    "**_legacy.ts",
     "LegacyPackage*.json",
     "svelte.config.js",
     "src/wasm_exec.js",
     "src/lib/wasm_exec.ts",
     "src/wasm_exec.ts",
     "src/routes/LegacyHomePage.svelte",
-    "src/lib/components/Legacy/LegacyTreePage.svelte",
+    "src/lib/components/Legacy/**/*",
     "src/routes/LegacyTree/+page.svelte",
     "src/lib/types/LegacyTypes.js",
     "src/lib/skill_tree_legacy.ts",
     "src/lib/skill_tree_types_legacy.ts",
     "src/lib/worker_legacy.ts",
-    "src/lib/sync_worker_legacy.ts"
+    "src/lib/sync_worker_legacy.ts",
+    "src/lib/workers/sync_worker_legacy.ts",
+    "src/lib/workers/worker_legacy.ts",
+    "src/routes-legacy/**/*"
   ]
 }

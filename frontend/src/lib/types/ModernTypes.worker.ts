@@ -40,8 +40,8 @@ export function setData(data: any) {
  * Initialize crystalline (worker-safe)
  */
 export function initializeCrystalline() {
-  if (typeof globalThis.initCrystalline === 'function') {
-    globalThis.initCrystalline();
+  if (typeof (globalThis as any).initCrystalline === 'function') {
+    (globalThis as any).initCrystalline();
   } else {
     console.warn('initCrystalline function not available in worker context');
   }

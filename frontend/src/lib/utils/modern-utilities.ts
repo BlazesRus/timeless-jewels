@@ -109,8 +109,10 @@ export function createIntersectionObserver(threshold = 0.1) {
     const observer = new IntersectionObserver(
       entries => {
         const entry = entries[0];
-        isVisible = entry.isIntersecting;
-        intersectionRatio = entry.intersectionRatio;
+        if (entry) {
+          isVisible = entry.isIntersecting;
+          intersectionRatio = entry.intersectionRatio;
+        }
       },
       { threshold }
     );

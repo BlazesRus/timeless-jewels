@@ -1,8 +1,9 @@
 import { expose } from 'comlink';
-import { ModernGo } from '../ModernWasm/go-runtime.worker';
-import { loadSkillTree, passiveToTree } from '../skill_tree_modern.worker';
-import { calculator, initializeCrystalline } from '../types/ModernTypes.worker';
+import { ModernGo, ModernWorkerManager } from '$lib/ModernWasm/go-runtime.worker';
+import { loadSkillTree, passiveToTree } from './skill_tree_modern.worker';
+import { calculator, initializeCrystalline } from '$lib/types/ModernTypes.worker';
 import type { ModernTimelessWorker, SearchConfig, SearchResults, SearchWithSeed, SearchProgressCallback, WorkerInitConfig } from './modern-worker-types';
+import { addDebugMessage, captureError } from '$lib/ModernWasm/debugLogger.worker';
 
 /**
  * Modern TimelessJewel Worker implementation with better error handling,
@@ -13,45 +14,46 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
   private ready = false;
 
   /**
-   * Initialize the worker with WASM data
+   * Initialize the worker with WASM data using reactive state
    */
   async initialize(config: WorkerInitConfig): Promise<void> {
     try {
-      // Use the Go WASM runtime
-      const go = new (globalThis as any).Go();
+      // Use the ModernWorkerManager for WASM runtime
+      const manager = new ModernWorkerManager();
+      await manager.initialize();
 
-      // Instantiate WASM module
-      const result = await WebAssembly.instantiate(config.wasmBuffer, go.importObject);
+      // Load and run WASM
+      await manager.loadAndRun(config.wasmBuffer);
 
-      // Run the Go program
-      go.run(result.instance);
-
-      // Wait for Go exports to be available
+      // Wait for Go exports to be available using manager state
       const exportedObjects = await new Promise<any>((resolve, reject) => {
         let attempts = 0;
-        const maxAttempts = 50;
+        const maxAttempts = 60; // Increased timeout
 
         const checkExports = () => {
           attempts++;
 
-          const goGlobal = (globalThis as any)['go'];
-          if (goGlobal && goGlobal['timeless-jewels']) {
-            const timelessExports = goGlobal['timeless-jewels'];
+          // Use the manager state check
+          if (manager.isReady) {
+            const goGlobal = (globalThis as any)['go'];
+            if (goGlobal && goGlobal['timeless-jewels']) {
+              const timelessExports = goGlobal['timeless-jewels'];
 
-            if (timelessExports.Calculate && timelessExports.data) {
-              resolve({
-                calculator: {
-                  Calculate: timelessExports.Calculate,
-                  ReverseSearch: timelessExports.ReverseSearch || null
-                },
-                data: timelessExports.data
-              });
-              return;
+              if (timelessExports.Calculate && timelessExports.data) {
+                resolve({
+                  calculator: {
+                    Calculate: timelessExports.Calculate,
+                    ReverseSearch: timelessExports.ReverseSearch || null
+                  },
+                  data: timelessExports.data
+                });
+                return;
+              }
             }
           }
 
           if (attempts >= maxAttempts) {
-            reject(new Error(`Timeout waiting for Go exports after ${maxAttempts} attempts`));
+            reject(new Error(`Timeout waiting for Go exports after ${maxAttempts} attempts. Runtime ready: ${manager.isReady}`));
             return;
           }
 
@@ -73,9 +75,9 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
       this.initialized = true;
       this.ready = true;
 
-      console.log('TimelessJewel Worker initialized successfully');
+      addDebugMessage('TimelessJewel Worker initialized successfully');
     } catch (error) {
-      console.error('Failed to initialize TimelessJewel Worker:', error);
+      captureError(error instanceof Error ? error : new Error(String(error)), 'TimelessJewelWorkerInit');
       throw new Error(`Worker initialization failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
@@ -102,10 +104,12 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
    */
   async reverseSearch(config: SearchConfig, onProgress?: SearchProgressCallback): Promise<SearchResults> {
     if (!this.initialized) {
+      addDebugMessage('Worker not initialized. Call initialize() first.', 'error');
       throw new Error('Worker not initialized. Call initialize() first.');
     }
 
     if (!this.ready) {
+      addDebugMessage('Worker not ready for operations.', 'error');
       throw new Error('Worker not ready for operations.');
     }
 
@@ -131,6 +135,7 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
       const calculatorValue = calculator.get();
 
       if (!calculatorValue) {
+        addDebugMessage('Calculator not initialized', 'error');
         throw new Error('Calculator not initialized');
       }
 
@@ -145,7 +150,7 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
       // Process and group results
       const processedResults = this.processSearchResults(searchResult, config);
 
-      console.log(`Search completed. Found ${processedResults.raw.length} results.`);
+      addDebugMessage(`Search completed. Found ${processedResults.raw.length} results.`);
 
       return processedResults;
     } catch (error) {
@@ -217,7 +222,7 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
           const skillData = seedData[skillID];
           if (!skillData) {
             return {
-              passive: passiveToTree[skillID] || skillID,
+              passive: passiveToTree(skillID) || skillID,
               stats: {}
             };
           }
@@ -243,7 +248,7 @@ class ModernTimelessWorkerImpl implements ModernTimelessWorker {
           });
 
           return {
-            passive: passiveToTree[skillID] || skillID,
+            passive: passiveToTree(skillID) || skillID,
             stats: skillData
           };
         })

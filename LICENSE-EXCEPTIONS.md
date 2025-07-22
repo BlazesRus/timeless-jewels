@@ -66,19 +66,23 @@ License: `MIT No Attribution (MIT-0)`
 Path: `frontend/scripts/`  
 License: `MIT License`
 
-## 12. Static License Files (MIT-0)  
+## 12. Static License Files and debug-wasm (MIT-0)  
 Path: `frontend/static/`  
-Files: `licenses.html`, `licenses.txt`  
+Files: `licenses.html`, `licenses.txt`'debug-wasm.js'
 License: `MIT No Attribution (MIT-0)`
+
+
 
 ## 13. Frontend Tests (MIT-0)  
 Path: `frontend/tests/`  
 License: `MIT No Attribution (MIT-0)`
 
+
+
 ---
 
 ## How to Use These Exceptions
 
-- Everything *not* listed above is **GPL-3.0-only**.  
+- Everything *not* listed above is **GPL-3.0-only** unless the specific file says otherwise.  
 - Files under exception paths carry the license indicated; you may reuse those under MIT-0, MIT or BSD-3-Clause instead of GPL-3.  
 - Always refer to each file’s header or folder README for the precise terms before reuse.  

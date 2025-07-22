@@ -45,11 +45,14 @@ export default {
   preprocess,
   kit: {
     adapter,
-    // Use different app.html files for modern vs legacy mode
+    // Use different app.html files and routes folders for modern vs legacy mode
     files: {
       appTemplate: isSvelte5
         ? 'src/app-modern.html'
-        : 'src/app-legacy.html'
+        : 'src/app-legacy.html',
+      routes: isSvelte5
+        ? 'src/routes-modern'
+        : 'src/routes-legacy'
     },
     paths: { 
       base: process.env.NODE_ENV === 'production' ? '/timeless-jewels' : '',
@@ -93,6 +96,15 @@ export default {
         return tsconfig;
       }
     }
+  },
+  // Enable Svelte 5 runes experimental feature
+  experimental: {
+    runes: isSvelte5 // Enable runes only for Svelte 5
+  },
+  compilerOptions: {
+    // Additional compiler options for better development experience
+    dev: process.env.NODE_ENV !== 'production',
+    hydratable: true
   },
   dynamicCompileOptions: ({ filename }) => getCompilerOptions(filename)
 };

@@ -12,5 +12,6 @@ declare global {
     fs: any;
     process: any;
     goInternalError: string | undefined;
+    __CALC_WASM_URL__: string;
   } & typeof globalThis;
 }

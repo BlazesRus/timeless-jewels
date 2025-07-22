@@ -8,7 +8,9 @@ import (
 )
 
 func main() {
+	// Create and expose all functions/data - this automatically registers them
 	exposition.Expose()
+	
 	fmt.Println("Calculator Initialized")
 	select {}
 }

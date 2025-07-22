@@ -7,11 +7,11 @@ param(
     [Parameter(Position=0)]
     [ValidateSet("switch", "status", "help", "")]
     [string]$Command = "switch",
-    
+
     [Parameter()]
     [ValidateSet("4", "5")]
     [string]$Version,
-    
+
     [Parameter()]
     [switch]$Force
 )
@@ -62,7 +62,7 @@ Examples:
 Modern Usage:
   Most operations now auto-detect the Svelte version from your installed packages.
   You typically only need: pnpm run dev (auto-detects version)
-  
+
 Configuration:
   Edit version.ini for backward compatibility or explicit version control
 "@ -ForegroundColor White
@@ -71,17 +71,17 @@ Configuration:
             node scripts/version-manager.js switch
         }
     }
-    
+
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✅ Operation completed successfully!" -ForegroundColor Green
-        
+
         # Show next steps
         Write-Host "`n💡 Next steps:" -ForegroundColor Cyan
         Write-Host "  • Run 'pnpm run dev' to start development server (auto-detects version)" -ForegroundColor White
         Write-Host "  • Run 'pnpm run version:status' to check current configuration" -ForegroundColor White
         Write-Host "  • System now uses runtime Svelte version detection" -ForegroundColor White
     }
-    
+
 } catch {
     Write-Host "❌ Error running version manager: $($_.Exception.Message)" -ForegroundColor Red
     exit 1

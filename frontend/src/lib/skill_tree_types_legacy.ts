@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Legacy Skill Tree Types for Svelte 4 compatibility
 // This file maintains compatibility with legacy components
 

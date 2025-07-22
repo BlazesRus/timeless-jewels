@@ -7,9 +7,10 @@
     "dev:modern": "cross-env SVELTE_MODE=modern pnpm install && vite dev",
     "dev:svelte4": "pnpm run dev:legacy",
     "dev:svelte5": "pnpm run dev:modern",
-    "build": "vite build",
-    "build:legacy": "cross-env SVELTE_MODE=legacy pnpm install && vite build",
-    "build:modern": "cross-env SVELTE_MODE=modern pnpm install && vite build",
+	  "generateWasm": "pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/build-wasm.ps1",
+    "build": "shx test -f build/main.wasm || pnpm run generateWasm && vite build",
+    "build:legacy": "cross-env SVELTE_MODE=legacy pnpm install && pnpm run build",
+    "build:modern": "cross-env SVELTE_MODE=modern pnpm install && pnpm run build",
     "build:svelte4": "pnpm run build:legacy",
     "build:svelte5": "pnpm run build:modern",
     "install:legacy": "cross-env SVELTE_MODE=legacy pnpm install",
@@ -41,9 +42,7 @@
     "version:help": "node scripts/version-manager.js help",
     "perf:analyze": "vite-bundle-analyzer dist",
     "dev:debug": "cross-env DEBUG=vite:* pnpm run dev:modern",
-    "build:wasm": "powershell -ExecutionPolicy Bypass -File scripts/build-wasm.ps1",
-    "build:wasm:unix": "bash scripts/build-wasm.sh",
-    "wasm:optimize": "pnpm run build:wasm"
+    "build:full":    "pnpm run generateWasm && vite build"
   },
   "devDependencies": {
     "@eslint/css": "^0.9.0",
@@ -75,6 +74,7 @@
     "prettier": "^3.6.1",
     "prettier-plugin-svelte": "^3.4.0",
     "sass": "^1.77.4",
+    "shx": "^0.4.0",
     "stylelint": "^16.21.0",
     "stylelint-config-standard": "^38.0.0",
     "stylelint-config-tailwindcss": "^1.0.0",
@@ -92,14 +92,19 @@
     "typescript-eslint": "^8.33.1",
     "vite": "^7.0.0",
     "vite-plugin-top-level-await": "^1.5.0",
-    "vitest": "^2.1.8"
+    "vite-plugin-wasm": "^3.4.1",
+    "vitest": "^2.1.8",
+    "@wasmer/sdk": "^0.9.0",
+    "@wasmer/wasi": "^1.2.2",
+    "binaryen": "^123.0.0",
+    "buffer": "^6.0.3"
   },
   "engines": {
     "node": ">=22.0.0",
     "pnpm": ">=10.0.0"
   },
   "type": "module",
-  "packageManager": "pnpm@10.12.4",
+  "packageManager": "pnpm@10.13.1+sha512.37ebf1a5c7a30d5fabe0c5df44ee8da4c965ca0c5af3dbab28c3a1681b70a256218d05c81c9c0dcf767ef6b8551eb5b960042b9ed4300c59242336377e01cfad",
   "pnpm": {
     "onlyBuiltDependencies": [],
     "peerDependencyRules": {
@@ -110,5 +115,7 @@
         "vite"
       ]
     }
+  },
+  "dependencies": {
   }
 }

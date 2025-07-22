@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WASM Debug</title>
+</head>
+<body>
+    <h1>WASM Debug Tool</h1>
+    <button id="loadWasm">Load WASM</button>
+    <button id="testFunction">Test GetTimelessJewelsData</button>
+    <pre id="output"></pre>
+
+    <script type="module">
+        import { WASI } from '@wasmer/wasi';
+        import wasmInit from '@wasmer/wasi/lib/pkg/wasi_js_bg.wasm?init';
+
+        let wasiInstance = null;
+        let wasmMemory = null;
+
+        const output = document.getElementById('output');
+        function log(message) {
+            output.textContent += message + '\n';
+            console.log(message);
+        }
+
+        document.getElementById('loadWasm').onclick = async () => {
+            try {
+                log('🔄 Initializing WASI...');
+                await wasmInit();
+
+                const wasi = new WASI({
+                    env: {},
+                    args: []
+                });
+
+                log('🔄 Loading WASM module...');
+                const wasmBuffer = await fetch('/main.wasm').then(r => r.arrayBuffer());
+
+                log('🔄 Compiling and instantiating...');
+                const module = await WebAssembly.compile(wasmBuffer);
+                const instance = await WebAssembly.instantiate(module, {
+                    ...wasi.getImports(module)
+                });
+
+                wasiInstance = instance;
+                wasmMemory = instance.exports.memory;
+
+                log('✅ WASI loaded successfully');
+                log('Available exports: ' + Object.keys(instance.exports).join(', '));
+
+                // Start WASI
+                wasi.start(instance);
+                log('✅ WASI started');
+
+            } catch (error) {
+                log('❌ Error loading WASM: ' + error.message);
+            }
+        };
+
+        document.getElementById('testFunction').onclick = async () => {
+            if (!wasiInstance) {
+                log('❌ WASM not loaded');
+                return;
+            }
+
+            try {
+                const exports = wasiInstance.exports;
+
+                // Test memory functions
+                if (exports.getMemoryPointer && exports.getMemorySize) {
+                    const memPtr = exports.getMemoryPointer();
+                    const memSize = exports.getMemorySize();
+                    log(`🔍 Go memory - pointer: ${memPtr}, size: ${memSize}`);
+                }
+
+                // Test GetTimelessJewelsData
+                if (exports.GetTimelessJewelsData) {
+                    log('🔄 Calling GetTimelessJewelsData...');
+                    const result = exports.GetTimelessJewelsData();
+                    log(`🔍 Function returned: ${result} (type: ${typeof result})`);
+
+                    if (typeof result === 'number' && result !== 0) {
+                        // Try to read the string
+                        const memory = new Uint8Array(wasmMemory.buffer);
+                        const length = memory[result] | (memory[result + 1] << 8) | (memory[result + 2] << 16) | (memory[result + 3] << 24);
+                        log(`🔍 String length: ${length}`);
+
+                        if (length > 0 && length < 1000000) {
+                            const stringBytes = memory.slice(result + 4, result + 4 + length);
+                            const jsonString = new TextDecoder().decode(stringBytes);
+                            log(`🔍 JSON string (first 500 chars): ${jsonString.substring(0, 500)}`);
+
+                            try {
+                                const parsed = JSON.parse(jsonString);
+                                log(`✅ Successfully parsed JSON with keys: ${Object.keys(parsed).join(', ')}`);
+                            } catch (parseError) {
+                                log(`❌ JSON parse error: ${parseError.message}`);
+                            }
+                        }
+                    }
+                } else {
+                    log('❌ GetTimelessJewelsData not found in exports');
+                }
+
+            } catch (error) {
+                log('❌ Error testing function: ' + error.message);
+                log('Stack: ' + error.stack);
+            }
+        };
+    </script>
+</body>
+</html>

@@ -46,7 +46,7 @@
   "terminal.integrated.allowChords": false,
   "terminal.integrated.altClickMovesCursor": false,
   "terminal.integrated.confirmOnExit": "hasChildProcesses",
-  "terminal.integrated.confirmOnKill": "hasChildProcesses", 
+  "terminal.integrated.confirmOnKill": "hasChildProcesses",
   "terminal.integrated.showExitAlert": true,
   "terminal.integrated.tabs.showActions": "never",
   "terminal.integrated.tabs.hideCondition": "never",
@@ -187,7 +187,7 @@
     "**/LegacyPackage*.json": true,
     "frontend/.eslintrc.cjs": true,
     "frontend/.eslintignore": true,
-    
+
     // Hide specific problematic legacy files in modern mode
     "frontend/src/routes/LegacyHomePage.svelte": true,
     "frontend/src/lib/components/Legacy/**": true,
@@ -201,7 +201,7 @@
     "frontend/src/lib/worker_legacy.ts": true,
     "frontend/src/lib/sync_worker_legacy.ts": true,
     "frontend/src/lib/*legacy*": true,
-    
+
     // Hide LegacyWasm folder in modern mode
     "frontend/src/lib/LegacyWasm/**": true,
     "frontend/src/lib/LegacyWasm": true
@@ -210,14 +210,14 @@
     "**/node_modules": true,
     "**/pnpm-lock.yaml": true,
     "***.gz": true,
-    
+
     // Hide legacy files from search in modern mode
     "frontend/src/routes/LegacyHomePage.svelte": true,
     "frontend/src/lib/components/Legacy/**": true,
     "frontend/src/routes/LegacyTree/**": true,
     "frontend/src/lib/wasm/wasm_exec.ts": true,
     "frontend/src/lib/*legacy*": true,
-    
+
     // Hide LegacyWasm folder from search in modern mode
     "frontend/src/lib/LegacyWasm/**": true
   },
@@ -357,7 +357,7 @@
   "typescript.exclude": [
     "**/frontend/src/routes/LegacyHomePage.svelte",
     "**/frontend/src/lib/components/Legacy/**/*",
-    "**/frontend/src/routes/LegacyTree/**/*", 
+    "**/frontend/src/routes/LegacyTree/**/*",
     "**/frontend/src/routes/LegacyLayout.svelte",
     "**/frontend/src/lib/wasm/wasm_exec.ts",
     "**/frontend/src/wasm_exec.ts",
@@ -374,7 +374,7 @@
     "**/frontend/src/routes/LegacyHomePage.svelte",
     "**/frontend/src/lib/components/Legacy/**/*",
     "**/frontend/src/routes/LegacyTree/**/*",
-    "**/frontend/src/routes/LegacyLayout.svelte", 
+    "**/frontend/src/routes/LegacyLayout.svelte",
     "**/frontend/src/lib/wasm/wasm_exec.ts",
     "**/frontend/src/wasm_exec.ts",
     "**/frontend/src/lib/types/LegacyTypes.js",
@@ -450,5 +450,20 @@
   "tailwindCSS.experimental.classRegex": [
     ["class:([^=]+)=", "\"([^\"]*)\""],
     ["@apply\\s+([^;]*);", "([^\\s]+)"]
-  ]
+  ],
+
+  // UTF-8 encoding configuration
+  "files.encoding": "utf8",
+  "files.autoGuessEncoding": false,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  "[go]": {
+    "editor.insertSpaces": false,
+    "editor.tabSize": 4
+  },
+  "[markdown]": {
+    "files.trimTrailingWhitespace": false
+  }
 }

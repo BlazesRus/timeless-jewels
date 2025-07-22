@@ -17,4 +17,7 @@ declare global {
   const TimelessJewels: Record<string, string>;
   const TimelessJewelConquerors: Record<number, string[]>;
   const TreeToPassive: Record<number, number>;
+
+  // Global WASM URL for the calculator
+  var __CALC_WASM_URL__: string;
 }

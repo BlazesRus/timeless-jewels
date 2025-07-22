@@ -1,64 +1,83 @@
 import { expose, transfer } from 'comlink';
-import '../wasm_exec.js';
-import { loadSkillTree, passiveToTree } from './skill_tree_modern.worker';
+// Modern worker - uses TypeScript Go runtime instead of wasm_exec.js
+import { loadSkillTree, passiveToTree } from './workers/skill_tree_modern.worker';
 import type { SearchWithSeed, ReverseSearchConfig, SearchResults } from './skill_tree_modern';
 import { calculator, initializeCrystalline } from './types/ModernTypes.worker';
+import { getModernWasmExecutor } from './ModernWasm/wasm-exec.svelte';
+import { getWorkerWasmUrl } from './utils/wasm-urls';
 
 // Modern worker implementation with enhanced error handling and performance
 const obj = {
   // Modern async boot with transfer optimization for ArrayBuffer
   async boot(wasm: ArrayBuffer): Promise<void> {
     try {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      const go = new Go();
-      const result = await WebAssembly.instantiate(wasm, go.importObject);
-
-      // Use transfer for ArrayBuffer performance
-      await go.run(result.instance);
-
-      // Wait for Go exports to be available
-      const exportedObjects = await new Promise<any>((resolve, reject) => {
-        let attempts = 0;
-        const maxAttempts = 50;
-
-        const checkExports = () => {
-          attempts++;
-
-          const goGlobal = (globalThis as any)['go'];
-          if (goGlobal && goGlobal['timeless-jewels']) {
-            const timelessExports = goGlobal['timeless-jewels'];
-
-            if (timelessExports.Calculate && timelessExports.data) {
-              resolve({
-                calculator: {
-                  Calculate: timelessExports.Calculate,
-                  ReverseSearch: timelessExports.ReverseSearch || null
-                },
-                data: timelessExports.data
-              });
-              return;
-            }
-          }
-
-          if (attempts >= maxAttempts) {
-            reject(new Error(`Timeout waiting for Go exports after ${maxAttempts} attempts`));
-            return;
-          }
-
-          setTimeout(checkExports, 200);
-        };
-
-        checkExports();
+      // Use modern TypeScript WASM executor instead of legacy wasm_exec.js
+      const wasmExecutor = getModernWasmExecutor((progress) => {
+        console.log(`Worker WASM loading progress: ${progress}%`);
       });
 
-      // Set the calculator and data instances in worker context
-      calculator.set(exportedObjects.calculator);
+      // Convert ArrayBuffer to a URL that can be loaded
+      const wasmBlob = new Blob([wasm], { type: 'application/wasm' });
+      const wasmUrl = URL.createObjectURL(wasmBlob);
 
-      await initializeCrystalline();
-      await loadSkillTree();
+      try {
+        // Load WASM using the modern executor
+        const success = await wasmExecutor.loadWasm(wasmUrl);
 
-      console.log('Modern worker initialized successfully');
+        if (!success) {
+          throw new Error('Modern WASM executor failed to load WASM');
+        }
+
+        // Clean up the object URL
+        URL.revokeObjectURL(wasmUrl);
+
+        // Wait for Go exports to be available through the modern runtime
+        const exportedObjects = await new Promise<any>((resolve, reject) => {
+          let attempts = 0;
+          const maxAttempts = 50;
+
+          const checkExports = () => {
+            attempts++;
+
+            const goGlobal = (globalThis as any)['go'];
+            if (goGlobal && goGlobal['timeless-jewels']) {
+              const timelessExports = goGlobal['timeless-jewels'];
+
+              if (timelessExports.Calculate && timelessExports.data) {
+                resolve({
+                  calculator: {
+                    Calculate: timelessExports.Calculate,
+                    ReverseSearch: timelessExports.ReverseSearch || null
+                  },
+                  data: timelessExports.data
+                });
+                return;
+              }
+            }
+
+            if (attempts >= maxAttempts) {
+              reject(new Error(`Timeout waiting for Go exports after ${maxAttempts} attempts`));
+              return;
+            }
+
+            setTimeout(checkExports, 200);
+          };
+
+          checkExports();
+        });
+
+        // Set the calculator and data instances in worker context
+        calculator.set(exportedObjects.calculator);
+
+        await initializeCrystalline();
+        await loadSkillTree();
+
+        console.log('Modern worker initialized successfully');
+      } catch (wasmError) {
+        // Clean up the object URL on error
+        URL.revokeObjectURL(wasmUrl);
+        throw wasmError;
+      }
     } catch (error) {
       console.error('Modern worker initialization failed:', error);
       throw new Error(`Worker boot failed: ${error instanceof Error ? error.message : String(error)}`);
