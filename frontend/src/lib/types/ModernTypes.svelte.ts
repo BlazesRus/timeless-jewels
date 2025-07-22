@@ -10,7 +10,7 @@
 
 import { loadWasm, enhancedWasmState } from '$lib/ModernWasm/wasm-loader.svelte';
 import { getEnvironmentWasmUrl } from '$lib/utils/wasm-urls';
-import { captureError } from '$lib/ModernWasm/debugLogger.svelte';
+import { captureError } from '$lib/ModernWasm/wasmDebugLogger.svelte';
 
 // Central reactive store for all of your "Modern Types" surface:
 export const modernTypes = $state({

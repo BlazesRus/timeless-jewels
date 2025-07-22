@@ -219,7 +219,7 @@ tools2024.go
 
 tools_test
 
-frontend/src/lib/types/index.modern.d.ts.old
+frontend/src/lib/types/index.d.ts.old
 
 frontend/test-tailwind.html
 

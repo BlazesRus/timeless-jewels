@@ -27,7 +27,7 @@
  */
 
 import { loadWasm } from '../ModernWasm/wasm-loader.svelte';
-import { addDebugMessage, captureError } from '$lib/ModernWasm/debugLogger.svelte';
+import { addDebugMessage, captureError } from '$lib/ModernWasm/wasmDebugLogger.svelte';
 
 let wasmReady = false;
 

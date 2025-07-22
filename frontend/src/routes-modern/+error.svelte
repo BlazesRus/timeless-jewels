@@ -3,7 +3,7 @@
   Shows the last 20 debug messages and detailed error information
 -->
 <script lang="ts">
-  import { page } from '$app/state';
+  import { page } from '$app/stores';
   import { browser } from '$app/environment';
   import { debugMessages, lastError, clearDebugMessages, clearLastError, wasmDebug } from '$lib/utils/debugLogger';
   import { goto } from '$app/navigation';

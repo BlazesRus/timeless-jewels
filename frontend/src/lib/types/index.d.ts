@@ -1,4 +1,10 @@
 /* eslint-disable */
+// Modern (Svelte 5) TypeScript definitions - WASM types with rune enhancements
+// Generated from: go run -tags=tools tools.go types
+// Auto-updated: 2025-06-22T120000Z
+
+// ===== GENERATED TYPES SECTION START =====
+/* eslint-disable */
 export declare namespace calculator {
   function Calculate(passiveID: number, seed: number, timelessJewelType: number, conqueror: string): data.AlternatePassiveSkillInformation;
   function ReverseSearch(passiveIDs?: Array<number>, statIDs?: Array<number>, timelessJewelType: number, conqueror: string, updates: (arg1: number) => Promise<void>): Promise<(Record<number, Record<number, Record<number, number> | undefined> | undefined> | undefined)>;
@@ -89,3 +95,61 @@ export declare namespace data {
   const TreeToPassive: Record<number, data.PassiveSkill | undefined> | undefined;
 }
 export const initializeCrystalline: () => void;
+// ===== GENERATED TYPES SECTION END =====
+
+// Svelte 5 rune-based reactive state declarations
+export declare const calculatorState: {
+  readonly current: {
+    Calculate: typeof calculator.Calculate;
+    ReverseSearch: typeof calculator.ReverseSearch;
+  } | null;
+};
+
+export declare const dataState: {
+  readonly current: {
+    GetAlternatePassiveAdditionByIndex: typeof data.GetAlternatePassiveAdditionByIndex;
+    GetAlternatePassiveSkillByIndex: typeof data.GetAlternatePassiveSkillByIndex;
+    GetPassiveSkillByIndex: typeof data.GetPassiveSkillByIndex;
+    GetStatByIndex: typeof data.GetStatByIndex;
+    PassiveSkillAuraStatTranslationsJSON: typeof data.PassiveSkillAuraStatTranslationsJSON;
+    PassiveSkillStatTranslationsJSON: typeof data.PassiveSkillStatTranslationsJSON;
+    PassiveSkills: typeof data.PassiveSkills;
+    PossibleStats: typeof data.PossibleStats;
+    SkillTree: typeof data.SkillTree;
+    StatTranslationsJSON: typeof data.StatTranslationsJSON;
+    TimelessJewelConquerors: typeof data.TimelessJewelConquerors;
+    TimelessJewelSeedRanges: typeof data.TimelessJewelSeedRanges;
+    TimelessJewels: typeof data.TimelessJewels;
+    TreeToPassive: typeof data.TreeToPassive;
+  } | null;
+};
+
+// Enhanced initialization for Svelte 5 with rune support
+export declare const initializeCrystalline: () => void;
+
+// Rune-based reactive utilities for Svelte 5
+export declare function useCalculator(): {
+  readonly current: {
+    Calculate: typeof calculator.Calculate;
+    ReverseSearch: typeof calculator.ReverseSearch;
+  } | null;
+};
+
+export declare function useData(): {
+  readonly current: {
+    GetAlternatePassiveAdditionByIndex: typeof data.GetAlternatePassiveAdditionByIndex;
+    GetAlternatePassiveSkillByIndex: typeof data.GetAlternatePassiveSkillByIndex;
+    GetPassiveSkillByIndex: typeof data.GetPassiveSkillByIndex;
+    GetStatByIndex: typeof data.GetStatByIndex;
+    PassiveSkillAuraStatTranslationsJSON: typeof data.PassiveSkillAuraStatTranslationsJSON;
+    PassiveSkillStatTranslationsJSON: typeof data.PassiveSkillStatTranslationsJSON;
+    PassiveSkills: typeof data.PassiveSkills;
+    PossibleStats: typeof data.PossibleStats;
+    SkillTree: typeof data.SkillTree;
+    StatTranslationsJSON: typeof data.StatTranslationsJSON;
+    TimelessJewelConquerors: typeof data.TimelessJewelConquerors;
+    TimelessJewelSeedRanges: typeof data.TimelessJewelSeedRanges;
+    TimelessJewels: typeof data.TimelessJewels;
+    TreeToPassive: typeof data.TreeToPassive;
+  } | null;
+};

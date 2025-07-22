@@ -28,7 +28,7 @@
   // Modern types and functions
   import { useCalculator, useData, initializeCrystalline } from '$lib/types/ModernTypes.svelte';
   // Modern Select component
-  import ModernSelect from '$lib/components/ModernSelect.svelte';
+  import ModernSelect from '$lib/components/Modern/ModernSelect.svelte';
   // WASM URL configuration
   import { getCalculatorWasmUrl, getEnvironmentWasmUrl } from '$lib/utils/wasm-urls';
   // Debug logging and error handling

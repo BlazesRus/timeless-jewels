@@ -145,9 +145,9 @@ func generateTypes() {
 }
 
 func updateModernTypeDefinitions(originalTs string) {
-	modernTypesPath := "./frontend/src/lib/types/index.modern.d.ts"
+	modernTypesPath := "./frontend/src/lib/types/index.d.ts"
 
-	// Check if index.modern.d.ts exists
+	// Check if index.d.ts exists
 	if _, err := os.Stat(modernTypesPath); os.IsNotExist(err) {
 		// Create it if it doesn't exist
 		createModernTypeDefinitions(originalTs)
@@ -221,7 +221,7 @@ export declare function useData(): {
   readonly current: typeof dataState.current;
 };`
 
-	if err := os.WriteFile("./frontend/src/lib/types/index.modern.d.ts", []byte(modernTs), 0777); err != nil {
+	if err := os.WriteFile("./frontend/src/lib/types/index.d.ts", []byte(modernTs), 0777); err != nil {
 		panic(err)
 	}
 }

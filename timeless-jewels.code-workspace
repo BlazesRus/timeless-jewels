@@ -1,9 +1,21 @@
-﻿{
+{
   // ── Multi-Root Workspace: Timeless Jewels ──
   "folders": [
-    { "path": ".", "name": "projectroot" },
-    { "path": "./frontend", "name": "frontend" },
-    { "path": "../ErrorLogs", "name": "error-logs" }
+    {
+      "path": ".",
+      "name": "projectroot"
+    },
+    {
+      "path": "./frontend",
+      "name": "frontend"
+    },
+    {
+      "path": "../ErrorLogs",
+      "name": "error-logs"
+    },
+    {
+      "path": "../timeless-jewels_legacy"
+    }
   ],
   // ── Recommended Extensions ──
   "extensions": {

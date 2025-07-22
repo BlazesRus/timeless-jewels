@@ -3,6 +3,8 @@ import path from 'path';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { VERSION as SVELTE_VER } from 'svelte/compiler';
 import tailwindcss from '@tailwindcss/vite';
+import Inspect from 'vite-plugin-inspect';
+import checker from 'vite-plugin-checker';
 
 const majorVer = +SVELTE_VER.split('.')[0];
 const isSvelte5 = majorVer >= 5;
@@ -18,6 +20,16 @@ const config = {
   plugins: [
     sveltekit(),
     tailwindcss(), // Add Tailwind CSS Vite plugin for v4 support
+    Inspect(), // Vite plugin inspection tool for debugging
+    checker({ 
+      typescript: true, 
+      svelte: true,
+      // Remove ESLint from checker plugin due to ESLint v9 compatibility issues
+      // eslint: {
+      //   lintCommand: 'eslint "./src/**/*.{ts,js,svelte}"'
+      // }
+    }), // TypeScript and Svelte checking in dev mode (ESLint disabled due to v9 incompatibility)
+    // PWA plugin temporarily disabled until configuration is fixed
     // Add Vite 7 optimizations for modern mode
     ...(isSvelte5 ? [
       // Top-level await support for modern development

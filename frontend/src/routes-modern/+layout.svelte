@@ -60,6 +60,25 @@
   const layoutClasses = $derived(`layout-wrapper ${viewport.isMobile ? 'mobile' : 'desktop'}`);
 </script>
 
+<svelte:head>
+  <!-- PWA Meta Tags -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f97316" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-title" content="TJ Calculator" />
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json" />
+  
+  <!-- Icons -->
+  <link rel="icon" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
+  
+  <!-- Description -->
+  <meta name="description" content="Path of Exile Timeless Jewel Calculator - Calculate passive tree modifications offline" />
+</svelte:head>
+
 <!-- Always show the main content, WASM loads dynamically in components -->
 <div class={layoutClasses} data-hydrated={layoutMetrics.isHydrated}>
   {@render children()}

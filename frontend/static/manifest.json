@@ -1,0 +1,17 @@
+{
+  "name": "Timeless Jewel Calculator",
+  "short_name": "TJ Calculator",
+  "description": "Path of Exile Timeless Jewel Calculator - Calculate passive tree modifications offline",
+  "theme_color": "#f97316",
+  "background_color": "#111827",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
