@@ -1,0 +1,11 @@
+{
+  "name": "timeless-jewels-legacy-config",
+  "version": "1.0.0",
+  "description": "Configuration package for Timeless Jewels Svelte 4 (Legacy) mode",
+  "main": "index.js",
+  "files": [
+    "pnpmfile.cjs",
+    "index.js",
+    "tsconfig.json"
+  ]
+}
