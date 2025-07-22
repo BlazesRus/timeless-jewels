@@ -33,7 +33,7 @@ async function debugWasmModule() {
     console.log('🔍 Loading WASM module for inspection...');
 
     // Fetch the WASM file
-    const response = await fetch('/main.wasm');
+    const response = await fetch('/calculator.wasm');
     const wasmBuffer = await response.arrayBuffer();
 
     console.log(`📁 WASM file size: ${wasmBuffer.byteLength} bytes`);

@@ -7,10 +7,10 @@
  */
 
 // WASM file URL for WASI approach
-export const WASM_URL = '/main.wasm';
+export const WASM_URL = '/calculator.wasm';
 
 /**
- * Get the WASM URL (WASI-based main.wasm)
+ * Get the WASM URL (WASI-based calculator.wasm)
  */
 export function getWasmUrl(): string {
   return WASM_URL;

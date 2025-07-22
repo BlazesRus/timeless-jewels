@@ -111,7 +111,7 @@ WASI Integration Layer (@wasmer/sdk)
     ↓
 WASM Memory Management
     ↓ 
-TinyGo WASI Module (main.wasm)
+TinyGo WASI Module (calculator.wasm)
 ```
 
 The service now provides a robust, production-ready interface for WASI WASM module integration in the Timeless Jewels application.

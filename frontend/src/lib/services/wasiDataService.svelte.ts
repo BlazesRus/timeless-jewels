@@ -147,10 +147,10 @@ class WasiTimelessJewelsDataService {
       await wasmerSdk.init();
       console.log('✅ Wasmer SDK initialized');
 
-      console.log('🔄 Loading TinyGo WASI module from /main.wasm...');
+      console.log('🔄 Loading TinyGo WASI module from /calculator.wasm...');
 
       // Fetch the WASM module bytes
-      const wasmResponse = await fetch('/main.wasm');
+      const wasmResponse = await fetch('/calculator.wasm');
       if (!wasmResponse.ok) {
         throw new Error(`Failed to fetch WASM module: ${wasmResponse.status} ${wasmResponse.statusText}`);
       }

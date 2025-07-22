@@ -45,7 +45,7 @@ if (-not (Get-Command wasmOpt -ErrorAction SilentlyContinue)) {
 }
 
 $BuildDir   = Join-Path $PSScriptRoot '..' '..' 'wasm'
-$OutputPath = Join-Path $PSScriptRoot '..' '..' 'frontend' 'static' 'main.wasm'
+$OutputPath = Join-Path $PSScriptRoot '..' '..' 'frontend' 'static' 'calculator.wasm'
 
 Write-Verbose "Will write optimized WASM to $OutputPath"
 
