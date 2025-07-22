@@ -1,5 +1,13 @@
 # timeless-jewels [![push](https://github.com/BlazesRus/timeless-jewels/actions/workflows/push.yml/badge.svg)](https://github.com/BlazesRus/timeless-jewels/actions/workflows/push.yaml) ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/vilsol/timeless-jewels) ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/vilsol/timeless-jewels) [![GitHub license](https://img.shields.io/github/license/Vilsol/timeless-jewels)](https://github.com/BlazesRus/timeless-jewels/blob/master/LICENSE)
 
+# timeless-jewels [![push](https://github.com/BlazesRus/timeless-jewels/actions/workflows/push.yml/badge.svg)](https://github.com/BlazesRus/timeless-jewels/actions/workflows/push.yaml) ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/vilsol/timeless-jewels) ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/vilsol/timeless-jewels) [![GitHub license](https://img.shields.io/github/license/Vilsol/timeless-jewels)](https://github.com/BlazesRus/timeless-jewels/blob/master/LICENSE)
+
+## 📄 License Exceptions
+
+This project uses a multi-license structure. Most files are licensed under GPL-3.0-only, but many components and scripts are available under more permissive licenses (MIT, MIT-0, BSD-3-Clause). For a detailed list of exceptions and the exact license for each directory or file, see [LICENSE-EXCEPTIONS.md](./LICENSE-EXCEPTIONS.md).
+
+**Always check LICENSE-EXCEPTIONS.md before reusing or redistributing any part of this project.**
+
 A simple timeless jewel calculator with a skill tree view by Vilsol
 with some modifications for better trade search functionality
 
