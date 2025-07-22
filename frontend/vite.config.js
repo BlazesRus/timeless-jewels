@@ -217,6 +217,17 @@ const config = {
       }
     ])
   ],
+  // Optimization dependencies configuration
+  optimizeDeps: {
+    exclude: [
+      // Exclude @wasmer/sdk from pre-bundling as it contains WASM files
+      // that don't work well with Vite's dependency optimization
+      '@wasmer/sdk',
+      '@wasmer/wasi'
+    ],
+    // Include other dependencies that should be pre-bundled
+    include: []
+  },
   define: {
     // Inject the build-time Svelte version into the client code
     __SVELTE_BUILD_VERSION__: JSON.stringify(majorVer),

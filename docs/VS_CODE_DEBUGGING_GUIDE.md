@@ -144,7 +144,7 @@ Ctrl+Shift+P → "Tasks: Run Task" → "Preview Production Build"
 # Or manually: npx serve .svelte-kit/output/client -l 3001
 ```
 
-**Key Insight:** Your WASM file (`calculator.wasm`) is correctly being copied to the build output, confirming the build process is working properly!
+
 
 ## Quick Commands
 

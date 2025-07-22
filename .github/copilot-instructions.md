@@ -15,3 +15,20 @@ Set-Location frontend; Write-Host "🔄 Switching to Svelte 5..." -ForegroundCol
 # Auto-detect version and start dev server
 Set-Location frontend; Write-Host "🚀 Starting development server..." -ForegroundColor Green; pnpm run dev
 ```
+
+### **Copilot Chat Workflow Guidelines**
+
+**⚠️ Important:** Recent updates to Copilot Chat cause the session to end early when long-running tasks (like `pnpm run dev`) are started through chat integration. To avoid wasting premium chat turns:
+
+**Recommended Workflow:**
+- Run the dev server manually in terminal using the commands above
+- Use Copilot Chat for code changes, troubleshooting, and short-lived tasks only
+
+**When requesting code changes from Copilot:**
+- ✅ "Make the code change, but do not run the dev server and pause to prompt for confirmation before continuing"
+- ✅ "Prompt me before running any long-running tasks that would end the chat session"
+- ✅ "Make these changes and run a build to validate, but ask before starting any servers"
+
+**Avoid in Chat:**
+- ❌ Starting dev servers through chat/task integration (causes early session termination)
+- ❌ Long-running background processes without explicit confirmation

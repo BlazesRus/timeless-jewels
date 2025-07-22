@@ -10,8 +10,8 @@
   import { base } from '$app/paths';
 
   // Get error details from page data or store - Svelte 5 runes
-  const error = $derived($page.error || $lastError);
-  const status = $derived($page.status || 500);
+  const error = $derived($page?.error || $lastError);
+  const status = $derived($page?.status || 500);
 
   // WASM memory inspection
   let wasmMemoryInfo = $state<any>(null);
@@ -299,7 +299,7 @@
         </div>
         <div>
           <span class="text-gray-500">URL:</span>
-          <span class="text-white ml-2 break-all">{page.url.pathname}</span>
+          <span class="text-white ml-2 break-all">{$page?.url?.pathname || 'Unknown'}</span>
         </div>
         <div>
           <span class="text-gray-500">User Agent:</span>

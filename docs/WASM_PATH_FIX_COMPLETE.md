@@ -26,7 +26,7 @@ const wasmUrl = new URL('/calculator.wasm', window.location.origin).href;
 - **Browser Compatibility**: Uses standard browser APIs instead of SvelteKit-specific paths
 - **Worker Safe**: The WASM loader can now work in contexts where SvelteKit APIs aren't available
 - **Static Asset Access**: Directly accesses the WASM file from the static directory
-- **Production Ready**: Works in both development and production builds
+
 
 ### 3. Path Resolution ✅
 - WASM file location: `frontend/static/calculator.wasm`
