@@ -135,6 +135,72 @@ class WasiTimelessJewelsDataService {
     console.log('Initializing WASI-based Timeless Jewels data service...');
 
     try {
+      // Use enhanced WASI loader for better PWA support
+      const { wasiLoader } = await import('../ModernWasm/enhanced-wasi-loader');
+      
+      console.log('🔄 Loading WASI module with enhanced PWA support...');
+      const wasmExports = await wasiLoader.loadWasiModule();
+      
+      console.log('✅ WASI module loaded with enhanced loader');
+      console.log('🔍 Available exports:', Object.keys(wasmExports));
+
+      // Store the exports for later function calls
+      this.wasiInstance = { exports: wasmExports };
+
+      // Get the data from the WASM module
+      console.log('🔄 Calling GetTimelessJewelsData...');
+      const rawData = this.callWasmFunction('GetTimelessJewelsData', []);
+      if (!rawData) {
+        console.warn('⚠️ GetTimelessJewelsData returned null, using default data structure');
+      }
+
+      console.log('✅ Retrieved data from WASI module');
+      if (rawData) {
+        console.log('🔍 Raw data keys:', Object.keys(rawData));
+        console.log('🔍 Raw data types:', Object.keys(rawData).map(key => `${key}: ${typeof rawData[key]}`));
+      }
+
+      // Parse and transform the data
+      console.log('🔄 Transforming raw data...');
+      let transformedData: any = {};
+      try {
+        if (rawData) {
+          transformedData = this.extractAndTransformData(rawData);
+          console.log('✅ Data transformation completed');
+        } else {
+          console.log('⚠️ Using default empty data structure');
+        }
+      } catch (error) {
+        console.error('❌ Failed to transform raw data:', error);
+        console.log('⚠️ Using default empty data structure');
+      }
+
+      // Create wrapper functions for WASM exports
+      const wasmFunctions = this.createWasmFunctionWrappers();
+
+      // Combine everything into the final data structure
+      const serviceData: TimelessJewelsData = {
+        ...wasmFunctions,
+        ...transformedData
+      };
+
+      console.log('✅ WASI Timeless Jewels data service initialized successfully with PWA support');
+      return serviceData;
+
+    } catch (error) {
+      console.error('❌ Failed to initialize WASI Timeless Jewels data service:', error);
+      
+      // Fallback to original implementation
+      console.log('🔄 Falling back to original WASI implementation...');
+      return this.performOriginalWasiInitialization();
+    }
+  }
+
+  // Keep the original implementation as fallback
+  private async performOriginalWasiInitialization(): Promise<TimelessJewelsData> {
+    console.log('Initializing WASI-based Timeless Jewels data service...');
+
+    try {
       // Use dynamic import as recommended by the troubleshooting docs
       console.log('🔄 Dynamically importing @wasmer/sdk...');
       const wasmerSdk = await import('@wasmer/sdk');
@@ -159,11 +225,20 @@ class WasiTimelessJewelsDataService {
 
       console.log('🔄 Creating WASI instance with @wasmer/sdk...');
 
+      // Check cross-origin isolation status before attempting WASI operations
+      const isIsolated = typeof SharedArrayBuffer !== 'undefined';
+      console.log(`🔍 Cross-origin isolation status: ${isIsolated ? 'ENABLED' : 'DISABLED'}`);
+      
+      if (!isIsolated) {
+        console.warn('⚠️ Cross-origin isolation is not enabled. SharedArrayBuffer is not available.');
+        console.warn('   This will prevent runWasix() from working. Falling back to manual WASI.');
+      }
+
       // Try multiple approaches for WASI instantiation
       let wasiInstance: any = null;
 
-      // Approach 1: Try runWasix() if available (recommended for custom WASI modules)
-      if (wasmerSdk.runWasix) {
+      // Approach 1: Try runWasix() if available (requires cross-origin isolation)
+      if (wasmerSdk.runWasix && isIsolated) {
         try {
           console.log('🔄 Attempting runWasix() approach...');
           wasiInstance = await wasmerSdk.runWasix(new Uint8Array(wasmBytes), {
@@ -175,6 +250,8 @@ class WasiTimelessJewelsDataService {
         } catch (error) {
           console.warn('⚠️ runWasix() failed, trying alternative approaches:', error);
         }
+      } else if (!isIsolated) {
+        console.warn('⚠️ Skipping runWasix() - cross-origin isolation not available');
       }
 
       // Approach 2: Try Wasmer.fromRegistry() or Wasmer.fromBytes() if available

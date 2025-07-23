@@ -4,6 +4,9 @@
     <meta charset="utf-8" />
     <link rel="icon" href="%sveltekit.assets%/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <!-- Content Security Policy for WASM and worker support -->
+    <meta http-equiv="Content-Security-Policy" content="worker-src 'self' blob: data:; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https:; img-src 'self' data:;">
 
     <title>Timeless Jewel Calculator</title>
     <meta name="description" content="Timeless Jewel calculator with a passive tree view" />

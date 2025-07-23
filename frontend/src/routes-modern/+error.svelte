@@ -3,15 +3,15 @@
   Shows the last 20 debug messages and detailed error information
 -->
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { browser } from '$app/environment';
   import { debugMessages, lastError, clearDebugMessages, clearLastError, wasmDebug } from '$lib/utils/debugLogger';
   import { goto } from '$app/navigation';
   import { base } from '$app/paths';
 
   // Get error details from page data or store - Svelte 5 runes
-  const error = $derived($page?.error || $lastError);
-  const status = $derived($page?.status || 500);
+  const error = $derived(page?.error || $lastError);
+  const status = $derived(page?.status || 500);
 
   // WASM memory inspection
   let wasmMemoryInfo = $state<any>(null);
@@ -85,7 +85,7 @@
   function handleRetry() {
     clearLastError();
     clearDebugMessages();
-    goto(page.url.pathname);
+    goto(page?.url?.pathname || '/');
   }
 
   function handleGoHome() {
@@ -299,7 +299,7 @@
         </div>
         <div>
           <span class="text-gray-500">URL:</span>
-          <span class="text-white ml-2 break-all">{$page?.url?.pathname || 'Unknown'}</span>
+          <span class="text-white ml-2 break-all">{page?.url?.pathname || 'Unknown'}</span>
         </div>
         <div>
           <span class="text-gray-500">User Agent:</span>

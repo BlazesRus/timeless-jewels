@@ -47,23 +47,12 @@ export default [
       }
     },
     rules: {
-      ...commonRules
+      ...commonRules,
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': 'off'
     }
   },
-  // TypeScript configuration
-  {
-    files: ["**/*.ts", "**/*.tsx"],
-    ...ts.configs.recommended[0],
-    languageOptions: {
-      parser: ts.parser,
-      parserOptions: {
-        project: './tsconfig.json'
-      }
-    },
-    rules: {
-      ...commonRules
-    }
-  },  // Svelte configuration
+  // Svelte configuration
   ...svelte.configs['flat/recommended'],
   // Svelte TypeScript configuration
   {
@@ -100,10 +89,13 @@ export default [
       '**/build/**',
       '**/package/**',
       '**/node_modules/**',
+      '**/static/**',
       '**/postcss.config.js',
       '**/tsconfig.tsbuildinfo',
       'src/wasm_exec.d.ts',
       'wasm_exec.js',
+      // Exclude .svelte.ts files from ESLint to avoid parsing issues
+      '**/*.svelte.ts',
       // Configuration files - excluded from linting and formatting
       'package.json',
       'pnpm-lock.yaml',

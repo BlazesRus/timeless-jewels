@@ -24,3 +24,10 @@ linters:
       - third_party$
       - builtin$
       - examples$
+
+linters-settings:
+  unused:
+    check-exported: true
+    # Respect //nolint:unused comments for exported functions
+    # This is the default, but we set explicitly for clarity
+    allow-nolint: true

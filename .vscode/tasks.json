@@ -114,9 +114,9 @@
       "problemMatcher": []
     },
     {
-      "label": "Dev Server (Auto-detect Version)",
+      "label": "Dev Server",
       "type": "shell",
-      "command": "& { if ((Get-Location).Path -notlike '*frontend') { if (Test-Path 'frontend') { Set-Location frontend; Write-Host 'Navigated to frontend directory' -ForegroundColor Yellow } else { Write-Host 'Frontend directory not found in current location' -ForegroundColor Red; exit 1 } } else { Write-Host 'Already in frontend directory' -ForegroundColor Green }; Write-Host '🚀 Starting development server with auto-detected version...' -ForegroundColor Green; pnpm run dev }",
+      "command": "pnpm run dev",
       "group": {
         "kind": "build",
         "isDefault": true
@@ -131,7 +131,7 @@
         "close": false
       },
       "options": {
-        "cwd": "${workspaceFolder}",
+        "cwd": "${workspaceFolder}/frontend",
         "shell": {
           "executable": "pwsh.exe",
           "args": ["-NoProfile", "-Command"]

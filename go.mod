@@ -4,7 +4,6 @@ go 1.24
 
 require (
 	github.com/MarvinJWendt/testza v0.5.2
-	github.com/Vilsol/crystalline v0.0.15
 )
 
 require (

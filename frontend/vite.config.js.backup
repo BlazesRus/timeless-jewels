@@ -105,7 +105,38 @@ const config = {
           'favicon.png'
         ]
       }
-    }),
+    }),th from 'path';
+import { sveltekit } from '@sveltejs/kit/vite';
+import { VERSION as SVELTE_VER } from 'svelte/compiler';
+import tailwindcss from '@tailwindcss/vite';
+import Inspect from 'vite-plugin-inspect';
+import checker from 'vite-plugin-checker';
+import wasm from 'vite-plugin-wasm';
+import { VitePWA } from 'vite-plugin-pwa';
+
+const majorVer = +SVELTE_VER.split('.')[0];
+const isSvelte5 = majorVer >= 5;
+
+// no __dirname in ESM by default!
+import { fileURLToPath } from 'url';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+console.log(`Building with Svelte ${majorVer} (${isSvelte5 ? 'Modern' : 'Legacy'} mode)`);
+
+/** @type {import('vite').UserConfig} */
+const config = {
+  plugins: [
+    sveltekit(),
+    tailwindcss(), // Add Tailwind CSS Vite plugin for v4 support
+    Inspect(), // Vite plugin inspection tool for debugging
+    checker({ 
+      typescript: true, 
+      svelte: true,
+      // Remove ESLint from checker plugin due to ESLint v9 compatibility issues
+      // eslint: {
+      //   lintCommand: 'eslint "./src/**/*.{ts,js,svelte}"'
+      // }
+    }), // TypeScript and Svelte checking in dev mode (ESLint disabled due to v9 incompatibility)
     // PWA plugin temporarily disabled until configuration is fixed
     // Add Vite 7 optimizations for modern mode
     ...(isSvelte5 ? [
@@ -458,11 +489,13 @@ const config = {
     hmr: {
       overlay: true
     },
-    // Add WASM MIME type support for proper WASM loading
+    // Cross-Origin Isolation headers required for Wasmer SDK and SharedArrayBuffer
     headers: {
       'Cross-Origin-Embedder-Policy': 'require-corp',
       'Cross-Origin-Opener-Policy': 'same-origin',
-      'Cross-Origin-Resource-Policy': 'cross-origin'
+      'Cross-Origin-Resource-Policy': 'cross-origin',
+      // Additional headers for WASM and worker support
+      'Content-Security-Policy': "worker-src 'self' blob: data:; script-src 'self' 'unsafe-eval' 'unsafe-inline';"
     },
     // Custom middleware for WASM MIME type and import handling
     middlewares: [
@@ -488,7 +521,14 @@ const config = {
   // Vite 7 enhanced preview configuration
   preview: {
     port: 4173,
-    strictPort: true
+    strictPort: true,
+    // Cross-Origin Isolation headers for production preview
+    headers: {
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Resource-Policy': 'cross-origin',
+      'Content-Security-Policy': "worker-src 'self' blob: data:; script-src 'self' 'unsafe-eval' 'unsafe-inline';"
+    }
   }
 };
 

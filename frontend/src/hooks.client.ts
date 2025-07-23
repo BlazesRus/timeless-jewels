@@ -384,4 +384,32 @@ export const handleError = async ({ error, event }) => {
 
 export const init = async () => {
   console.log('🚀 SvelteKit client initialized');
+
+  // PWA Service Worker Registration for offline support
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', async () => {
+      try {
+        const registration = await navigator.serviceWorker.register('/sw.js');
+        console.log('✅ Service Worker registered successfully:', registration);
+        
+        // Listen for updates
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          if (newWorker) {
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('🔄 New content is available; please refresh.');
+                // You could show a notification to the user here
+              }
+            });
+          }
+        });
+      } catch (error) {
+        console.warn('⚠️ Service Worker registration failed:', error);
+      }
+    });
+  }
+
+  console.log(`🎯 PWA Support: ${'serviceWorker' in navigator ? 'AVAILABLE' : 'NOT AVAILABLE'}`);
+  console.log(`📱 Offline Ready: ${navigator.onLine ? 'ONLINE' : 'OFFLINE'}`);
 };
