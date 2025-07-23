@@ -1,19 +1,20 @@
 ### **Version Management**
 ```powershell
 # Check current version
-Set-Location frontend; Write-Host "🎯 Checking version status..." -ForegroundColor Cyan; node scripts/version-manager.js status
+Write-Host "🎯 Checking version status..." -ForegroundColor Cyan; node scripts/version-manager.js status
 
-# Switch to Svelte 4
-Set-Location frontend; Write-Host "🔄 Switching to Svelte 4..." -ForegroundColor Yellow; node scripts/version-manager.js switchTo4
-
-# Switch to Svelte 5  
-Set-Location frontend; Write-Host "🔄 Switching to Svelte 5..." -ForegroundColor Yellow; node scripts/version-manager.js switchTo5
+# Switch to Svelte 5 (if needed)
+Write-Host "🔄 Switching to Svelte 5..." -ForegroundColor Yellow; node scripts/version-manager.js switchTo5
 ```
 
+
+
 ### **Development Server**
+> 💡 **Tip:** Open the `frontend` workspace directly in VS Code for all development tasks. Do not use `Set-Location frontend` or `cd frontend`—instead, use the absolute path to the `frontend` folder in your commands if you are not already there (e.g., after a previous command changed your location). Only reset the terminal location if absolutely necessary.
+
 ```powershell
-# Auto-detect version and start dev server
-Set-Location frontend; Write-Host "🚀 Starting development server..." -ForegroundColor Green; pnpm run dev
+# Start dev server (from anywhere, using the VS Code workspace variable for the frontend folder)
+Write-Host "🚀 Starting development server..." -ForegroundColor Green; pnpm --dir "${workspaceFolder:frontend}" run dev
 ```
 
 ### **Copilot Chat Workflow Guidelines**
