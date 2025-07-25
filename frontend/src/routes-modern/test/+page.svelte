@@ -1,7 +1,7 @@
 <!-- Test page for cross-origin isolation and WASM debugging -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import crossOriginCheck from '../lib/utils/cross-origin-check';
+  import crossOriginCheck, { getDetailedStatus } from '$lib/utils/cross-origin-check';
 
   let checkResults = {
     hasSharedArrayBuffer: false,
@@ -26,7 +26,7 @@
 
   onMount(async () => {
     // Run cross-origin check
-    checkResults = crossOriginCheck;
+    checkResults = getDetailedStatus();
     
     // Check PWA status
     pwaStatus.serviceWorkerSupported = 'serviceWorker' in navigator;
