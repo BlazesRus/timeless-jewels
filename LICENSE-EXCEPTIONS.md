@@ -71,12 +71,13 @@ Path: `frontend/static/`
 Files: `licenses.html`, `licenses.txt`'debug-wasm.js'
 License: `MIT No Attribution (MIT-0)`
 
-
-
 ## 13. Frontend Tests (MIT-0)  
 Path: `frontend/tests/`  
 License: `MIT No Attribution (MIT-0)`
 
+## 14. Electron start up (MIT-0)  
+Path: `src-electron/main.js` 'dist-electron/main.js' 
+License: `MIT No Attribution (MIT-0)`
 
 
 ---

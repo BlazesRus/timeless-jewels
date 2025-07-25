@@ -1,42 +1,88 @@
 {
   "name": "frontend",
   "version": "0.0.2",
+  "type": "module",
   "scripts": {
-    "dev": "vite dev",
-    "dev:modern": "pnpm install && vite dev",
-    "dev:svelte5": "pnpm run dev:modern",
-    "generateWasm": "pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/build-wasm.ps1",
-    "build": "(shx test -f build/calculator.wasm || pnpm run generateWasm) && vite build",
-    "build:modern": "pnpm install && pnpm run build",
-    "build:svelte5": "pnpm run build:modern",
-    "install:modern": "pnpm install",
-    "package": "svelte-kit package",
-    "preview": "vite preview",
-    "prepare": "svelte-kit sync",
-    "check": "svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
-    "lint": "prettier --check . && eslint . --no-warn-ignored",
-    "lint:css": "stylelint \"src/**/*.css\"",
-    "lint:css:svelte": "stylelint \"src/**/*.{css,svelte}\"",
-    "lint:css:fix": "stylelint \"src/**/*.{css,svelte}\" --fix",
-    "format": "prettier --write .",
-    "test:version": "node -e \"console.log('Svelte version:', require('svelte/package.json').version)\"",
-    "test:modern": "vitest run",
-    "test:modern:watch": "vitest",
-    "test:modern:ui": "vitest --ui",
-    "test:node22": "node --test src/**/*.test.js",
-    "test:coverage": "vitest run --coverage",
-    "test:modern:coverage": "vitest run --coverage --config vitest.config.modern.ts",
-    "mode:status": "node -e \"console.log('Current mode: modern (Svelte 5)')\"",
-    "mode:modern": "pnpm install",
-    "version:switch": "node scripts/version-manager.js switch",
-    "version:status": "node scripts/version-manager.js status",
-    "version:help": "node scripts/version-manager.js help",
-    "perf:analyze": "vite-bundle-analyzer dist",
-    "dev:debug": "cross-env DEBUG=vite:* pnpm run dev:modern",
-    "build:full": "pnpm run generateWasm && vite build"
+    // Development
+    "dev":                   "vite dev",
+    "dev:debug":             "cross-env DEBUG=vite:* vite dev",
+
+    // WASM
+    "generateWasm":          "pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/build-wasm.ps1",
+
+    // Build & Preview
+    "build":                 "(shx test -f build/calculator.wasm || pnpm run generateWasm) && vite build",
+    "build:full":            "pnpm run generateWasm && vite build",
+    "preview":               "vite preview",
+
+    // Generate Electron 
+    "bundle:electron": "tsc -p tsconfig.electron.json"",
+		"PrepareElectron" : (shx test -f dist-electron/main.js || pnpm run bundle:electron) && pnpm run build,
+
+    // Electron offline desktop
+    "electron:serve":        "pnpm run PrepareElectron && serve build -p 4173 & electron .",
+    "offline:win":           "pnpm run PrepareElectron && electron-builder --win portable --publish never",
+    "offline:mac":           "pnpm run PrepareElectron && electron-builder --mac --publish never",
+    "offline:linux":         "pnpm run PrepareElectron && electron-builder --linux --publish never",
+    "offline:all":           "pnpm run PrepareElectron && electron-builder --publish never",
+    "packOfflineBuild":      "pnpm run PrepareElectron && electron-packager ./build \"Timeless Jewels\" --platform=win32 --arch=x64 --out OfflineBuild --overwrite",
+
+    // Packaging & Kit commands
+    "package":               "svelte-kit package",
+    "prepare":               "svelte-kit sync",
+
+    // Testing
+    "test:version":          "node -e \"console.log('Svelte version:', require('svelte/package.json').version)\"",
+    "test:modern":           "vitest run",
+    "test:watch":            "vitest",             // ? added missing comma on the next line
+    "test:node":             "node --test src/**/*.test.js",
+    "test:coverage":         "vitest run --coverage",
+
+    // Checking & Linting
+    "check":                 "svelte-check --tsconfig ./tsconfig.json",
+    "check:watch":           "svelte-check --tsconfig ./tsconfig.json --watch",
+    "lint":                  "prettier --check . && eslint . --no-warn-ignored",
+    "lint:css":              "stylelint \"src/**/*.css\"",
+    "lint:css:svelte":       "stylelint \"src/**/*.{css,svelte}\"",
+    "lint:css:fix":          "stylelint \"src/**/*.{css,svelte}\" --fix",
+    "format":                "prettier --write .",
+
+    // Utility
+    "perf:analyze":          "vite-bundle-analyzer dist",
+    "install":               "pnpm install"
+  },
+  // point Electron to the compiled entry
+  "main": "dist-electron/main.js"
+  // Electron-builder configuration
+  "build": {
+    "appId": "com.BlazesRus.TimelessJewelGen",
+    "files": [
+      "build/**/*",
+      "dist-electron/main.js",
+      "dist-electron/**/*.js"
+    ],
+    "directories": {
+      "buildResources": "assets",
+      "output": "OfflineBuild"
+    },
+    "win": {
+      "target": [ "portable" ]
+    },
+    "portable": {
+      "artifactName": "TimelessJewelGenerator.exe"
+    },
+    "mac": {
+      "target": ["dmg","zip"]
+    },
+    "linux": {
+      "target": ["AppImage","deb"]
+    }
   },
   "devDependencies": {
+    "electron-builder": "^24.0.0",
+		"@electron/packager": "^18.3.6",
+    "serve": "^14.2.1",
+		"esbuild": "^0.25.8",
     "@eslint/css": "^0.9.0",
     "@eslint/js": "^9.28.0",
     "@sveltejs/adapter-auto": "^6.0.1",
@@ -98,7 +144,6 @@
     "node": ">=22.0.0",
     "pnpm": ">=10.0.0"
   },
-  "type": "module",
   "packageManager": "pnpm@10.13.1+sha512.37ebf1a5c7a30d5fabe0c5df44ee8da4c965ca0c5af3dbab28c3a1681b70a256218d05c81c9c0dcf767ef6b8551eb5b960042b9ed4300c59242336377e01cfad",
   "pnpm": {
     "onlyBuiltDependencies": [],

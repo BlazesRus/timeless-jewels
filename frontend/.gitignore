@@ -9,3 +9,4 @@ node_modules
 static/calculator.wasm
 .idea/
 static/poe_tree.png
+dist-electron

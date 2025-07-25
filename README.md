@@ -247,13 +247,6 @@ pnpm run build
 # Development server (uses default Svelte 5)
 pnpm run dev
 
-# Version-specific development
-pnpm run dev:svelte5  # Svelte 5 with runes
-pnpm run dev:svelte4  # Svelte 4 compatibility
-
-# Version management
-pnpm run version:status   # Check current version
-pnpm run version:switch   # Switch based on INI config
 ```
 
 ### 🔧 Emergency Recovery
@@ -270,3 +263,30 @@ pnpm install  # Reinstall dependencies
 - See `PNPM_V10_MIGRATION.md` for detailed migration information
 - Lifecycle scripts are now more secure (only specified dependencies can run build scripts)
 - Test arguments no longer require `--` prefix: `pnpm test --watch` instead of `pnpm test -- --watch`
+
+## Offline Builds
+
+Electron will package your static site into `frontend/OfflineBuild/`.  
+By default you get a Windows portable EXE, but you can also target macOS and Linux.
+
+### Offline Build Folder layout
+frontend/OfflineBuild/
+├─ TimelessJewelGenerator.exe           ← Windows portable EXE (electron-builder)
+├─ TimelessJewelGenerator Setup.exe     ← Windows NSIS installer (if enabled)
+├─ mac/
+│   ├─ TimelessJewelGenerator.dmg        ← macOS DMG
+│   └─ TimelessJewelGenerator.zip        ← macOS ZIP
+├─ linux/
+│   ├─ TimelessJewelGenerator.AppImage   ← Linux AppImage
+│   └─ TimelessJewelGenerator.deb        ← Linux DEB
+└─ win-unpacked/
+    └─ Timeless Jewels.exe               ← electron-packager output
+
+## Electron offline‐build commands (package.json)
+
+pnpm run electron:serve Rebuilds the site and launches it in Electron (dev mode)
+pnpm run offline:win Generates a signed Windows portable EXE
+pnpm run offline:mac Generates macOS .dmg and .zip
+pnpm run offline:linux Generates Linux .AppImage and .deb
+pnpm run offline:all Builds for all three platforms at once
+pnpm run packOfflineBuild for Electron packaged exe without code signing
