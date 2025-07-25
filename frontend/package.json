@@ -1,159 +1,140 @@
 {
-  "name": "frontend",
-  "version": "0.0.2",
-  "type": "module",
-  "scripts": {
-    // Development
-    "dev":                   "vite dev",
-    "dev:debug":             "cross-env DEBUG=vite:* vite dev",
-
-    // WASM
-    "generateWasm":          "pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/build-wasm.ps1",
-
-    // Build & Preview
-    "build":                 "(shx test -f build/calculator.wasm || pnpm run generateWasm) && vite build",
-    "build:full":            "pnpm run generateWasm && vite build",
-    "preview":               "vite preview",
-
-    // Generate Electron 
-    "bundle:electron": "tsc -p tsconfig.electron.json"",
-		"PrepareElectron" : (shx test -f dist-electron/main.js || pnpm run bundle:electron) && pnpm run build,
-
-    // Electron offline desktop
-    "electron:serve":        "pnpm run PrepareElectron && serve build -p 4173 & electron .",
-    "offline:win":           "pnpm run PrepareElectron && electron-builder --win portable --publish never",
-    "offline:mac":           "pnpm run PrepareElectron && electron-builder --mac --publish never",
-    "offline:linux":         "pnpm run PrepareElectron && electron-builder --linux --publish never",
-    "offline:all":           "pnpm run PrepareElectron && electron-builder --publish never",
-    "packOfflineBuild":      "pnpm run PrepareElectron && electron-packager ./build \"Timeless Jewels\" --platform=win32 --arch=x64 --out OfflineBuild --overwrite",
-
-    // Packaging & Kit commands
-    "package":               "svelte-kit package",
-    "prepare":               "svelte-kit sync",
-
-    // Testing
-    "test:version":          "node -e \"console.log('Svelte version:', require('svelte/package.json').version)\"",
-    "test:modern":           "vitest run",
-    "test:watch":            "vitest",             // ? added missing comma on the next line
-    "test:node":             "node --test src/**/*.test.js",
-    "test:coverage":         "vitest run --coverage",
-
-    // Checking & Linting
-    "check":                 "svelte-check --tsconfig ./tsconfig.json",
-    "check:watch":           "svelte-check --tsconfig ./tsconfig.json --watch",
-    "lint":                  "prettier --check . && eslint . --no-warn-ignored",
-    "lint:css":              "stylelint \"src/**/*.css\"",
-    "lint:css:svelte":       "stylelint \"src/**/*.{css,svelte}\"",
-    "lint:css:fix":          "stylelint \"src/**/*.{css,svelte}\" --fix",
-    "format":                "prettier --write .",
-
-    // Utility
-    "perf:analyze":          "vite-bundle-analyzer dist",
-    "install":               "pnpm install"
-  },
-  // point Electron to the compiled entry
-  "main": "dist-electron/main.js"
-  // Electron-builder configuration
-  "build": {
-    "appId": "com.BlazesRus.TimelessJewelGen",
-    "files": [
-      "build/**/*",
-      "dist-electron/main.js",
-      "dist-electron/**/*.js"
-    ],
-    "directories": {
-      "buildResources": "assets",
-      "output": "OfflineBuild"
+    "name": "frontend",
+    "version": "0.0.2",
+    "type": "module",
+    "scripts": {
+        "dev": "vite dev",
+        "dev:debug": "cross-env DEBUG=vite:* vite dev",
+        "generateWasm": "pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/build-wasm.ps1",
+        "build": "(shx test -f build/calculator.wasm || pnpm run generateWasm) && vite build",
+        "build:full": "pnpm run generateWasm && vite build",
+        "preview": "vite preview",
+        "bundle:electron": "tsc -p tsconfig.electron.json",
+        "PrepareElectron": "(shx test -f dist-electron/main.js || pnpm run bundle:electron) && pnpm run build",
+        "electron:serve": "pnpm run PrepareElectron && serve build -p 4173 & electron .",
+        "offline:win": "pnpm run PrepareElectron && electron-builder --win portable --publish never",
+        "offline:mac": "pnpm run PrepareElectron && electron-builder --mac --publish never",
+        "offline:linux": "pnpm run PrepareElectron && electron-builder --linux --publish never",
+        "offline:all": "pnpm run PrepareElectron && electron-builder --publish never",
+        "packOfflineBuild": "pnpm run PrepareElectron && electron-packager ./build \"Timeless Jewels\" --platform=win32 --arch=x64 --out OfflineBuild --overwrite",
+        "package": "svelte-kit package",
+        "prepare": "svelte-kit sync",
+        "test:version": "node -e \"console.log('Svelte version:', require('svelte/package.json').version)\"",
+        "test:modern": "vitest run",
+        "test:watch": "vitest",
+        "test:node": "node --test src/**/*.test.js",
+        "test:coverage": "vitest run --coverage",
+        "check": "svelte-check --tsconfig ./tsconfig.json",
+        "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
+        "lint": "prettier --check . && eslint . --no-warn-ignored",
+        "lint:css": "stylelint \"src/**/*.css\"",
+        "lint:css:svelte": "stylelint \"src/**/*.{css,svelte}\"",
+        "lint:css:fix": "stylelint \"src/**/*.{css,svelte}\" --fix",
+        "format": "prettier --write .",
+        "perf:analyze": "vite-bundle-analyzer dist",
+        "install": "pnpm install"
     },
-    "win": {
-      "target": [ "portable" ]
+    "main": "dist-electron/main.js",
+    "build": {
+        "appId": "com.BlazesRus.TimelessJewelGen",
+        "files": [
+            "build/**/*",
+            "dist-electron/main.js",
+            "dist-electron/**/*.js"
+        ],
+        "directories": {
+            "buildResources": "assets",
+            "output": "OfflineBuild"
+        },
+        "win": {
+          "target": [ "portable" ]
+        },
+        "portable": {
+            "artifactName": "TimelessJewelGenerator.exe"
+        },
+        "mac": {
+          "target": ["dmg","zip"]
+        },
+        "linux": {
+          "target": ["AppImage","deb"]
+        }
     },
-    "portable": {
-      "artifactName": "TimelessJewelGenerator.exe"
+    "devDependencies": {
+        "electron-builder": "^24.0.0",
+        "@electron/packager": "^18.3.6",
+        "serve": "^14.2.1",
+        "esbuild": "^0.25.8",
+        "@eslint/css": "^0.9.0",
+        "@eslint/js": "^9.28.0",
+        "@sveltejs/adapter-auto": "^6.0.1",
+        "@sveltejs/adapter-static": "^3.0.8",
+        "@sveltejs/eslint-config": "^8.2.0",
+        "@sveltejs/kit": "^2.22.2",
+        "@sveltejs/vite-plugin-svelte": "^5.1.0",
+        "@sveltejs/vite-plugin-svelte-inspector": "^4.0.1",
+        "@tailwindcss/postcss": "^4.1.8",
+        "@tailwindcss/vite": "^4.1.11",
+        "@types/node": "^24.0.4",
+        "@typescript-eslint/eslint-plugin": "^8.33.1",
+        "@typescript-eslint/parser": "^8.33.1",
+        "@vitest/coverage-v8": "^2.1.8",
+        "@vitest/ui": "^2.1.8",
+        "@wasmer/sdk": "^0.9.0",
+        "@wasmer/wasi": "^1.2.2",
+        "autoprefixer": "^10.4.16",
+        "binaryen": "^123.0.0",
+        "buffer": "^6.0.3",
+        "comlink": "^4.4.2",
+        "cross-env": "^7.0.3",
+        "eslint": "^9.28.0",
+        "eslint-config-prettier": "^10.1.5",
+        "eslint-plugin-prettier": "^5.5.1",
+        "eslint-plugin-svelte": "^3.9.1",
+        "globals": "^16.2.0",
+        "postcss": "^8.4.38",
+        "postcss-html": "^1.8.0",
+        "postcss-import": "^16.1.0",
+        "prettier": "^3.6.1",
+        "prettier-plugin-svelte": "^3.4.0",
+        "sass": "^1.77.4",
+        "shx": "^0.4.0",
+        "stylelint": "^16.21.0",
+        "stylelint-config-standard": "^38.0.0",
+        "stylelint-config-tailwindcss": "^1.0.0",
+        "svelte": "^5.34.8",
+        "svelte-canvas": "^2.0.2",
+        "svelte-check": "^4.2.1",
+        "svelte-eslint-parser": "^1.2.0",
+        "svelte-tiny-virtual-list": "^2.0.6",
+        "tailwind-csstree": "^0.1.1",
+        "tailwindcss": "^4.1.8",
+        "timeless-jewels-legacy-config": "file:.config-deps/timeless-jewels-legacy-config/timeless-jewels-legacy-config-1.0.0.tgz",
+        "timeless-jewels-modern-config": "file:.config-deps/timeless-jewels-modern-config/timeless-jewels-modern-config-1.0.0.tgz",
+        "tslib": "^2.6.3",
+        "typescript": "^5.8.3",
+        "typescript-eslint": "^8.33.1",
+        "vite": "^7.0.0",
+        "vite-plugin-checker": "^0.10.1",
+        "vite-plugin-inspect": "^11.3.0",
+        "vite-plugin-pwa": "^1.0.1",
+        "vite-plugin-top-level-await": "^1.5.0",
+        "vite-plugin-wasm": "^3.4.1",
+        "vitest": "^2.1.8"
     },
-    "mac": {
-      "target": ["dmg","zip"]
+    "engines": {
+        "node": ">=22.0.0",
+        "pnpm": ">=10.0.0"
     },
-    "linux": {
-      "target": ["AppImage","deb"]
+    "packageManager": "pnpm@10.13.1+sha512.37ebf1a5c7a30d5fabe0c5df44ee8da4c965ca0c5af3dbab28c3a1681b70a256218d05c81c9c0dcf767ef6b8551eb5b960042b9ed4300c59242336377e01cfad",
+    "pnpm": {
+        "onlyBuiltDependencies": [],
+        "peerDependencyRules": {
+            "allowedVersions": {
+                "vite": ">=7.0.0"
+            },
+            "ignoreMissing": [
+                "vite"
+            ]
+        }
     }
-  },
-  "devDependencies": {
-    "electron-builder": "^24.0.0",
-		"@electron/packager": "^18.3.6",
-    "serve": "^14.2.1",
-		"esbuild": "^0.25.8",
-    "@eslint/css": "^0.9.0",
-    "@eslint/js": "^9.28.0",
-    "@sveltejs/adapter-auto": "^6.0.1",
-    "@sveltejs/adapter-static": "^3.0.8",
-    "@sveltejs/eslint-config": "^8.2.0",
-    "@sveltejs/kit": "^2.22.2",
-    "@sveltejs/vite-plugin-svelte": "^5.1.0",
-    "@sveltejs/vite-plugin-svelte-inspector": "^4.0.1",
-    "@tailwindcss/postcss": "^4.1.8",
-    "@tailwindcss/vite": "^4.1.11",
-    "@types/node": "^24.0.4",
-    "@typescript-eslint/eslint-plugin": "^8.33.1",
-    "@typescript-eslint/parser": "^8.33.1",
-    "@vitest/coverage-v8": "^2.1.8",
-    "@vitest/ui": "^2.1.8",
-    "@wasmer/sdk": "^0.9.0",
-    "@wasmer/wasi": "^1.2.2",
-    "autoprefixer": "^10.4.16",
-    "binaryen": "^123.0.0",
-    "buffer": "^6.0.3",
-    "comlink": "^4.4.2",
-    "cross-env": "^7.0.3",
-    "eslint": "^9.28.0",
-    "eslint-config-prettier": "^10.1.5",
-    "eslint-plugin-prettier": "^5.5.1",
-    "eslint-plugin-svelte": "^3.9.1",
-    "globals": "^16.2.0",
-    "postcss": "^8.4.38",
-    "postcss-html": "^1.8.0",
-    "postcss-import": "^16.1.0",
-    "prettier": "^3.6.1",
-    "prettier-plugin-svelte": "^3.4.0",
-    "sass": "^1.77.4",
-    "shx": "^0.4.0",
-    "stylelint": "^16.21.0",
-    "stylelint-config-standard": "^38.0.0",
-    "stylelint-config-tailwindcss": "^1.0.0",
-    "svelte": "^5.34.8",
-    "svelte-canvas": "^2.0.2",
-    "svelte-check": "^4.2.1",
-    "svelte-eslint-parser": "^1.2.0",
-    "svelte-tiny-virtual-list": "^2.0.6",
-    "tailwind-csstree": "^0.1.1",
-    "tailwindcss": "^4.1.8",
-    "timeless-jewels-legacy-config": "file:.config-deps/timeless-jewels-legacy-config/timeless-jewels-legacy-config-1.0.0.tgz",
-    "timeless-jewels-modern-config": "file:.config-deps/timeless-jewels-modern-config/timeless-jewels-modern-config-1.0.0.tgz",
-    "tslib": "^2.6.3",
-    "typescript": "^5.8.3",
-    "typescript-eslint": "^8.33.1",
-    "vite": "^7.0.0",
-    "vite-plugin-checker": "^0.10.1",
-    "vite-plugin-inspect": "^11.3.0",
-    "vite-plugin-pwa": "^1.0.1",
-    "vite-plugin-top-level-await": "^1.5.0",
-    "vite-plugin-wasm": "^3.4.1",
-    "vitest": "^2.1.8"
-  },
-  "engines": {
-    "node": ">=22.0.0",
-    "pnpm": ">=10.0.0"
-  },
-  "packageManager": "pnpm@10.13.1+sha512.37ebf1a5c7a30d5fabe0c5df44ee8da4c965ca0c5af3dbab28c3a1681b70a256218d05c81c9c0dcf767ef6b8551eb5b960042b9ed4300c59242336377e01cfad",
-  "pnpm": {
-    "onlyBuiltDependencies": [],
-    "peerDependencyRules": {
-      "allowedVersions": {
-        "vite": ">=7.0.0"
-      },
-      "ignoreMissing": [
-        "vite"
-      ]
-    }
-  }
 }
