@@ -1,7 +1,5 @@
 # timeless-jewels [![push](https://github.com/BlazesRus/timeless-jewels/actions/workflows/push.yml/badge.svg)](https://github.com/BlazesRus/timeless-jewels/actions/workflows/push.yaml) ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/vilsol/timeless-jewels) ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/vilsol/timeless-jewels) [![GitHub license](https://img.shields.io/github/license/Vilsol/timeless-jewels)](https://github.com/BlazesRus/timeless-jewels/blob/master/LICENSE)
 
-# timeless-jewels [![push](https://github.com/BlazesRus/timeless-jewels/actions/workflows/push.yml/badge.svg)](https://github.com/BlazesRus/timeless-jewels/actions/workflows/push.yaml) ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/vilsol/timeless-jewels) ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/vilsol/timeless-jewels) [![GitHub license](https://img.shields.io/github/license/Vilsol/timeless-jewels)](https://github.com/BlazesRus/timeless-jewels/blob/master/LICENSE)
-
 ## 📄 License Exceptions
 
 This project uses a multi-license structure. Most files are licensed under GPL-3.0-only, but many components and scripts are available under more permissive licenses (MIT, MIT-0, BSD-3-Clause). For a detailed list of exceptions and the exact license for each directory or file, see [LICENSE-EXCEPTIONS.md](./LICENSE-EXCEPTIONS.md).
@@ -27,26 +25,10 @@ Source of ImHamba Branch(Github):[https://github.com/ImHamba/timeless-jewels](ht
 
 Uses data extracted with https://github.com/Vilsol/go-pob-data
 
-## ✅ Project Status: Dual-Mode Configuration Complete
-
-This project has been successfully consolidated and modernized with robust dual-mode support:
-
-- **🔄 Dual-Mode Frontend**: Seamless switching between Svelte 4 (Legacy) and Svelte 5 (Modern)
-- **🛠️ Modern Tooling**: Tailwind CSS v4+, TypeScript 5.8+, Vite 6+, pnpm v10+
-- **⚙️ Dynamic Configuration**: Environment-aware dependency management
-- **🧪 Comprehensive Testing**: Automated validation for both modes
-- **📚 Complete Documentation**: Detailed guides and status reports
-
 ### Quick Start
 ```powershell
 # Modern Mode (Svelte 5) - Default
-cd frontend && pnpm run dev:modern
-
-# Legacy Mode (Svelte 4) 
-cd frontend && pnpm run dev:legacy
-
-# Test both modes
-cd frontend && ./test-dual-mode.ps1 -Mode both
+cd frontend && pnpm run dev
 ```
 
 ## 📁 Project Structure
@@ -56,72 +38,83 @@ timeless-jewels_Partial/
 ├── 📄 README.md                    # Main project documentation
 ├── 📄 go.mod, go.sum              # Go module dependencies
 ├── 📄 LICENSE                     # Project license
+├── 📄 LICENSE-EXCEPTIONS.md       # License exceptions documentation
+├── 📄 timeless-jewels.code-workspace # VS Code workspace configuration
+│
+├── 📁 .github/                    # 🤖 GitHub configuration
+│   └── copilot-instructions.md   # GitHub Copilot development guidelines
 │
 ├── 📁 docs/                       # 📚 Comprehensive documentation
 │   ├── 📋 INDEX.md               # Documentation index and navigation
 │   ├── 🏗️ BUILD_FIXES_COMPLETE.md # Build system with dual Svelte support
-│   ├── 🔄 VERSION_AWARE_SYSTEM.md # Version-aware architecture
 │   ├── 🚀 QUICK_START_VERSION_AWARE.md # Quick start guide
 │   ├── 📦 PNPM_V10_MIGRATION.md  # Package manager migration
 │   ├── 🎯 SVELTE_5_MIGRATION_PREP.md # Framework upgrade guide
 │   ├── 🔧 COMLINK_MODERNIZATION.md # Web Worker modernization
 │   ├── 🎨 SELECT_COMPONENT_FIX.md # Component updates
+|   ├── 📄 PWA-IMPLEMENTATION.md       # Progressive Web App implementation guide
 │   └── 🤖 COPILOT_*.md           # AI development tools integration
 │
-├── 📁 frontend/                   # 💻 Dual-Mode Svelte Frontend (4 & 5)
-│   ├── 📦 package.json           # Main package with dual-mode scripts
-│   ├── � pnpmfile.cjs           # Dynamic dependency hook system  
-│   ├── � tsconfig.json          # Root TypeScript configuration
-│   ├── � tsconfig.Modern.json   # Svelte 5 TypeScript config
-│   ├── � tsconfig.Legacy.json   # Svelte 4 TypeScript config
-│   ├── 🎨 tailwind.config.js     # Tailwind v4+ ESM configuration
-│   ├── 🎨 tailwind.config.cjs    # Tailwind v4+ CJS configuration  
-│   ├── ⚡ postcss.config.cjs     # PostCSS for Tailwind v4+
-│   ├── 🔧 vite.config.js         # Vite build configuration
-│   ├── 🧪 test-dual-mode.ps1     # Comprehensive dual-mode testing
-│   ├── 📊 project-status.ps1     # Project status and config report
+├── 📁 frontend/                   # 💻 Svelte 5 Frontend
+│   ├── 📦 package.json           # Main package configuration
+│   ├── 🔧 pnpmfile.cjs           # Dynamic dependency hook system  
+│   ├── 📄 tsconfig.json          # Root TypeScript configuration
+│   ├── 📄 tsconfig.Modern.json   # Svelte 5 TypeScript config
+│   ├── 📄 tsconfig.electron.json # Electron TypeScript config
+│   ├── 🎨 tailwind.config.js     # Tailwind CSS configuration
+│   ├── ⚡ postcss.config.cjs     # PostCSS for Tailwind
+│   ├── 🔧 vite.config.ts         # Vite build configuration
+│   ├── 🔧 svelte.config.ts       # Svelte configuration
+│   ├── 🧪 vitest.config.ts       # Vitest testing configuration
 │   ├── 📁 .config-deps/          # Local configuration packages
-│   │   ├── timeless-jewels-legacy-config/  # Svelte 4 config package
 │   │   └── timeless-jewels-modern-config/  # Svelte 5 config package
 │   │
-│   ├── 📁 scripts/               # Build and version management
-│   │   ├── version-manager.js    # Node.js version manager
-│   │   └── version-manager.ps1   # PowerShell wrapper
+│   ├── 📁 scripts/               # Build and automation scripts
+│   │   ├── build-wasm.ps1        # WebAssembly build script
+│   │   └── version-manager.js    # Version management utility
+│   │
+│   ├── 📁 tests/                 # Test configuration and utilities
+│   │   └── scripts/              # Test automation scripts
 │   │
 │   ├── 📁 src/                   # Source code
 │   │   ├── 🏠 app.html           # HTML template
-│   │   ├── 🎨 app.scss           # Global styles
-│   │   ├── 🔧 wasm_exec.js       # WebAssembly support
+│   │   ├── 🎨 app.css            # Global styles
+│   │   ├── 🔧 hooks.client.ts    # SvelteKit client hooks
 │   │   │
 │   │   ├── 📁 lib/               # Shared libraries
-│   │   │   ├── 🔄 skill_tree.ts  # Skill tree logic
-│   │   │   ├── 👷 *worker*.ts    # Web Workers with Comlink
-│   │   │   ├── 📁 components/    # Svelte components
-│   │   │   │   ├── ModernSelect.svelte # Modern select component
-│   │   │   │   └── SearchResult.svelte # Search result display
-│   │   │   ├── 📁 types/         # TypeScript type definitions
-│   │   │   └── 📁 utils/         # Utility functions
-│   │   │       ├── version-detection.ts # Runtime version detection
-│   │   │       ├── version-config.ts    # Version configuration
-│   │   │       └── vite-svelte-version-plugin.ts # Build-time plugin
+│   │   │   ├── 🔄 skill_tree_modern.ts    # Skill tree logic
+│   │   │   ├── 👷 *worker*.ts             # Web Workers with Comlink
+│   │   │   ├── 📁 components/             # Svelte components
+│   │   │   ├── 📁 services/               # Data services
+│   │   │   │   └── wasiDataService.svelte.ts # WASI data service
+│   │   │   ├── 📁 ModernWasm/             # Modern WebAssembly utilities
+│   │   │   │   └── enhanced-wasi-loader.ts # Enhanced WASI loader
+│   │   │   ├── 📁 types/                  # TypeScript type definitions
+│   │   │   ├── 📁 utils/                  # Utility functions
+│   │   │   │   └── cross-origin-check.ts  # Cross-origin isolation check
+│   │   │   └── 📁 workers/                # Web Worker implementations
 │   │   │
-│   │   └── 📁 routes/            # SvelteKit routes
-│   │       ├── +layout.svelte    # Layout component
-│   │       ├── +page.svelte      # Home page
-│   │       └── 📁 tree/          # Tree page with version-aware loading
-│   │           ├── +page.svelte  # Main router with dynamic imports
-│   │           ├── LegacyPage.svelte    # Svelte 4 implementation
-│   │           └── ModernPage.svelte    # Svelte 5 implementation
+│   │   ├── 📁 routes-modern/              # SvelteKit routes
+│   │   │   ├── +layout.svelte             # Layout component
+│   │   │   ├── +page.svelte               # Home page
+│   │   │   ├── 📁 about/                  # About page
+│   │   │   ├── 📁 tree/                   # Tree page
+│   │   │   └── 📁 test/                   # Test/debug page
+│   │   │       └── +page.svelte           # Cross-origin & PWA testing
+│   │   │
+│   │   └── 📁 styles/            # Style definitions
 │   │
-│   ├── 📁 static/                # Static assets
-│   │   ├── calculator.wasm       # Go WebAssembly calculator
-│   │   ├── favicon.png           # Site icon
-│   │   └── *.png                 # Additional images
+│   ├── 📁 src-electron/          # Electron TypeScript code
+│   ├── 📁 dist-electron/         # Electron compiled JavaScript
+│   ├── 📁 build/                 # Built application output
+│   │   ├── calculator.wasm       # WebAssembly calculator
+│   │   └── _app/                 # SvelteKit application assets
 │   │
-│   └── 📁 docs/                  # Frontend-specific documentation
-│       ├── BACKUP_FILE_STRUCTURE.md   # Backup system guide
-│       ├── INI_DEPENDENCY_SYSTEM_COMPLETE.md # INI system docs
-│       └── BACKUP_QUICK_REFERENCE.md  # Emergency recovery guide
+│   └── 📁 static/                # Static assets
+│       ├── calculator.wasm       # Go WebAssembly calculator
+│       ├── favicon.png           # Site icon
+│       ├── licenses.html         # License information
+│       └── *.png                 # Additional images
 │
 ├── 📁 calculator/                # ⚙️ Go WebAssembly calculator
 │   ├── main.go                   # Calculator entry point
@@ -132,15 +125,16 @@ timeless-jewels_Partial/
 │   ├── main.go                   # Data processing entry point
 │   ├── manager.go                # Data management
 │   ├── jewels.go                 # Jewel-specific logic
-│   └── types.go                  # Data type definitions
+│   └── internal_types.go         # Internal data type definitions
 │
 ├── 📁 wasm/                      # 🌐 WebAssembly build targets
-│   ├── main.go                   # WASM main entry
-│   └── 📁 exposition/            # Exposition/export functionality
-│       └── main.go
+│   └── main.go                   # WASI formatted WASM main entry
 │
-└── 📁 random/                    # 🎲 Random utilities
-    └── main.go                   # Random number generation
+├── 📁 random/                    # 🎲 Random utilities
+│   └── main.go                   # Random number generation
+│
+└── 📁 PowershellSettings/        # 🔧 Development environment settings
+    └── Microsoft.PowerShell_profile.ps1 # PowerShell profile
 ```
 
 ### 🗂️ Key Directory Functions:
@@ -247,15 +241,6 @@ pnpm run build
 # Development server (uses default Svelte 5)
 pnpm run dev
 
-```
-
-### 🔧 Emergency Recovery
-
-```powershell
-# If package.json gets corrupted:
-cp Svelte5PackageBackup.json package.json  # Restore Svelte 5
-cp LegacyPackageBackup.json package.json   # Restore Svelte 4
-pnpm install  # Reinstall dependencies
 ```
 
 ### pnpm v10 Migration Notes

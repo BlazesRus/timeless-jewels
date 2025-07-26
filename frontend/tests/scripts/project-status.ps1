@@ -59,7 +59,6 @@ Write-Host "⚙️ Config Dependencies" -ForegroundColor Cyan
 Write-Host "----------------------" -ForegroundColor DarkCyan
 Check-File ".config-deps/timeless-jewels-legacy-config" "Legacy config package directory"
 Check-File ".config-deps/timeless-jewels-modern-config" "Modern config package directory"
-Check-File ".config-deps/timeless-jewels-legacy-config/timeless-jewels-legacy-config-1.0.0.tgz" "Legacy config tarball"
 Check-File ".config-deps/timeless-jewels-modern-config/timeless-jewels-modern-config-1.0.0.tgz" "Modern config tarball"
 
 # Source structure
