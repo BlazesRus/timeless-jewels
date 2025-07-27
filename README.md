@@ -1,87 +1,132 @@
-# timeless-jewels [![push](https://github.com/BlazesRus/timeless-jewels/actions/workflows/push.yml/badge.svg)](https://github.com/BlazesRus/timeless-jewels/actions/workflows/push.yaml) ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/vilsol/timeless-jewels) ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/vilsol/timeless-jewels) [![GitHub license](https://img.shields.io/github/license/Vilsol/timeless-jewels)](https://github.com/BlazesRus/timeless-jewels/blob/master/LICENSE)
+# timeless-jewels 
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/vilsol/timeless-jewels) ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/vilsol/timeless-jewels) 
+[![GitHub license](https://img.shields.io/github/license/Vilsol/timeless-jewels)](https://github.com/BlazesRus/timeless-jewels/blob/master/LICENSE)
 
-## 📄 License Exceptions
+An advanced Svelte 5 application with WebAssembly, SSR, PWA and Electron support.  
+This repo powers both a browser-based UI and a standalone desktop app.  
+It includes strict TypeScript, fast bundling with Vite, and a modern build pipeline designed for cross-platform deployment.
 
-This project uses a multi-license structure. Most files are licensed under GPL-3.0-only, but many components and scripts are available under more permissive licenses (MIT, MIT-0, BSD-3-Clause). For a detailed list of exceptions and the exact license for each directory or file, see [LICENSE-EXCEPTIONS.md](./LICENSE-EXCEPTIONS.md).
+A fork of Vilsol’s timeless-jewels, enhanced with:
 
-**Always check LICENSE-EXCEPTIONS.md before reusing or redistributing any part of this project.**
+- Conqueror-keystone selection or “any” option  
+- Trade-search split into 200-seed batches  
+- Duplicate-filter bug fix  
+- Experimental “stat total” search  
 
-A simple timeless jewel calculator with a skill tree view by Vilsol
-with some modifications for better trade search functionality
-
-- choose specific conqueror or select any conqueror if you don't care about keystone passive
-- trade search gets split into multiple links with 200 seeds per link (max poe trade site can handle)
-- fixed bug with duplicate filter groups in trade link
-
-Original Hosted Version: [https://vilsol.github.io/timeless-jewels](https://vilsol.github.io/timeless-jewels)
-
-Hosted Timeless Jewel Searcher:[https://blazesrus.github.io/timeless-jewels/tree]https://blazesrus.github.io/timeless-jewels/tree
-
-Modified version: https://BlazesRus.github.io/timeless-jewels
-
-Official Branch(Github):[https://github.com/vilsol/timeless-jewels](https://github.com/vilsol/timeless-jewels)
-
-Source of ImHamba Branch(Github):[https://github.com/ImHamba/timeless-jewels](https://github.com/ImHamba/timeless-jewels)
-
+Original version:  [https://vilsol.github.io/timeless-jewels](https://vilsol.github.io/timeless-jewels)
+Hosted GitHub page: [https://BlazesRus.github.io/timeless-jewels](https://BlazesRus.github.io/timeless-jewels)
+Source of ImHamba Branch(Conqueror-keystone selection or “any” option feature):[https://github.com/ImHamba/timeless-jewels](https://github.com/ImHamba/timeless-jewels)
 Uses data extracted with https://github.com/Vilsol/go-pob-data
 
-### Quick Start
-```powershell
-# Modern Mode (Svelte 5) - Default
-cd frontend && pnpm run dev
+---
+## Table of Contents
+
+- [Prerequisites](#prerequisites)  
+- [Installation](#installation)  
+- [Project Structure](#project-structure)  
+- [Development Commands](#development-commands)  
+- [Build & Deployment](#build--deployment)  
+- [Packaging the Electron App](#packaging-the-electron-app)  
+- [Utilities](#utilities)  
+- [Configuration](#configuration)  
+- [License](#license)  
+
+---
+
+## Prerequisites
+
+- Node.js 22+  
+- pnpm 10+  
+- (Windows) PowerShell 7+ for script compatibility 
+- VSCode if want to use VSCode project
+
+---
+
+## Installation
+
+- Install with git, gitKrakenm or any other git repository downloader
+- cd to frontend of the repository
+```
+pnpm install
+corepack enable pnpm
 ```
 
-## 📁 Project Structure
+Simplified frontend structure:
+- **src/** — Svelte application source (renderer)
+- **src-electron/** — Electron main-process code
+- **dist/renderer/**  — Bundled renderer output
+  Vite’s client build for local preview or Electron dev  
+  → from `pnpm run build:web`
+- **dist/ghpages/** - Generated WebAssembly and intermediate artifacts for GitHub pages
+  Final prerendered static site(deployed to GitHub Pages) (HTML, JS, WASM, etc.)  
+  → from `pnpm run build:ghpages`  
+- **dist/main/** — Bundled Electron main output
+- **scripts/** — Utility scripts (e.g. build-wasm.ps1)
+- **static/**  
+  Source public assets (WASM, manifest, favicon, etc.). Used by Vite during build.
 
-```
-timeless-jewels_Partial/
-├── 📄 README.md                    # Main project documentation
-├── 📄 go.mod, go.sum              # Go module dependencies
-├── 📄 LICENSE                     # Project license
-├── 📄 LICENSE-EXCEPTIONS.md       # License exceptions documentation
-├── 📄 timeless-jewels.code-workspace # VS Code workspace configuration
+
+
+
+- **dist/ghpages/**  
+  Final prerendered static site(deployed to GitHub Pages) (HTML, JS, WASM, etc.)  
+  → from `pnpm run build:ghpages`  
+
+- **dist/main/**  
+  Electron main & preload bundles  
+  → from `pnpm run build:electron`
+
+(Other files exist other than shown here these are just some of them)
+📁 timeless-jewels/
+├── README.md
+├── LICENSE
+├── LICENSE-EXCEPTIONS.md
+├── go.mod
+├── go.sum
+├── timeless-jewels.code-workspace
 │
-├── 📁 .github/                    # 🤖 GitHub configuration
-│   └── copilot-instructions.md   # GitHub Copilot development guidelines
+├── 📁.github/
+│   └── copilot-instructions.md
 │
-├── 📁 docs/                       # 📚 Comprehensive documentation
-│   ├── 📋 INDEX.md               # Documentation index and navigation
-│   ├── 🏗️ BUILD_FIXES_COMPLETE.md # Build system with dual Svelte support
-│   ├── 🚀 QUICK_START_VERSION_AWARE.md # Quick start guide
-│   ├── 📦 PNPM_V10_MIGRATION.md  # Package manager migration
-│   ├── 🎯 SVELTE_5_MIGRATION_PREP.md # Framework upgrade guide
-│   ├── 🔧 COMLINK_MODERNIZATION.md # Web Worker modernization
-│   ├── 🎨 SELECT_COMPONENT_FIX.md # Component updates
-|   ├── 📄 PWA-IMPLEMENTATION.md       # Progressive Web App implementation guide
-│   └── 🤖 COPILOT_*.md           # AI development tools integration
+├── 📁docs/   (2024Extended Exclusive for now until reduce documentation)
+│   ├── INDEX.md
+│   └── *.md
 │
-├── 📁 frontend/                   # 💻 Svelte 5 Frontend
-│   ├── 📦 package.json           # Main package configuration
-│   ├── 🔧 pnpmfile.cjs           # Dynamic dependency hook system  
-│   ├── 📄 tsconfig.json          # Root TypeScript configuration
-│   ├── 📄 tsconfig.Modern.json   # Svelte 5 TypeScript config
-│   ├── 📄 tsconfig.electron.json # Electron TypeScript config
-│   ├── 🎨 tailwind.config.js     # Tailwind CSS configuration
-│   ├── ⚡ postcss.config.cjs     # PostCSS for Tailwind
-│   ├── 🔧 vite.config.ts         # Vite build configuration
-│   ├── 🔧 svelte.config.ts       # Svelte configuration
-│   ├── 🧪 vitest.config.ts       # Vitest testing configuration
-│   ├── 📁 .config-deps/          # Local configuration packages
-│   │   └── timeless-jewels-modern-config/  # Svelte 5 config package
-│   │
-│   ├── 📁 scripts/               # Build and automation scripts
-│   │   ├── build-wasm.ps1        # WebAssembly build script
-│   │   └── version-manager.js    # Version management utility
-│   │
-│   ├── 📁 tests/                 # Test configuration and utilities
-│   │   └── scripts/              # Test automation scripts
-│   │
-│   ├── 📁 src/                   # Source code
-│   │   ├── 🏠 app.html           # HTML template
-│   │   ├── 🎨 app.css            # Global styles
-│   │   ├── 🔧 hooks.client.ts    # SvelteKit client hooks
-│   │   │
-│   │   ├── 📁 lib/               # Shared libraries
+├───📁 frontend/
+│   ├── package.json
+│   ├── pnpmfile.cjs                     (2024Extended Exclusive)
+│   ├── tsconfig.json
+│   ├── tsconfig.electron.json
+│   ├── tailwind.config.js
+│   ├── postcss.config.cjs
+│   ├── svelte.config.ts
+│   ├── vite.base.config.ts    (Base file for vite config variants)
+│   ├── vite.electron.config.ts
+│   ├── vite.ghpages.config.ts
+│   ├── vite.renderer.config.ts
+│   ├── vite.config.ts
+│   ├── vitest.config.ts
+│   ├── tsconfig.Modern.json    (2024Extended Exclusive)
+│   ├── 📁.config-deps/                     (2024Extended Exclusive)
+│   │   └── timeless-jewels-modern-config/
+│   ├── 📁scripts/
+│   │   ├── build-wasm.ps1
+│   │   └── version-manager.js
+│   ├── 📁tests/
+│   │   └── scripts/
+│   ├── 📁 src-electron/       # Typescript source code for electron
+│   ├── 📁 dist-electron/      # Compiled code from src-electron
+│   ├── 📁static/
+│   │   ├── .nojekyll
+│   │   ├── calculator.wasm       # WebAssembly calculator
+│   │   ├── favicon.png
+│   │   ├── licenses.html         # License information
+│   │   └── *.*         # Other files
+│   ├── 📁src/
+│   │   ├── app.html
+│   │   ├── app.css
+│   │   ├── hooks.client.ts
+│   │   ├── 📁lib/               # Shared libraries
 │   │   │   ├── 🔄 skill_tree_modern.ts    # Skill tree logic
 │   │   │   ├── 👷 *worker*.ts             # Web Workers with Comlink
 │   │   │   ├── 📁 components/             # Svelte components
@@ -93,28 +138,21 @@ timeless-jewels_Partial/
 │   │   │   ├── 📁 utils/                  # Utility functions
 │   │   │   │   └── cross-origin-check.ts  # Cross-origin isolation check
 │   │   │   └── 📁 workers/                # Web Worker implementations
-│   │   │
-│   │   ├── 📁 routes-modern/              # SvelteKit routes
-│   │   │   ├── +layout.svelte             # Layout component
-│   │   │   ├── +page.svelte               # Home page
-│   │   │   ├── 📁 about/                  # About page
-│   │   │   ├── 📁 tree/                   # Tree page
-│   │   │   └── 📁 test/                   # Test/debug page
-│   │   │       └── +page.svelte           # Cross-origin & PWA testing
-│   │   │
-│   │   └── 📁 styles/            # Style definitions
+│   │   ├── 📁styles/            # Style definitions
+│   │   └── 📁routes/ (or any routes* folder)
+│   │       ├── +layout.svelte             # Layout component
+│   │       ├── +page.svelte               # Home page
+│   │       ├── 📁 about/                  # About page
+│   │       ├── 📁 tree/                   # Tree page
+│   │       └── 📁 test/                   # Test/debug page
+│   │           └── +page.svelte           # Cross-origin & PWA testing
 │   │
-│   ├── 📁 src-electron/          # Electron TypeScript code
-│   ├── 📁 dist-electron/         # Electron compiled JavaScript
-│   ├── 📁 build/                 # Built application output
-│   │   ├── calculator.wasm       # WebAssembly calculator
-│   │   └── _app/                 # SvelteKit application assets
-│   │
-│   └── 📁 static/                # Static assets
-│       ├── calculator.wasm       # Go WebAssembly calculator
-│       ├── favicon.png           # Site icon
-│       ├── licenses.html         # License information
-│       └── *.png                 # Additional images
+│   └──📁dist  (Output directory for output folders)
+│
+│
+│
+│
+│
 │
 ├── 📁 calculator/                # ⚙️ Go WebAssembly calculator
 │   ├── main.go                   # Calculator entry point
@@ -142,28 +180,11 @@ timeless-jewels_Partial/
 | Directory     | Purpose                        | Technology                   |
 | ------------- | ------------------------------ | ---------------------------- |
 | `docs/`       | 📚 Comprehensive documentation | Markdown                     |
-| `frontend/`   | 💻 Web application             | Svelte 4/5, TypeScript, Vite |
-| `calculator/` | ⚙️ Core calculations           | Go → WebAssembly             |
+| `frontend/`   | 💻 Web application             | Svelte 5, TypeScript, Vite   |
+| `calculator/` | ⚙️ Core calculations           | Go → WebAssembly            |
 | `data/`       | 📊 Game data processing        | Go, JSON                     |
 | `wasm/`       | 🌐 WebAssembly builds          | Go                           |
 
-## 📚 Documentation
-
-Comprehensive documentation is available in the [`docs/`](docs/) directory:
-
-- **[📋 Documentation Index](docs/INDEX.md)** - Complete documentation overview
-- **[📁 Project Structure](docs/PROJECT_STRUCTURE.md)** - Detailed technical structure guide
-- **[🚀 Quick Start Guide](docs/QUICK_START_VERSION_AWARE.md)** - Get started quickly
-- **[🏗️ Build System Guide](docs/BUILD_FIXES_COMPLETE.md)** - Build system and fixes
-- **[🔄 Version Management](docs/VERSION_AWARE_SYSTEM.md)** - Dual Svelte 4/5 support
-
-### Key Documentation:
-
-- **System Architecture**: [Version-Aware System](docs/VERSION_AWARE_SYSTEM.md)
-- **Migration Guides**: [pnpm v10](docs/PNPM_V10_MIGRATION.md), [Svelte 5 Prep](docs/SVELTE_5_MIGRATION_PREP.md)
-- **Component Updates**: [Select Components](docs/SELECT_COMPONENT_FIX.md), [Modern Workers](docs/COMLINK_MODERNIZATION.md)
-- **Development Tools**: [Copilot Integration](docs/COPILOT_INTEGRATION_SUCCESS.md)
-- **AI Assistant Guides**: [Formatting Guidelines](docs/AI_FORMATTING_GUIDELINES.md), [Context Guide](docs/AI_ASSISTANT_CONTEXT_GUIDE.md)
 
 ## Updates to new leagues
 
@@ -186,92 +207,144 @@ run command:
 golangci-lint config verify
 golangci-lint run ./... --default=none -E errcheck
 
-## Frontend Development
-
-This project uses **pnpm v10** for package management and features a **version-aware Svelte system** with comprehensive backup protection.
-
-### 📋 System Overview
-
-- **Default**: Svelte 5 with modern runes syntax
-- **Fallback**: Svelte 4 compatibility maintained
-- **Safety**: Multiple backup files protect against corruption
-- **Switching**: INI-based dependency management
-
-### 🛡️ Backup Protection
-
-The system includes multiple safety layers:
-
-- `Svelte5PackageBackup.json` - Emergency Svelte 5 restore
-- `LegacyPackageBackup.json` - Emergency Svelte 4 restore
-- See `frontend/BACKUP_FILE_STRUCTURE.md` for recovery procedures
-
-```powershell
-# Install or update to pnpm v10
-pnpm self-update
-
-# Or via npm
-npm install -g pnpm@10
-```
-
-### First-time Setup
-
-```powershell
-cd frontend
-
-# Install dependencies
-pnpm install
-
-# For migration from older pnpm versions, you may need to:
-# 1. Remove old lockfile: Remove-Item pnpm-lock.yaml
-# 2. Remove node_modules: Remove-Item node_modules -Recurse -Force
-# 3. Fresh install: pnpm install
-```
-
+---
 ### Development Commands
 
-```powershell
-# After using cd frontend:
-pnpm install
-pnpm run format
-pnpm run lint
-pnpm run check
-pnpm run prepare
-pnpm run build
+Clean previous outputs and produce production builds for web, GH Pages, and Electron.
+```bash
+# Generate or rebuild the WebAssembly calculator
+pnpm run generateWasm
+pnpm run prepare:wasm
 
-# Development server (uses default Svelte 5)
-pnpm run dev
+# Preview GitHub Pages routing locally
+pnpm run dev:gh
+
+# Launch Electron (renderer + main) with hot reload
+pnpm run dev:electron
+
+# Remove build artifacts
+pnpm run clean
+
+# Start web renderer in dev mode (SSR + HMR)
+pnpm run dev:web
+
+# Preview GitHub Pages routing locally
+pnpm run dev:gh
+
+# Launch Electron (renderer + main) with hot reload
+pnpm run dev:electron
+
+# Run web and Electron dev in parallel
+pnpm run dev:all
+
+# Preview the static web build
+pnpm run preview:web
+```
+
+---
+## Building the GitPages build
+
+run
+```bash
+# Build and deploy to GitHub Pages
+pnpm run build:ghpages
+pnpm run deploy:gh
+```
+
+Pre-renders every route as a static HTML file, outputs into dist/ghpages/.
+
+
+## Packaging the Electron App
+Create distributable desktop installers or portable executables for each platform.
+
+
+```bash
+# Build electron static web build
+pnpm run build:web
+
+# Bundle Electron (main + preload + renderer)
+pnpm run build:electron
+
+# Serve electron build
+pnpm run electron:serve
+
+# Full cross-platform packaging with electron-builder
+pnpm run package:electron
+
+# Windows portable executable
+pnpm run offline:win
+
+# macOS DMG and ZIP
+pnpm run offline:mac
+
+# Linux AppImage and DEB
+pnpm run offline:linux
+
+# All platforms without publishing
+pnpm run offline:all
+
+# Legacy packager commands (optional)
+pnpm run packOfflineBuild:win
+pnpm run packOfflineBuild:linux
+pnpm run packOfflineBuild:mac
 
 ```
 
-### pnpm v10 Migration Notes
+---
+## Utilities
+```bash
 
-- See `PNPM_V10_MIGRATION.md` for detailed migration information
-- Lifecycle scripts are now more secure (only specified dependencies can run build scripts)
-- Test arguments no longer require `--` prefix: `pnpm test --watch` instead of `pnpm test -- --watch`
+# Lint source code and styles
+pnpm run lint
+pnpm run lint:css
+pnpm run lint:css:fix
 
-## Offline Builds
+# Format files consistently
+pnpm run format
 
-Electron will package your static site into `frontend/OfflineBuild/`.  
-By default you get a Windows portable EXE, but you can also target macOS and Linux.
+# Type-check Svelte + TS
+pnpm run check
+pnpm run check:watch
 
-### Offline Build Folder layout
-frontend/OfflineBuild/
-├─ TimelessJewelGenerator.exe           ← Windows portable EXE (electron-builder)
-├─ TimelessJewelGenerator Setup.exe     ← Windows NSIS installer (if enabled)
-├─ mac/
-│   ├─ TimelessJewelGenerator.dmg        ← macOS DMG
-│   └─ TimelessJewelGenerator.zip        ← macOS ZIP
-├─ linux/
-│   ├─ TimelessJewelGenerator.AppImage   ← Linux AppImage
-│   └─ TimelessJewelGenerator.deb        ← Linux DEB
-└─ win-unpacked/
-    └─ Timeless Jewels.exe               ← electron-packager output
+# Run unit tests with Vitest
+pnpm run test:modern
+pnpm run test:coverage
+pnpm run test:watch
+```
 
-## Electron offline‐build commands (package.json)
+---
+## Configuration
 
-pnpm run electron:serve Rebuilds the site and launches it in Electron (dev mode)
-pnpm run offline:win Generates a signed Windows portable EXE
-pnpm run offline:mac Generates macOS .dmg and .zip
-pnpm run offline:linux Generates Linux .AppImage and .deb
-pnpm run offline:all Builds for all three platforms at once
-pnpm run packOfflineBuild for Electron packaged exe without code signing
+Environment is controlled via BUILD_TARGET:
+
+  - renderer — Standard web build
+
+  - ghpages — Static output for GitHub Pages
+
+Further options can be found in the Vite configs:
+
+  - vite.renderer.config.ts
+
+  - vite.ghpages.config.ts
+
+  - vite.electron.config.ts
+
+Electron build settings live in package.json under the build section.
+
+---
+## License
+
+This repository combines code under multiple licenses:
+
+  - The original codebase is licensed under GPL v3.
+	- For specific liceases on other files check frontend/static/liceases.html
+
+License
+
+This project merges code under multiple licenses:
+
+    GPL-3.0-only for the original codebase
+    MIT, MIT-0 and BSD-3-Clause for select additions and scripts
+
+Always consult LICENSE (GPL-3.0-only) 
+and LICENSE-EXCEPTIONS.md or frontend/static/liceases.html for full license details.
