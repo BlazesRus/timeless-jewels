@@ -1,0 +1,6 @@
+[submodule "PowershellSettings"]
+	path = PowershellSettings
+	url = https://github.com/BlazesRus/PowershellSettings.git
+[submodule "frontend/src/lib/ModernWasm"]
+	path = frontend/src/lib/ModernWasm
+	url = https://github.com/BlazesRus/ModernWasm.git

@@ -1,0 +1,310 @@
+{
+  // ── Multi-Root Workspace: Timeless Jewels ──
+  "folders": [
+    {
+      "path": ".",
+      "name": "projectroot"
+    },
+    {
+      "path": "./frontend",
+      "name": "frontend"
+    },
+    {
+      "path": "../ErrorLogs",
+      "name": "error-logs"
+    },
+    {
+      "path": "../timeless-jewels_legacy"
+    }
+  ],
+  // ── Recommended Extensions ──
+  "extensions": {
+    "recommendations": [
+      "svelte.svelte-vscode",      // Svelte language support
+      "github.copilot"             // AI pair programming
+    ]
+  },
+  // ── Workspace Settings ──
+  "settings": {
+    // ---- Workbench & UI ----
+    "workbench.colorTheme": "Default Dark+",
+    "workbench.iconTheme": "vscode-icons",
+    "workbench.statusBar.visible": true,
+    // ---- Terminal Configuration ----
+    "terminal.integrated.profiles.windows": {
+      "PowerShell 7": {
+        "path": [
+          "${env:ProgramFiles}\\PowerShell\\7\\pwsh.exe",
+          "${env:ProgramFiles(x86)}\\PowerShell\\7\\pwsh.exe",
+          "pwsh.exe"
+        ],
+        "icon": "terminal-powershell",
+        "args": [
+          "-NoLogo",
+          "-NoExit",
+          "-ExecutionPolicy", "Bypass",
+          "-Command",
+          "& \"${workspaceFolder:projectroot}/PowershellSettings/PowerShellTerminal.ps1\""
+        ],
+        "overrideName": true
+      },
+      "Windows PowerShell": {
+        "source": "PowerShell",
+        "icon": "terminal-powershell",
+        "args": [
+          "-NoLogo",
+          "-NoExit",
+          "-ExecutionPolicy", "Bypass",
+          "-Command",
+          "& \"${workspaceFolder:projectroot}/PowershellSettings/PowerShellTerminal.ps1\""
+        ],
+        "overrideName": true
+      }
+    },
+    "terminal.integrated.defaultProfile.windows": "PowerShell 7",
+    "terminal.integrated.automationProfile.windows": "PowerShell 7",
+    //Default workplace folder except for certain things like powershell scripts
+    "terminal.integrated.cwd": "${workspaceFolder:frontend}",
+    // ── Terminal: Shell Integration & History ──
+    "terminal.integrated.shellIntegration.enabled": true,
+    "terminal.integrated.shellIntegration.decorationsEnabled": "both",
+    "terminal.integrated.shellIntegration.history": 100,
+     // ── Terminal: Scrolling & Interaction ──
+    "terminal.integrated.enableVisualBell": false,
+    "terminal.integrated.scrollback": 10000,
+    "terminal.integrated.fastScrollSensitivity": 5,
+    "terminal.integrated.focusAfterRun": "terminal",
+    "terminal.integrated.commandsToSkipShell": [
+      "language-julia.interrupt",
+      "workbench.action.terminal.clear"
+    ],
+    // ── Terminal: Environment & Persistence ──
+    "terminal.integrated.environmentChangesIndicator": "on",
+    "terminal.integrated.environmentChangesRelaunch": false,
+    "terminal.integrated.enablePersistentSessions": true,
+    "terminal.integrated.persistentSessionReviveProcess": "onExitAndWindowClose",
+    "terminal.integrated.detectLocale": "on",
+    "terminal.integrated.allowChords": false,
+    "terminal.integrated.altClickMovesCursor": false,
+    // ── Terminal: Confirmations & Alerts ──
+    "terminal.integrated.confirmOnExit": "hasChildProcesses",
+    "terminal.integrated.confirmOnKill": "hasChildProcesses",
+    "terminal.integrated.showExitAlert": true,
+     // ── Terminal: Tabs UI ──
+    "terminal.integrated.tabs.enabled": true,
+    "terminal.integrated.tabs.location": "right",
+    "terminal.integrated.tabs.focusMode": "singleClick",
+    "terminal.integrated.tabs.hideCondition": "never",
+    "terminal.integrated.tabs.showActions": "never",
+    // ── Terminal: Rendering ──
+    "terminal.integrated.smoothScrolling": true,
+
+    // ---- npm / pnpm ----
+    "npm.packageManager": "pnpm",
+
+    // ---- GitHub Copilot ----
+    "github.copilot.enable": {
+      "*": true,
+      "yaml": true,
+      "plaintext": true,
+      "markdown": true,
+      "json": true,
+      "typescript": true,
+      "svelte": true,
+      "javascript": true,
+      "go": true
+    },
+    "github.copilot.advanced": {
+      "debug.overrideEngine": "codex",
+      "debug.overrideProxyUrl": "",
+      "debug.testOverrideProxyUrl": ""
+    },
+    "github.copilot.chat.useProjectTemplates": true,
+    "github.copilot.chat.agent.thinkingTool": true,
+    // ---- AI: Copilot Chat Instructions ----
+    "github.copilot.chat.codeGeneration.instructions": [
+      "Follow the AI_FORMATTING_GUIDELINES.md in the docs/ directory",
+      "Understand the version-aware architecture with dual Svelte 4/5 support using pnpmfile.cjs",
+      "Use appropriate syntax for target Svelte version (check SVELTE_MODE environment variable)",
+      "Never edit backup files (*Backup.json)",
+      "Reference AI_ASSISTANT_CONTEXT_GUIDE.md for project understanding",
+      "Use PowerShell command format by default for Windows commands",
+      "Prefer Write-Host with color coding for output in PowerShell scripts",
+      "Use proper PowerShell parameter syntax with hyphen prefixes",
+      "Include error handling with try-catch blocks in PowerShell commands",
+      "RESPECT CURRENT MODE: Use runtime version detection, focus on current Svelte version",
+      "Version switching uses SVELTE_MODE environment variable and pnpmfile.cjs system",
+      "Only suggest version switching when explicitly requested by the user",
+      "When working in Modern (Svelte 5) mode, suggest testing and development using current version only"
+    ],
+
+    // ---- Live Preview ----
+    "livePreview.portNumber": 3000,
+    "livePreview.autoRefreshPreview": "On Changes to Saved Files",
+    "livePreview.notifyOnOpenLooseFile": false,
+
+    // ---- Simple Browser ----
+    "simpleBrowser.focusLockIndicator.enabled": true,
+
+    // ---- VSCode Edge DevTools ----
+    "vscode-edge-devtools.headless": false,
+    "vscode-edge-devtools.defaultUrl": "http://localhost:5173",
+
+    // ---- Debug Console Tweaks ----
+    "debug.openDebug": "openOnDebugBreak",
+    "debug.showBreakpointsInOverviewRuler": true,
+    "debug.console.acceptSuggestionOnEnter": "on",
+    "debug.console.closeOnEnd": false,
+    "debug.console.fontSize": 12,
+    "debug.console.wordWrap": false,
+    "debug.internalConsoleOptions": "neverOpen",
+    "debug.allowBreakpointsEverywhere": true,
+    "debug.terminal.clearBeforeReusing": false,
+    "testExplorer.codeLens": true,
+
+    // ---- Files & Explorer ----
+    "files.associations": {
+      "*.ini": "ini",
+      "*Package.json": "json",
+      "*PackageBackup.json": "jsonc",
+      "pnpmfile.cjs": "javascript",
+      "*.svelte": "svelte",
+      "*.css": "tailwindcss"
+    },
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/.svelte-kit": true,
+      "**/dist": true
+    },
+    "explorer.compactFolders": true,
+
+    // ---- Problems & Breadcrumbs ----
+    "problems.decorations.enabled": true,
+    "problems.showCurrentInStatus": true,
+    "breadcrumbs.enabled": true,
+
+    // ---- Git Source Control----
+    "git.enableSmartCommit": false,
+    "git.autofetch": true,
+    "git.confirmSync": false,
+
+    // ---- Svelte 5 Modern Features ----
+    "svelte.enable-ts-plugin": true,
+    "svelte.plugin.typescript.enable": true,
+    "svelte.plugin.typescript.diagnostics.enable": true,
+    "svelte.plugin.typescript.hover.enable": true,
+    "svelte.plugin.typescript.completions.enable": true,
+    "svelte.plugin.svelte.diagnostics.enable": false,
+    "svelte.plugin.svelte.compilerWarnings": {
+      "global_reference_invalid": "ignore",
+      "global-reference-invalid": "ignore"
+    },
+    "svelte.plugin.svelte.format.enable": true,
+    "svelte.plugin.svelte.completions.enable": true,
+
+    // ---- TypeScript ----
+    "typescript.preferences.includePackageJsonAutoImports": "auto",
+    "typescript.validate.enable": true,
+    "typescript.reportStyleChecksAsWarnings": true,
+
+    // ── Force Tasks to Reuse a Single Panel ──
+    // instead of "dedicated" or "new", always use the "shared" panel
+    "tasks.showReuseMessage": false,// hide the “Terminal will be reused” popup
+    // make sure in each task:
+    //   "presentation": { "panel": "shared" }
+    // ── Prevent Auto-Launched Tasks ──
+    // stop VS Code from automatically running any detected tasks (e.g. on folder open)
+    "tasks.allowAutomaticTasks": "never",
+
+    // ---- Go Language Server ----
+    "go.useLanguageServer": true,
+    "go.toolsManagement.checkForUpdates": "local"
+  },
+
+  // ── Tasks: Common Scripts ──
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build: Frontend (Svelte 5)",
+        "type": "shell",
+        "command": "pnpm run build",
+        "options": { "cwd": "${workspaceFolder:frontend}" },
+        "presentation": {
+          "reveal": "always",
+          "panel": "shared"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Check: Frontend (Svelte 5)",
+        "type": "shell",
+        "command": "pnpm run check",
+        "options": { "cwd": "${workspaceFolder:frontend}" },
+        "presentation": {
+          "reveal": "always",
+          "panel": "shared"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Dev: Frontend (Svelte 5)",
+        "type": "shell",
+        "command": "pnpm run dev",
+        "options": { "cwd": "${workspaceFolder:frontend}" },
+        "presentation": {
+          "reveal": "always",
+          "panel": "shared"
+        },
+        "problemMatcher": []
+      }
+    ]
+  },
+
+  // ── Launch Configurations: Debugging ──
+  "launch": {
+    "configurations": [
+      {
+        "name": "Launch Go Package",
+        "type": "go",
+        "request": "launch",
+        "mode": "auto",
+        "program": "${fileDirname}"
+      },
+      {
+        "name": "Debug Frontend in Edge",
+        "type": "pwa-msedge",
+        "request": "launch",
+        "url": "http://localhost:5173",
+        "webRoot": "${workspaceFolder:frontend}/src",
+        "preLaunchTask": "Dev: Frontend (Svelte 5)"
+      },
+      {
+        "name": "Debug Frontend in Firefox",
+        "type": "pwa-firefox",
+        "request": "launch",
+        "url": "http://localhost:5173",
+        "webRoot": "${workspaceFolder:frontend}/src",
+        "preLaunchTask": "Dev: Frontend (Svelte 5)"
+      },
+      {
+        "name": "Attach to Chrome/Edge",
+        "type": "pwa-chrome",
+        "request": "attach",
+        "port": 9229,
+        "restart": true,
+        "webRoot": "${workspaceFolder:frontend}/src"
+      }
+    ],
+    "compounds": [
+      {
+        "name": "Run & Debug: Firefox",
+        "configurations": ["Debug Frontend in Firefox"]
+      },
+      {
+        "name": "Run & Debug: Edge",
+        "configurations": ["Debug Frontend in Edge"]
+      }
+    ]
+  }
+}
