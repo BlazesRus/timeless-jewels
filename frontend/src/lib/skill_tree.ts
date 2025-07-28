@@ -397,8 +397,17 @@ const tradeStatNames: { [key: number]: { [key: string]: string } } = {
   }
 };
 
-export const constructSingleResultQuery = (jewel: number, conqueror: string | null, result: SearchWithSeed): Query => {
-  const anyConqueror = conqueror === null;
+export const constructQuery = (jewel: number, conqueror: string, result: SearchWithSeed[]) => {
+  const max_filter_length = 45;
+  const max_filters = 4;
+  const max_query_length = max_filter_length * max_filters;
+  const final_query = [];
+  const stat = {
+    type: 'count',
+    value: { min: 1 },
+    filters: [],
+    disabled: false
+  };
 
   const filters: Filter[] = Object.keys(tradeStatNames[jewel]).map((conq) => ({
     id: tradeStatNames[jewel][conq],
@@ -409,10 +418,17 @@ export const constructSingleResultQuery = (jewel: number, conqueror: string | nu
     disabled: anyConqueror ? false : conq != conqueror
   }));
 
-  const filterGroup = filtersToFilterGroup(filters, false);
-  const query: Query = filterGroupsToQuery([filterGroup]);
-  return query;
-};
+    final_query.push(stat);
+    // too many results case
+  } else if (result.length > max_query_length) {
+    for (let i = 0; i < max_filters; i++) {
+      final_query.push({
+        type: 'count',
+        value: { min: 1 },
+        filters: [],
+        disabled: i != 0
+      });
+    }
 
 const constructSearchFilter = (jewel: number, conqueror: string | null, result: SearchWithSeed): Filter[] => {
   // null conqueror indicates to search for any conqueror
@@ -450,5 +466,27 @@ export const constructQueries = (jewel: number, conqueror: string | null, result
     return tradeQuery;
   });
 
-  return tradeQueries;
+export const openTrade = (
+  jewel: number,
+  conqueror: string,
+  results: SearchWithSeed[],
+  platform: string,
+  league: string
+) => {
+  if (!platform || typeof platform !== 'string') {
+    platform = 'PC';
+  }
+
+  if (!league || typeof league !== 'string') {
+    league = 'Standard';
+  }
+
+  const url = new URL(
+    `https://www.pathofexile.com/trade/search${platform === 'PC' ? '' : `/${platform.toLowerCase()}`}/${league}`
+  );
+  url.searchParams.set('q', JSON.stringify(constructQuery(jewel, conqueror, results)));
+
+  console.log('opening trade', url);
+
+  window.open(url, '_blank');
 };
