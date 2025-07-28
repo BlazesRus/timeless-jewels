@@ -12,6 +12,7 @@ export const svelte4Libraries = [
 
 // Libraries that are Svelte 5 compatible
 export const svelte5Libraries = [
+  '@humanspeak/svelte-virtual-list',//Replacement for svelte-tiny-virtual-list but needs some changes
   'svelte-canvas' // Canvas drawing component (supports Svelte ^5.0.0)
 ];
 
@@ -27,9 +28,9 @@ export const componentMigrations = {
   // Virtual list - consider upgrading to @tanstack/svelte-virtual
   'svelte-tiny-virtual-list': {
     legacy: 'svelte-tiny-virtual-list',
-    modern: '@tanstack/svelte-virtual', // Future upgrade path
+    modern: '@humanspeak/svelte-virtual-list', // Future upgrade path
     runes: false,
-    notes: 'Works in compatibility mode, consider upgrading to @tanstack/svelte-virtual'
+    notes: 'Works in compatibility mode, consider upgrading to @humanspeak/svelte-virtual-list or @tanstack/svelte-virtual'
   }
 };
 

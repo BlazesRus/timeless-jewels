@@ -94,7 +94,7 @@ Simplified frontend structure:
 │
 ├───📁 frontend/
 │   ├── package.json
-│   ├── pnpmfile.cjs                     (2024Extended Exclusive)
+│   │   ├── 🔧 pnpmfile.cjs           # Dynamic package management with toggle system (OFF by default)
 │   ├── tsconfig.json
 │   ├── tsconfig.electron.json
 │   ├── tailwind.config.js
@@ -127,8 +127,11 @@ Simplified frontend structure:
 │   │   ├── app.css
 │   │   ├── hooks.client.ts
 │   │   ├── 📁lib/               # Shared libraries
-│   │   │   ├── 🔄 skill_tree_modern.ts    # Skill tree logic
-│   │   │   ├── 👷 *worker*.ts             # Web Workers with Comlink
+│   │   │   ├── 🔄 skill_tree.ts           # Skill tree logic (Modernized for Svelte 5)
+│   │   │   ├── 👷 sync_worker.ts         # Sync worker (Modernized for Svelte 5)
+│   │   │   ├── 👷 skill_tree.worker.ts   # Skill tree web worker (Modernized for Svelte 5)
+│   │   │   ├── 👷 worker.ts              # General worker (Modernized for Svelte 5)
+│   │   │   ├── 👷 *worker.ts             # Web Workers with Comlink
 │   │   │   ├── 📁 components/             # Svelte components
 │   │   │   ├── 📁 services/               # Data services
 │   │   │   │   └── wasiDataService.svelte.ts # WASI data service
@@ -314,6 +317,11 @@ pnpm run test:watch
 
 ---
 ## Configuration
+
+**pnpm Hook System (Toggle):**
+- **Default**: OFF - Uses standard package.json configuration  
+- **Enable**: Set `ENABLE_PNPM_HOOKS=true` for experimental package management
+- **Recommended**: Keep disabled for stable builds
 
 Environment is controlled via BUILD_TARGET:
 

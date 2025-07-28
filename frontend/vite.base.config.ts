@@ -1,7 +1,7 @@
 import path from 'path';
 import { defineConfig } from 'vite';
-import ssr from 'vite-plugin-ssr/plugin';
-import ssrSvelte from 'vite-plugin-ssr-svelte';
+import vike from 'vike/plugin';
+import vikeSvelte  from 'vike-svelte/plugin';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import wasm from 'vite-plugin-wasm';
 import tailwindcss from '@tailwindcss/vite';
@@ -17,8 +17,8 @@ export default defineConfig({
     alias: {
       $lib: path.resolve(__dirname, 'src/lib'),
       '$lib/*': path.resolve(__dirname, 'src/lib/*'),
-      $routes: path.resolve(__dirname, 'src/routes-modern'),
-      '$routes/*': path.resolve(__dirname, 'src/routes-modern/*'),
+      $routes: path.resolve(__dirname, 'src/routes'),
+      '$routes/*': path.resolve(__dirname, 'src/routes/*'),
       'svelte/src/internal/server': path.resolve(
         __dirname,
         'node_modules/svelte/ssr/index.js'
@@ -55,9 +55,9 @@ export default defineConfig({
       }
     },
 
-    // 2) SSR + Prerender
-    ssr({
-      pagesDir: 'src/routes-modern',
+    // 2) SSR + Prerender via Vike
+    vike({
+      pagesDir: 'src/routes',
       noExternal: ['@wasmer/sdk', '@wasmer/wasi'],
       prerender: {
         entries: ['/'],
@@ -66,8 +66,8 @@ export default defineConfig({
       }
     }),
 
-    // 3) Svelte SSR + client hydration
-    ssrSvelte(),
+    // 3) Svelte SSR + client hydration via vike-svelte
+    vikeSvelte(),
 
     // 4) Standard Svelte plugin
     svelte(),
