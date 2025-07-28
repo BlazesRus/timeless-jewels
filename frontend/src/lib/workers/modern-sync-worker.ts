@@ -3,7 +3,7 @@ import { ModernGo, ModernWorkerManager } from '$lib/ModernWasm/go-runtime.worker
 import { loadSkillTree, passiveToTree } from './skill_tree_modern.worker';
 import { calculator, initializeCrystalline } from '$lib/types/ModernTypes.worker';
 import type { ModernTimelessWorker, SearchConfig, SearchResults, SearchWithSeed, SearchProgressCallback, WorkerInitConfig } from './modern-worker-types';
-import { addDebugMessage, captureError } from '$lib/ModernWasm/wasmDebugLogger.svelte';
+import { addDebugMessage, captureError } from '$lib/ModernWasm/wasmLogger.svelte';
 
 /**
  * Modern TimelessJewel Worker implementation with better error handling,

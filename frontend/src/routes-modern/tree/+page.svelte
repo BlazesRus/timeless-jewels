@@ -20,7 +20,7 @@
   import type { JewelOption } from '$lib/skill_tree_types_modern';
   import { translateStat, constructQueries, getAffectedNodes, type StatConfig } from '$lib/skill_tree_modern';
   import { statValues } from '$lib/values';
-  import { debugLog, addDebugMessage } from '$lib/ModernWasm/wasmDebugLogger.svelte';
+  import { debugLog, addDebugMessage } from '$lib/ModernWasm/wasmLogger.svelte';
   import { getTimelessJewelsData, isTimelessJewelsDataReady } from '$lib/services/wasiDataService.svelte.ts';
 
   // 2) Get data from WASI data service (all data is managed internally now)

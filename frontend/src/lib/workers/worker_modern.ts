@@ -2,7 +2,7 @@ import { browser } from '$app/environment';
 import SyncWorker from './sync_worker_modern?worker';
 import * as Comlink from 'comlink';
 import type { WorkerType } from './sync_worker_modern';
-import { addDebugMessage } from '$lib/ModernWasm/wasmDebugLogger.svelte';
+import { addDebugMessage } from '$lib/ModernWasm/wasmLogger.svelte';
 
 // Modern Comlink patterns with performance optimization and cleanup
 function getWorker() {

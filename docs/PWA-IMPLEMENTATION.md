@@ -11,12 +11,12 @@
 - ✅ Set up runtime caching for static resources
 
 ### 2. HTML Templates
-- ✅ Added Content Security Policy headers to both `app.html` and `app-modern.html`
+- ✅ Added Content Security Policy headers to `app.html`
 - ✅ Updated CSP to allow `worker-src 'self' blob: data:`
 - ✅ Added proper script and style source permissions
 
 ### 3. Enhanced WASI Loader
-- ✅ Created `enhanced-wasi-loader.ts` with PWA support
+- ✅ Created `wasi-loader.svelte.ts` with PWA support
 - ✅ Implements multiple WASI instantiation strategies
 - ✅ Better error handling and cross-origin isolation detection
 - ✅ Compatible with existing service architecture

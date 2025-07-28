@@ -5,7 +5,7 @@ Demonstrates Svelte 5 runes, Vite 7 features, and Node.js 22 patterns
 <script lang="ts">
   import { tick } from 'svelte';
   import { createViewportTracker, createPerformanceObserver, createIntersectionObserver, createReactiveStorage, createThemeManager, createDebouncer } from '$lib/utils/modern-utilities.js';
-  import { addDebugMessage } from '$lib/ModernWasm/wasmDebugLogger.svelte';
+  import { addDebugMessage } from '$lib/ModernWasm/wasmLogger.svelte';
 
   interface Props {
     title?: string;

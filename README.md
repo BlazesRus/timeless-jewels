@@ -133,7 +133,7 @@ Simplified frontend structure:
 │   │   │   ├── 📁 services/               # Data services
 │   │   │   │   └── wasiDataService.svelte.ts # WASI data service
 │   │   │   ├── 📁 ModernWasm/             # Modern WebAssembly utilities
-│   │   │   │   └── enhanced-wasi-loader.ts # Enhanced WASI loader
+│   │   │   │   └── wasi-loader.svelte.ts # Enhanced WASI loader
 │   │   │   ├── 📁 types/                  # TypeScript type definitions
 │   │   │   ├── 📁 utils/                  # Utility functions
 │   │   │   │   └── cross-origin-check.ts  # Cross-origin isolation check
