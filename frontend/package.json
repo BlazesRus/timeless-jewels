@@ -2,59 +2,58 @@
   "name": "frontend",
   "version": "0.0.2",
   "type": "module",
-	"scripts": {
-		"generateWasm":  "pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/build-wasm.ps1",
+  "scripts": {
+    "generateWasm":  "pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/build-wasm.ps1",
     "prepare:wasm": "(shx test -f build/calculator.wasm || pnpm run generateWasm)",
     "clean": "rimraf build dist dist-electron",
 
-		"dev:web":      "cross-env BUILD_TARGET=renderer vite --config vite.renderer.config.ts",
-		"dev:gh":       "cross-env BUILD_TARGET=ghpages vite --config vite.ghpages.config.ts",
-		"dev":          "pnpm run dev:web",
+    "dev:web":      "cross-env BUILD_TARGET=renderer vite --config vite.renderer.config.ts",
+    "dev:gh":       "cross-env BUILD_TARGET=ghpages vite --config vite.ghpages.config.ts",
+    "dev":          "pnpm run dev:web",
 
-		"build:web":    "pnpm run prepare:wasm && cross-env BUILD_TARGET=renderer vite build --config vite.renderer.config.ts",
-		"build:ghpages":"pnpm run prepare:wasm && cross-env BUILD_TARGET=ghpages vite build --config vite.ghpages.config.ts",
-		"deploy:gh":    "pnpm run build:ghpages && npx gh-pages -d dist/ghpages",
-		"preview:web":  "vite preview",
+    "build:web":    "pnpm run prepare:wasm && cross-env BUILD_TARGET=renderer vite build --config vite.renderer.config.ts",
+    "build:ghpages":"pnpm run prepare:wasm && cross-env BUILD_TARGET=ghpages vite build --config vite.ghpages.config.ts",
+    "deploy:gh":    "pnpm run build:ghpages && npx gh-pages -d dist/ghpages",
+    "preview:web":  "vite preview",
 
-		"dev:electron": "electron-vite dev --config vite.electron.config.ts",
+    "dev:electron": "electron-vite dev --config vite.electron.config.ts",
 
     "bundle:electron": "tsc -p tsconfig.electron.json",
     "prepare:electron": "pnpm run prepare:wasm && (shx test -f dist-electron/main.js || pnpm run bundle:electron)",
 
-		"build:electron":"pnpm run prepare:electron  && electron-vite build --config vite.electron.config.ts",
+    "build:electron":"pnpm run prepare:electron  && electron-vite build --config vite.electron.config.ts",
 
-		"package:electron": "pnpm run build:electron && electron-builder",
+    "package:electron": "pnpm run build:electron && electron-builder",
 
     "electron:serve": "pnpm run prepare:electron && pnpm run build:web && serve build -p 4173 & electron .",
-		"offline:win":     "pnpm run build:electron && electron-builder --win portable --publish never",
-		"offline:mac":     "pnpm run build:electron && electron-builder --mac --publish never",
-		"offline:linux":   "pnpm run build:electron && electron-builder --linux --publish never",
-		"offline:all":     "pnpm run build:electron && electron-builder --publish never",
+    "offline:win":     "pnpm run build:electron && electron-builder --win portable --publish never",
+    "offline:mac":     "pnpm run build:electron && electron-builder --mac --publish never",
+    "offline:linux":   "pnpm run build:electron && electron-builder --linux --publish never",
+    "offline:all":     "pnpm run build:electron && electron-builder --publish never",
 
     "packOfflineBuild:win":   "pnpm run prepare:electron && pnpm run build:web && electron-packager ./build \"Timeless Jewels\" --platform=win32 --arch=x64 --out OfflineBuild --overwrite",
     "packOfflineBuild:linux": "pnpm run prepare:electron && pnpm run build:web && electron-packager ./build \"Timeless Jewels\" --platform=linux --arch=x64 --out OfflineBuild --overwrite",
     "packOfflineBuild:mac": "pnpm run prepare:electron && pnpm run build:web && electron-packager ./build \"Timeless Jewels\" --platform=mac --arch=x64 --out OfflineBuild --overwrite",
 
 
-		"test:version":  "node -e \"console.log('Svelte version:', require('svelte/package.json').version)\"",
-		"test:modern":   "vitest run",
-		"test:watch":    "vitest",
+    "test:version":  "node -e \"console.log('Svelte version:', require('svelte/package.json').version)\"",
+    "test:modern":   "vitest run",
+    "test:watch":    "vitest",
     "test:node": "node --test src/**/*.test.js",
-		"test:coverage": "vitest run --coverage",
-		"check":         "svelte-check --tsconfig ./tsconfig.json",
+    "test:coverage": "vitest run --coverage",
+    "check":         "svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
-		"lint":          "prettier --check . && eslint . --no-warn-ignored",
+    "lint":          "prettier --check . && eslint . --no-warn-ignored",
     "lint:css": "stylelint \"src/**/*.css\"",
     "lint:css:svelte": "stylelint \"src/**/*.{css,svelte}\"",
     "lint:css:fix": "stylelint \"src/**/*.{css,svelte}\" --fix",
-		"format":        "prettier --write .",
+    "format":        "prettier --write .",
 
     "perf:analyze": "vite-bundle-analyzer dist",
-    "install": "pnpm install",
-    "dev:all": "concurrently \"pnpm run dev:web\" \"pnpm run dev:electron\""
+    "dev:all": "concurrently \"pnpm run dev:web\" \"pnpm run dev:electron\"",
 
     "build:all": "pnpm run clean && pnpm run build:web && pnpm run build:ghpages && pnpm run build:electron"
-	},
+  },
   "main": "dist/main/main.js",
   "build": {
     "appId": "com.BlazesRus.TimelessJewelGen",
@@ -84,9 +83,10 @@
       "@electron/packager": "^18.3.6",
       "serve": "^14.2.1",
       "esbuild": "^0.25.8",
-		  "electron-vite": "^4.0.0",
-      "vite-plugin-ssr": "^0.4.0",
-      "vite-plugin-ssr-svelte": "^0.3.0",
+      "electron-vite": "^4.0.0",
+      "vike": "^0.4.236",
+      "vike-svelte": "^1.0.1",
+      "@wasmer/wasmfs": "^0.12.0",
       "@eslint/css": "^0.9.0",
       "@eslint/js": "^9.28.0",
       "@sveltejs/adapter-auto": "^6.0.1",
