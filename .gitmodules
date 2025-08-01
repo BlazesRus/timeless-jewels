@@ -4,3 +4,6 @@
 [submodule "PowershellSettings"]
 	path = PowershellSettings
 	url = https://github.com/BlazesRus/PowershellSettings.git
+[submodule "packages/vite-plugin-svelte"]
+	path = packages/vite-plugin-svelte
+	url = https://github.com/sveltejs/vite-plugin-svelte.git

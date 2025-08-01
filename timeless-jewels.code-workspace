@@ -12,6 +12,9 @@
     {
       "path": "../ErrorLogs",
       "name": "error-logs"
+    },
+    {
+      "path": "../vike-svelte/packages/@blazesrus/vike-svelte"
     }
   ],
   // ── Recommended Extensions ──
