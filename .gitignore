@@ -195,25 +195,11 @@ $RECYCLE.BIN/
 /build/bin/
 .vs/
 
-# Keep template files in version control
-!Svelte5Package.json
-!LegacyPackage.json
-
-# Keep backup files in version control (safety)
-!Svelte5PackageBackup.json
-!LegacyPackageBackup.json
-
 # But ignore temporary backup files created by tools
 package.json.backup.*
 *.backup.json
 
 CorrectFrontPage.png
-
-frontend/src/lib/components/Svelte5/SkillTree - Copy.svelte
-
-frontend/src/routes/ModernHomePage - Copy.svelte
-
-frontend/src/routes/ModernLayout - Copy.svelte
 
 tools2024.go
 
@@ -223,18 +209,11 @@ frontend/src/lib/types/index.d.ts.old
 
 frontend/test-tailwind.html
 
-frontend/.config-deps/timeless-jewels-modern-config/pnpmfile - Copy.cjs
-
 docs/BUILD_ERRORS_FIXED_FINAL.md
-
-frontend/src/lib/wasm/modern-wasm-loader.svelte.ts.backup
-
-frontend/src/lib/types/ModernTypes.svelte.ts.backup
-
-frontend/src/routes/LegacyTree/\+page.svelte.backup
 
 frontend/build-error.log
 
 setup-utf8.ps1
 
 frontend/src/lib/components/Examples/
+frontend/ElectronHybridTester/
