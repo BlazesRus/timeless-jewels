@@ -1,2 +1,38 @@
 packages:
-  - 'packages/*'
+  - "."
+  - 'frontend'
+  - 'frontend/ElectronHybridTester'
+  - 'packages/vite-plugin-svelte/packages/vite-plugin-svelte'
+  - 'frontend/modules/*'
+packageExtensions:
+  "@eslint-community/eslint-utils@*":
+    peerDependencies:
+      eslint: "^8.0.0 || ^9.0.0"
+  "eslint-config-prettier@*":
+    peerDependencies:
+      eslint: "^8.0.0 || ^9.0.0"
+  "eslint-plugin-n@*":
+    peerDependencies:
+      eslint: "^8.0.0 || ^9.0.0"
+  "eslint-plugin-es-x@*":
+    peerDependencies:
+      eslint: "^8.0.0 || ^9.0.0"
+  "vite-plugin-checker@*":
+    peerDependencies:
+      eslint: "^8.0.0 || ^9.0.0"
+      vite: "^4.3.0 || ^7.0.0"
+  "vite-plugin-inspect@*":
+    peerDependencies:
+      vite: "^4.3.0 || ^7.0.0"
+  "vite-plugin-pwa@*":
+    peerDependencies:
+      vite: "^4.3.0 || ^7.0.0"
+  "vite-plugin-top-level-await@*":
+    peerDependencies:
+      vite: "^4.3.0 || ^7.0.0"
+  "vite-plugin-wasm@*":
+    peerDependencies:
+      vite: "^4.3.0 || ^7.0.0"
+  "@sveltejs/vite-plugin-svelte@*":
+    peerDependencies:
+      vite: "^4.3.0 || ^7.0.0"

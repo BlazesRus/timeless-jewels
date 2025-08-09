@@ -3,157 +3,166 @@
   "version": "0.0.2",
   "type": "module",
   "scripts": {
-    "generateWasm":  "pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/build-wasm.ps1",
-    "prepare:wasm": "(shx test -f build/calculator.wasm || pnpm run generateWasm)",
-    "clean": "rimraf build dist dist-electron",
+	  "clean":      "rimraf dist",
+    "generate:wasm": "pwsh -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/build-wasm.ps1",
+    "prepare:wasm": "(shx test -f static/calculator.wasm || pnpm run generate:wasm)",
 
-    "dev:web":      "cross-env BUILD_TARGET=renderer vite --config vite.renderer.config.ts",
-    "dev:gh":       "cross-env BUILD_TARGET=ghpages vite --config vite.ghpages.config.ts",
-    "dev":          "pnpm run dev:web",
-
-    "build:web":    "pnpm run prepare:wasm && cross-env BUILD_TARGET=renderer vite build --config vite.renderer.config.ts",
-    "build:ghpages":"pnpm run prepare:wasm && cross-env BUILD_TARGET=ghpages vite build --config vite.ghpages.config.ts",
-    "deploy:gh":    "pnpm run build:ghpages && npx gh-pages -d dist/ghpages",
-    "preview:web":  "vite preview",
-
-    "dev:electron": "electron-vite dev --config vite.electron.config.ts",
-
-    "bundle:electron": "tsc -p tsconfig.electron.json",
-    "prepare:electron": "pnpm run prepare:wasm && (shx test -f dist-electron/main.js || pnpm run bundle:electron)",
-
-    "build:electron":"pnpm run prepare:electron  && electron-vite build --config vite.electron.config.ts",
-
-    "package:electron": "pnpm run build:electron && electron-builder",
-
-    "electron:serve": "pnpm run prepare:electron && pnpm run build:web && serve build -p 4173 & electron .",
-    "offline:win":     "pnpm run build:electron && electron-builder --win portable --publish never",
-    "offline:mac":     "pnpm run build:electron && electron-builder --mac --publish never",
-    "offline:linux":   "pnpm run build:electron && electron-builder --linux --publish never",
-    "offline:all":     "pnpm run build:electron && electron-builder --publish never",
-
-    "packOfflineBuild:win":   "pnpm run prepare:electron && pnpm run build:web && electron-packager ./build \"Timeless Jewels\" --platform=win32 --arch=x64 --out OfflineBuild --overwrite",
-    "packOfflineBuild:linux": "pnpm run prepare:electron && pnpm run build:web && electron-packager ./build \"Timeless Jewels\" --platform=linux --arch=x64 --out OfflineBuild --overwrite",
-    "packOfflineBuild:mac": "pnpm run prepare:electron && pnpm run build:web && electron-packager ./build \"Timeless Jewels\" --platform=mac --arch=x64 --out OfflineBuild --overwrite",
-
-
-    "test:version":  "node -e \"console.log('Svelte version:', require('svelte/package.json').version)\"",
-    "test:modern":   "vitest run",
-    "test:watch":    "vitest",
+    "test:watch": "vitest",
     "test:node": "node --test src/**/*.test.js",
     "test:coverage": "vitest run --coverage",
-    "check":         "svelte-check --tsconfig ./tsconfig.json",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
-    "lint":          "prettier --check . && eslint . --no-warn-ignored",
+    "lint": "prettier --check . && eslint . --no-warn-ignored",
     "lint:css": "stylelint \"src/**/*.css\"",
     "lint:css:svelte": "stylelint \"src/**/*.{css,svelte}\"",
     "lint:css:fix": "stylelint \"src/**/*.{css,svelte}\" --fix",
-    "format":        "prettier --write .",
-
+    "format": "prettier --write .",
     "perf:analyze": "vite-bundle-analyzer dist",
-    "dev:all": "concurrently \"pnpm run dev:web\" \"pnpm run dev:electron\"",
+    "dev": "vite dev",
+    "preview": "vite preview",
+		
+    "buildstep:electron":  "vite build",
+    "buildstep:web":  "cross-env BUILD_TARGET=ghpages vite build",
+		
+	  "build:electron": "pnpm run clean &&  pnpm run buildstep:electron",
+	  "build:app": "pnpm run build:electron",
+		
+	  "build:web": "pnpm run clean &&  pnpm run buildstep:web",
+	  "build:gitpages": "pnpm run build:web",
+	  "build:ghpages": "pnpm run build:web",
+		
+		"zip:electron": "cross-zip dist/ElectronApp dist/ElectronApp.zip",
+	  "build": "pnpm run clean && pnpm run prepare:wasm && pnpm run buildstep:electron && pnpm run buildstep:ghpages",
 
-    "build:all": "pnpm run clean && pnpm run build:web && pnpm run build:ghpages && pnpm run build:electron"
+    "package:windows":   "rimraf dist/ElectronApp/win && electron-builder --win portable --publish never --config.directories.output=dist/ElectronApp/win",
+    "package:mac":   "rimraf dist/ElectronApp/mac && electron-builder --mac --publish never --config.directories.output=dist/ElectronApp/mac",
+    "package:linux": "rimraf dist/ElectronApp/linux && electron-builder --linux --publish never --config.directories.output=dist/ElectronApp/linux",
+		
+    "zip:windows":       "cross-zip dist/ElectronApp/win dist/ElectronApp/win.zip",
+    "zip:mac":       "cross-zip dist/ElectronApp/mac dist/ElectronApp/mac.zip",
+    "zip:linux":       "cross-zip dist/ElectronApp/linux dist/ElectronApp/linux.zip",
+    "zip:all":       "pnpm run zip:windows && pnpm run zip:mac",
+
+    "package:all":   "pnpm run package:windows && pnpm run package:mac && pnpm run package:linux",
+    "release:all":   "pnpm run build && pnpm run package:all && pnpm run zip:all"
   },
-  "main": "dist/main/main.js",
+  "main": "dist/ElectronApp/main.js",
+  "homepage": "https://BlazesRus.github.io/timeless-jewels/",
   "build": {
     "appId": "com.BlazesRus.TimelessJewelGen",
     "files": [
-      "dist/renderer/**/*",
-      "dist/main/**/*"
+      "dist/ElectronApp/**/*"
     ],
     "directories": {
       "buildResources": "assets",
       "output": "OfflineBuild"
     },
     "win": {
-      "target": ["portable"]
+      "target": [
+        "portable"
+      ]
     },
     "portable": {
       "artifactName": "TimelessJewelGenerator.exe"
     },
     "mac": {
-      "target": ["dmg", "zip"]
+      "target": [
+        "dmg",
+        "zip"
+      ]
     },
     "linux": {
-      "target": ["AppImage", "deb"]
+      "target": [
+        "AppImage",
+        "deb"
+      ]
     }
   },
   "devDependencies": {
-      "electron-builder": "^24.0.0",
-      "@electron/packager": "^18.3.6",
-      "serve": "^14.2.1",
-      "esbuild": "^0.25.8",
-      "electron-vite": "^4.0.0",
-      "vike": "^0.4.236",
-      "vike-svelte": "^1.0.1",
-      "@wasmer/wasmfs": "^0.12.0",
-      "@eslint/css": "^0.9.0",
-      "@eslint/js": "^9.28.0",
-      "@sveltejs/adapter-auto": "^6.0.1",
-      "@sveltejs/adapter-static": "^3.0.8",
-      "@sveltejs/eslint-config": "^8.2.0",
-      "@sveltejs/kit": "^2.22.2",
-      "@sveltejs/vite-plugin-svelte": "^5.1.0",
-      "@sveltejs/vite-plugin-svelte-inspector": "^4.0.1",
-      "@tailwindcss/postcss": "^4.1.8",
-      "@tailwindcss/vite": "^4.1.11",
-      "@types/node": "^24.0.4",
-      "@typescript-eslint/eslint-plugin": "^8.33.1",
-      "@typescript-eslint/parser": "^8.33.1",
-      "@vitest/coverage-v8": "^2.1.8",
-      "@vitest/ui": "^2.1.8",
-      "@wasmer/sdk": "^0.9.0",
-      "@wasmer/wasi": "^1.2.2",
-      "autoprefixer": "^10.4.16",
-      "binaryen": "^123.0.0",
-      "buffer": "^6.0.3",
-      "comlink": "^4.4.2",
-      "cross-env": "^7.0.3",
-      "eslint": "^9.28.0",
-      "eslint-config-prettier": "^10.1.5",
-      "eslint-plugin-prettier": "^5.5.1",
-      "eslint-plugin-svelte": "^3.9.1",
-      "globals": "^16.2.0",
-      "postcss": "^8.4.38",
-      "postcss-html": "^1.8.0",
-      "postcss-import": "^16.1.0",
-      "prettier": "^3.6.1",
-      "prettier-plugin-svelte": "^3.4.0",
-      "sass": "^1.77.4",
-      "shx": "^0.4.0",
-      "stylelint": "^16.21.0",
-      "stylelint-config-standard": "^38.0.0",
-      "stylelint-config-tailwindcss": "^1.0.0",
-      "svelte": "^5.34.8",
-      "svelte-canvas": "^2.0.2",
-      "svelte-check": "^4.2.1",
-      "svelte-eslint-parser": "^1.2.0",
-      "@humanspeak/svelte-virtual-list": "^0.2.6",
-      "tailwind-csstree": "^0.1.1",
-      "tailwindcss": "^4.1.8",
-      "tslib": "^2.6.3",
-      "typescript": "^5.8.3",
-      "typescript-eslint": "^8.33.1",
-      "vite": "^7.0.0",
-      "vite-plugin-checker": "^0.10.1",
-      "vite-plugin-inspect": "^11.3.0",
-      "vite-plugin-pwa": "^1.0.1",
-      "vite-plugin-top-level-await": "^1.5.0",
-      "vite-plugin-wasm": "^3.4.1",
-      "vitest": "^2.1.8"
+    "@electron/packager": "^18.3.6",
+    "@eslint-community/eslint-utils": "^4.7.0",
+    "@eslint/css": "^0.9.0",
+    "@eslint/js": "^9.28.0",
+    "@humanspeak/svelte-virtual-list": "^0.2.6",
+    "@sveltejs/adapter-auto": "^6.0.1",
+    "@sveltejs/adapter-static": "^3.0.8",
+    "@sveltejs/eslint-config": "^8.2.0",
+    "@sveltejs/kit": "^2.22.2",
+    "@sveltejs/vite-plugin-svelte": "workspace:*",
+    "@tailwindcss/postcss": "^4.1.8",
+    "@tailwindcss/vite": "^4.1.11",
+    "@types/electron": "^1.6.12",
+    "@types/node": "^24.0.4",
+    "@typescript-eslint/eslint-plugin": "^8.33.1",
+    "@typescript-eslint/parser": "^8.33.1",
+    "@vitest/coverage-v8": "^2.1.8",
+    "@vitest/ui": "^2.1.8",
+    "@wasmer/sdk": "^0.9.0",
+    "@wasmer/wasi": "^1.2.2",
+    "@wasmer/wasmfs": "^0.12.0",
+		"cross-zip": "^4.0.1",
+    "autoprefixer": "^10.4.16",
+    "binaryen": "^123.0.0",
+    "buffer": "^6.0.3",
+    "comlink": "^4.4.2",
+    "cross-env": "^7.0.3",
+    "electron": "^37.2.5",
+    "electron-builder": "^24.0.0",
+    "electron-vite": "^4.0.0",
+    "esbuild": "^0.25.8",
+    "eslint": "^9.28.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.5.1",
+    "eslint-plugin-svelte": "^3.9.1",
+    "globals": "^16.2.0",
+    "patch-package": "^8.0.0",
+    "postcss": "^8.4.38",
+    "postcss-html": "^1.8.0",
+    "postcss-import": "^16.1.0",
+    "prettier": "^3.6.1",
+    "prettier-plugin-svelte": "^3.4.0",
+    "sass": "^1.77.4",
+    "serve": "^14.2.1",
+    "shx": "^0.4.0",
+    "stylelint": "^16.21.0",
+    "stylelint-config-standard": "^38.0.0",
+    "stylelint-config-tailwindcss": "^1.0.0",
+    "svelte": "^5.34.8",
+    "svelte-canvas": "^2.0.2",
+    "svelte-check": "^4.2.1",
+    "svelte-eslint-parser": "^1.2.0",
+    "tailwind-csstree": "^0.1.1",
+    "tailwindcss": "^4.1.8",
+    "tslib": "^2.6.3",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.33.1",
+    "vike": "^0.4.236",
+    "vite": "^7.0.0",
+    "vite-plugin-checker": "^0.10.2",
+    "vite-plugin-electron": "^0.29.0",
+    "vite-plugin-inspect": "^11.3.0",
+    "vite-plugin-pwa": "^1.0.1",
+    "vite-plugin-top-level-await": "^1.5.0",
+    "vite-plugin-wasm": "^3.4.1",
+    "vitest": "^2.1.8"
   },
   "engines": {
     "node": ">=22.0.0",
     "pnpm": ">=10.0.0"
   },
-  "packageManager": "pnpm@10.13.1+sha512.37ebf1a5c7a30d5fabe0c5df44ee8da4c965ca0c5af3dbab28c3a1681b70a256218d05c81c9c0dcf767ef6b8551eb5b960042b9ed4300c59242336377e01cfad",
+  "packageManager": "pnpm@10.14.0+sha512.ad27a79641b49c3e481a16a805baa71817a04bbe06a38d17e60e2eaee83f6a146c6a688125f5792e48dd5ba30e7da52a5cda4c3992b9ccf333f9ce223af84748",
   "pnpm": {
     "onlyBuiltDependencies": [],
     "peerDependencyRules": {
       "allowedVersions": {
         "vite": ">=7.0.0"
       },
-      "ignoreMissing": ["vite"]
+      "ignoreMissing": [
+        "vite"
+      ]
     }
+  },
+  "dependencies": {
+    "@blazesrus/vike-svelte": "1.0.2-alpha.3"
   }
 }
