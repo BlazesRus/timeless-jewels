@@ -1,26 +1,26 @@
 {
   "extends": "./.svelte-kit/tsconfig.json",
   "compilerOptions": {
-    // Default Modern (Svelte 5) TypeScript Configuration
     "composite": true,
+    "verbatimModuleSyntax": true,
+    "preserveValueImports": false,
     "allowJs": true,
-    "checkJs": false,
+    "checkJs": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "target": "ES2022",
+    "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
-    "verbatimModuleSyntax": true,
     "declaration": true,
     "declarationMap": true,
     "isolatedModules": true,
     "noEmit": true,
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": ["ESNext", "DOM", "DOM.Iterable","WebWorker"],
     "typeRoots": ["node_modules/@types", "src/types"],
     "noImplicitAny": false,
     "noImplicitReturns": true,
@@ -28,7 +28,12 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "exactOptionalPropertyTypes": false,
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "noEmitOnError": false,
+    "preserveConstEnums": true,
+    "removeComments": false
   },
   "include": [
     "src/**/*.d.ts",
@@ -40,30 +45,13 @@
     "src/lib/**/*",
     "src/routes/**/*",
     "src/app.d.ts",
-    "src/wasm_exec.d.ts"
+    ".svelte-kit/types", "svelte.config.js"
   ],
   "exclude": [
     "node_modules/**/*",
     ".svelte-kit/**/*",
     "build/**/*",
     "dist/**/*",
-    "static/**/*",
-    "LegacyMode/**/*",
-    "LegacyPackage*.json",
-    "svelte.config.js",
-    "src/wasm_exec.js",
-    "src/lib/wasm_exec.ts",
-    "src/wasm_exec.ts",
-    "src/routes/LegacyHomePage.svelte",
-    "src/lib/components/Legacy/**/*",
-    "src/routes/LegacyTree/+page.svelte",
-    "src/lib/types/LegacyTypes.js",
-    "src/lib/skill_tree_legacy.ts",
-    "src/lib/skill_tree_types_legacy.ts",
-    "src/lib/worker_legacy.ts",
-    "src/lib/sync_worker_legacy.ts",
-    "src/lib/workers/sync_worker_legacy.ts",
-    "src/lib/workers/worker_legacy.ts",
-    "src/routes-legacy/**/*"
+    "static/**/*"
   ]
 }
