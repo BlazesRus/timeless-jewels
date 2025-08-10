@@ -1,4 +1,5 @@
 <!--
+  Modernized for Svelte 5
   Modern Home Page - Svelte 5 Component
   Based on original +page.svelte, modernized for Svelte 5 with enhanced debug features
 
@@ -37,32 +38,8 @@
   // Using enhancedWasmState from the new loader instead of local state
 
   async function startWasm() {
-    if (enhancedWasmState.isLoading || enhancedWasmState.isReady) return; // Prevent multiple loads
-
-    try {
-      debugLog.info("Starting modern WASM loader with Copilot's fixes...", 'MainPage');
-      debugLog.info("Starting modern WASM loader with Copilot's fixes...", 'MainPage-WasmStart');
-
-      // Use the modern loader with properly formatted WASM URL
-      const wasmUrl = getEnvironmentWasmUrl();
-      debugLog.info(`Using WASM URL: ${wasmUrl}`, 'MainPage');
-      debugLog.info(`Using WASM URL: ${wasmUrl}`, 'MainPage-WasmStart');
-      const success = await loadWasm(wasmUrl);
-
-      if (success) {
-        debugLog.info("Modern WASM loader is ready with Copilot's approach!", 'MainPage');
-        debugLog.info("Modern WASM loader is ready with Copilot's approach!", 'MainPage-WasmStart');
-
-        // Initialize the app now that WASM is ready
-        await initializeCrystalline();
-      } else {
-        throw new Error("Failed to load WASM using Copilot's enhanced loader");
-      }
-    } catch (e) {
-      const error = e instanceof Error ? e : new Error(String(e));
-      captureError(error, 'MainPage-startWasm');
-      console.error('❌ WASM loading failed:', e);
-    }
+    //Need to update code to use the loader if not already have wasm loader or loaded
+    //enhancedWasmState is not the current loader wasm state
   }
 
   debugLog.info('Main page loading...', 'MainPage-Init');
@@ -109,10 +86,11 @@
   let hasInitializedData = $state(false);
 
   $effect(() => {
+    //Need to update this to use the wasm loader service access
+
     // Only initialize if WASM is ready and we haven't initialized yet
     if (enhancedWasmState.isReady && enhancedWasmState.executor && browser && !hasInitializedData) {
       (async () => {
-        debugLog.info('WASM ready, checking for data availability...', 'MainPage-DataInit');
         debugLog.info('WASM ready, checking for data availability...', 'MainPage-DataInit');
 
         // Small delay to ensure WASM exports are fully populated
@@ -137,7 +115,6 @@
             label: timelessJewelsData[k]
           }));
           debugLog.info(`Jewels loaded: ${jewels.length}`, 'MainPage-DataInit');
-          debugLog.info(`Jewels loaded: ${jewels.length}`, 'MainPage-DataInit');
         } else {
           debugLog.warn('TimelessJewels data not available in globalThis.data', 'MainPage-DataInit');
           debugLog.warn('Available globalThis.data keys: ' + Object.keys((globalThis as any).data || {}).join(', '), 'MainPage-DataInit');
@@ -153,7 +130,6 @@
               label: skill!.Name
             }));
           debugLog.info(`Passive skills loaded: ${passiveSkills.length}`, 'MainPage-DataInit');
-          debugLog.info(`Passive skills loaded: ${passiveSkills.length}`, 'MainPage-DataInit');
         } else {
           debugLog.warn('PassiveSkills data not available in globalThis.data', 'MainPage-DataInit');
           debugLog.warn('Available globalThis.data keys: ' + Object.keys((globalThis as any).data || {}).join(', '), 'MainPage-DataInit');
@@ -161,7 +137,6 @@
 
         JewelsAreNotInitialized = false;
         hasInitializedData = true;
-        debugLog.info('Data initialization completed successfully', 'MainPage-DataInit');
         debugLog.info('Data initialization completed successfully', 'MainPage-DataInit');
 
         // Restore selections from URL params after data is loaded
@@ -298,7 +273,6 @@
             </a>
           </div>
 
-          <!-- Debug Info (don't remove until functional production build that works at least as well as original) -->
           <div class="bg-gray-800 p-4 rounded-lg text-sm">
             <h3 class="mb-2 font-semibold">Debug Info:</h3>
             <div class="space-y-1 text-gray-300">

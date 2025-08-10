@@ -5,11 +5,11 @@
     return window.performance.now();
   };
 
-  // Svelte 5 compatible canvas library (or fallback to current)
+  // Svelte 5 compatible canvas library
   import { Canvas, Layer } from 'svelte-canvas';
-  import type { RenderFunc, Node } from '$lib/skill_tree_types_modern';
-  import { baseJewelRadius, calculateNodePos, distance, drawnGroups, drawnNodes, formatStats, inverseSprites, inverseSpritesActive, inverseTranslations, orbitAngleAt, skillTree, toCanvasCoords } from '$lib/skill_tree_modern';
-  import type { Point } from '$lib/skill_tree_modern';
+  import type { RenderFunc, Node } from '$lib/skill_tree_types';
+  import { baseJewelRadius, calculateNodePos, distance, drawnGroups, drawnNodes, formatStats, inverseSprites, inverseSpritesActive, inverseTranslations, orbitAngleAt, skillTree, toCanvasCoords } from '$lib/skill_tree';
+  import type { Point } from '$lib/skill_tree';
   import { modernTypes } from '$lib/types/ModernTypes.svelte';
 
   // Modern state management using Svelte 5 runes
@@ -17,7 +17,7 @@
   let offsetX = $state(0);
   let offsetY = $state(0);
 
-  // Get reactive calculator and data using modern reactive approach
+  // Get reactive calculator and data using modern reactive approach(Need to update to use WasiLoader singleton instead)
   const calculatorValue = $derived(modernTypes.calculator);
   const dataValue = $derived(modernTypes.data);
 

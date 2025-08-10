@@ -1,4 +1,7 @@
-import type { Translation, Node, SkillTreeData, Group, Sprite, TranslationFile } from './skill_tree_types_modern';
+/**
+ * Modernized for Svelte 5
+ */
+import type { Translation, Node, SkillTreeData, Group, Sprite, TranslationFile } from './skill_tree_types';
 import { modernTypes } from './types/ModernTypes.svelte';
 import { type Filter, type Query, filterGroupsToQuery, filtersToFilterGroup } from './utils/trade_utils';
 import { chunkArray } from './utils/utils';

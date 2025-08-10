@@ -1,34 +1,32 @@
-<!-- Svelte 5 Modern Layout - Uses children prop and advanced runes -->
+<!-- src/routes/+layout.svelte -->
+<!-- Modernized for Svelte 5-->
 <script lang="ts">
-  import type { Snippet } from 'svelte';
   import '../app.css';
-  import { onMount } from 'svelte';
+  import { Snippet } from 'svelte';
+  import {
+    $props,
+    $state,
+    $effect,
+    $derived
+  } from 'svelte/runes';
 
-  // Svelte 5 children prop with proper typing
+  import {
+    initialize,
+    status,
+    isReady
+  } from '$lib/services/JewelGenService.svelte.ts';
+
+  import { loadSkillTree } from '../lib/skill_tree';
+  import Spinner from '$lib/components/Spinner.svelte';
+
+  // children prop
   let { children }: { children: Snippet } = $props();
 
-  // Modern performance tracking with runes
-  let layoutMetrics = $state({
+  // layout performance metrics
+  const layoutMetrics = $state({
     mountTime: 0,
     renderTime: 0,
     isHydrated: false
-  });
-
-  // Use $effect for lifecycle management (Svelte 5 replacement for onMount)
-  $effect(() => {
-    const startTime = performance.now();
-    layoutMetrics.mountTime = startTime;
-
-    // Modern hydration detection
-    if (typeof window !== 'undefined') {
-      layoutMetrics.isHydrated = true;
-      layoutMetrics.renderTime = performance.now() - startTime;
-
-      // Log performance in development
-      if (import.meta.env.DEV) {
-        console.log(`?? Modern Layout rendered in ${layoutMetrics.renderTime.toFixed(2)}ms`);
-      }
-    }
   });
 
   // Modern viewport tracking with runes
@@ -36,6 +34,42 @@
     width: 0,
     height: 0,
     isMobile: false
+  });
+
+  // CSS classes based on viewport
+  const layoutClasses = $derived(
+    () => `layout-wrapper ${viewport.isMobile ? 'mobile' : 'desktop'}`
+  );
+
+  const skillLoaded = $state(false);
+
+  // Initialization & hydration
+  $effect(() => {
+    // record mount/hydration
+    const t0 = performance.now();
+    layoutMetrics.mountTime = t0;
+
+    if (typeof window !== 'undefined') {
+      layoutMetrics.isHydrated = true;
+      layoutMetrics.renderTime = performance.now() - t0;
+
+      // Log performance in development
+      if (import.meta.env.DEV) {
+        console.log(`?? Modern Layout rendered in ${layoutMetrics.renderTime.toFixed(2)}ms`);
+      }
+
+      // async WASM init
+      (async () => {
+        try {
+          await initialize('layout');
+          await loadSkillTree();
+          skillLoaded = true;
+        }
+    		catch (err) {
+          console.error('Initialization error:', err, status());
+    		}
+      })();
+    }
   });
 
   // Responsive viewport tracking
@@ -55,9 +89,6 @@
     // Return a no-op cleanup function for server-side rendering
     return () => {};
   });
-
-  // Derived responsive classes using $derived
-  const layoutClasses = $derived(`layout-wrapper ${viewport.isMobile ? 'mobile' : 'desktop'}`);
 </script>
 
 <svelte:head>
@@ -79,10 +110,15 @@
   <meta name="description" content="Path of Exile Timeless Jewel Calculator - Calculate passive tree modifications offline" />
 </svelte:head>
 
-<!-- Always show the main content, WASM loads dynamically in components -->
-<div class={layoutClasses} data-hydrated={layoutMetrics.isHydrated}>
-  {@render children()}
-</div>
+{#if !isReady() || !skillLoaded()}
+  <div class="loading">
+    <Spinner /> Loading WASM… (status: {status()})
+  </div>
+{:else}
+  <div class={layoutClasses} data-hydrated={layoutMetrics.isHydrated}>
+    {@render children}
+  </div>
+{/if}
 
 <style>
   /* Modern Layout specific styles with CSS custom properties */

@@ -1,3 +1,4 @@
+<!-- Modern SkillTree Component - Svelte 5 Compliant -->
 <script lang="ts">
   import { openQueryTrade, type Query } from '$lib/utils/trade_utils';
 

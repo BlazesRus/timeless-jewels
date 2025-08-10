@@ -9,7 +9,7 @@ console.log('');
 
 const likelySources = [
   {
-    file: 'frontend/src/routes-modern/+layout.ts',
+    file: 'frontend/src/routes/+layout.ts',
     line: 63,
     likelihood: 'HIGH',
     reason: 'Safe JSON parsing wrapper - if this fails, the input is definitely malformed',
@@ -17,7 +17,7 @@ const likelySources = [
     context: 'This is in a safe parsing function, so it handles bad JSON gracefully'
   },
   {
-    file: 'frontend/src/routes-modern/tree/+page.svelte',
+    file: 'frontend/src/routes/tree/+page.svelte',
     line: 39,
     likelihood: 'HIGH',
     reason: 'Parsing possibleStatsJSON from WASM - could be timing or data issue',

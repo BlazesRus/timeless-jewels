@@ -1,4 +1,7 @@
-<!-- src/routes/tree/+page.svelte -->
+<!-- 
+  Modernized for Svelte 5
+  src/routes/tree/+page.svelte 
+-->
 <script lang="ts">
   // 1) Core imports & stores
   import { browser } from '$app/environment';
@@ -18,7 +21,7 @@
   import { modernWorker } from '$lib/workers/modern-worker';
   import type { SearchConfig, SearchResults as SearchResultsType } from '$lib/workers/modern-worker-types';
   import type { JewelOption } from '$lib/skill_tree_types_modern';
-  import { translateStat, constructQueries, getAffectedNodes, type StatConfig } from '$lib/skill_tree_modern';
+  import { translateStat, constructQueries, getAffectedNodes, type StatConfig } from '$lib/skill_tree';
   import { statValues } from '$lib/values';
   import { debugLog, addDebugMessage } from '$lib/ModernWasm/wasmLogger.svelte';
   import { getTimelessJewelsData, isTimelessJewelsDataReady } from '$lib/services/wasiDataService.svelte.ts';

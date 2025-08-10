@@ -1,3 +1,6 @@
+/**
+ * Modernized for Svelte 5
+ */
 // Modern (Svelte 5) version of skill tree types
 // This file includes all the original types plus modern enhancements
 

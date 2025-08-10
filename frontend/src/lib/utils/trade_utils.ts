@@ -3,12 +3,14 @@ export type Filter = {
   value: { min: number; max: number };
   disabled?: boolean;
 };
+
 export type FilterGroup = {
   type: string;
   value: { min: number };
   filters: Filter[];
   disabled: boolean;
 };
+
 export type Query = {
   query: {
     status: {

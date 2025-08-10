@@ -1,10 +1,13 @@
-import type { Translation, Node, SkillTreeData, Group, Sprite, TranslationFile } from '../skill_tree_types_modern';
-import { getData } from '../types/ModernTypes.worker';
-import { type Filter, type Query, filterGroupsToQuery, filtersToFilterGroup } from '../utils/trade_utils';
-import { chunkArray } from '../utils/utils';
+/**
+ * Modernized for Svelte 5
+ */
+import type { Translation, Node, SkillTreeData, Group, Sprite, TranslationFile } from './skill_tree_types';
+import { getData } from './types/ModernTypes.worker';
+import { type Filter, type Query, filterGroupsToQuery, filtersToFilterGroup } from './utils/trade_utils';
+import { chunkArray } from './utils/utils';
 
 // Re-export types for worker use
-export type { Query, Filter } from '../utils/trade_utils';
+export type { Query, Filter } from './utils/trade_utils';
 
 export let skillTree: SkillTreeData;
 export let alternateTreeVersions: any;

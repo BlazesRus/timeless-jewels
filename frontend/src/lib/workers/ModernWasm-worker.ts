@@ -26,8 +26,7 @@
  * SOFTWARE.
  */
 
-import { loadWasm } from '../ModernWasm/wasm-loader.svelte';
-import { addDebugMessage, captureError } from '$lib/ModernWasm/wasmLogger.svelte';
+import { initialize, wasmFunctions, wasmDataFields, isReady } from '../services/JewelGenService.svelte';
 
 let wasmReady = false;
 
@@ -39,17 +38,17 @@ self.onmessage = async function (e) {
     switch (type) {
       case 'init':
         if (!wasmReady) {
-          addDebugMessage('🔧 Initializing WASM in Web Worker...');
-          await loadWasm(data.wasmUrl);
-          wasmReady = true;
-          self.postMessage({ type: 'init', success: true });
+          console.log('🔧 Initializing WASM in Web Worker with JewelGenService...');
+          const success = await initialize('ModernWasm-worker');
+          wasmReady = success;
+          self.postMessage({ type: 'init', success });
         } else {
           self.postMessage({ type: 'init', success: true, message: 'Already initialized' });
         }
         break;
 
       case 'calculate':
-        if (!wasmReady) {
+        if (!wasmReady || !isReady()) {
           self.postMessage({
             type: 'calculate',
             success: false,
@@ -60,24 +59,24 @@ self.onmessage = async function (e) {
 
         const { passiveSkill, seed, jewel, conqueror } = data;
 
-        if ((globalThis as any).Calculate) {
-          const result = (globalThis as any).Calculate(passiveSkill, seed, jewel, conqueror);
+        try {
+          const result = wasmFunctions.calculate(passiveSkill, seed, jewel, conqueror);
           self.postMessage({
             type: 'calculate',
             success: true,
             result
           });
-        } else {
+        } catch (error) {
           self.postMessage({
             type: 'calculate',
             success: false,
-            error: 'Calculate function not available'
+            error: error instanceof Error ? error.message : 'Calculate function failed'
           });
         }
         break;
 
       case 'getData':
-        if (!wasmReady) {
+        if (!wasmReady || !isReady()) {
           self.postMessage({
             type: 'getData',
             success: false,
@@ -86,17 +85,25 @@ self.onmessage = async function (e) {
           return;
         }
 
-        const exports = {
-          TimelessJewels: (globalThis as any).TimelessJewels,
-          PassiveSkills: (globalThis as any).PassiveSkills,
-          TimelessJewelConquerors: (globalThis as any).TimelessJewelConquerors
-        };
+        try {
+          const data = {
+            TimelessJewels: wasmDataFields.jewels,
+            PassiveSkills: wasmDataFields.passiveSkills,
+            TimelessJewelConquerors: wasmDataFields.conquerors
+          };
 
-        self.postMessage({
-          type: 'getData',
-          success: true,
-          data: exports
-        });
+          self.postMessage({
+            type: 'getData',
+            success: true,
+            data
+          });
+        } catch (error) {
+          self.postMessage({
+            type: 'getData',
+            success: false,
+            error: error instanceof Error ? error.message : 'Failed to get data'
+          });
+        }
         break;
 
       default:
