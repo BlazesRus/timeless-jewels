@@ -9,6 +9,8 @@ import tailwindcss from '@tailwindcss/vite';
 import Inspect from 'vite-plugin-inspect';
 import checker from 'vite-plugin-checker';
 import { VitePWA } from 'vite-plugin-pwa';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
+import { builtinModules } from 'module';
 
 export default defineConfig(({ mode }) => {
   // BUILD_TARGET=ghpages for GH Pages, otherwise default to app+electron
@@ -72,6 +74,15 @@ export default defineConfig(({ mode }) => {
     },
 
     plugins: [
+      // copy your icon folder to dist/ElectronApp/icons
+      viteStaticCopy({
+        targets: [
+          {
+            src: 'electron/assets/icons/*',
+            dest: 'icons'
+          }
+        ]
+      }),
       // 1) CSP Injection
       {
         name: 'html-transform-csp',
@@ -174,8 +185,59 @@ export default defineConfig(({ mode }) => {
       // 8) Electron main + preload build (only for non-ghpages)
       !isGhPages &&
         electron({
-          main: { entry: 'electron/main.ts' },
-          preload: { input: 'electron/preload.ts' }
+          main: {
+            entry: 'electron/main.ts',
+            vite: {
+              build: {
+                target: `node${process.versions.node}`
+                outDir: 'dist/ElectronApp/main', emptyOutDir: true,
+                sourcemap: true,
+                commonjsOptions: {
+                  transformMixedEsModules: true,
+                  include: [/electron-store/, /electron-log/]
+                },
+                rollupOptions: {
+                  external: [
+                    ...builtinModules,
+                    'electron',
+                    'electron-updater',
+                    'electron-store',
+                    'electron-log'
+                  ],
+                  output: { format: 'cjs'/*← Electron’s default loader expects CommonJS*/ }
+                }
+              }
+            }
+          },
+          preload: {
+            input: 'electron/preload.ts',
+            vite: {
+              build: {
+                target: `node${process.versions.node}`
+                outDir: 'dist/ElectronApp/preload', emptyOutDir: true,
+                sourcemap: true,
+                commonjsOptions: {
+                  transformMixedEsModules: true,
+                  include: [/electron-store/, /electron-log/]
+                },
+                rollupOptions: {
+                  external: [...builtinModules, 'electron']
+                  output: { format: 'cjs'/*← Electron’s default loader expects CommonJS*/ }
+                }
+              }
+            }
+          },
+          builderOptions: {
+            productName: 'Timeless Jewel Generator',
+            directories: { buildResources: 'electron/assets/icons' },
+            win: { icon: 'icon.ico' },
+            mac: { icon: 'icon.icns' },
+            linux: { icon: 'tray-icon.png' }
+          },
+          onstart(options) {
+            options.spawnProcess();// dev: launch Electron
+            options.reload();      // dev: reload renderer on HMR
+          }
         })
     ].filter(Boolean)
   }

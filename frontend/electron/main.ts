@@ -7,59 +7,97 @@ import {
   Rectangle,
   globalShortcut,
   ipcMain,
+  Menu,
+  Tray,
+  dialog,
+  nativeImage,
+  Display
 } from 'electron';
 import { join } from 'path';
 import log from 'electron-log';
-import Store from 'electron-store';
 
-// Try to load electron-window-state; fall back to our manual Store if missing
+//Creating a single Store for window state + auto-update flag
+import Store from 'electron-store';
+interface StoreSchema {
+  x?: number;
+  y?: number;
+  width: number;
+  height: number;
+  autoUpdateEnabled: boolean;
+  repositionOnDisplayRemoval: boolean;
+}
+const store = new Store<StoreSchema>({
+  defaults: {
+    width: 1024,
+    height: 768,
+    autoUpdateEnabled: false,
+    repositionOnDisplayRemoval: false
+  }
+});
+
+// Dynamically loading `electron-updater`
+let autoUpdater: typeof import('electron-updater').autoUpdater | null = null;
+try {
+  autoUpdater = require('electron-updater').autoUpdater;
+  log.info('electron-updater loaded; auto-updates enabled');
+} catch {
+  log.warn('electron-updater not found; auto-updates disabled');
+  store.set('autoUpdateEnabled', false);
+}
+
+// Read the persisted flag autoupdate flag
+let autoUpdateEnabled = store.get('autoUpdateEnabled');
+
+// tray state
+let tray: Tray | null = null;
+function createTray() {
+  // load a high-res source (e.g. 64×64 PNG) and downsize to 32×32
+  const rawIcon = nativeImage.createFromPath(
+    join(__dirname, 'assets', 'tray-icon.png')
+  );
+  const trayIcon = rawIcon.resize({ width: 32, height: 32 });
+
+  tray = new Tray(trayIcon);
+  tray.setToolTip('Timeless Jewels Generator');
+  tray.on('click', () => {
+    const w = BrowserWindow.getAllWindows()[0];
+    if (w) w.show();
+  });
+}
+
+// Try to load electron-window-state; fallback to manual Store if missing
 let windowStateKeeper: typeof import('electron-window-state') | null = null;
 try {
   require.resolve('electron-window-state');
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   windowStateKeeper = require('electron-window-state');
 } catch {
-  console.log('electron-window-state not installed; using manual window-state management'
+  console.log(
+    'electron-window-state not installed; using manual window-state management'
   );
 }
 
-// Define the types for our manual state
-interface WindowState {
-  x?: number;
-  y?: number;
-  width: number;
-  height: number;
-}
+let state: ReturnType<typeof windowStateKeeper> | null = null;
 
-// Prepare either the auto-clamp state manager or our own Store
-let state:
-  | ReturnType<typeof windowStateKeeper>
-  | null = null;
-let store:
-  | Store<WindowState>
-  | null = null;
-
+// Initialize auto-clamp or manual state store
 if (windowStateKeeper) {
   state = windowStateKeeper({
-    defaultWidth: 1024,
-    defaultHeight: 768,
-  });
-} else {
-  store = new Store<WindowState>({
-    defaults: { width: 1024, height: 768 },
+    defaultWidth : store.get('width'),
+    defaultHeight: store.get('height'),
+    defaultX     : store.get('x'),
+    defaultY     : store.get('y')
   });
 }
 
-// Helper: clamp raw bounds into whichever display work area overlaps, or primary
+// Clamp helper to keep window fully on-screen
 function clampToVisible(raw: Rectangle): Rectangle {
   const displays = screen.getAllDisplays().map((d) => d.workArea);
   const workArea =
-    displays.find(
-      (area) =>
-        raw.x! < area.x + area.width &&
-        raw.x! + raw.width > area.x &&
-        raw.y! < area.y + area.height &&
-        raw.y! + raw.height > area.y
+    displays.find((area) =>
+      raw.x! < area.x + area.width &&
+      raw.x! + raw.width > area.x &&
+      raw.y! < area.y + area.height &&
+      raw.y! + raw.height > area.y
     ) || screen.getPrimaryDisplay().workArea;
 
   const x = Math.min(
@@ -73,42 +111,32 @@ function clampToVisible(raw: Rectangle): Rectangle {
   return { x, y, width: raw.width, height: raw.height };
 }
 
-// Whitelist full-URL prefixes (protocol+domain+path)
+// Whitelist URL prefixes
 const ALLOWED_URL_PREFIXES = [
-  'file://',                                 // always allow local files
+  'file://',
   'https://github.com/BlazesRus/timeless-jewels/',
   'https://blazesrus.github.io/timeless-jewels/',
   'https://vilsol.github.io/timeless-jewels/',
   'https://github.com/vilsol/timeless-jewels/',
 ];
 
-// IPC handlers (renderer → main)
+/** IPC: Renderer → Main logging & config **/
 ipcMain.on('log-event', (_, data) => {
   log.info(`Renderer says: ${data}`);
 });
-
 ipcMain.handle('get-config', () => {
-  // Return manual store state if using DIY, else auto state
-  if (store) return store.store;
-  return {
-    x: state!.x,
-    y: state!.y,
-    width: state!.width,
-    height: state!.height,
-  };
+  if (state) {
+    return { x: state.x, y: state.y, width: state.width, height: state.height };
+  }
+  return store.store;
 });
 
-// Crash logging
-crashReporter.start({
-  companyName: 'BlazesRus',
-  uploadToServer: false,
-});
+// CrashReporter & uncaught exception logging
+crashReporter.start({ companyName: 'BlazesRus', uploadToServer: false });
 app.on('ready', () => log.info('App is ready'));
-process.on('uncaughtException', (err) =>
-  log.error('Uncaught exception', err)
-);
+process.on('uncaughtException', (err) => log.error('Uncaught exception', err));
 
-// Prevent multiple processes; spawn a new window on second-instance
+// Prevent multiple processes; open new window on second-instance
 const gotLock = app.requestSingleInstanceLock();
 if (!gotLock) {
   app.quit();
@@ -118,92 +146,185 @@ app.on('second-instance', () => {
   createWindow();
 });
 
-function createWindow() {
-  // 1) Determine which bounds to use
-  const rawBounds = state
-    ? { x: state.x, y: state.y, width: state.width, height: state.height }
-    : store!.store;
-  const { x, y, width, height } = clampToVisible(rawBounds as Rectangle);
+/** Build the Application Menu **/
+function buildMenu() {
+  const isMac = process.platform === 'darwin';
+  const template: Electron.MenuItemConstructorOptions[] = [
+    ...(isMac 
+    ? [{label: app.name, submenu: [{ role: 'about' }, { type: 'separator' }, { role: 'quit' }]}]
+    : []),
 
-  // 2) Create the BrowserWindow
-  const win = new BrowserWindow({
-    x,
-    y,
-    width,
-    height,
-    show: false, // wait for ready-to-show
-    webPreferences: {
-      contextIsolation: true,
-      nodeIntegration: false,
-      preload: join(__dirname, 'preload.js'),
+    { label: 'Edit', role: 'editMenu' },
+
+    {
+      label: 'View',
+      submenu: [
+        { role: 'reload' },
+        { role: 'toggledevtools', visible: !!process.env.VITE_DEV_SERVER_URL },
+        { type: 'separator' },
+        { role: 'resetzoom' }, { role: 'zoomin' }, { role: 'zoomout' }
+      ]
     },
-  });
+    {
+      label: 'Options',
+      submenu: [
+        {
+          label: 'Enable Auto-Updates',
+          type: 'checkbox',
+          enabled: !!autoUpdater,
+          checked: autoUpdateEnabled,
+          click: async (menuItem) => {
+            autoUpdateEnabled = menuItem.checked;
+            store.set('autoUpdateEnabled', autoUpdateEnabled);
+            if (autoUpdateEnabled && autoUpdater) {
+              autoUpdater.checkForUpdatesAndNotify();
+            }
+          }
+        },
+        {
+          label: 'Reposition on Display Removal',
+          type: 'checkbox',
+          checked: store.get('repositionOnDisplayRemoval'),
+          click: (menuItem) => {
+            store.set('repositionOnDisplayRemoval', menuItem.checked);
+          }
+        }
+      ]
+    },
+    { role: 'windowMenu' },
+    {
+      role: 'help',
+      submenu: [
+        { label: 'Learn More', click: () => shell.openExternal('https://electronjs.org') }
+      ]
+    }
+  ];
 
-  // 3) Track moves/resizes
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+}
+
+function handleDisplayRemoved(_event: Event, removedDisplay: Display) {
+  // 1) Honor user preference
+  if (!store.get('repositionOnDisplayRemoval')) return;
+
+  // 2) Grab the current window
+  const win = BrowserWindow.getAllWindows()[0];
+  if (!win) return;
+
+  // 3) Check if the window was on the removed display
+  const winBounds = win.getBounds();
+  const { x, y, width, height } = removedDisplay.bounds;
+  const overlaps =
+    winBounds.x < x + width &&
+    winBounds.x + winBounds.width > x &&
+    winBounds.y < y + height &&
+    winBounds.y + winBounds.height > y;
+
+  // 4) Only clamp if the window overlapped the removed display
+  if (overlaps) {
+    const clamped = clampToVisible(winBounds);
+    win.setBounds(clamped);
+  }
+}
+
+//If screen with App is turned off, instead move to current window if repositionOnDisplayRemoval setting is on
+screen.on('display-removed', handleDisplayRemoved);
+
+/** Create & configure a new BrowserWindow **/
+function createWindow() {
+  // Decide which source to use
+  const raw = windowStateKeeper
+    ? { x: state.x!, y: state.y!, width: state.width, height: state.height }
+    : { x: store.x!, y: store.y!, width: store.width, height: store.height };
+
+  // If not using state-keeper, center on first run
+  if (!state && (raw.x == null || raw.y == null)) {
+    const work = screen.getPrimaryDisplay().workArea;
+    raw.x = work.x + (work.width  - raw.width)  / 2;
+    raw.y = work.y + (work.height - raw.height) / 2;
+  }
+
+  // Clamp on any setup
+  const { x, y, width, height } = clampToVisible(raw as Rectangle);
+
+  const win = new BrowserWindow({ x, y, width, height, /* … */ });
+  
+  // Persist moves/resizes
   if (state) {
     state.manage(win);
   } else {
     win.on('close', () => {
       const b = win.getBounds();
-      store!.set('x', b.x);
-      store!.set('y', b.y);
-      store!.set('width', b.width);
-      store!.set('height', b.height);
+      store.set({ x: b.x, y: b.y, width: b.width, height: b.height });
     });
   }
 
   // 4) Navigation lockdown & external links
   win.webContents.on('will-navigate', (e, url) => {
-    if (!ALLOWED_URL_PREFIXES.some((p) => url.startsWith(p))) {
+    if (!ALLOWED_URL_PREFIXES.some(p => url.startsWith(p))) {
       e.preventDefault();
       shell.openExternal(url);
     }
   });
-
   win.webContents.setWindowOpenHandler(({ url }) => {
-    if (ALLOWED_URL_PREFIXES.some((p) => url.startsWith(p))) {
+    if (ALLOWED_URL_PREFIXES.some(p => url.startsWith(p))) {
       return { action: 'allow' };
     }
     shell.openExternal(url);
     return { action: 'deny' };
   });
 
-  // 5) Show when ready
-  win.once('ready-to-show', () => win.show());
+  // 5) Crash-reload dialog for render failures
+  win.webContents.on('render-process-gone',
+    async (event, details) => {
+      log.error('Renderer crashed:', details);
+      const { response } = await dialog.showMessageBox(win, {
+        type: 'error',
+        title: 'Renderer Crash',
+        message: 'The renderer process has crashed. Reload?',
+        buttons: ['Reload', 'Close']
+      });
+      if (response === 0) win.reload();
+      else win.close();
+    }
+  );
 
-  // 6) Load dev server or local file
+  // 6) Show & load URL/file
+  win.once('ready-to-show', () => win.show());
   if (process.env.VITE_DEV_SERVER_URL) {
     win.loadURL(process.env.VITE_DEV_SERVER_URL);
   } else {
     win.loadFile(join(__dirname, 'index.html'));
   }
 
-  // 7) Windows AppUserModelID for notifications & jump lists
+  // 7) Windows AppUserModelID
   if (process.platform === 'win32') {
     app.setAppUserModelId('com.BlazesRus.TimelessJewelGen');
   }
 }
 
-// Register a global shortcut (toggle DevTools)
+/** App Ready: build menu, first window & register shortcuts **/
 app.whenReady().then(() => {
+  buildMenu();
   createWindow();
-  // Ctrl+Shift+I for toggling DevTools anywhere
+
+  // DevTools toggle (Ctrl+Shift+I)
   globalShortcut.register('Control+Shift+I', () => {
     const w = BrowserWindow.getAllWindows()[0];
     if (w) w.webContents.toggleDevTools();
   });
+
+  // Tray toggle (Ctrl+Shift+M)
+  globalShortcut.register('Control+Shift+M', () => {
+    if (!tray) createTray();
+    else {
+      tray.destroy();
+      tray = null;
+    }
+  });
 });
 
-// Cleanup shortcuts on quit
-app.on('will-quit', () => {
-  globalShortcut.unregisterAll();
-});
-
-// Quit behavior
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
-});
-
-app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) createWindow();
-});
+// Cleanup on quit
+app.on('will-quit', () => globalShortcut.unregisterAll());
+app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
+app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });

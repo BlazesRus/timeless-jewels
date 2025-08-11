@@ -44,20 +44,24 @@
     "zip:all":       "pnpm run zip:windows && pnpm run zip:mac",
 
     "package:all":   "pnpm run package:windows && pnpm run package:mac && pnpm run package:linux",
-    "release:all":   "pnpm run build && pnpm run package:all && pnpm run zip:all"
+    "release:all":   "pnpm run build && pnpm run package:all && pnpm run zip:all",
+    "icon:generate": "electron-icon-maker --input electron/assets/icons/tray-icon.png --output electron/assets"
   },
-  "main": "dist/ElectronApp/main.js",
+  "main": "dist/ElectronApp/main/main.js",
   "homepage": "https://BlazesRus.github.io/timeless-jewels/",
   "build": {
     "appId": "com.BlazesRus.TimelessJewelGen",
     "files": [
-      "dist/ElectronApp/**/*"
+      "dist/ElectronApp/main/**/*",
+      "dist/ElectronApp/preload/**/*",
+      "dist/ElectronApp/assets/icons/**/*"
     ],
     "directories": {
-      "buildResources": "assets",
+      "buildResources": "dist/ElectronApp/assets/icons",
       "output": "OfflineBuild"
     },
     "win": {
+		  "icon": "icon.ico",
       "target": [
         "portable"
       ]
@@ -66,12 +70,14 @@
       "artifactName": "TimelessJewelGenerator.exe"
     },
     "mac": {
+		  "icon": "icon.icns",
       "target": [
         "dmg",
         "zip"
       ]
     },
     "linux": {
+		  "icon": "tray-icon.png",
       "target": [
         "AppImage",
         "deb"
@@ -80,6 +86,9 @@
   },
   "devDependencies": {
     "@electron/packager": "^18.3.6",
+		"electron-log": "^5.4.2",
+		"electron-icon-maker": "^0.0.5",
+    "vite-plugin-static-copy": "^3.1.1",
     "@eslint-community/eslint-utils": "^4.7.0",
     "@eslint/css": "^0.9.0",
     "@eslint/js": "^9.28.0",
